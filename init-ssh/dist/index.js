@@ -74,15 +74,17 @@ async function run() {
     // Input
     const privateKey = getInput('private-key')
 
-    // Create an array of commands to execute
-    const commands = [
-      'mkdir -p ~/.ssh',
-      `echo -e "${privateKey}" > ~/.ssh/id_rsa`,
-      'chmod og -rwx ~/.ssh/id_rsa'
-    ].concat(rsaKeys.map(rsaKey => `echo "${rsaKey}" >> ~/.ssh/known_hosts`))
+    // Save the private key
+    await exec('mkdir -p ~/.ssh')
+    await exec(`echo -e "${privateKey}" > ~/.ssh/id_rsa`, [], { silent: true })
+    console.log('Saved private key to ~/.ssh/id_rsa')
+    await exec('chmod og-rwx ~/.ssh/id_rsa')
 
-    // Execute commands
-    await asyncForEach(commands, async command => await exec(command))
+    // Prime the known_hosts
+    await asyncForEach(
+      rsaKeys,
+      async rsaKey => await exec(`echo "${rsaKey}" >> ~/.ssh/known_hosts`)
+    )
 
     // Output
     let publicKey = ''
