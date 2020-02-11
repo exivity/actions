@@ -4,8 +4,8 @@ Public GitHub Actions used at Exivity for CI/CD
 
 ## `init-ssh`
 
-This action sets up a private key and prime the known_hosts file with
-pre-loaded keys for github.com, gitlab.com and bitbucket.org.
+Use a private key and prime the known_hosts file with pre-loaded keys for
+github.com, gitlab.com and bitbucket.org.
 
 ## Inputs
 

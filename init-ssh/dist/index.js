@@ -56,7 +56,7 @@ async function run() {
     const privateKey = getInput('private-key')
 
     // Execute init-ssh bash script
-    await exec('./init-ssh.sh', undefined, {
+    await exec('bash init-ssh.sh', undefined, {
       cwd: path.resolve(__dirname, '..'),
       env: {
         PRIVATE_KEY: privateKey
