@@ -1,5 +1,5 @@
 name: 'Init SSH'
-description: 'Sets up a private key and primes the .known_hosts'
+description: 'Use a private key and prime the known_hosts'
 inputs:
   private-key:
     description: 'The SSH private key to load'
