@@ -28,7 +28,15 @@ async function run() {
 
     // Save the private key
     await exec('mkdir -p ~/.ssh')
-    await exec(`echo -e "${privateKey}" > ~/.ssh/id_rsa`, [], { silent: true })
+    await exec(`ls -la ~/.ssh`)
+    await exec('echo', ['-e', privateKey, '>', '~/.ssh/id_rsa'])
+    await exec(`ls -la ~/.ssh`)
+    await exec(`echo -e ${privateKey} > ~/.ssh/id_rsa`)
+    await exec(`ls -la ~/.ssh`)
+    await exec(`PRIVATE_KEY="${privateKey}"`)
+    await exec(`echo $PRIVATE_KEY > ~/.ssh/id_rsa`)
+    await exec(`ls -la ~/.ssh`)
+    await exec(`cat ~/.ssh/id_rsa`)
     console.log('Saved private key to ~/.ssh/id_rsa')
     await exec('chmod og-rwx ~/.ssh/id_rsa')
 
