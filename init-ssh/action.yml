@@ -1,0 +1,12 @@
+name: 'Init SSH'
+description: 'Sets up a private key and primes the .known_hosts'
+inputs:
+  private-key:
+    description: 'The SSH private key to load'
+    required: true
+outputs:
+  public-key:
+    description: 'The SSH public key derived from the private key'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

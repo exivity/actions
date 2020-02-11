@@ -1,0 +1,19 @@
+{
+  "name": "@exivity/actions",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:exivity/actions.git",
+  "author": "Joram van den Boezem <joram@vandenboezem.nl>",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn build:init-ssh",
+    "build:init-ssh": "ncc build init-ssh/src/index.js -o init-ssh/dist"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.2",
+    "@actions/exec": "^1.0.3"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.21.0"
+  }
+}
