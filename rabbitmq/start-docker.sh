@@ -22,7 +22,7 @@ function retry {
 }
 
 function health {
-  docker inspect --format='{{json .State.Health.Status}}' rabbitmq
+  docker inspect --format="{{json .State.Health.Status}}" rabbitmq
 }
 
 function test {
@@ -30,11 +30,12 @@ function test {
 
   echo "Got status $status"
 
-  [ $status = "\"healthy\"" ]
+  [[ $status == "\"healthy\"" ]]
 }
 
 set -e
 
+echo "Running Docker image $DOCKER_IMAGE"
 docker run \
     --rm \
     --detach \
@@ -45,4 +46,5 @@ docker run \
     --name rabbitmq \
     $DOCKER_IMAGE
 
+echo "Running health check"
 retry 10 test
