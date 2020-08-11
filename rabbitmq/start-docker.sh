@@ -47,4 +47,6 @@ docker run \
     $DOCKER_IMAGE
 
 echo "Running health check"
-retry 10 test
+
+#retry 10 test
+docker inspect rabbitmq
