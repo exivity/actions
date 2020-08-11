@@ -9,6 +9,16 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: exivity/actions/init-ssh@master
+      - uses: ./init-ssh
+        with:
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
+  test-rabbitmq:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: ./rabbitmq
         with:
           private-key: ${{ secrets.PRIVATE_KEY }}

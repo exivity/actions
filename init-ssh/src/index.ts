@@ -1,6 +1,6 @@
-const path = require('path')
-const { getInput, setFailed } = require('@actions/core')
-const { exec } = require('@actions/exec')
+import { getInput, setFailed } from '@actions/core'
+import { exec } from '@actions/exec'
+import path from 'path'
 
 async function run() {
   try {
@@ -11,8 +11,8 @@ async function run() {
     await exec('bash init-ssh.sh', undefined, {
       cwd: path.resolve(__dirname, '..'),
       env: {
-        PRIVATE_KEY: privateKey
-      }
+        PRIVATE_KEY: privateKey,
+      },
     })
   } catch (error) {
     setFailed(error.message)

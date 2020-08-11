@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(402);
+/******/ 		return __webpack_require__(168);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -969,14 +969,7 @@ module.exports = require("child_process");
 
 /***/ }),
 
-/***/ 357:
-/***/ (function(module) {
-
-module.exports = require("assert");
-
-/***/ }),
-
-/***/ 402:
+/***/ 168:
 /***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -998,16 +991,27 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+const DEFAULT_VERSION = '3.8.6';
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Input
-            const privateKey = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('private-key');
-            // Execute init-ssh bash script
-            yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)('bash init-ssh.sh', undefined, {
+            const version = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('version') || DEFAULT_VERSION;
+            // Set Docker image name
+            let image;
+            switch (process.platform) {
+                case 'linux':
+                    image = 'rabbitmq';
+                    break;
+                case 'win32':
+                    image = 'exivity/rabbitmq';
+                    break;
+            }
+            // Execute start-docker bash script
+            yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)('bash start-docker.sh', undefined, {
                 cwd: path__WEBPACK_IMPORTED_MODULE_2___default().resolve(__dirname, '..'),
                 env: {
-                    PRIVATE_KEY: privateKey,
+                    DOCKER_IMAGE: `${image}:${version}`,
                 },
             });
         }
@@ -1018,6 +1022,13 @@ function run() {
 }
 run();
 
+
+/***/ }),
+
+/***/ 357:
+/***/ (function(module) {
+
+module.exports = require("assert");
 
 /***/ }),
 
