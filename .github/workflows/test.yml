@@ -9,6 +9,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v1
       - uses: ./init-ssh
         with:
           private-key: ${{ secrets.PRIVATE_KEY }}
@@ -19,6 +20,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v1
       - uses: ./rabbitmq
         with:
           private-key: ${{ secrets.PRIVATE_KEY }}
