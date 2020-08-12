@@ -1011,7 +1011,8 @@ function run() {
             yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)('bash start-docker.sh', undefined, {
                 cwd: path__WEBPACK_IMPORTED_MODULE_2___default().resolve(__dirname, '..'),
                 env: {
-                    DOCKER_IMAGE: `${image}:${version}`,
+                    IMAGE: image,
+                    TAG: version,
                 },
             });
         }
