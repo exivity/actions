@@ -21,12 +21,12 @@ function retry {
   return 0
 }
 
-function health {
+function get_health_status {
   docker inspect --format="{{json .State.Health.Status}}" rabbitmq
 }
 
-function test {
-  status=`health`
+function check_if_healthy {
+  status=`get_health_status`
 
   echo "Got status $status"
 
@@ -35,7 +35,7 @@ function test {
 
 set -e
 
-echo "Running Docker image $DOCKER_IMAGE"
+echo "Running Docker image $IMAGE:$TAG"
 docker run \
     --rm \
     --detach \
@@ -44,9 +44,17 @@ docker run \
     -p 5672:5672 \
     -p 15672:15672 \
     --name rabbitmq \
-    $DOCKER_IMAGE
+    $IMAGE:$TAG
 
 echo "Running health check"
 
-#retry 10 test
-docker inspect rabbitmq
+if [[ $IMAGE == "exivity/rabbitmq" ]]
+then
+  # On the exivity/rabbitmq image, we have a built-in healthcheck
+  retry 10 check_if_healthy
+else
+  # On the rabbitmq image, poll the rabbitmq api
+  curl --connect-timeout 5 --max-time 60 --retry 10 --user guest:guest http://localhost:15672/api/healthchecks/node
+fi
+
+

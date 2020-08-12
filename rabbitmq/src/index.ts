@@ -24,7 +24,8 @@ async function run() {
     await exec('bash start-docker.sh', undefined, {
       cwd: path.resolve(__dirname, '..'),
       env: {
-        DOCKER_IMAGE: `${image}:${version}`,
+        IMAGE: image,
+        TAG: version,
       },
     })
   } catch (error) {
