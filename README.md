@@ -22,11 +22,12 @@ Triggers a scaffold repository build on AppVeyor
 ### `scaffold-branch`
 
 **Optional** _Defaults to `develop` or `custom` depending on current branch_ The
-scaffold branch to use.
+scaffold branch to build.
 
 ### `appveyor-token`
 
-**Required** AppVeyor API token
+**Required** _Defaults to the APPVEYOR_TOKEN environment variable_ AppVeyor API
+token
 
 ## Example usage
 
@@ -50,11 +51,13 @@ repository migrations and runs them.
 
 ### `aws-access-key-id`
 
-**Required** The AWS access key ID
+**Optional** _Defaults to the AWS_ACCESS_KEY_ID environment variable_ The AWS
+access key ID
 
 ### `aws-secret-access-key`
 
-**Required** The AWS secret access key
+**Optional** _Defaults to the AWS_SECRET_ACCESS_KEY environment variable_ The
+AWS secret access key
 
 ## Example usage
 
