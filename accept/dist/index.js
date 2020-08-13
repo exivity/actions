@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(402);
+/******/ 		return __webpack_require__(514);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -976,51 +976,6 @@ module.exports = require("assert");
 
 /***/ }),
 
-/***/ 402:
-/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(470);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(986);
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_actions_exec__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(622);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_2__);
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // Input
-            const privateKey = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('private-key');
-            // Execute init-ssh bash script
-            yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)('bash init-ssh.sh', undefined, {
-                cwd: path__WEBPACK_IMPORTED_MODULE_2___default().resolve(__dirname, '..'),
-                env: {
-                    PRIVATE_KEY: privateKey,
-                },
-            });
-        }
-        catch (error) {
-            Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(error.message);
-        }
-    });
-}
-run();
-
-
-/***/ }),
-
 /***/ 431:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -1346,6 +1301,71 @@ function getState(name) {
 }
 exports.getState = getState;
 //# sourceMappingURL=core.js.map
+
+/***/ }),
+
+/***/ 514:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(470);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(986);
+/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_actions_exec__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(622);
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_2__);
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // Determine default branch
+            const ref = process.env['GITHUB_REF'];
+            let defaultBranch;
+            switch (ref) {
+                case 'refs/heads/master':
+                    // Skip accepting master commits
+                    return;
+                case 'refs/heads/develop':
+                    defaultBranch = 'develop';
+                    break;
+                default:
+                    defaultBranch = 'custom';
+                    break;
+            }
+            // Input
+            const branch = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('scaffold-branch') || defaultBranch;
+            const token = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('appveyor-token') || process.env['APPVEYOR_TOKEN'];
+            // Assertions
+            if (!token) {
+                throw new Error('A required argument is missing');
+            }
+            // Execute trigger-appveyor script
+            yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)('bash trigger-appveyor.sh', undefined, {
+                cwd: path__WEBPACK_IMPORTED_MODULE_2___default().resolve(__dirname, '..'),
+                env: {
+                    BRANCH: branch,
+                    APPVEYOR_TOKEN: token,
+                },
+            });
+        }
+        catch (error) {
+            Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(error.message);
+        }
+    });
+}
+run();
+
 
 /***/ }),
 
