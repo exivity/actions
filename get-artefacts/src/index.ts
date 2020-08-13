@@ -6,13 +6,13 @@ async function run() {
     // Input
     const component = getInput('component', { required: true })
     let sha = getInput('sha')
-    let branch = getInput('branch') || 'develop'
-    const path = getInput('path', { required: true })
+    const branch = getInput('branch') || 'develop'
+    const path = getInput('path') || `../${component}/build`
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
-    const ghToken = getInput('gh-token') || process.env['GH_TOKEN']
+    const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
 
     // Assertions
     if (!awsKeyId || !awsSecretKey || !ghToken) {

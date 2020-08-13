@@ -5664,11 +5664,11 @@ function run() {
             // Input
             const component = Object(core.getInput)('component', { required: true });
             let sha = Object(core.getInput)('sha');
-            let branch = Object(core.getInput)('branch') || 'develop';
-            const path = Object(core.getInput)('path', { required: true });
+            const branch = Object(core.getInput)('branch') || 'develop';
+            const path = Object(core.getInput)('path') || `../${component}/build`;
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
-            const ghToken = Object(core.getInput)('gh-token') || process.env['GH_TOKEN'];
+            const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
             // Assertions
             if (!awsKeyId || !awsSecretKey || !ghToken) {
                 throw new Error('A required argument is missing');
