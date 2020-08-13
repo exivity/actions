@@ -1,16 +1,13 @@
-name: get-artefacts
+name: accept
 
 on:
   push:
     paths:
-      - '.github/workflows/get-artefacts.yml'
-      - 'lib/**'
-      - 'get-artefacts/**'
+      - '.github/workflows/accept.yml'
+      - 'accept/**'
 
 env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+  APPVEYOR_TOKEN: ${{ secrets.APPVEYOR_TOKEN }}
 
 jobs:
   test:
@@ -20,8 +17,4 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
-      - uses: ./get-artefacts
-        with:
-          component: actions
-          branch: master
-          path: test
+      - uses: ./accept
