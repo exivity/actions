@@ -18,4 +18,4 @@ curl \
   -H "Authorization: Bearer $APPVEYOR_TOKEN" \
   -H "Content-Type: application/json" \
   -X POST \
-  --data $data https://ci.appveyor.com/api/builds
+  --data "$data" https://ci.appveyor.com/api/builds
