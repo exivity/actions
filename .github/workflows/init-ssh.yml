@@ -3,6 +3,7 @@ name: init-ssh
 on:
   push:
     paths:
+      - '.github/workflows/init-ssh.yml'
       - 'init-ssh/**'
 
 jobs:

@@ -3,6 +3,8 @@ name: get-artefacts
 on:
   push:
     paths:
+      - '.github/workflows/get-artefacts.yml'
+      - 'lib/**'
       - 'get-artefacts/**'
 
 env:

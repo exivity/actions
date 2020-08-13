@@ -3,6 +3,9 @@ name: rabbitmq
 on:
   push:
     paths:
+      - '.github/workflows/rabbitmq.yml'
+      - 'lib/**'
+      - start-docker.sh
       - 'rabbitmq/**'
 
 jobs:

@@ -3,6 +3,9 @@ name: postgres
 on:
   push:
     paths:
+      - '.github/workflows/postgres.yml'
+      - 'lib/**'
+      - start-docker.sh
       - 'postgres/**'
 
 jobs:
