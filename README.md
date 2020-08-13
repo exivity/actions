@@ -9,6 +9,7 @@ _Available actions:_
 - [`db`](#db)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
+- [`postgres`](#postgres)
 - [`put-artefacts`](#put-artefacts)
 - [`rabbitmq`](#rabbitmq)
 
@@ -67,15 +68,28 @@ repository migrations and runs them.
 
 # `get-artefacts`
 
-Download artefacts for the provided components and put them in their respective
-directories. It will use the S3 _exivity_ bucket in the _eu-central-1_ region.
-Artefacts are uploaded with the _build/{component}/{sha}_ prefix.
+Download artefacts for the provided component. It will use the S3 _exivity_
+bucket in the _eu-central-1_ region. Artefacts are downloaded with the
+_build/{component}/{sha}/{platform}_ prefix.
 
 ## Inputs
 
-### `components`
+### `component`
 
-**Required** A list in the form of `component@branch: path`
+**Required** Component to download artefacts for
+
+### `sha`
+
+**Optional** Use specific artefacts sha
+
+### `branch`
+
+**Optional** _Defaults to `develop`_ If no sha is provided, resolve sha from
+branch name
+
+### `path`
+
+**Required** Put artefacts in this path
 
 ### `aws-access-key-id`
 
@@ -86,6 +100,11 @@ access key ID
 
 **Optional** _Defaults to the AWS_SECRET_ACCESS_KEY environment variable_ The
 AWS secret access key
+
+### `gh-token`
+
+**Optional** _Defaults to the GH_TOKEN environment variable_ A GitHub token with
+access to the exivity/{component} repository.
 
 ## Example usage
 
