@@ -1,0 +1,12 @@
+name: 'Accept'
+description: 'Triggers a scaffold repository build on AppVeyor'
+inputs:
+  scaffold-branch:
+    description: 'The scaffold branch to build'
+    required: false
+  appveyor-token:
+    description: 'AppVeyor API token'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
