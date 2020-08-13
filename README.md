@@ -111,11 +111,12 @@ access to the exivity/{component} repository.
 ```
 - uses: exivity/actions/get-artefacts@master
   with:
-    components:
-      - testbench@master: ../testbench/build
-      - bunny@master: ../bunny/build
+    component: db
+    branch: master
+    path: db-artefacts
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 # `init-ssh`
@@ -167,8 +168,8 @@ is supported.
 # `put-artefacts`
 
 Uploads artefacts in the provided directory. It will use the S3 _exivity_ bucket
-in the _eu-central-1_ region. Artefacts are downloaded from the
-_build/{component}/{sha}_ prefix.
+in the _eu-central-1_ region. Artefacts are uploaded to the
+_build/{component}/{sha}/{platform}_ prefix.
 
 ## Inputs
 

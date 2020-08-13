@@ -11,8 +11,8 @@
     "build:rabbitmq": "ncc build rabbitmq/src/index.ts -o rabbitmq/dist",
     "build:postgres": "ncc build postgres/src/index.ts -o postgres/dist",
     "build:get-artefacts": "ncc build get-artefacts/src/index.ts -o get-artefacts/dist",
+    "build:put-artefacts": "ncc build put-artefacts/src/index.ts -o put-artefacts/dist",
     "wip:db": "ncc build db/src/index.ts -o db/dist",
-    "wip:put-artefacts": "ncc build put-artefacts/src/index.ts -o put-artefacts/dist",
     "wip:accept": "ncc build accept/src/index.ts -o accept/dist"
   },
   "dependencies": {
