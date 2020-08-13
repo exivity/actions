@@ -1,0 +1,9 @@
+name: 'PostgreSQL'
+description: 'Starts a PostgreSQL server in a Docker container'
+inputs:
+  version:
+    description: 'PostgreSQL version'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

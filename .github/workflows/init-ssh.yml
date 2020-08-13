@@ -1,9 +1,12 @@
-name: test
+name: init-ssh
 
-on: push
+on:
+  push:
+    paths:
+      - 'init-ssh/**'
 
 jobs:
-  test-init-ssh:
+  test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -13,12 +16,3 @@ jobs:
       - uses: ./init-ssh
         with:
           private-key: ${{ secrets.PRIVATE_KEY }}
-
-  test-rabbitmq:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v1
-      - uses: ./rabbitmq

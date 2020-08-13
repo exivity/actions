@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(528);
+/******/ 		return __webpack_require__(234);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -969,6 +969,69 @@ module.exports = require("child_process");
 
 /***/ }),
 
+/***/ 234:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __webpack_require__(470);
+
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __webpack_require__(986);
+
+// EXTERNAL MODULE: external "path"
+var external_path_ = __webpack_require__(622);
+var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
+
+// CONCATENATED MODULE: ./lib/dockerAction.ts
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function dockerAction({ defaultVersion, image }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // Input
+            const version = Object(core.getInput)('version') || defaultVersion;
+            // Execute start-docker bash script
+            yield Object(exec.exec)('bash ../start-docker.sh', undefined, {
+                cwd: external_path_default().resolve(__dirname, '..'),
+                env: {
+                    IMAGE: image,
+                    TAG: version,
+                },
+            });
+        }
+        catch (error) {
+            Object(core.setFailed)(error.message);
+        }
+    });
+}
+
+// CONCATENATED MODULE: ./lib/index.ts
+
+
+// CONCATENATED MODULE: ./postgres/src/index.ts
+
+const src_image = 'exivity/postgres';
+const src_defaultVersion = '12.3';
+dockerAction({
+    image: src_image,
+    defaultVersion: src_defaultVersion,
+});
+
+
+/***/ }),
+
 /***/ 357:
 /***/ (function(module) {
 
@@ -1301,69 +1364,6 @@ function getState(name) {
 }
 exports.getState = getState;
 //# sourceMappingURL=core.js.map
-
-/***/ }),
-
-/***/ 528:
-/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __webpack_require__(470);
-
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __webpack_require__(986);
-
-// EXTERNAL MODULE: external "path"
-var external_path_ = __webpack_require__(622);
-var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
-
-// CONCATENATED MODULE: ./lib/dockerAction.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-function dockerAction({ defaultVersion, image }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // Input
-            const version = Object(core.getInput)('version') || defaultVersion;
-            // Execute start-docker bash script
-            yield Object(exec.exec)('bash ../start-docker.sh', undefined, {
-                cwd: external_path_default().resolve(__dirname, '..'),
-                env: {
-                    IMAGE: image,
-                    TAG: version,
-                },
-            });
-        }
-        catch (error) {
-            Object(core.setFailed)(error.message);
-        }
-    });
-}
-
-// CONCATENATED MODULE: ./lib/index.ts
-
-
-// CONCATENATED MODULE: ./rabbitmq/src/index.ts
-
-const src_image = 'exivity/rabbitmq';
-const src_defaultVersion = '3.8.6';
-dockerAction({
-    image: src_image,
-    defaultVersion: src_defaultVersion,
-});
-
 
 /***/ }),
 
