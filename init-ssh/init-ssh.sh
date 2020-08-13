@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 echo "Create ~/.ssh folder"
 mkdir -p ~/.ssh
 

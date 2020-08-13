@@ -3,6 +3,7 @@ import { exec } from '@actions/exec'
 import { platform } from 'os'
 import path from 'path'
 import { downloadS3object, getShaFromBranch, startDocker } from '../../lib'
+
 async function run() {
   try {
     // Input
@@ -27,10 +28,11 @@ async function run() {
     })
 
     // Download db artefacts
+    const dbDirectory = '../db'
     await downloadS3object({
       component: 'db',
       sha,
-      path: '.db-artefacts',
+      path: dbDirectory,
       awsKeyId,
       awsSecretKey,
     })
@@ -47,6 +49,7 @@ async function run() {
     await exec('bash init-db.sh', undefined, {
       cwd: path.resolve(__dirname, '..'),
       env: {
+        BASE_DIR: path.join(process.env['GITHUB_WORKSPACE'], dbDirectory),
         DB_NAME: dbName,
         MIGRATE_BIN: migrateBin,
       },

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Local vars
 component=$(cut -d "/" -f 2 <<< $GITHUB_REPOSITORY)
 data="{\

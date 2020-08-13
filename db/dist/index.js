@@ -1245,10 +1245,11 @@ function run() {
                 branch,
             });
             // Download db artefacts
+            const dbDirectory = '../db';
             yield downloadS3object({
                 component: 'db',
                 sha,
-                path: '.db-artefacts',
+                path: dbDirectory,
                 awsKeyId,
                 awsSecretKey,
             });
@@ -1263,6 +1264,7 @@ function run() {
             yield Object(exec.exec)('bash init-db.sh', undefined, {
                 cwd: external_path_default().resolve(__dirname, '..'),
                 env: {
+                    BASE_DIR: external_path_default().join(process.env['GITHUB_WORKSPACE'], dbDirectory),
                     DB_NAME: dbName,
                     MIGRATE_BIN: migrateBin,
                 },
