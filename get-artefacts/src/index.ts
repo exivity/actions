@@ -42,7 +42,7 @@ async function run() {
 
     const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}/${os}`
     const dest = join(process.env['GITHUB_WORKSPACE'], path)
-    const cmd = `aws s3 cp "${src}" "${dest}" --recursive`
+    const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
     info(`About to execute ${cmd}`)
 
     // Execute aws cli command
