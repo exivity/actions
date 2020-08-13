@@ -15,6 +15,8 @@ _Available actions:_
 
 # `accept`
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/accept)
+
 Triggers a scaffold repository build on AppVeyor
 
 ## Inputs
@@ -39,6 +41,8 @@ token
 ```
 
 # `db`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/db)
 
 Runs a PostgreSQL docker container, create a new database, pulls in the `db`
 repository migrations and runs them.
@@ -79,6 +83,8 @@ access to the exivity/db repository.
 ```
 
 # `get-artefacts`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/get-artefacts)
 
 Download artefacts for the provided component. It will use the S3 _exivity_
 bucket in the _eu-central-1_ region. Artefacts are downloaded with the
@@ -133,6 +139,8 @@ access to the exivity/{component} repository.
 
 # `init-ssh`
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/init-ssh)
+
 Use a private key and prime the known_hosts file with pre-loaded keys for
 github.com, gitlab.com and bitbucket.org.
 
@@ -160,6 +168,8 @@ key contents
 
 # `postgres`
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/postgres)
+
 Starts a PostgreSQL server in a Docker container.
 
 ## Inputs
@@ -178,6 +188,8 @@ is supported.
 ```
 
 # `put-artefacts`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/put-artefacts)
 
 Uploads artefacts in the provided directory. It will use the S3 _exivity_ bucket
 in the _eu-central-1_ region. Artefacts are uploaded to the
@@ -210,6 +222,8 @@ AWS secret access key
 ```
 
 # `rabbitmq`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/rabbitmq)
 
 Starts a RabbitMQ server in a Docker container.
 
