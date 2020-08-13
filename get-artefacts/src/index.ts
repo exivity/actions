@@ -1,7 +1,7 @@
 import { getInput, info, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
-import github from '@actions/github'
-import os from 'os'
+import { getOctokit } from '@actions/github'
+import { platform } from 'os'
 import { join } from 'path'
 
 const S3_BUCKET = 'exivity'
@@ -20,7 +20,7 @@ async function run() {
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
     const ghToken = getInput('gh-token') || process.env['GH_TOKEN']
-    const platform = os.platform() === 'win32' ? 'windows' : 'linux'
+    const os = platform() === 'win32' ? 'windows' : 'linux'
 
     // Assertions
     if (!awsKeyId || !awsSecretKey || !ghToken) {
@@ -29,7 +29,7 @@ async function run() {
 
     // If we have no sha and a branch, let's find the sha
     if (!sha) {
-      const octokit = github.getOctokit(ghToken)
+      const octokit = getOctokit(ghToken)
       sha = (
         await octokit.repos.getBranch({
           owner: 'exivity',
@@ -40,7 +40,7 @@ async function run() {
       info(`Resolved ${branch} to ${sha}`)
     }
 
-    const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}/${platform}`
+    const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}/${os}`
     const dest = join(
       process.env['GITHUB_WORKSPACE'],
       component,
