@@ -1461,7 +1461,7 @@ function run() {
             }
             const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}/${os}`;
             const dest = Object(path__WEBPACK_IMPORTED_MODULE_4__.join)(process.env['GITHUB_WORKSPACE'], path);
-            const cmd = `aws s3 cp "${src}" "${dest}" --recursive`;
+            const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
             Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`About to execute ${cmd}`);
             // Execute aws cli command
             yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)(cmd);
