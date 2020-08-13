@@ -48,13 +48,6 @@ docker run \
 
 echo "Running health check"
 
-if [[ $IMAGE == "exivity/rabbitmq" ]]
-then
-  # On the exivity/rabbitmq image, we have a built-in healthcheck
-  retry 10 check_if_healthy
-else
-  # On the rabbitmq image, poll the rabbitmq api
-  curl --connect-timeout 5 --max-time 60 --retry 10 --retry-all-errors --retry-connrefused --user guest:guest http://localhost:15672/api/healthchecks/node
-fi
+retry 10 check_if_healthy
 
 

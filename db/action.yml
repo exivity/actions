@@ -1,0 +1,9 @@
+name: 'DB'
+description: 'Runs a PostgreSQL docker container, create a new database, pulls in the `db` repository migrations and runs them.'
+inputs:
+  branch:
+    description: 'The db repository branch to use'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
