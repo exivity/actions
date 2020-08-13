@@ -40,14 +40,18 @@ token
 
 # `db`
 
-Runs a PostgreSQL docker container, create a new datanase, pulls in the `db`
+Runs a PostgreSQL docker container, create a new database, pulls in the `db`
 repository migrations and runs them.
 
 ## Inputs
 
 ### `branch`
 
-**Optional** _Default: `master`_ The db repository branch to use.
+**Optional** _Default: `develop`_ The db repository branch to use.
+
+### `db-name`
+
+**Optional** _Default: `exdb-test`_ The db name to create.
 
 ### `aws-access-key-id`
 
@@ -58,6 +62,11 @@ access key ID
 
 **Optional** _Defaults to the AWS_SECRET_ACCESS_KEY environment variable_ The
 AWS secret access key
+
+### `gh-token`
+
+**Optional** _Defaults to the GH_TOKEN environment variable_ A GitHub token with
+access to the exivity/db repository.
 
 ## Example usage
 
@@ -73,7 +82,7 @@ AWS secret access key
 
 Download artefacts for the provided component. It will use the S3 _exivity_
 bucket in the _eu-central-1_ region. Artefacts are downloaded with the
-_build/{component}/{sha}/{platform}_ prefix.
+_build/{component}/{sha}_ prefix.
 
 ## Inputs
 
@@ -172,7 +181,7 @@ is supported.
 
 Uploads artefacts in the provided directory. It will use the S3 _exivity_ bucket
 in the _eu-central-1_ region. Artefacts are uploaded to the
-_build/{component}/{sha}/{platform}_ prefix.
+_build/{component}/{sha}_ prefix.
 
 ## Inputs
 

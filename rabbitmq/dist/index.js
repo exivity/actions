@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(185);
+/******/ 		return __webpack_require__(242);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -1395,7 +1395,14 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 185:
+/***/ 211:
+/***/ (function(module) {
+
+module.exports = require("https");
+
+/***/ }),
+
+/***/ 242:
 /***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1411,6 +1418,28 @@ var exec = __webpack_require__(986);
 var external_path_ = __webpack_require__(622);
 var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
 
+// EXTERNAL MODULE: external "crypto"
+var external_crypto_ = __webpack_require__(417);
+var external_crypto_default = /*#__PURE__*/__webpack_require__.n(external_crypto_);
+
+// CONCATENATED MODULE: ./lib/string.ts
+
+function sluggify(str) {
+    return str
+        .toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(/[^\w-]+/g, '') // Remove all non-word chars
+        .replace(/--+/g, '-') // Replace multiple - with single -
+        .replace(/^-+/, '') // Trim - from start of text
+        .replace(/-+$/, ''); // Trim - from end of text
+}
+function randomString(length) {
+    return external_crypto_default().randomBytes(Math.ceil(length / 2))
+        .toString('hex')
+        .substr(0, length);
+}
+
 // CONCATENATED MODULE: ./lib/docker.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1423,15 +1452,18 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-function startDocker({ defaultVersion, image }) {
+
+function startDocker({ defaultVersion, image, ports }) {
     return __awaiter(this, void 0, void 0, function* () {
         const version = Object(core.getInput)('version') || defaultVersion;
+        const portsArg = ports.map((port) => `-p ${port}:${port}`).join(' ');
         Object(core.info)(`About to start a Docker container from ${image}:${version}`);
         // Execute start-docker bash script
-        yield Object(exec.exec)('bash start-docker.sh', undefined, {
+        yield Object(exec.exec)(`bash start-docker.sh ${portsArg}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
             env: {
+                NAME: sluggify(image),
                 IMAGE: image,
                 TAG: version,
             },
@@ -1484,26 +1516,37 @@ var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argum
 const s3_S3_BUCKET = 'exivity';
 const s3_S3_PREFIX = 'build';
 const s3_S3_REGION = 'eu-central-1';
-function downloadS3object({ component, sha, suffix, path, }) {
+function downloadS3object({ component, sha, path, awsKeyId, awsSecretKey, }) {
     return s3_awaiter(this, void 0, void 0, function* () {
-        const src = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}${suffix ? `/${suffix}` : ''}`;
+        const src = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}`;
         const dest = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
         const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
-        yield Object(exec.exec)(cmd);
+        yield Object(exec.exec)(cmd, undefined, {
+            env: {
+                AWS_ACCESS_KEY_ID: awsKeyId,
+                AWS_SECRET_ACCESS_KEY: awsSecretKey,
+            },
+        });
     });
 }
-function uploadS3object({ component, sha, suffix, path, }) {
+function uploadS3object({ component, sha, path, awsKeyId, awsSecretKey, }) {
     return s3_awaiter(this, void 0, void 0, function* () {
         const src = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
-        const dest = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}${suffix ? `/${suffix}` : ''}`;
+        const dest = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}`;
         const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
-        yield Object(exec.exec)(cmd);
+        yield Object(exec.exec)(cmd, undefined, {
+            env: {
+                AWS_ACCESS_KEY_ID: awsKeyId,
+                AWS_SECRET_ACCESS_KEY: awsSecretKey,
+            },
+        });
     });
 }
 
 // CONCATENATED MODULE: ./lib/index.ts
+
 
 
 
@@ -1527,6 +1570,7 @@ function run() {
             yield startDocker({
                 image: src_image,
                 defaultVersion: src_defaultVersion,
+                ports: [4369, 5671, 5672, 15672],
             });
         }
         catch (error) {
@@ -1536,13 +1580,6 @@ function run() {
 }
 run();
 
-
-/***/ }),
-
-/***/ 211:
-/***/ (function(module) {
-
-module.exports = require("https");
 
 /***/ }),
 
@@ -2175,6 +2212,13 @@ exports.endpoint = endpoint;
 
 module.exports = __webpack_require__(141);
 
+
+/***/ }),
+
+/***/ 417:
+/***/ (function(module) {
+
+module.exports = require("crypto");
 
 /***/ }),
 

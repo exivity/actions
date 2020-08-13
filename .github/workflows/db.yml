@@ -1,0 +1,20 @@
+name: db
+
+on:
+  push:
+    paths:
+      - '.github/workflows/db.yml'
+      - 'db/**'
+
+env:
+  APPVEYOR_TOKEN: ${{ secrets.APPVEYOR_TOKEN }}
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ./db

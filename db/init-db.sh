@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+cd ../.db-artefacts
+
+echo "Unpacking migrations"
+7z x migrations.zip -omigrations -aoa
+
+echo "Creating database"
+docker exec exivity-postgres createdb $DB_NAME
+
+echo "Running migrations"
+./bin/$MIGRATE_BIN -path=migrations -database="postgres://postgres:postgres@localhost:5432/${DB_NAME}?sslmode=disable" up
