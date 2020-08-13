@@ -12,8 +12,8 @@
     "build:postgres": "ncc build postgres/src/index.ts -o postgres/dist",
     "build:get-artefacts": "ncc build get-artefacts/src/index.ts -o get-artefacts/dist",
     "build:put-artefacts": "ncc build put-artefacts/src/index.ts -o put-artefacts/dist",
-    "wip:db": "ncc build db/src/index.ts -o db/dist",
-    "wip:accept": "ncc build accept/src/index.ts -o accept/dist"
+    "build:accept": "ncc build accept/src/index.ts -o accept/dist",
+    "wip:db": "ncc build db/src/index.ts -o db/dist"
   },
   "dependencies": {
     "@actions/core": "^1.2.4",
