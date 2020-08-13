@@ -1496,6 +1496,15 @@ function downloadS3object({ component, sha, suffix, path, }) {
         yield Object(exec.exec)(cmd);
     });
 }
+function uploadS3object({ component, sha, suffix, path, }) {
+    return s3_awaiter(this, void 0, void 0, function* () {
+        const src = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
+        const dest = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}${suffix ? `/${suffix}` : ''}`;
+        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
+        Object(core.info)(`About to execute ${cmd}`);
+        yield Object(exec.exec)(cmd);
+    });
+}
 
 // CONCATENATED MODULE: ./lib/index.ts
 

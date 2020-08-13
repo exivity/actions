@@ -1,0 +1,27 @@
+name: 'Get artefacts'
+description: 'Download artefacts for the provided component.'
+inputs:
+  component:
+    description: 'Component to download artefacts for'
+    required: true
+  sha:
+    description: 'Use specific artefacts sha'
+    required: false
+  branch:
+    description: 'Resolve sha from branch name'
+    required: false
+  path:
+    description: 'Put artefacts in this path'
+    required: true
+  aws-access-key-id:
+    description: 'The AWS access key ID'
+    required: false
+  aws-secret-access-key:
+    description: 'The AWS secret access key'
+    required: false
+  gh-token:
+    description: 'A GitHub token'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

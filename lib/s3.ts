@@ -29,3 +29,20 @@ export async function downloadS3object({
 
   await exec(cmd)
 }
+
+export async function uploadS3object({
+  component,
+  sha,
+  suffix,
+  path,
+}: Options) {
+  const src = join(process.env['GITHUB_WORKSPACE'], path)
+  const dest = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${
+    suffix ? `/${suffix}` : ''
+  }`
+  const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
+
+  info(`About to execute ${cmd}`)
+
+  await exec(cmd)
+}
