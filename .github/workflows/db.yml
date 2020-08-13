@@ -4,10 +4,13 @@ on:
   push:
     paths:
       - '.github/workflows/db.yml'
+      - 'lib/**'
       - 'db/**'
 
 env:
-  APPVEYOR_TOKEN: ${{ secrets.APPVEYOR_TOKEN }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
 
 jobs:
   test:
