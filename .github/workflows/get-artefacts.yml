@@ -10,7 +10,7 @@ on:
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
 
 jobs:
   test:
@@ -23,5 +23,3 @@ jobs:
       - uses: ./get-artefacts
         with:
           component: actions
-          branch: master
-          path: test

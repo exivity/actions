@@ -12,7 +12,7 @@ inputs:
     required: false
   path:
     description: 'Put artefacts in this path'
-    required: true
+    required: false
   aws-access-key-id:
     description: 'The AWS access key ID'
     required: false

@@ -65,7 +65,7 @@ AWS secret access key
 
 ### `gh-token`
 
-**Optional** _Defaults to the GH_TOKEN environment variable_ A GitHub token with
+**Optional** _Defaults to the GITHUB_TOKEN environment variable_ A GitHub token with
 access to the exivity/db repository.
 
 ## Example usage
@@ -101,7 +101,7 @@ branch name
 
 ### `path`
 
-**Required** Put artefacts in this path
+**Optional** _Defaults to `../{component}/build`_ Put artefacts in this path
 
 ### `aws-access-key-id`
 
@@ -115,7 +115,7 @@ AWS secret access key
 
 ### `gh-token`
 
-**Optional** _Defaults to the GH_TOKEN environment variable_ A GitHub token with
+**Optional** _Defaults to the GITHUB_TOKEN environment variable_ A GitHub token with
 access to the exivity/{component} repository.
 
 ## Example usage

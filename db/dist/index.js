@@ -1233,7 +1233,7 @@ function run() {
             const dbName = Object(core.getInput)('db-name') || 'exdb-test';
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
-            const ghToken = Object(core.getInput)('gh-token') || process.env['GH_TOKEN'];
+            const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
             // Assertions
             if (!awsKeyId || !awsSecretKey || !ghToken) {
                 throw new Error('A required argument is missing');
