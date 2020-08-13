@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-cd ../.db-artefacts
+set -e
+
+cd $BASE_DIR
 
 echo "Unpacking migrations"
 7z x migrations.zip -omigrations -aoa
