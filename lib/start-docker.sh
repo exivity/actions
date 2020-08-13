@@ -35,7 +35,7 @@ function check_if_healthy {
 
 set -e
 
-echo "Running Docker image $IMAGE:$TAG"
+echo "Running Docker image $IMAGE:$TAG with name $NAME"
 
 docker run \
     --rm \
