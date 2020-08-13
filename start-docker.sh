@@ -48,6 +48,7 @@ docker run \
 
 echo "Running health check"
 
-retry 10 check_if_healthy
+# retry 5 means we will wait max 1+2+4+8+16 seconds
+retry 5 check_if_healthy
 
 

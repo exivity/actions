@@ -1003,8 +1003,9 @@ function dockerAction({ defaultVersion, image }) {
             // Input
             const version = Object(core.getInput)('version') || defaultVersion;
             // Execute start-docker bash script
-            yield Object(exec.exec)('bash ../start-docker.sh', undefined, {
-                cwd: external_path_default().resolve(__dirname, '..'),
+            yield Object(exec.exec)('bash start-docker.sh', undefined, {
+                // Once bundled, executing file will be */dist/index.js
+                cwd: external_path_default().resolve(__dirname, '..', '..'),
                 env: {
                     IMAGE: image,
                     TAG: version,
