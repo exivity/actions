@@ -1,5 +1,4 @@
 import { getInput, setFailed } from '@actions/core'
-import { platform } from 'os'
 import { uploadS3object } from '../../lib'
 
 async function run() {
@@ -14,7 +13,6 @@ async function run() {
     // From environment
     const sha = process.env['GITHUB_SHA']
     const [_, component] = process.env['GITHUB_REPOSITORY'].split('/')
-    const os = platform() === 'win32' ? 'windows' : 'linux'
 
     // Assertions
     if (!awsKeyId || !awsSecretKey) {
@@ -24,8 +22,9 @@ async function run() {
     await uploadS3object({
       component,
       sha,
-      suffix: os,
       path,
+      awsKeyId,
+      awsSecretKey,
     })
   } catch (error) {
     setFailed(error.message)

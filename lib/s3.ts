@@ -9,40 +9,49 @@ const S3_REGION = 'eu-central-1'
 type Options = {
   component: string
   sha: string
-  suffix?: string
   path: string
+  awsKeyId: string
+  awsSecretKey: string
 }
 
 export async function downloadS3object({
   component,
   sha,
-  suffix,
   path,
+  awsKeyId,
+  awsSecretKey,
 }: Options) {
-  const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${
-    suffix ? `/${suffix}` : ''
-  }`
+  const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}`
   const dest = join(process.env['GITHUB_WORKSPACE'], path)
   const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
 
   info(`About to execute ${cmd}`)
 
-  await exec(cmd)
+  await exec(cmd, undefined, {
+    env: {
+      AWS_ACCESS_KEY_ID: awsKeyId,
+      AWS_SECRET_ACCESS_KEY: awsSecretKey,
+    },
+  })
 }
 
 export async function uploadS3object({
   component,
   sha,
-  suffix,
   path,
+  awsKeyId,
+  awsSecretKey,
 }: Options) {
   const src = join(process.env['GITHUB_WORKSPACE'], path)
-  const dest = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${
-    suffix ? `/${suffix}` : ''
-  }`
+  const dest = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}`
   const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
 
   info(`About to execute ${cmd}`)
 
-  await exec(cmd)
+  await exec(cmd, undefined, {
+    env: {
+      AWS_ACCESS_KEY_ID: awsKeyId,
+      AWS_SECRET_ACCESS_KEY: awsSecretKey,
+    },
+  })
 }

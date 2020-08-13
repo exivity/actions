@@ -9,6 +9,7 @@ async function run() {
     await startDocker({
       image,
       defaultVersion,
+      ports: [4369, 5671, 5672, 15672],
     })
   } catch (error) {
     setFailed(error.message)

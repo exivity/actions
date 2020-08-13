@@ -22,7 +22,7 @@ function retry {
 }
 
 function get_health_status {
-  docker inspect --format="{{json .State.Health.Status}}" test
+  docker inspect --format="{{json .State.Health.Status}}" $NAME
 }
 
 function check_if_healthy {
@@ -40,7 +40,8 @@ echo "Running Docker image $IMAGE:$TAG"
 docker run \
     --rm \
     --detach \
-    --name test \
+    "$@" \
+    --name $NAME \
     $IMAGE:$TAG
 
 echo "Running health check"

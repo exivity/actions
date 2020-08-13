@@ -1,5 +1,4 @@
 import { getInput, setFailed } from '@actions/core'
-import { platform } from 'os'
 import { downloadS3object, getShaFromBranch } from '../../lib'
 
 async function run() {
@@ -14,7 +13,6 @@ async function run() {
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
     const ghToken = getInput('gh-token') || process.env['GH_TOKEN']
-    const os = platform() === 'win32' ? 'windows' : 'linux'
 
     // Assertions
     if (!awsKeyId || !awsSecretKey || !ghToken) {
@@ -33,8 +31,9 @@ async function run() {
     await downloadS3object({
       component,
       sha,
-      suffix: os,
       path,
+      awsKeyId,
+      awsSecretKey,
     })
   } catch (error) {
     setFailed(error.message)

@@ -4,6 +4,18 @@ inputs:
   branch:
     description: 'The db repository branch to use'
     required: false
+  db-name:
+    description: 'The db name to create'
+    required: false
+  aws-access-key-id:
+    description: 'The AWS access key ID'
+    required: false
+  aws-secret-access-key:
+    description: 'The AWS secret access key'
+    required: false
+  gh-token:
+    description: 'A GitHub token'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

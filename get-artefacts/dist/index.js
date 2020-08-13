@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(189);
+/******/ 		return __webpack_require__(753);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -1395,175 +1395,6 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 189:
-/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __webpack_require__(470);
-
-// EXTERNAL MODULE: external "os"
-var external_os_ = __webpack_require__(87);
-
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __webpack_require__(986);
-
-// EXTERNAL MODULE: external "path"
-var external_path_ = __webpack_require__(622);
-var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
-
-// CONCATENATED MODULE: ./lib/docker.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-function startDocker({ defaultVersion, image }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const version = Object(core.getInput)('version') || defaultVersion;
-        Object(core.info)(`About to start a Docker container from ${image}:${version}`);
-        // Execute start-docker bash script
-        yield Object(exec.exec)('bash start-docker.sh', undefined, {
-            // Once bundled, executing file will be /{action-name}/dist/index.js
-            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                IMAGE: image,
-                TAG: version,
-            },
-        });
-    });
-}
-
-// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
-var github = __webpack_require__(469);
-
-// CONCATENATED MODULE: ./lib/github.ts
-var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-const S3_BUCKET = 'exivity';
-const S3_PREFIX = 'build';
-const S3_REGION = 'eu-central-1';
-function getShaFromBranch({ ghToken, component, branch, }) {
-    return github_awaiter(this, void 0, void 0, function* () {
-        const octokit = Object(github.getOctokit)(ghToken);
-        const sha = (yield octokit.repos.getBranch({
-            owner: 'exivity',
-            repo: component,
-            branch,
-        })).data.commit.sha;
-        Object(core.info)(`Resolved ${branch} to ${sha}`);
-        return sha;
-    });
-}
-
-// CONCATENATED MODULE: ./lib/s3.ts
-var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-const s3_S3_BUCKET = 'exivity';
-const s3_S3_PREFIX = 'build';
-const s3_S3_REGION = 'eu-central-1';
-function downloadS3object({ component, sha, suffix, path, }) {
-    return s3_awaiter(this, void 0, void 0, function* () {
-        const src = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}${suffix ? `/${suffix}` : ''}`;
-        const dest = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
-        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
-        Object(core.info)(`About to execute ${cmd}`);
-        yield Object(exec.exec)(cmd);
-    });
-}
-function uploadS3object({ component, sha, suffix, path, }) {
-    return s3_awaiter(this, void 0, void 0, function* () {
-        const src = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
-        const dest = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}${suffix ? `/${suffix}` : ''}`;
-        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
-        Object(core.info)(`About to execute ${cmd}`);
-        yield Object(exec.exec)(cmd);
-    });
-}
-
-// CONCATENATED MODULE: ./lib/index.ts
-
-
-
-
-// CONCATENATED MODULE: ./get-artefacts/src/index.ts
-var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-function run() {
-    return src_awaiter(this, void 0, void 0, function* () {
-        try {
-            // Input
-            const component = Object(core.getInput)('component', { required: true });
-            let sha = Object(core.getInput)('sha');
-            let branch = Object(core.getInput)('branch') || 'develop';
-            const path = Object(core.getInput)('path', { required: true });
-            const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
-            const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
-            const ghToken = Object(core.getInput)('gh-token') || process.env['GH_TOKEN'];
-            const os = Object(external_os_.platform)() === 'win32' ? 'windows' : 'linux';
-            // Assertions
-            if (!awsKeyId || !awsSecretKey || !ghToken) {
-                throw new Error('A required argument is missing');
-            }
-            // If we have no sha and a branch, let's find the sha
-            if (!sha) {
-                sha = yield getShaFromBranch({
-                    ghToken,
-                    component,
-                    branch,
-                });
-            }
-            yield downloadS3object({
-                component,
-                sha,
-                suffix: os,
-                path,
-            });
-        }
-        catch (error) {
-            Object(core.setFailed)(error.message);
-        }
-    });
-}
-run();
-
-
-/***/ }),
-
 /***/ 211:
 /***/ (function(module) {
 
@@ -1796,6 +1627,162 @@ function paginateRest(octokit) {
 paginateRest.VERSION = VERSION;
 
 exports.paginateRest = paginateRest;
+//# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ 317:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var endpoint = __webpack_require__(385);
+var universalUserAgent = __webpack_require__(796);
+var isPlainObject = _interopDefault(__webpack_require__(696));
+var nodeFetch = _interopDefault(__webpack_require__(454));
+var requestError = __webpack_require__(463);
+
+const VERSION = "5.4.7";
+
+function getBufferResponse(response) {
+  return response.arrayBuffer();
+}
+
+function fetchWrapper(requestOptions) {
+  if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
+    requestOptions.body = JSON.stringify(requestOptions.body);
+  }
+
+  let headers = {};
+  let status;
+  let url;
+  const fetch = requestOptions.request && requestOptions.request.fetch || nodeFetch;
+  return fetch(requestOptions.url, Object.assign({
+    method: requestOptions.method,
+    body: requestOptions.body,
+    headers: requestOptions.headers,
+    redirect: requestOptions.redirect
+  }, requestOptions.request)).then(response => {
+    url = response.url;
+    status = response.status;
+
+    for (const keyAndValue of response.headers) {
+      headers[keyAndValue[0]] = keyAndValue[1];
+    }
+
+    if (status === 204 || status === 205) {
+      return;
+    } // GitHub API returns 200 for HEAD requests
+
+
+    if (requestOptions.method === "HEAD") {
+      if (status < 400) {
+        return;
+      }
+
+      throw new requestError.RequestError(response.statusText, status, {
+        headers,
+        request: requestOptions
+      });
+    }
+
+    if (status === 304) {
+      throw new requestError.RequestError("Not modified", status, {
+        headers,
+        request: requestOptions
+      });
+    }
+
+    if (status >= 400) {
+      return response.text().then(message => {
+        const error = new requestError.RequestError(message, status, {
+          headers,
+          request: requestOptions
+        });
+
+        try {
+          let responseBody = JSON.parse(error.message);
+          Object.assign(error, responseBody);
+          let errors = responseBody.errors; // Assumption `errors` would always be in Array format
+
+          error.message = error.message + ": " + errors.map(JSON.stringify).join(", ");
+        } catch (e) {// ignore, see octokit/rest.js#684
+        }
+
+        throw error;
+      });
+    }
+
+    const contentType = response.headers.get("content-type");
+
+    if (/application\/json/.test(contentType)) {
+      return response.json();
+    }
+
+    if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
+      return response.text();
+    }
+
+    return getBufferResponse(response);
+  }).then(data => {
+    return {
+      status,
+      url,
+      headers,
+      data
+    };
+  }).catch(error => {
+    if (error instanceof requestError.RequestError) {
+      throw error;
+    }
+
+    throw new requestError.RequestError(error.message, 500, {
+      headers,
+      request: requestOptions
+    });
+  });
+}
+
+function withDefaults(oldEndpoint, newDefaults) {
+  const endpoint = oldEndpoint.defaults(newDefaults);
+
+  const newApi = function (route, parameters) {
+    const endpointOptions = endpoint.merge(route, parameters);
+
+    if (!endpointOptions.request || !endpointOptions.request.hook) {
+      return fetchWrapper(endpoint.parse(endpointOptions));
+    }
+
+    const request = (route, parameters) => {
+      return fetchWrapper(endpoint.parse(endpoint.merge(route, parameters)));
+    };
+
+    Object.assign(request, {
+      endpoint,
+      defaults: withDefaults.bind(null, endpoint)
+    });
+    return endpointOptions.request.hook(request, endpointOptions);
+  };
+
+  return Object.assign(newApi, {
+    endpoint,
+    defaults: withDefaults.bind(null, endpoint)
+  });
+}
+
+const request = withDefaults(endpoint.endpoint, {
+  headers: {
+    "user-agent": `octokit-request.js/${VERSION} ${universalUserAgent.getUserAgent()}`
+  }
+});
+
+exports.request = request;
 //# sourceMappingURL=index.js.map
 
 
@@ -2203,6 +2190,13 @@ module.exports = __webpack_require__(141);
 
 /***/ }),
 
+/***/ 417:
+/***/ (function(module) {
+
+module.exports = require("crypto");
+
+/***/ }),
+
 /***/ 431:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -2312,7 +2306,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var universalUserAgent = __webpack_require__(796);
 var beforeAfterHook = __webpack_require__(523);
-var request = __webpack_require__(753);
+var request = __webpack_require__(317);
 var graphql = __webpack_require__(898);
 var authToken = __webpack_require__(813);
 
@@ -5505,157 +5499,202 @@ module.exports = require("fs");
 /***/ }),
 
 /***/ 753:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
 
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __webpack_require__(470);
 
-Object.defineProperty(exports, '__esModule', { value: true });
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __webpack_require__(986);
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+// EXTERNAL MODULE: external "path"
+var external_path_ = __webpack_require__(622);
+var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
 
-var endpoint = __webpack_require__(385);
-var universalUserAgent = __webpack_require__(796);
-var isPlainObject = _interopDefault(__webpack_require__(696));
-var nodeFetch = _interopDefault(__webpack_require__(454));
-var requestError = __webpack_require__(463);
+// EXTERNAL MODULE: external "crypto"
+var external_crypto_ = __webpack_require__(417);
+var external_crypto_default = /*#__PURE__*/__webpack_require__.n(external_crypto_);
 
-const VERSION = "5.4.7";
+// CONCATENATED MODULE: ./lib/string.ts
 
-function getBufferResponse(response) {
-  return response.arrayBuffer();
+function sluggify(str) {
+    return str
+        .toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(/[^\w-]+/g, '') // Remove all non-word chars
+        .replace(/--+/g, '-') // Replace multiple - with single -
+        .replace(/^-+/, '') // Trim - from start of text
+        .replace(/-+$/, ''); // Trim - from end of text
+}
+function randomString(length) {
+    return external_crypto_default().randomBytes(Math.ceil(length / 2))
+        .toString('hex')
+        .substr(0, length);
 }
 
-function fetchWrapper(requestOptions) {
-  if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
-    requestOptions.body = JSON.stringify(requestOptions.body);
-  }
-
-  let headers = {};
-  let status;
-  let url;
-  const fetch = requestOptions.request && requestOptions.request.fetch || nodeFetch;
-  return fetch(requestOptions.url, Object.assign({
-    method: requestOptions.method,
-    body: requestOptions.body,
-    headers: requestOptions.headers,
-    redirect: requestOptions.redirect
-  }, requestOptions.request)).then(response => {
-    url = response.url;
-    status = response.status;
-
-    for (const keyAndValue of response.headers) {
-      headers[keyAndValue[0]] = keyAndValue[1];
-    }
-
-    if (status === 204 || status === 205) {
-      return;
-    } // GitHub API returns 200 for HEAD requests
+// CONCATENATED MODULE: ./lib/docker.ts
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 
 
-    if (requestOptions.method === "HEAD") {
-      if (status < 400) {
-        return;
-      }
 
-      throw new requestError.RequestError(response.statusText, status, {
-        headers,
-        request: requestOptions
-      });
-    }
 
-    if (status === 304) {
-      throw new requestError.RequestError("Not modified", status, {
-        headers,
-        request: requestOptions
-      });
-    }
-
-    if (status >= 400) {
-      return response.text().then(message => {
-        const error = new requestError.RequestError(message, status, {
-          headers,
-          request: requestOptions
+function startDocker({ defaultVersion, image, ports }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const version = Object(core.getInput)('version') || defaultVersion;
+        const portsArg = ports.map((port) => `-p ${port}:${port}`).join(' ');
+        Object(core.info)(`About to start a Docker container from ${image}:${version}`);
+        // Execute start-docker bash script
+        yield Object(exec.exec)(`bash start-docker.sh ${portsArg}`, undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
+            env: {
+                NAME: sluggify(image),
+                IMAGE: image,
+                TAG: version,
+            },
         });
+    });
+}
 
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __webpack_require__(469);
+
+// CONCATENATED MODULE: ./lib/github.ts
+var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+const S3_BUCKET = 'exivity';
+const S3_PREFIX = 'build';
+const S3_REGION = 'eu-central-1';
+function getShaFromBranch({ ghToken, component, branch, }) {
+    return github_awaiter(this, void 0, void 0, function* () {
+        const octokit = Object(github.getOctokit)(ghToken);
+        const sha = (yield octokit.repos.getBranch({
+            owner: 'exivity',
+            repo: component,
+            branch,
+        })).data.commit.sha;
+        Object(core.info)(`Resolved ${branch} to ${sha}`);
+        return sha;
+    });
+}
+
+// CONCATENATED MODULE: ./lib/s3.ts
+var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+const s3_S3_BUCKET = 'exivity';
+const s3_S3_PREFIX = 'build';
+const s3_S3_REGION = 'eu-central-1';
+function downloadS3object({ component, sha, path, awsKeyId, awsSecretKey, }) {
+    return s3_awaiter(this, void 0, void 0, function* () {
+        const src = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}`;
+        const dest = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
+        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
+        Object(core.info)(`About to execute ${cmd}`);
+        yield Object(exec.exec)(cmd, undefined, {
+            env: {
+                AWS_ACCESS_KEY_ID: awsKeyId,
+                AWS_SECRET_ACCESS_KEY: awsSecretKey,
+            },
+        });
+    });
+}
+function uploadS3object({ component, sha, path, awsKeyId, awsSecretKey, }) {
+    return s3_awaiter(this, void 0, void 0, function* () {
+        const src = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
+        const dest = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}`;
+        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
+        Object(core.info)(`About to execute ${cmd}`);
+        yield Object(exec.exec)(cmd, undefined, {
+            env: {
+                AWS_ACCESS_KEY_ID: awsKeyId,
+                AWS_SECRET_ACCESS_KEY: awsSecretKey,
+            },
+        });
+    });
+}
+
+// CONCATENATED MODULE: ./lib/index.ts
+
+
+
+
+
+// CONCATENATED MODULE: ./get-artefacts/src/index.ts
+var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+function run() {
+    return src_awaiter(this, void 0, void 0, function* () {
         try {
-          let responseBody = JSON.parse(error.message);
-          Object.assign(error, responseBody);
-          let errors = responseBody.errors; // Assumption `errors` would always be in Array format
-
-          error.message = error.message + ": " + errors.map(JSON.stringify).join(", ");
-        } catch (e) {// ignore, see octokit/rest.js#684
+            // Input
+            const component = Object(core.getInput)('component', { required: true });
+            let sha = Object(core.getInput)('sha');
+            let branch = Object(core.getInput)('branch') || 'develop';
+            const path = Object(core.getInput)('path', { required: true });
+            const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
+            const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+            const ghToken = Object(core.getInput)('gh-token') || process.env['GH_TOKEN'];
+            // Assertions
+            if (!awsKeyId || !awsSecretKey || !ghToken) {
+                throw new Error('A required argument is missing');
+            }
+            // If we have no sha and a branch, let's find the sha
+            if (!sha) {
+                sha = yield getShaFromBranch({
+                    ghToken,
+                    component,
+                    branch,
+                });
+            }
+            yield downloadS3object({
+                component,
+                sha,
+                path,
+                awsKeyId,
+                awsSecretKey,
+            });
         }
-
-        throw error;
-      });
-    }
-
-    const contentType = response.headers.get("content-type");
-
-    if (/application\/json/.test(contentType)) {
-      return response.json();
-    }
-
-    if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
-      return response.text();
-    }
-
-    return getBufferResponse(response);
-  }).then(data => {
-    return {
-      status,
-      url,
-      headers,
-      data
-    };
-  }).catch(error => {
-    if (error instanceof requestError.RequestError) {
-      throw error;
-    }
-
-    throw new requestError.RequestError(error.message, 500, {
-      headers,
-      request: requestOptions
+        catch (error) {
+            Object(core.setFailed)(error.message);
+        }
     });
-  });
 }
-
-function withDefaults(oldEndpoint, newDefaults) {
-  const endpoint = oldEndpoint.defaults(newDefaults);
-
-  const newApi = function (route, parameters) {
-    const endpointOptions = endpoint.merge(route, parameters);
-
-    if (!endpointOptions.request || !endpointOptions.request.hook) {
-      return fetchWrapper(endpoint.parse(endpointOptions));
-    }
-
-    const request = (route, parameters) => {
-      return fetchWrapper(endpoint.parse(endpoint.merge(route, parameters)));
-    };
-
-    Object.assign(request, {
-      endpoint,
-      defaults: withDefaults.bind(null, endpoint)
-    });
-    return endpointOptions.request.hook(request, endpointOptions);
-  };
-
-  return Object.assign(newApi, {
-    endpoint,
-    defaults: withDefaults.bind(null, endpoint)
-  });
-}
-
-const request = withDefaults(endpoint.endpoint, {
-  headers: {
-    "user-agent": `octokit-request.js/${VERSION} ${universalUserAgent.getUserAgent()}`
-  }
-});
-
-exports.request = request;
-//# sourceMappingURL=index.js.map
+run();
 
 
 /***/ }),
@@ -7011,7 +7050,7 @@ function removeHook (state, name, method) {
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var request = __webpack_require__(753);
+var request = __webpack_require__(317);
 var universalUserAgent = __webpack_require__(796);
 
 const VERSION = "4.5.3";
