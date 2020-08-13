@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(215);
+/******/ 		return __webpack_require__(189);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -1395,28 +1395,26 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 211:
-/***/ (function(module) {
-
-module.exports = require("https");
-
-/***/ }),
-
-/***/ 215:
+/***/ 189:
 /***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(470);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(986);
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_actions_exec__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(469);
-/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_actions_github__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var os__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(87);
-/* harmony import */ var os__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(os__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(622);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_4__);
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __webpack_require__(470);
+
+// EXTERNAL MODULE: external "os"
+var external_os_ = __webpack_require__(87);
+
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __webpack_require__(986);
+
+// EXTERNAL MODULE: external "path"
+var external_path_ = __webpack_require__(622);
+var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
+
+// CONCATENATED MODULE: ./lib/docker.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1428,51 +1426,139 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+function startDocker({ defaultVersion, image }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const version = Object(core.getInput)('version') || defaultVersion;
+        Object(core.info)(`About to start a Docker container from ${image}:${version}`);
+        // Execute start-docker bash script
+        yield Object(exec.exec)('bash start-docker.sh', undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
+            env: {
+                IMAGE: image,
+                TAG: version,
+            },
+        });
+    });
+}
+
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __webpack_require__(469);
+
+// CONCATENATED MODULE: ./lib/github.ts
+var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 
 
 const S3_BUCKET = 'exivity';
 const S3_PREFIX = 'build';
 const S3_REGION = 'eu-central-1';
+function getShaFromBranch({ ghToken, component, branch, }) {
+    return github_awaiter(this, void 0, void 0, function* () {
+        const octokit = Object(github.getOctokit)(ghToken);
+        const sha = (yield octokit.repos.getBranch({
+            owner: 'exivity',
+            repo: component,
+            branch,
+        })).data.commit.sha;
+        Object(core.info)(`Resolved ${branch} to ${sha}`);
+        return sha;
+    });
+}
+
+// CONCATENATED MODULE: ./lib/s3.ts
+var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+const s3_S3_BUCKET = 'exivity';
+const s3_S3_PREFIX = 'build';
+const s3_S3_REGION = 'eu-central-1';
+function downloadS3object({ component, sha, suffix, path, }) {
+    return s3_awaiter(this, void 0, void 0, function* () {
+        const src = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}${suffix ? `/${suffix}` : ''}`;
+        const dest = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
+        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
+        Object(core.info)(`About to execute ${cmd}`);
+        yield Object(exec.exec)(cmd);
+    });
+}
+
+// CONCATENATED MODULE: ./lib/index.ts
+
+
+
+
+// CONCATENATED MODULE: ./get-artefacts/src/index.ts
+var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
 function run() {
-    return __awaiter(this, void 0, void 0, function* () {
+    return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
-            const component = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('component', { required: true });
-            let sha = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('sha');
-            let branch = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('branch') || 'develop';
-            const path = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('path', { required: true });
-            const awsKeyId = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
-            const awsSecretKey = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
-            const ghToken = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('gh-token') || process.env['GH_TOKEN'];
-            const os = Object(os__WEBPACK_IMPORTED_MODULE_3__.platform)() === 'win32' ? 'windows' : 'linux';
+            const component = Object(core.getInput)('component', { required: true });
+            let sha = Object(core.getInput)('sha');
+            let branch = Object(core.getInput)('branch') || 'develop';
+            const path = Object(core.getInput)('path', { required: true });
+            const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
+            const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+            const ghToken = Object(core.getInput)('gh-token') || process.env['GH_TOKEN'];
+            const os = Object(external_os_.platform)() === 'win32' ? 'windows' : 'linux';
             // Assertions
             if (!awsKeyId || !awsSecretKey || !ghToken) {
                 throw new Error('A required argument is missing');
             }
             // If we have no sha and a branch, let's find the sha
             if (!sha) {
-                const octokit = Object(_actions_github__WEBPACK_IMPORTED_MODULE_2__.getOctokit)(ghToken);
-                sha = (yield octokit.repos.getBranch({
-                    owner: 'exivity',
-                    repo: component,
+                sha = yield getShaFromBranch({
+                    ghToken,
+                    component,
                     branch,
-                })).data.commit.sha;
-                Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Resolved ${branch} to ${sha}`);
+                });
             }
-            const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}/${os}`;
-            const dest = Object(path__WEBPACK_IMPORTED_MODULE_4__.join)(process.env['GITHUB_WORKSPACE'], path);
-            const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
-            Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`About to execute ${cmd}`);
-            // Execute aws cli command
-            yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)(cmd);
+            yield downloadS3object({
+                component,
+                sha,
+                suffix: os,
+                path,
+            });
         }
         catch (error) {
-            Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(error.message);
+            Object(core.setFailed)(error.message);
         }
     });
 }
 run();
 
+
+/***/ }),
+
+/***/ 211:
+/***/ (function(module) {
+
+module.exports = require("https");
 
 /***/ }),
 
@@ -7143,6 +7229,36 @@ exports.exec = exec;
 /******/ 		};
 /******/ 	}();
 /******/ 	
+/******/ 	/* webpack/runtime/define property getter */
+/******/ 	!function() {
+/******/ 		// define getter function for harmony exports
+/******/ 		var hasOwnProperty = Object.prototype.hasOwnProperty;
+/******/ 		__webpack_require__.d = function(exports, name, getter) {
+/******/ 			if(!hasOwnProperty.call(exports, name)) {
+/******/ 				Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/create fake namespace object */
+/******/ 	!function() {
+/******/ 		// create a fake namespace object
+/******/ 		// mode & 1: value is a module id, require it
+/******/ 		// mode & 2: merge all properties of value into the ns
+/******/ 		// mode & 4: return value when already ns object
+/******/ 		// mode & 8|1: behave like require
+/******/ 		__webpack_require__.t = function(value, mode) {
+/******/ 			if(mode & 1) value = this(value);
+/******/ 			if(mode & 8) return value;
+/******/ 			if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 			var ns = Object.create(null);
+/******/ 			__webpack_require__.r(ns);
+/******/ 			Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 			if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 			return ns;
+/******/ 		};
+/******/ 	}();
+/******/ 	
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	!function() {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
@@ -7152,17 +7268,6 @@ exports.exec = exec;
 /******/ 				function getModuleExports() { return module; };
 /******/ 			__webpack_require__.d(getter, 'a', getter);
 /******/ 			return getter;
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getter */
-/******/ 	!function() {
-/******/ 		// define getter function for harmony exports
-/******/ 		var hasOwnProperty = Object.prototype.hasOwnProperty;
-/******/ 		__webpack_require__.d = function(exports, name, getter) {
-/******/ 			if(!hasOwnProperty.call(exports, name)) {
-/******/ 				Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 			}
 /******/ 		};
 /******/ 	}();
 /******/ 	

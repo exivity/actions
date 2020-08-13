@@ -1,12 +1,6 @@
-import { getInput, info, setFailed } from '@actions/core'
-import { exec } from '@actions/exec'
-import { getOctokit } from '@actions/github'
+import { getInput, setFailed } from '@actions/core'
 import { platform } from 'os'
-import { join } from 'path'
-
-const S3_BUCKET = 'exivity'
-const S3_PREFIX = 'build'
-const S3_REGION = 'eu-central-1'
+import { downloadS3object, getShaFromBranch } from '../../lib'
 
 async function run() {
   try {
@@ -29,24 +23,19 @@ async function run() {
 
     // If we have no sha and a branch, let's find the sha
     if (!sha) {
-      const octokit = getOctokit(ghToken)
-      sha = (
-        await octokit.repos.getBranch({
-          owner: 'exivity',
-          repo: component,
-          branch,
-        })
-      ).data.commit.sha
-      info(`Resolved ${branch} to ${sha}`)
+      sha = await getShaFromBranch({
+        ghToken,
+        component,
+        branch,
+      })
     }
 
-    const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}/${os}`
-    const dest = join(process.env['GITHUB_WORKSPACE'], path)
-    const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
-    info(`About to execute ${cmd}`)
-
-    // Execute aws cli command
-    await exec(cmd)
+    await downloadS3object({
+      component,
+      sha,
+      suffix: os,
+      path,
+    })
   } catch (error) {
     setFailed(error.message)
   }
