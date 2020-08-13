@@ -23,3 +23,4 @@ jobs:
       - uses: ./get-artefacts
         with:
           component: actions
+          branch: master
