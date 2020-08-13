@@ -22,7 +22,7 @@ function retry {
 }
 
 function get_health_status {
-  docker inspect --format="{{json .State.Health.Status}}" rabbitmq
+  docker inspect --format="{{json .State.Health.Status}}" $IMAGE
 }
 
 function check_if_healthy {
@@ -36,19 +36,16 @@ function check_if_healthy {
 set -e
 
 echo "Running Docker image $IMAGE:$TAG"
+
 docker run \
     --rm \
     --detach \
-    -p 4369:4369 \
-    -p 5671:5671 \
-    -p 5672:5672 \
-    -p 15672:15672 \
-    --name rabbitmq \
+    --name $IMAGE \
     $IMAGE:$TAG
 
 echo "Running health check"
 
-# retry 5 means we will wait max 1+2+4+8+16 seconds
-retry 5 check_if_healthy
+# retry 6 means we will wait max 1+2+4+8+16 seconds
+retry 6 check_if_healthy
 
 
