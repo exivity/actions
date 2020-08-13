@@ -1444,14 +1444,14 @@ function run() {
             const awsKeyId = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('gh-token') || process.env['GH_TOKEN'];
-            const platform = os__WEBPACK_IMPORTED_MODULE_3___default().platform() === 'win32' ? 'windows' : 'linux';
+            const os = Object(os__WEBPACK_IMPORTED_MODULE_3__.platform)() === 'win32' ? 'windows' : 'linux';
             // Assertions
             if (!awsKeyId || !awsSecretKey || !ghToken) {
                 throw new Error('A required argument is missing');
             }
             // If we have no sha and a branch, let's find the sha
             if (!sha) {
-                const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_2___default().getOctokit(ghToken);
+                const octokit = Object(_actions_github__WEBPACK_IMPORTED_MODULE_2__.getOctokit)(ghToken);
                 sha = (yield octokit.repos.getBranch({
                     owner: 'exivity',
                     repo: component,
@@ -1459,7 +1459,7 @@ function run() {
                 })).data.commit.sha;
                 Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Resolved ${branch} to ${sha}`);
             }
-            const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}/${platform}`;
+            const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}/${os}`;
             const dest = Object(path__WEBPACK_IMPORTED_MODULE_4__.join)(process.env['GITHUB_WORKSPACE'], component, component, path);
             const cmd = `aws s3 cp "${src}" "${dest}" --recursive`;
             Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`About to execute ${cmd}`);
