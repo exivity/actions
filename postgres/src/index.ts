@@ -1,9 +1,18 @@
-import { dockerAction } from '../../lib'
+import { setFailed } from '@actions/core'
+import { startDocker } from '../../lib'
 
 const image = 'exivity/postgres'
 const defaultVersion = '12.3'
 
-dockerAction({
-  image,
-  defaultVersion,
-})
+async function run() {
+  try {
+    await startDocker({
+      image,
+      defaultVersion,
+    })
+  } catch (error) {
+    setFailed(error.message)
+  }
+}
+
+run()

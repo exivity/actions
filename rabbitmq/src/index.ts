@@ -1,9 +1,18 @@
-import { dockerAction } from '../../lib'
+import { setFailed } from '@actions/core'
+import { startDocker } from '../../lib'
 
 const image = 'exivity/rabbitmq'
 const defaultVersion = '3.8.6'
 
-dockerAction({
-  image,
-  defaultVersion,
-})
+async function run() {
+  try {
+    await startDocker({
+      image,
+      defaultVersion,
+    })
+  } catch (error) {
+    setFailed(error.message)
+  }
+}
+
+run()
