@@ -8,7 +8,12 @@ echo "Unpacking migrations"
 7z x migrations.zip -omigrations -aoa
 
 echo "Creating database"
-docker exec exivity-postgres createdb -U postgres $DB_NAME
+if [[ $MODE == 'docker' ]]
+then
+    docker exec exivity-postgres createdb -U postgres $DB_NAME
+else
+    createdb -U postgres $DB_NAME
+fi
 
 echo "Running migrations"
 chmod u+x bin/$MIGRATE_BIN

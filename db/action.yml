@@ -1,21 +1,24 @@
-name: 'DB'
-description: 'Runs a PostgreSQL docker container, create a new database, pulls in the `db` repository migrations and runs them.'
+name: "DB"
+description: "Runs a PostgreSQL docker container, create a new database, pulls in the `db` repository migrations and runs them."
 inputs:
   branch:
-    description: 'The db repository branch to use'
+    description: "The db repository branch to use"
     required: false
   db-name:
-    description: 'The db name to create'
+    description: "The db name to create"
+    required: false
+  mode:
+    description: Run as a Docker container or start the host server
     required: false
   aws-access-key-id:
-    description: 'The AWS access key ID'
+    description: "The AWS access key ID"
     required: false
   aws-secret-access-key:
-    description: 'The AWS secret access key'
+    description: "The AWS secret access key"
     required: false
   gh-token:
-    description: 'A GitHub token'
+    description: "A GitHub token"
     required: false
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"

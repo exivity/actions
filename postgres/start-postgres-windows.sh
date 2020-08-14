@@ -2,14 +2,13 @@
 
 set -e
 
-echo "Create ~/.ssh folder"
-mkdir -p ~/.ssh
+echo "Updating postgres config"
+echo max_prepared_transactions = 16 >> "C:\Program Files\PostgreSQL\12\data\postgresql.conf"	
+echo "::add-path::C:\Program Files\PostgreSQL\12\bin"	
 
-echo "Copy private key to ~/.ssh/id_rsa"
-echo -e "$PRIVATE_KEY" > ~/.ssh/id_rsa
+echo "Starting postgres service"
+sc config postgresql-x64-12 start=demand
+net start postgresql-x64-12
 
-echo "Set proper permissions on ~/.ssh/id_rsa"
-chmod og-rwx ~/.ssh/id_rsa
-
-echo "Copy known_hosts to ~/.ssh"
-cp known_hosts ~/.ssh
+echo "Change password"
+PGPASSWORD=root psql -c "ALTER USER postgres PASSWORD 'postgres';" -U postgres
