@@ -1238,6 +1238,8 @@ function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
+            const usePlatformPrefix = !!Object(core.getInput)('use-platform-prefix') || false;
+            const prefix = Object(core.getInput)('prefix') || undefined;
             const path = Object(core.getInput)('path', { required: true });
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
@@ -1251,6 +1253,8 @@ function run() {
             yield uploadS3object({
                 component,
                 sha,
+                usePlatformPrefix,
+                prefix,
                 path,
                 awsKeyId,
                 awsSecretKey,
