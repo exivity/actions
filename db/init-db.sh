@@ -12,7 +12,12 @@ if [[ $MODE == 'docker' ]]
 then
     docker exec exivity-postgres createdb -U postgres $DB_NAME
 else
-    sudo -u postgres createdb $DB_NAME
+    unameOut="$(uname -s)"
+    case "${unameOut}" in
+        Linux*)     sudo -u postgres createdb $DB_NAME ;;
+        *)          PGPASSWORD=postgres "C:/Program Files/PostgreSQL/12/bin/createdb" -U postgres $DB_NAME
+    esac
+    
 fi
 
 echo "Running migrations"
