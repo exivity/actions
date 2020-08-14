@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - ".github/workflows/postgres.yml"
-      - "lib/**"
+      - "lib/postgres*"
+      - "lib/docker*"
       - "postgres/**"
 
 jobs:
