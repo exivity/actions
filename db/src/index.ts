@@ -9,14 +9,12 @@ import {
   startPostgres,
 } from '../../lib'
 
-type MODE = 'docker' | 'host'
-
 async function run() {
   try {
     // Input
     const branch = getInput('branch') || 'develop'
     const dbName = getInput('db-name') || 'exdb-test'
-    const mode = getInput('mode') || 'docker'
+    const mode = getInput('mode') || 'host'
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =

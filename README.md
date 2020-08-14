@@ -59,7 +59,7 @@ repository migrations and runs them.
 
 ### `mode`
 
-**Optional** _Options: `docker` or `host`, defaults to `docker`_ Whether to
+**Optional** _Options: `docker` or `host`, defaults to `host`_ Whether to
 run PostgreSQL as a Docker container or start the server installed on the host
 
 ### `aws-access-key-id`
@@ -191,7 +191,7 @@ Starts a PostgreSQL server
 
 ### `mode`
 
-**Optional** _Options: `docker` or `host`, defaults to `docker`_ Whether to
+**Optional** _Options: `docker` or `host`, defaults to `host`_ Whether to
 run PostgreSQL as a Docker container or start the server installed on the host
 
 ### `version`

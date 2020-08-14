@@ -7,7 +7,7 @@ const defaultVersion = '12.3'
 async function run() {
   try {
     // Input
-    const mode = getInput('mode') || 'docker'
+    const mode = getInput('mode') || 'host'
 
     if (mode !== 'docker' && mode !== 'host') {
       throw new Error(`Mode must be 'docker' or 'host'`)
