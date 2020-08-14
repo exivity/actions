@@ -1,27 +1,42 @@
 import { info } from '@actions/core'
 import { exec } from '@actions/exec'
+import { platform } from 'os'
 import { join } from 'path'
 
 const S3_BUCKET = 'exivity'
 const S3_PREFIX = 'build'
 const S3_REGION = 'eu-central-1'
 
-type Options = {
+type S3Options = {
   component: string
   sha: string
+  usePlatformPrefix?: boolean
+  prefix?: string
+}
+
+type Options = S3Options & {
   path: string
   awsKeyId: string
   awsSecretKey: string
 }
 
+function getS3url({ component, sha, usePlatformPrefix, prefix }: S3Options) {
+  const platformPrefix = platform() === 'win32' ? 'windows' : 'linux'
+  return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${
+    usePlatformPrefix ? `/${platformPrefix}` : ''
+  }${prefix ? `/${prefix}` : ''}`
+}
+
 export async function downloadS3object({
   component,
   sha,
+  usePlatformPrefix,
+  prefix,
   path,
   awsKeyId,
   awsSecretKey,
 }: Options) {
-  const src = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}`
+  const src = getS3url({ component, sha, usePlatformPrefix, prefix })
   const dest = join(process.env['GITHUB_WORKSPACE'], path)
   const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
 
@@ -38,12 +53,14 @@ export async function downloadS3object({
 export async function uploadS3object({
   component,
   sha,
+  usePlatformPrefix,
+  prefix,
   path,
   awsKeyId,
   awsSecretKey,
 }: Options) {
   const src = join(process.env['GITHUB_WORKSPACE'], path)
-  const dest = `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}`
+  const dest = getS3url({ component, sha, usePlatformPrefix, prefix })
   const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
 
   info(`About to execute ${cmd}`)

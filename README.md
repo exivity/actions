@@ -88,7 +88,7 @@ access to the exivity/db repository.
 
 Download artefacts for the provided component. It will use the S3 _exivity_
 bucket in the _eu-central-1_ region. Artefacts are downloaded with the
-_build/{component}/{sha}_ prefix.
+_build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ## Inputs
 
@@ -104,6 +104,16 @@ _build/{component}/{sha}_ prefix.
 
 **Optional** _Defaults to `develop`_ If no sha is provided, resolve sha from
 branch name
+
+### `use-platform-prefix`
+
+**Optional** _Defaults to `false`_ If `true`, uses `windows` or `linux` prefix
+depending on current os.
+
+### `prefix`
+
+**Optional** If specified, download artefacts from this prefix (appended after
+platform prefix if specified).
 
 ### `path`
 
