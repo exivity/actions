@@ -180,14 +180,19 @@ key contents
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/postgres)
 
-Starts a PostgreSQL server in a Docker container.
+Starts a PostgreSQL server
 
 ## Inputs
+
+### `mode`
+
+**Optional** _Options: `docker` or `host`, defaults to `docker`_ Whether to
+run PostgreSQL as a Docker container or start the server installed on the host
 
 ### `version`
 
 **Optional** _Default: 12.3_ The PostgreSQL version to use. Currently, only 12.3
-is supported.
+is supported. Only available when using Docker.
 
 ## Example usage
 

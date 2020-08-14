@@ -5347,6 +5347,9 @@ var core = __webpack_require__(470);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
 var exec = __webpack_require__(986);
 
+// EXTERNAL MODULE: external "os"
+var external_os_ = __webpack_require__(87);
+
 // EXTERNAL MODULE: external "path"
 var external_path_ = __webpack_require__(622);
 var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
@@ -5434,9 +5437,6 @@ function getShaFromBranch({ ghToken, component, branch, }) {
     });
 }
 
-// EXTERNAL MODULE: external "os"
-var external_os_ = __webpack_require__(87);
-
 // CONCATENATED MODULE: ./lib/s3.ts
 var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5503,16 +5503,36 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 };
 
 
+
+
+
 const src_image = 'exivity/postgres';
 const src_defaultVersion = '12.3';
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
-            yield startDocker({
-                image: src_image,
-                defaultVersion: src_defaultVersion,
-                ports: [5432],
-            });
+            // Input
+            const mode = Object(core.getInput)('mode') || 'docker';
+            if (mode !== 'docker' && mode !== 'host') {
+                throw new Error(`Mode must be 'docker' or 'host'`);
+            }
+            switch (mode) {
+                case 'docker':
+                    yield startDocker({
+                        image: src_image,
+                        defaultVersion: src_defaultVersion,
+                        ports: [5432],
+                    });
+                    break;
+                case 'host':
+                    const script = Object(external_os_.platform)() === 'win32'
+                        ? 'start-postgres-windows.sh'
+                        : 'start-postgres-linux.sh';
+                    yield Object(exec.exec)(`bash ${script}`, undefined, {
+                        cwd: external_path_default().resolve(__dirname, '..'),
+                    });
+                    break;
+            }
         }
         catch (error) {
             Object(core.setFailed)(error.message);
