@@ -11,4 +11,4 @@ sc config postgresql-x64-12 start=demand
 net start postgresql-x64-12
 
 echo "Change password"
-psql -c "ALTER USER postgres CREATEDB CREATEUSER PASSWORD 'postgres';" -U postgres
+psql -c "ALTER ROLE postgres $ATTRIBUTES PASSWORD 'postgres';" -U postgres
