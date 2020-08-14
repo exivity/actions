@@ -2242,7 +2242,7 @@ function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
-            const mode = Object(core.getInput)('mode') || 'docker';
+            const mode = Object(core.getInput)('mode') || 'host';
             if (mode !== 'docker' && mode !== 'host') {
                 throw new Error(`Mode must be 'docker' or 'host'`);
             }
