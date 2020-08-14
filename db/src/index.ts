@@ -4,11 +4,14 @@ import { platform } from 'os'
 import path from 'path'
 import { downloadS3object, getShaFromBranch, startDocker } from '../../lib'
 
+type MODE = 'docker' | 'host'
+
 async function run() {
   try {
     // Input
     const branch = getInput('branch') || 'develop'
     const dbName = getInput('db-name') || 'exdb-test'
+    const mode = getInput('mode') || 'docker'
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
@@ -18,6 +21,10 @@ async function run() {
     // Assertions
     if (!awsKeyId || !awsSecretKey || !ghToken) {
       throw new Error('A required argument is missing')
+    }
+
+    if (mode !== 'docker' && mode !== 'host') {
+      throw new Error(`Mode must be 'docker' or 'host'`)
     }
 
     // Let's find the sha
@@ -49,6 +56,7 @@ async function run() {
     await exec('bash init-db.sh', undefined, {
       cwd: path.resolve(__dirname, '..'),
       env: {
+        MODE: mode,
         BASE_DIR: path.join(process.env['GITHUB_WORKSPACE'], dbDirectory),
         DB_NAME: dbName,
         MIGRATE_BIN: migrateBin,

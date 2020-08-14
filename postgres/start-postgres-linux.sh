@@ -2,14 +2,12 @@
 
 set -e
 
-echo "Create ~/.ssh folder"
-mkdir -p ~/.ssh
+echo "Updating postgres config"
+sudo -u postgres chmod 777 /etc/postgresql/12/main/postgresql.conf
+sudo echo max_prepared_transactions = 16 >> /etc/postgresql/12/main/postgresql.conf	
 
-echo "Copy private key to ~/.ssh/id_rsa"
-echo -e "$PRIVATE_KEY" > ~/.ssh/id_rsa
+echo "Starting postgres service"
+sudo service postgresql start
 
-echo "Set proper permissions on ~/.ssh/id_rsa"
-chmod og-rwx ~/.ssh/id_rsa
-
-echo "Copy known_hosts to ~/.ssh"
-cp known_hosts ~/.ssh
+echo "Change password"
+PGPASSWORD=root psql -c "ALTER USER postgres PASSWORD 'postgres';" -U postgres

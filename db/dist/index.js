@@ -1236,12 +1236,16 @@ function run() {
             // Input
             const branch = Object(core.getInput)('branch') || 'develop';
             const dbName = Object(core.getInput)('db-name') || 'exdb-test';
+            const mode = Object(core.getInput)('mode') || 'docker';
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
             // Assertions
             if (!awsKeyId || !awsSecretKey || !ghToken) {
                 throw new Error('A required argument is missing');
+            }
+            if (mode !== 'docker' && mode !== 'host') {
+                throw new Error(`Mode must be 'docker' or 'host'`);
             }
             // Let's find the sha
             const sha = yield getShaFromBranch({
@@ -1269,6 +1273,7 @@ function run() {
             yield Object(exec.exec)('bash init-db.sh', undefined, {
                 cwd: external_path_default().resolve(__dirname, '..'),
                 env: {
+                    MODE: mode,
                     BASE_DIR: external_path_default().join(process.env['GITHUB_WORKSPACE'], dbDirectory),
                     DB_NAME: dbName,
                     MIGRATE_BIN: migrateBin,

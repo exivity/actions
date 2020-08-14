@@ -57,6 +57,11 @@ repository migrations and runs them.
 
 **Optional** _Default: `exdb-test`_ The db name to create.
 
+### `mode`
+
+**Optional** _Options: `docker` or `host`, defaults to `docker`_ Whether to
+run PostgreSQL as a Docker container or start the server installed on the host
+
 ### `aws-access-key-id`
 
 **Optional** _Defaults to the AWS_ACCESS_KEY_ID environment variable_ The AWS
