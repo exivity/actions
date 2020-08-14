@@ -12,7 +12,7 @@ if [[ $MODE == 'docker' ]]
 then
     docker exec exivity-postgres createdb -U postgres $DB_NAME
 else
-    createdb -U postgres $DB_NAME
+    sudo -u postgres createdb $DB_NAME
 fi
 
 echo "Running migrations"
