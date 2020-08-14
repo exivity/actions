@@ -1240,7 +1240,7 @@ function run() {
             // Input
             const usePlatformPrefix = !!Object(core.getInput)('use-platform-prefix') || false;
             const prefix = Object(core.getInput)('prefix') || undefined;
-            const path = Object(core.getInput)('path', { required: true });
+            const path = Object(core.getInput)('path') || 'build';
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             // From environment

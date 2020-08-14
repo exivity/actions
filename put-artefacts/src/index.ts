@@ -6,7 +6,7 @@ async function run() {
     // Input
     const usePlatformPrefix = !!getInput('use-platform-prefix') || false
     const prefix = getInput('prefix') || undefined
-    const path = getInput('path', { required: true })
+    const path = getInput('path') || 'build'
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =

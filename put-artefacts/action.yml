@@ -1,15 +1,6 @@
-name: "Get artefacts"
-description: "Download artefacts for the provided component."
+name: "Put artefacts"
+description: "Upload artefacts for this component."
 inputs:
-  component:
-    description: "Component to download artefacts for"
-    required: true
-  sha:
-    description: "Use specific artefacts sha"
-    required: false
-  branch:
-    description: "Resolve sha from branch name"
-    required: false
   use-platform-prefix:
     description: "Uses `windows` or `linux` prefix depending on current os."
     required: false
@@ -17,8 +8,8 @@ inputs:
     description: "If specified, upload artefacts with this prefix"
     required: false
   path:
-    description: "Put artefacts in this path"
-    required: true
+    description: "Upload artefacts from this path"
+    required: false
   aws-access-key-id:
     description: "The AWS access key ID"
     required: false
