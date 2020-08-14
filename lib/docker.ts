@@ -15,7 +15,7 @@ export async function startDocker({ defaultVersion, image, ports }: Options) {
 
   info(`About to start a Docker container from ${image}:${version}`)
 
-  await exec(`bash start-docker.sh ${portsArg}`, undefined, {
+  await exec(`bash docker-start.sh ${portsArg}`, undefined, {
     // Once bundled, executing file will be /{action-name}/dist/index.js
     cwd: path.resolve(__dirname, '..', '..', 'lib'),
     env: {

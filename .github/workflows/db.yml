@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - ".github/workflows/db.yml"
-      - "lib/**"
+      - "lib/postgres*"
+      - "lib/docker*"
       - "db/**"
 
 env:

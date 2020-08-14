@@ -1688,7 +1688,7 @@ function startDocker({ defaultVersion, image, ports }) {
         const version = Object(core.getInput)('version') || defaultVersion;
         const portsArg = ports.map((port) => `-p ${port}:${port}`).join(' ');
         Object(core.info)(`About to start a Docker container from ${image}:${version}`);
-        yield Object(exec.exec)(`bash start-docker.sh ${portsArg}`, undefined, {
+        yield Object(exec.exec)(`bash docker-start.sh ${portsArg}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
             env: {
@@ -1748,8 +1748,8 @@ var postgres_awaiter = (undefined && undefined.__awaiter) || function (thisArg, 
 function startPostgres() {
     return postgres_awaiter(this, void 0, void 0, function* () {
         const script = Object(external_os_.platform)() === 'win32'
-            ? 'start-postgres-windows.sh'
-            : 'start-postgres-linux.sh';
+            ? 'postgres-start-windows.sh'
+            : 'postgres-start-linux.sh';
         yield Object(exec.exec)(`bash ${script}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
