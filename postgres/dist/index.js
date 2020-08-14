@@ -5530,6 +5530,10 @@ function run() {
                         : 'start-postgres-linux.sh';
                     yield Object(exec.exec)(`bash ${script}`, undefined, {
                         cwd: external_path_default().resolve(__dirname, '..'),
+                        env: {
+                            PGUSER: 'postgres',
+                            PGPASSWORD: 'root',
+                        },
                     });
                     break;
             }
