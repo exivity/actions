@@ -34,6 +34,10 @@ async function run() {
             : 'start-postgres-linux.sh'
         await exec(`bash ${script}`, undefined, {
           cwd: path.resolve(__dirname, '..'),
+          env: {
+            PGUSER: 'postgres',
+            PGPASSWORD: 'root',
+          },
         })
         break
     }
