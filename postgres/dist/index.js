@@ -2162,10 +2162,6 @@ function startPostgres() {
         yield Object(exec.exec)(`bash ${script}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                PGUSER: 'postgres',
-                PGPASSWORD: 'root',
-            },
         });
     });
 }

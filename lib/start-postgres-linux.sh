@@ -10,4 +10,4 @@ echo "Starting postgres service"
 sudo service postgresql start
 
 echo "Change password"
-psql -c "ALTER USER postgres PASSWORD 'postgres';"
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"

@@ -11,9 +11,5 @@ export async function startPostgres() {
   await exec(`bash ${script}`, undefined, {
     // Once bundled, executing file will be /{action-name}/dist/index.js
     cwd: path.resolve(__dirname, '..', '..', 'lib'),
-    env: {
-      PGUSER: 'postgres',
-      PGPASSWORD: 'root',
-    },
   })
 }
