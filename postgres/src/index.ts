@@ -1,13 +1,8 @@
 import { getInput, setFailed } from '@actions/core'
-import { exec } from '@actions/exec'
-import { platform } from 'os'
-import path from 'path'
-import { startDocker } from '../../lib'
+import { startDocker, startPostgres } from '../../lib'
 
 const image = 'exivity/postgres'
 const defaultVersion = '12.3'
-
-type MODE = 'docker' | 'host'
 
 async function run() {
   try {
@@ -28,17 +23,7 @@ async function run() {
         break
 
       case 'host':
-        const script =
-          platform() === 'win32'
-            ? 'start-postgres-windows.sh'
-            : 'start-postgres-linux.sh'
-        await exec(`bash ${script}`, undefined, {
-          cwd: path.resolve(__dirname, '..'),
-          env: {
-            PGUSER: 'postgres',
-            PGPASSWORD: 'root',
-          },
-        })
+        await startPostgres()
         break
     }
   } catch (error) {

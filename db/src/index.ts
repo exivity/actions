@@ -2,7 +2,12 @@ import { getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { platform } from 'os'
 import path from 'path'
-import { downloadS3object, getShaFromBranch, startDocker } from '../../lib'
+import {
+  downloadS3object,
+  getShaFromBranch,
+  startDocker,
+  startPostgres,
+} from '../../lib'
 
 type MODE = 'docker' | 'host'
 
@@ -44,12 +49,19 @@ async function run() {
       awsSecretKey,
     })
 
-    // Start postgres container
-    await startDocker({
-      image: 'exivity/postgres',
-      defaultVersion: '12.3',
-      ports: [5432],
-    })
+    switch (mode) {
+      case 'docker':
+        await startDocker({
+          image: 'exivity/postgres',
+          defaultVersion: '12.3',
+          ports: [5432],
+        })
+        break
+
+      case 'host':
+        await startPostgres()
+        break
+    }
 
     // Execute unpack-artefacts script
     const migrateBin = platform() === 'win32' ? 'migrate.exe' : 'migrate'
