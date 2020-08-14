@@ -5597,6 +5597,9 @@ function getShaFromBranch({ ghToken, component, branch, }) {
     });
 }
 
+// EXTERNAL MODULE: external "os"
+var external_os_ = __webpack_require__(87);
+
 // CONCATENATED MODULE: ./lib/s3.ts
 var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5609,12 +5612,17 @@ var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argum
 
 
 
+
 const s3_S3_BUCKET = 'exivity';
 const s3_S3_PREFIX = 'build';
 const s3_S3_REGION = 'eu-central-1';
-function downloadS3object({ component, sha, path, awsKeyId, awsSecretKey, }) {
+function getS3url({ component, sha, usePlatformPrefix, prefix }) {
+    const platformPrefix = Object(external_os_.platform)() === 'win32' ? 'windows' : 'linux';
+    return `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ''}${prefix ? `/${prefix}` : ''}`;
+}
+function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return s3_awaiter(this, void 0, void 0, function* () {
-        const src = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}`;
+        const src = getS3url({ component, sha, usePlatformPrefix, prefix });
         const dest = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
         const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
@@ -5626,10 +5634,10 @@ function downloadS3object({ component, sha, path, awsKeyId, awsSecretKey, }) {
         });
     });
 }
-function uploadS3object({ component, sha, path, awsKeyId, awsSecretKey, }) {
+function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return s3_awaiter(this, void 0, void 0, function* () {
         const src = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
-        const dest = `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}`;
+        const dest = getS3url({ component, sha, usePlatformPrefix, prefix });
         const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
         yield Object(exec.exec)(cmd, undefined, {
@@ -5665,6 +5673,8 @@ function run() {
             const component = Object(core.getInput)('component', { required: true });
             let sha = Object(core.getInput)('sha');
             const branch = Object(core.getInput)('branch') || 'develop';
+            const usePlatformPrefix = !!Object(core.getInput)('use-platform-prefix') || false;
+            const prefix = Object(core.getInput)('prefix') || undefined;
             const path = Object(core.getInput)('path') || `../${component}/build`;
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
@@ -5684,6 +5694,8 @@ function run() {
             yield downloadS3object({
                 component,
                 sha,
+                usePlatformPrefix,
+                prefix,
                 path,
                 awsKeyId,
                 awsSecretKey,

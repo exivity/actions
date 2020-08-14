@@ -7,6 +7,8 @@ async function run() {
     const component = getInput('component', { required: true })
     let sha = getInput('sha')
     const branch = getInput('branch') || 'develop'
+    const usePlatformPrefix = !!getInput('use-platform-prefix') || false
+    const prefix = getInput('prefix') || undefined
     const path = getInput('path') || `../${component}/build`
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
@@ -31,6 +33,8 @@ async function run() {
     await downloadS3object({
       component,
       sha,
+      usePlatformPrefix,
+      prefix,
       path,
       awsKeyId,
       awsSecretKey,
