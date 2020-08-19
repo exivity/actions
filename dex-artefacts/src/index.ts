@@ -9,6 +9,8 @@ async function run() {
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
 
+    console.log(process.env, { awsKeyId, awsSecretKey })
+
     // Assertions
     if (!awsKeyId || !awsSecretKey) {
       throw new Error('A required argument is missing')
