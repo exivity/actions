@@ -1355,8 +1355,9 @@ function startDex({ cmd, env }) {
         const cwd = Object(core.getInput)('path') || Object(core.getInput)('cwd') || '.';
         // Env vars
         const envOptions = Object.keys(env || {})
-            .map((key) => `--env ${key}="${env[key]}"`)
+            .map((key) => `--env "${key}=${env[key]}"`)
             .join(' ');
+        console.log(envOptions);
         Object(core.info)(`About to start a Dex container`);
         // Execute docker-start script
         yield Object(exec.exec)(`bash dex-start.sh ${cmd}`, undefined, {
