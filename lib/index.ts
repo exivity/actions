@@ -1,3 +1,4 @@
+export * from './dex'
 export * from './docker'
 export * from './github'
 export * from './postgres'

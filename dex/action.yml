@@ -1,9 +1,12 @@
 name: 'Dex'
 description: 'Runs a dex command'
 inputs:
-  args:
-    description: 'Dex args'
+  cmd:
+    description: 'Dex command'
     required: true
+  cwd:
+    description: 'Working directory'
+    required: false
   tag:
     description: 'Docker tag to use'
     required: false

@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(151);
+/******/ 		return __webpack_require__(160);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -1395,7 +1395,7 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 151:
+/***/ 160:
 /***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1410,6 +1410,41 @@ var exec = __webpack_require__(986);
 // EXTERNAL MODULE: external "path"
 var external_path_ = __webpack_require__(622);
 var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
+
+// CONCATENATED MODULE: ./lib/dex.ts
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function startDex({ cmd, env }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Input
+        const tag = Object(core.getInput)('tag') || 'latest';
+        const cwd = Object(core.getInput)('cwd') || 'cwd';
+        // Env vars
+        const envOptions = Object.keys(env || {})
+            .map((key) => `--env ${key}="${env[key]}"`)
+            .join(' ');
+        Object(core.info)(`About to start a Dex container`);
+        // Execute docker-start script
+        yield Object(exec.exec)(`bash dex-start.sh ${cmd}`, undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
+            env: {
+                CWD: cwd,
+                TAG: tag,
+                ENV_OPTIONS: envOptions,
+            },
+        });
+    });
+}
 
 // EXTERNAL MODULE: external "crypto"
 var external_crypto_ = __webpack_require__(417);
@@ -1434,7 +1469,7 @@ function randomString(length) {
 }
 
 // CONCATENATED MODULE: ./lib/docker.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+var docker_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
@@ -1447,7 +1482,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 function startDocker({ defaultVersion, image, ports }) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return docker_awaiter(this, void 0, void 0, function* () {
         const version = Object(core.getInput)('version') || defaultVersion;
         const portsArg = ports.map((port) => `-p ${port}:${port}`).join(' ');
         Object(core.info)(`About to start a Docker container from ${image}:${version}`);
@@ -1573,6 +1608,7 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
 }
 
 // CONCATENATED MODULE: ./lib/index.ts
+
 
 
 

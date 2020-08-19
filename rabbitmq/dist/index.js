@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(300);
+/******/ 		return __webpack_require__(599);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -1628,222 +1628,6 @@ paginateRest.VERSION = VERSION;
 
 exports.paginateRest = paginateRest;
 //# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 300:
-/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __webpack_require__(470);
-
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __webpack_require__(986);
-
-// EXTERNAL MODULE: external "path"
-var external_path_ = __webpack_require__(622);
-var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
-
-// EXTERNAL MODULE: external "crypto"
-var external_crypto_ = __webpack_require__(417);
-var external_crypto_default = /*#__PURE__*/__webpack_require__.n(external_crypto_);
-
-// CONCATENATED MODULE: ./lib/string.ts
-
-function sluggify(str) {
-    return str
-        .toString()
-        .toLowerCase()
-        .replace(/\s+/g, '-') // Replace spaces with -
-        .replace(/[^\w-]+/g, '-') // Remove all non-word chars
-        .replace(/--+/g, '-') // Replace multiple - with single -
-        .replace(/^-+/, '') // Trim - from start of text
-        .replace(/-+$/, ''); // Trim - from end of text
-}
-function randomString(length) {
-    return external_crypto_default().randomBytes(Math.ceil(length / 2))
-        .toString('hex')
-        .substr(0, length);
-}
-
-// CONCATENATED MODULE: ./lib/docker.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-
-function startDocker({ defaultVersion, image, ports }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const version = Object(core.getInput)('version') || defaultVersion;
-        const portsArg = ports.map((port) => `-p ${port}:${port}`).join(' ');
-        Object(core.info)(`About to start a Docker container from ${image}:${version}`);
-        yield Object(exec.exec)(`bash docker-start.sh ${portsArg}`, undefined, {
-            // Once bundled, executing file will be /{action-name}/dist/index.js
-            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                NAME: sluggify(image),
-                IMAGE: image,
-                TAG: version,
-            },
-        });
-    });
-}
-
-// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
-var github = __webpack_require__(469);
-
-// CONCATENATED MODULE: ./lib/github.ts
-var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-const S3_BUCKET = 'exivity';
-const S3_PREFIX = 'build';
-const S3_REGION = 'eu-central-1';
-function getShaFromBranch({ ghToken, component, branch, }) {
-    return github_awaiter(this, void 0, void 0, function* () {
-        const octokit = Object(github.getOctokit)(ghToken);
-        const sha = (yield octokit.repos.getBranch({
-            owner: 'exivity',
-            repo: component,
-            branch,
-        })).data.commit.sha;
-        Object(core.info)(`Resolved ${branch} to ${sha}`);
-        return sha;
-    });
-}
-
-// EXTERNAL MODULE: external "os"
-var external_os_ = __webpack_require__(87);
-
-// CONCATENATED MODULE: ./lib/postgres.ts
-var postgres_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-function startPostgres() {
-    return postgres_awaiter(this, void 0, void 0, function* () {
-        const script = Object(external_os_.platform)() === 'win32'
-            ? 'postgres-start-windows.sh'
-            : 'postgres-start-linux.sh';
-        yield Object(exec.exec)(`bash ${script}`, undefined, {
-            // Once bundled, executing file will be /{action-name}/dist/index.js
-            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN',
-            },
-        });
-    });
-}
-
-// CONCATENATED MODULE: ./lib/s3.ts
-var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-
-const s3_S3_BUCKET = 'exivity';
-const s3_S3_PREFIX = 'build';
-const s3_S3_REGION = 'eu-central-1';
-function getS3url({ component, sha, usePlatformPrefix, prefix }) {
-    const platformPrefix = Object(external_os_.platform)() === 'win32' ? 'windows' : 'linux';
-    return `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ''}${prefix ? `/${prefix}` : ''}`;
-}
-function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
-    return s3_awaiter(this, void 0, void 0, function* () {
-        const src = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const dest = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
-        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
-        Object(core.info)(`About to execute ${cmd}`);
-        yield Object(exec.exec)(cmd, undefined, {
-            env: {
-                AWS_ACCESS_KEY_ID: awsKeyId,
-                AWS_SECRET_ACCESS_KEY: awsSecretKey,
-            },
-        });
-    });
-}
-function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
-    return s3_awaiter(this, void 0, void 0, function* () {
-        const src = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
-        const dest = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
-        Object(core.info)(`About to execute ${cmd}`);
-        yield Object(exec.exec)(cmd, undefined, {
-            env: {
-                AWS_ACCESS_KEY_ID: awsKeyId,
-                AWS_SECRET_ACCESS_KEY: awsSecretKey,
-            },
-        });
-    });
-}
-
-// CONCATENATED MODULE: ./lib/index.ts
-
-
-
-
-
-
-// CONCATENATED MODULE: ./rabbitmq/src/index.ts
-var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-const src_image = 'exivity/rabbitmq';
-const src_defaultVersion = '3.8.6';
-function run() {
-    return src_awaiter(this, void 0, void 0, function* () {
-        try {
-            yield startDocker({
-                image: src_image,
-                defaultVersion: src_defaultVersion,
-                ports: [4369, 5671, 5672, 15672],
-            });
-        }
-        catch (error) {
-            Object(core.setFailed)(error.message);
-        }
-    });
-}
-run();
 
 
 /***/ }),
@@ -5238,6 +5022,258 @@ class HttpClient {
     }
 }
 exports.HttpClient = HttpClient;
+
+
+/***/ }),
+
+/***/ 599:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __webpack_require__(470);
+
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __webpack_require__(986);
+
+// EXTERNAL MODULE: external "path"
+var external_path_ = __webpack_require__(622);
+var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
+
+// CONCATENATED MODULE: ./lib/dex.ts
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function startDex({ cmd, env }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Input
+        const tag = Object(core.getInput)('tag') || 'latest';
+        const cwd = Object(core.getInput)('cwd') || 'cwd';
+        // Env vars
+        const envOptions = Object.keys(env || {})
+            .map((key) => `--env ${key}="${env[key]}"`)
+            .join(' ');
+        Object(core.info)(`About to start a Dex container`);
+        // Execute docker-start script
+        yield Object(exec.exec)(`bash dex-start.sh ${cmd}`, undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
+            env: {
+                CWD: cwd,
+                TAG: tag,
+                ENV_OPTIONS: envOptions,
+            },
+        });
+    });
+}
+
+// EXTERNAL MODULE: external "crypto"
+var external_crypto_ = __webpack_require__(417);
+var external_crypto_default = /*#__PURE__*/__webpack_require__.n(external_crypto_);
+
+// CONCATENATED MODULE: ./lib/string.ts
+
+function sluggify(str) {
+    return str
+        .toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(/[^\w-]+/g, '-') // Remove all non-word chars
+        .replace(/--+/g, '-') // Replace multiple - with single -
+        .replace(/^-+/, '') // Trim - from start of text
+        .replace(/-+$/, ''); // Trim - from end of text
+}
+function randomString(length) {
+    return external_crypto_default().randomBytes(Math.ceil(length / 2))
+        .toString('hex')
+        .substr(0, length);
+}
+
+// CONCATENATED MODULE: ./lib/docker.ts
+var docker_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+function startDocker({ defaultVersion, image, ports }) {
+    return docker_awaiter(this, void 0, void 0, function* () {
+        const version = Object(core.getInput)('version') || defaultVersion;
+        const portsArg = ports.map((port) => `-p ${port}:${port}`).join(' ');
+        Object(core.info)(`About to start a Docker container from ${image}:${version}`);
+        yield Object(exec.exec)(`bash docker-start.sh ${portsArg}`, undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
+            env: {
+                NAME: sluggify(image),
+                IMAGE: image,
+                TAG: version,
+            },
+        });
+    });
+}
+
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __webpack_require__(469);
+
+// CONCATENATED MODULE: ./lib/github.ts
+var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+const S3_BUCKET = 'exivity';
+const S3_PREFIX = 'build';
+const S3_REGION = 'eu-central-1';
+function getShaFromBranch({ ghToken, component, branch, }) {
+    return github_awaiter(this, void 0, void 0, function* () {
+        const octokit = Object(github.getOctokit)(ghToken);
+        const sha = (yield octokit.repos.getBranch({
+            owner: 'exivity',
+            repo: component,
+            branch,
+        })).data.commit.sha;
+        Object(core.info)(`Resolved ${branch} to ${sha}`);
+        return sha;
+    });
+}
+
+// EXTERNAL MODULE: external "os"
+var external_os_ = __webpack_require__(87);
+
+// CONCATENATED MODULE: ./lib/postgres.ts
+var postgres_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function startPostgres() {
+    return postgres_awaiter(this, void 0, void 0, function* () {
+        const script = Object(external_os_.platform)() === 'win32'
+            ? 'postgres-start-windows.sh'
+            : 'postgres-start-linux.sh';
+        yield Object(exec.exec)(`bash ${script}`, undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
+            env: {
+                ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN',
+            },
+        });
+    });
+}
+
+// CONCATENATED MODULE: ./lib/s3.ts
+var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+const s3_S3_BUCKET = 'exivity';
+const s3_S3_PREFIX = 'build';
+const s3_S3_REGION = 'eu-central-1';
+function getS3url({ component, sha, usePlatformPrefix, prefix }) {
+    const platformPrefix = Object(external_os_.platform)() === 'win32' ? 'windows' : 'linux';
+    return `s3://${s3_S3_BUCKET}/${s3_S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ''}${prefix ? `/${prefix}` : ''}`;
+}
+function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
+    return s3_awaiter(this, void 0, void 0, function* () {
+        const src = getS3url({ component, sha, usePlatformPrefix, prefix });
+        const dest = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
+        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
+        Object(core.info)(`About to execute ${cmd}`);
+        yield Object(exec.exec)(cmd, undefined, {
+            env: {
+                AWS_ACCESS_KEY_ID: awsKeyId,
+                AWS_SECRET_ACCESS_KEY: awsSecretKey,
+            },
+        });
+    });
+}
+function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
+    return s3_awaiter(this, void 0, void 0, function* () {
+        const src = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
+        const dest = getS3url({ component, sha, usePlatformPrefix, prefix });
+        const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
+        Object(core.info)(`About to execute ${cmd}`);
+        yield Object(exec.exec)(cmd, undefined, {
+            env: {
+                AWS_ACCESS_KEY_ID: awsKeyId,
+                AWS_SECRET_ACCESS_KEY: awsSecretKey,
+            },
+        });
+    });
+}
+
+// CONCATENATED MODULE: ./lib/index.ts
+
+
+
+
+
+
+
+// CONCATENATED MODULE: ./rabbitmq/src/index.ts
+var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+const src_image = 'exivity/rabbitmq';
+const src_defaultVersion = '3.8.6';
+function run() {
+    return src_awaiter(this, void 0, void 0, function* () {
+        try {
+            yield startDocker({
+                image: src_image,
+                defaultVersion: src_defaultVersion,
+                ports: [4369, 5671, 5672, 15672],
+            });
+        }
+        catch (error) {
+            Object(core.setFailed)(error.message);
+        }
+    });
+}
+run();
 
 
 /***/ }),

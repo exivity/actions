@@ -7,6 +7,8 @@ _Available actions:_
 
 - [`accept`](#accept)
 - [`db`](#db)
+- [`dex`](#dex)
+- [`dex-artefacts`](#dex-artefacts)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
@@ -83,6 +85,73 @@ access to the exivity/db repository.
 - uses: exivity/actions/db@master
   with:
     branch: some-feature-branch
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+
+# `dex`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/dex)
+
+_🚧 This action is not yet ready for production_
+
+Runs a dex command
+
+## Inputs
+
+### `cmd`
+
+**Required** Dex command to execute.
+
+### `cwd`
+
+**Optional** _Default: `.`_ Working directory
+
+### `tag`
+
+**Optional** _Default: `latest`_ The `exivity/dex` Docker image tag to use
+
+## Example usage
+
+```
+- uses: exivity/actions/dex@master
+  with:
+    cmd: help
+```
+
+# `dex-artefacts`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/dex-artefacts)
+
+_🚧 This action is not yet ready for production_
+
+Create, accept and publish artefacts with dex
+
+## Inputs
+
+### `cwd`
+
+**Optional** _Default: `.`_ Working directory
+
+### `tag`
+
+**Optional** _Default: `latest`_ The `exivity/dex` Docker image tag to use
+
+### `aws-access-key-id`
+
+**Optional** _Defaults to the AWS_ACCESS_KEY_ID environment variable_ The AWS
+access key ID
+
+### `aws-secret-access-key`
+
+**Optional** _Defaults to the AWS_SECRET_ACCESS_KEY environment variable_ The
+AWS secret access key
+
+## Example usage
+
+```
+- uses: exivity/actions/dex-artefacts@master
+  with:
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
