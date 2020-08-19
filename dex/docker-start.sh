@@ -7,6 +7,6 @@ echo "Running Docker image exivity/dex:$TAG with name dex"
 docker run \
     --rm \
     --name dex \
-    --mount type=bind,source="$GITHUB_WORKSPACE",target=/home
+    --mount type=bind,source="$GITHUB_WORKSPACE",target=/home \
     exivity/dex:$TAG \
     "$@"
