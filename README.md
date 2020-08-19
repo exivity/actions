@@ -129,9 +129,13 @@ Create, accept and publish artefacts with dex
 
 ## Inputs
 
-### `cwd`
+### `path`
 
-**Optional** _Default: `.`_ Working directory
+**Optional** _Default: `.`_ Component root directory
+
+### `channel`
+
+**Optional** Manually set channel
 
 ### `tag`
 

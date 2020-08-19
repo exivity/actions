@@ -1425,9 +1425,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function startDex({ cmd, env }) {
     return __awaiter(this, void 0, void 0, function* () {
-        // Input
+        // Use this Docker image tag
         const tag = Object(core.getInput)('tag') || 'latest';
-        const cwd = Object(core.getInput)('cwd') || 'cwd';
+        // Path/cwd input will be used as the Docker mount path in the dex-start bash
+        // script
+        const cwd = Object(core.getInput)('path') || Object(core.getInput)('cwd') || '.';
         // Env vars
         const envOptions = Object.keys(env || {})
             .map((key) => `--env ${key}="${env[key]}"`)

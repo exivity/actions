@@ -8,9 +8,12 @@ type Options = {
 }
 
 export async function startDex({ cmd, env }: Options) {
-  // Input
+  // Use this Docker image tag
   const tag = getInput('tag') || 'latest'
-  const cwd = getInput('cwd') || 'cwd'
+
+  // Path/cwd input will be used as the Docker mount path in the dex-start bash
+  // script
+  const cwd = getInput('path') || getInput('cwd') || '.'
 
   // Env vars
   const envOptions = Object.keys(env || {})

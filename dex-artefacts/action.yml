@@ -1,8 +1,11 @@
 name: 'Dex artefacts'
 description: 'Create, accept and publish artefacts with dex'
 inputs:
-  cwd:
-    description: 'Working directory'
+  path:
+    description: 'Component root directory'
+    required: false
+  channel:
+    description: 'Manually set channel'
     required: false
   tag:
     description: 'Docker tag to use'

@@ -2354,9 +2354,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function startDex({ cmd, env }) {
     return __awaiter(this, void 0, void 0, function* () {
-        // Input
+        // Use this Docker image tag
         const tag = Object(core.getInput)('tag') || 'latest';
-        const cwd = Object(core.getInput)('cwd') || 'cwd';
+        // Path/cwd input will be used as the Docker mount path in the dex-start bash
+        // script
+        const cwd = Object(core.getInput)('path') || Object(core.getInput)('cwd') || '.';
         // Env vars
         const envOptions = Object.keys(env || {})
             .map((key) => `--env ${key}="${env[key]}"`)
@@ -2560,6 +2562,7 @@ function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
+            const channel = Object(core.getInput)('channel');
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             console.log(process.env, { awsKeyId, awsSecretKey });
@@ -2567,11 +2570,13 @@ function run() {
             if (!awsKeyId || !awsSecretKey) {
                 throw new Error('A required argument is missing');
             }
+            // Override channel if set
+            const channelArg = channel ? `--channel ${channel}` : '';
             // Construct env vars
             const env = Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey });
-            yield startDex({ cmd: 'artefacts create .', env });
-            yield startDex({ cmd: 'artefacts accept .', env });
-            yield startDex({ cmd: 'artefacts publish .', env });
+            yield startDex({ cmd: `artefacts create ${channelArg} .`, env });
+            yield startDex({ cmd: `artefacts accept ${channelArg} .`, env });
+            yield startDex({ cmd: `artefacts publish ${channelArg} .`, env });
         }
         catch (error) {
             Object(core.setFailed)(error.message);
