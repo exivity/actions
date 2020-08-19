@@ -26,7 +26,7 @@ echo cmd
 docker run \
     --rm \
     --name dex \
-    --mount type=bind,source="$GITHUB_WORKSPACE/$CWD",target=/home \
-    $ENV_OPTIONS \
+    $MOUNT \
+    $ENV \
     exivity/dex:$TAG \
     "$@"
