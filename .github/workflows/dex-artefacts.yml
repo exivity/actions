@@ -21,4 +21,4 @@ jobs:
       - uses: actions/checkout@v1
       - uses: ./dex-artefacts
         with:
-          cwd: fixtures/test-component
+          path: fixtures/test-component

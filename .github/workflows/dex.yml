@@ -17,4 +17,4 @@ jobs:
       - uses: actions/checkout@v1
       - uses: ./dex
         with:
-          args: help
+          cmd: help
