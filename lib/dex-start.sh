@@ -7,26 +7,18 @@ echo "Running Docker image exivity/dex:$TAG with name dex"
 unameOut="$(uname -s)"
 case "${unameOut}" in
 	Linux*)     
-		MOUNT="--mount type=bind,source=\"$GITHUB_WORKSPACE/$CWD\",target=/home"
+        FROM="$GITHUB_WORKSPACE/$CWD"
+        TO=/home
 		;;
 	*)
-		MOUNT="--mount type=bind,source=\"$GITHUB_WORKSPACE\\$CWD\",target=C:\\home"
+        FROM="$GITHUB_WORKSPACE\\$CWD"
+        TO="C:\\home"
 esac
-
-cmd="docker run \
-    --rm \
-    --name dex \
-    $MOUNT \
-    $ENV \
-    exivity/dex:$TAG \
-    \"$@\""
-
-echo cmd
 
 docker run \
     --rm \
     --name dex \
-    $MOUNT \
+    --mount "type=bind,source=$FROM,target=$TO" \
     $ENV \
     exivity/dex:$TAG \
     "$@"
