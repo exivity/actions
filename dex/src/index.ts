@@ -1,5 +1,5 @@
 import { getInput, setFailed } from '@actions/core'
-import { startDex } from '../../lib'
+import { startDex } from '../../lib/dex'
 
 async function run() {
   try {

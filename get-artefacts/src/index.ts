@@ -1,5 +1,6 @@
 import { getInput, setFailed } from '@actions/core'
-import { downloadS3object, getShaFromBranch } from '../../lib'
+import { getShaFromBranch } from '../../lib/github'
+import { downloadS3object } from '../../lib/s3'
 
 async function run() {
   try {

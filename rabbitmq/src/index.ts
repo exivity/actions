@@ -1,5 +1,5 @@
 import { setFailed } from '@actions/core'
-import { startDocker } from '../../lib'
+import { startDocker } from '../../lib/docker'
 
 const image = 'exivity/rabbitmq'
 const defaultVersion = '3.8.6'

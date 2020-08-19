@@ -1,5 +1,5 @@
 import { getInput, setFailed } from '@actions/core'
-import { startDex } from '../../lib'
+import { startDex } from '../../lib/dex'
 
 async function run() {
   try {
@@ -9,8 +9,6 @@ async function run() {
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
-
-    console.log(process.env, { awsKeyId, awsSecretKey })
 
     // Assertions
     if (!awsKeyId || !awsSecretKey) {
