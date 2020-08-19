@@ -27,6 +27,7 @@ export async function startDex({ cmd, env }: Options) {
       CWD: cwd,
       TAG: tag,
       ENV_OPTIONS: envOptions,
+      GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
     },
   })
 }

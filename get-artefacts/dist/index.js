@@ -1441,6 +1441,7 @@ function startDex({ cmd, env }) {
                 CWD: cwd,
                 TAG: tag,
                 ENV_OPTIONS: envOptions,
+                GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
             },
         });
     });
