@@ -15,6 +15,16 @@ case "${unameOut}" in
         TO="C:\\home"
 esac
 
+echo "Docker command"
+
+echo "docker run \
+    --rm \
+    --name dex \
+    --mount \"type=bind,source=$FROM,target=$TO\" \
+    $ENV \
+    exivity/dex:$TAG \
+    \"$@\""
+
 docker run \
     --rm \
     --name dex \
