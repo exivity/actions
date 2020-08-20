@@ -7032,23 +7032,20 @@ var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
 const S3_BUCKET = 'exivity';
 const S3_PREFIX = 'build';
 const S3_REGION = 'eu-central-1';
-const checkBranches = (octokit, branch) => github_awaiter(undefined, void 0, void 0, function* () {
-    if (branch !== 'develop') {
-        return branch;
-    }
-    const branches = (yield octokit.repos.listBranches()).data;
-    if (branches.find(b => b.name === branch)) {
-        return branch;
-    }
-    return 'master';
-});
 function getShaFromBranch({ ghToken, component, branch, }) {
     return github_awaiter(this, void 0, void 0, function* () {
         const octokit = Object(github.getOctokit)(ghToken);
+        if (branch === 'develop') {
+            const hasDevelop = (yield octokit.repos.listBranches()).data.some((repoBranch) => repoBranch.name === 'develop');
+            if (!hasDevelop) {
+                Object(core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+                branch = 'master';
+            }
+        }
         const sha = (yield octokit.repos.getBranch({
             owner: 'exivity',
             repo: component,
-            branch: yield checkBranches(octokit, branch),
+            branch,
         })).data.commit.sha;
         Object(core.info)(`Resolved ${branch} to ${sha}`);
         return sha;

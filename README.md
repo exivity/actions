@@ -107,8 +107,7 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ### `branch`
 
-**Optional** _Defaults to `develop`_ If no sha is provided, resolve sha from
-branch name
+**Optional** _Defaults to `master` when used on a master branch or if artifact repo has no develop branch, else defaults to `develop`_ If no sha is provided, resolve sha from branch name
 
 ### `use-platform-prefix`
 
