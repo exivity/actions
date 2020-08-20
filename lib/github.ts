@@ -11,17 +11,31 @@ type Options = {
   branch: string
 }
 
+const checkBranches = async (octokit: any, branch: string): Promise<string> => {
+  if (branch !== 'develop') {
+    return branch
+  }
+
+  const branches = (await octokit.repos.listBranches()).data
+
+  if (branches.find(b => b.name === branch)) {
+    return branch
+  }
+  return 'master'
+}
+
 export async function getShaFromBranch({
   ghToken,
   component,
   branch,
 }: Options) {
   const octokit = getOctokit(ghToken)
+
   const sha = (
     await octokit.repos.getBranch({
       owner: 'exivity',
       repo: component,
-      branch,
+      branch: await checkBranches(octokit, branch),
     })
   ).data.commit.sha
 
