@@ -23,7 +23,7 @@ echo "docker run \
     --mount \"type=bind,source=$FROM,target=$TO\" \
     $ENV \
     exivity/dex:$TAG \
-    \"$@\""
+    $@"
 
 docker run \
     --rm \
