@@ -3,9 +3,9 @@ name: rabbitmq
 on:
   push:
     paths:
-      - ".github/workflows/rabbitmq.yml"
-      - "lib/docker*"
-      - "rabbitmq/**"
+      - '.github/workflows/rabbitmq.yml'
+      - 'lib/docker*'
+      - 'rabbitmq/**'
 
 jobs:
   test:

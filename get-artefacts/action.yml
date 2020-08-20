@@ -1,33 +1,33 @@
-name: "Get artefacts"
-description: "Download artefacts for the provided component."
+name: 'Get artefacts'
+description: 'Download artefacts for the provided component.'
 inputs:
   component:
-    description: "Component to download artefacts for"
+    description: 'Component to download artefacts for'
     required: true
   sha:
-    description: "Use specific artefacts sha"
+    description: 'Use specific artefacts sha'
     required: false
   branch:
-    description: "Resolve sha from branch name"
+    description: 'Resolve sha from branch name'
     required: false
   use-platform-prefix:
-    description: "Uses `windows` or `linux` prefix depending on current os."
+    description: 'Uses `windows` or `linux` prefix depending on current os.'
     required: false
   prefix:
-    description: "If specified, download artefacts from this prefix"
+    description: 'If specified, download artefacts from this prefix'
     required: false
   path:
-    description: "Put artefacts in this path"
+    description: 'Put artefacts in this path'
     required: false
   aws-access-key-id:
-    description: "The AWS access key ID"
+    description: 'The AWS access key ID'
     required: false
   aws-secret-access-key:
-    description: "The AWS secret access key"
+    description: 'The AWS secret access key'
     required: false
   gh-token:
-    description: "A GitHub token"
+    description: 'A GitHub token'
     required: false
 runs:
-  using: "node12"
-  main: "dist/index.js"
+  using: 'node12'
+  main: 'dist/index.js'

@@ -1,9 +1,9 @@
-name: "RabbitMQ"
-description: "Starts a RabbitMQ server in a Docker container"
+name: 'RabbitMQ'
+description: 'Starts a RabbitMQ server in a Docker container'
 inputs:
   version:
-    description: "RabbitMQ version"
+    description: 'RabbitMQ version'
     required: false
 runs:
-  using: "node12"
-  main: "dist/index.js"
+  using: 'node12'
+  main: 'dist/index.js'
