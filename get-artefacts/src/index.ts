@@ -1,5 +1,20 @@
 import { getInput, setFailed } from '@actions/core'
+import { promises as fsPromises } from 'fs'
+import { join as pathJoin } from 'path'
+import { exec } from '@actions/exec'
 import { downloadS3object, getShaFromBranch } from '../../lib'
+
+async function unzipAll(path: string) {
+  for (const file of await fsPromises.readdir(path)) {
+    if (file.endsWith('.zip')) {
+      await exec('7z', ['x',  pathJoin(path, file), '-o', path])
+    } else if (
+      (await fsPromises.lstat(pathJoin(path, file))).isDirectory()
+    ) {
+      unzipAll(pathJoin(path, file))
+    }
+  }
+}
 
 async function run() {
   try {
@@ -15,6 +30,7 @@ async function run() {
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
     const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
+    const unzip = !getInput('no-unzipping')
 
     // Assertions
     if (!awsKeyId || !awsSecretKey || !ghToken) {
@@ -39,6 +55,10 @@ async function run() {
       awsKeyId,
       awsSecretKey,
     })
+
+    if (unzip) {
+      	await unzipAll(path)
+    }
   } catch (error) {
     setFailed(error.message)
   }

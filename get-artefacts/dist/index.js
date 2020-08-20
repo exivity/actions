@@ -6953,12 +6953,15 @@ __webpack_require__.r(__webpack_exports__);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __webpack_require__(470);
 
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __webpack_require__(986);
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(747);
 
 // EXTERNAL MODULE: external "path"
 var external_path_ = __webpack_require__(622);
 var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
+
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __webpack_require__(986);
 
 // EXTERNAL MODULE: external "crypto"
 var external_crypto_ = __webpack_require__(417);
@@ -7139,6 +7142,21 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 };
 
 
+
+
+
+function unzipAll(path) {
+    return src_awaiter(this, void 0, void 0, function* () {
+        for (const file of yield Object(external_fs_.promises.readdir)(path)) {
+            if (file.endsWith('.zip')) {
+                yield Object(exec.exec)('7z', ['x', Object(external_path_.join)(path, file), '-o', path]);
+            }
+            else if ((yield Object(external_fs_.promises.lstat)(Object(external_path_.join)(path, file))).isDirectory()) {
+                unzipAll(Object(external_path_.join)(path, file));
+            }
+        }
+    });
+}
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
@@ -7152,6 +7170,7 @@ function run() {
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+            const unzip = !Object(core.getInput)('no-unzipping');
             // Assertions
             if (!awsKeyId || !awsSecretKey || !ghToken) {
                 throw new Error('A required argument is missing');
@@ -7173,6 +7192,9 @@ function run() {
                 awsKeyId,
                 awsSecretKey,
             });
+            if (unzip) {
+                yield unzipAll(path);
+            }
         }
         catch (error) {
             Object(core.setFailed)(error.message);

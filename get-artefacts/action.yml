@@ -28,6 +28,9 @@ inputs:
   gh-token:
     description: "A GitHub token"
     required: false
+  no-unzipping:
+    description: "Set to a truthy value to disable automatic unzipping of all zipped files"
+    required: false
 runs:
   using: "node12"
   main: "dist/index.js"
