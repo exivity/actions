@@ -7146,7 +7146,7 @@ function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
-            const branch = Object(core.getInput)('branch') || 'develop';
+            const branch = Object(core.getInput)('branch') || process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop';
             const dbName = Object(core.getInput)('db-name') || 'exdb-test';
             const mode = Object(core.getInput)('mode') || 'host';
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];

@@ -7145,7 +7145,7 @@ function run() {
             // Input
             const component = Object(core.getInput)('component', { required: true });
             let sha = Object(core.getInput)('sha');
-            const branch = Object(core.getInput)('branch') || 'develop';
+            const branch = Object(core.getInput)('branch') || process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop';
             const usePlatformPrefix = !!Object(core.getInput)('use-platform-prefix') || false;
             const prefix = Object(core.getInput)('prefix') || undefined;
             const path = Object(core.getInput)('path') || `../${component}/build`;
