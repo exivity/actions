@@ -1,4 +1,5 @@
-import { getInput, setFailed } from '@actions/core'
+import { getInput, setFailed, warning } from '@actions/core'
+import { platform } from 'os'
 import { startDex } from '../../lib/dex'
 
 async function run() {
@@ -20,13 +21,19 @@ async function run() {
 
     // Construct env vars
     const env = {
-      ...process.env,
+      CI: 'true',
       AWS_ACCESS_KEY_ID: awsKeyId,
       AWS_SECRET_ACCESS_KEY: awsSecretKey,
     }
 
     await startDex({ cmd: `artefacts create ${channelArg} .`, env })
-    await startDex({ cmd: `artefacts accept ${channelArg} .`, env })
+
+    if (platform() === 'linux') {
+      warning("Linux doesn't support accepting artefacts at the moment.")
+    } else {
+      await startDex({ cmd: `artefacts accept ${channelArg} .`, env })
+    }
+
     await startDex({ cmd: `artefacts publish ${channelArg} .`, env })
   } catch (error) {
     setFailed(error.message)

@@ -1313,6 +1313,9 @@ __webpack_require__.r(__webpack_exports__);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __webpack_require__(470);
 
+// EXTERNAL MODULE: external "os"
+var external_os_ = __webpack_require__(87);
+
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
 var exec = __webpack_require__(986);
 
@@ -1340,11 +1343,9 @@ function startDex({ cmd, env }) {
         // script
         const cwd = Object(core.getInput)('path') || Object(core.getInput)('cwd') || '.';
         // Env vars
-        // const envOptions = Object.keys(env || {})
-        //   .map((key) => `--env "${key}=${env[key]}"`)
-        //   .join(' ')
-        const envOptions = '';
-        console.log(envOptions);
+        const envOptions = Object.keys(env || {})
+            .map((key) => `--env "${key}=${env[key]}"`)
+            .join(' ');
         Object(core.info)(`About to start a Dex container`);
         // Execute docker-start script
         yield Object(exec.exec)(`bash dex-start.sh ${cmd}`, undefined, {
@@ -1371,6 +1372,7 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 };
 
 
+
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
@@ -1385,9 +1387,18 @@ function run() {
             // Override channel if set
             const channelArg = channel ? `--channel ${channel}` : '';
             // Construct env vars
-            const env = Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey });
+            const env = {
+                CI: 'true',
+                AWS_ACCESS_KEY_ID: awsKeyId,
+                AWS_SECRET_ACCESS_KEY: awsSecretKey,
+            };
             yield startDex({ cmd: `artefacts create ${channelArg} .`, env });
-            yield startDex({ cmd: `artefacts accept ${channelArg} .`, env });
+            if (Object(external_os_.platform)() === 'linux') {
+                Object(core.warning)("Linux doesn't support accepting artefacts at the moment.");
+            }
+            else {
+                yield startDex({ cmd: `artefacts accept ${channelArg} .`, env });
+            }
             yield startDex({ cmd: `artefacts publish ${channelArg} .`, env });
         }
         catch (error) {

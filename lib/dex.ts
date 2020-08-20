@@ -16,12 +16,9 @@ export async function startDex({ cmd, env }: Options) {
   const cwd = getInput('path') || getInput('cwd') || '.'
 
   // Env vars
-  // const envOptions = Object.keys(env || {})
-  //   .map((key) => `--env "${key}=${env[key]}"`)
-  //   .join(' ')
-  const envOptions = ''
-
-  console.log(envOptions)
+  const envOptions = Object.keys(env || {})
+    .map((key) => `--env "${key}=${env[key]}"`)
+    .join(' ')
 
   info(`About to start a Dex container`)
 
