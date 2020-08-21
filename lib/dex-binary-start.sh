@@ -5,14 +5,25 @@ set -e
 # pwd is the lib directory
 cwd=$(pwd)
 
-echo "Downloading dex binary"
+# dex binary
+unameOut="$(uname -s)"
+case "${unameOut}" in
+	Linux*)     
+        dex_bin=dex
+		;;
+	*)
+        dex_bin=dex.exe
+esac
+
+echo "Downloading $dex_bin"
 mkdir -p bin
 cd bin
-if [[ -f dex.exe || -f dex ]]
+if [[ -f $dex_bin ]]
 then
     echo "Already present, skip downloading"
 else
-    curl https://dex.exivity.com/v3/dex.exe -O
+    curl https://dex.exivity.com/v3/$dex_bin -O
+    chmod +x $dex_bin
 fi
 ls -la .
 ls -la $cwd
@@ -21,4 +32,4 @@ cd $cwd
 
 echo "Running dex with arguments \"$@\""
 cd "$GITHUB_WORKSPACE/$CWD"
-$cwd/bin/dex "$@"
+$cwd/bin/$dex_bin "$@"
