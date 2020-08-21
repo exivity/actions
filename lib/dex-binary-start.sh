@@ -25,11 +25,10 @@ else
     curl https://dex.exivity.com/v3/$dex_bin -O
     chmod +x $dex_bin
 fi
-ls -la .
-ls -la $cwd
-ls -la $cwd/..
 cd $cwd
+node test-which.js
 
 echo "Running dex with arguments \"$@\""
 cd "$GITHUB_WORKSPACE/$CWD"
+git rev-parse --is-inside-work-tree
 $cwd/bin/$dex_bin "$@"
