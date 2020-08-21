@@ -1373,8 +1373,7 @@ function startDexDocker({ cmd, env }) {
 }
 function startDexBinary({ cmd, env }) {
     return __awaiter(this, void 0, void 0, function* () {
-        // Path/cwd input will be used as the Docker mount path in the dex-start bash
-        // script
+        // Path/cwd input will be used as the cwd for the dex binary
         const cwd = Object(core.getInput)('path') || Object(core.getInput)('cwd') || '.';
         Object(core.info)(`About to start the Dex binary`);
         // Execute docker-start script

@@ -36,8 +36,7 @@ export async function startDexDocker({ cmd, env }: Options) {
 }
 
 export async function startDexBinary({ cmd, env }: Options) {
-  // Path/cwd input will be used as the Docker mount path in the dex-start bash
-  // script
+  // Path/cwd input will be used as the cwd for the dex binary
   const cwd = getInput('path') || getInput('cwd') || '.'
 
   info(`About to start the Dex binary`)
