@@ -7,7 +7,7 @@ type Options = {
   env?: { [key: string]: string }
 }
 
-export async function startDex({ cmd, env }: Options) {
+export async function startDexDocker({ cmd, env }: Options) {
   // Use this Docker image tag
   const tag = getInput('tag') || 'latest'
 
@@ -16,24 +16,41 @@ export async function startDex({ cmd, env }: Options) {
   const cwd = getInput('path') || getInput('cwd') || '.'
 
   // Env vars
-  // const envOptions = Object.keys(env || {})
-  //   .map((key) => `--env "${key}=${env[key]}"`)
-  //   .join(' ')
-  const envOptions = ''
-
-  console.log(envOptions)
+  const envOptions = Object.keys(env || {})
+    .map((key) => `--env ${key}=${env[key]}`)
+    .join(' ')
 
   info(`About to start a Dex container`)
 
   // Execute docker-start script
-  await exec(`bash dex-start.sh ${cmd}`, undefined, {
+  await exec(`bash dex-docker-start.sh ${cmd}`, undefined, {
     // Once bundled, executing file will be /{action-name}/dist/index.js
     cwd: path.resolve(__dirname, '..', '..', 'lib'),
     env: {
+      ...process.env,
       CWD: cwd,
       TAG: tag,
       ENV: envOptions,
       GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
+    },
+  })
+}
+
+export async function startDexBinary({ cmd, env }: Options) {
+  // Path/cwd input will be used as the cwd for the dex binary
+  const cwd = getInput('path') || getInput('cwd') || '.'
+
+  info(`About to start the Dex binary`)
+
+  // Execute docker-start script
+  await exec(`bash dex-binary-start.sh ${cmd}`, undefined, {
+    // Once bundled, executing file will be /{action-name}/dist/index.js
+    cwd: path.resolve(__dirname, '..', '..', 'lib'),
+    env: {
+      ...process.env,
+      CWD: cwd,
+      GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
+      ...env,
     },
   })
 }

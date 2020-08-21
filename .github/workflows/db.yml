@@ -16,24 +16,14 @@ env:
   GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
 
 jobs:
-  test-docker:
+  test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        mode: [host, docker]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
       - uses: ./db
         with:
-          mode: docker
-
-  test-host:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v1
-      - uses: ./db
-        with:
-          mode: host
+          mode: ${{ matrix.mode }}

@@ -1,4 +1,5 @@
 /node_modules/
+/lib/bin/
 yarn-error.log
 .db-artefacts
 .vscode

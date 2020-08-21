@@ -21,7 +21,7 @@ async function run() {
     const component = getInput('component', { required: true })
     let sha = getInput('sha')
     const branch = getInput('branch') || 'develop'
-    const usePlatformPrefix = !!getInput('use-platform-prefix') || false
+    const usePlatformPrefix = !!(getInput('use-platform-prefix') || false)
     const prefix = getInput('prefix') || undefined
     const path = getInput('path') || `../${component}/build`
     const autoUnzip = !!(getInput('auto-unzip') || true)
