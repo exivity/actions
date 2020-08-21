@@ -19,6 +19,9 @@ inputs:
   path:
     description: 'Put artefacts in this path'
     required: false
+  auto-unzip:
+    description: 'Automatically unzip artefact files'
+    required: false
   aws-access-key-id:
     description: 'The AWS access key ID'
     required: false

@@ -5056,6 +5056,15 @@ __webpack_require__.r(__webpack_exports__);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __webpack_require__(470);
 
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __webpack_require__(986);
+
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(747);
+
+// EXTERNAL MODULE: external "path"
+var external_path_ = __webpack_require__(622);
+
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __webpack_require__(469);
 
@@ -5093,14 +5102,8 @@ function getShaFromBranch({ ghToken, component, branch, }) {
     });
 }
 
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __webpack_require__(986);
-
 // EXTERNAL MODULE: external "os"
 var external_os_ = __webpack_require__(87);
-
-// EXTERNAL MODULE: external "path"
-var external_path_ = __webpack_require__(622);
 
 // CONCATENATED MODULE: ./lib/s3.ts
 var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -5163,18 +5166,32 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+
+
+
+function unzipAll(path) {
+    return src_awaiter(this, void 0, void 0, function* () {
+        for (const file of yield Object(external_fs_.promises.readdir)(path)) {
+            if (file.endsWith('.zip')) {
+                yield Object(exec.exec)('7z', ['x', Object(external_path_.join)(path, file), '-o', path]);
+            }
+            else if ((yield Object(external_fs_.promises.lstat)(Object(external_path_.join)(path, file))).isDirectory()) {
+                unzipAll(Object(external_path_.join)(path, file));
+            }
+        }
+    });
+}
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
             const component = Object(core.getInput)('component', { required: true });
             let sha = Object(core.getInput)('sha');
-            const branch = Object(core.getInput)('branch') || process.env.GITHUB_REF === 'refs/heads/master'
-                ? 'master'
-                : 'develop';
+            const branch = Object(core.getInput)('branch') || 'develop';
             const usePlatformPrefix = !!Object(core.getInput)('use-platform-prefix') || false;
             const prefix = Object(core.getInput)('prefix') || undefined;
             const path = Object(core.getInput)('path') || `../${component}/build`;
+            const autoUnzip = !!(Object(core.getInput)('auto-unzip') || true);
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
@@ -5199,6 +5216,9 @@ function run() {
                 awsKeyId,
                 awsSecretKey,
             });
+            if (autoUnzip) {
+                yield unzipAll(path);
+            }
         }
         catch (error) {
             Object(core.setFailed)(error.message);

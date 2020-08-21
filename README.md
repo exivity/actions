@@ -196,6 +196,10 @@ platform prefix if specified).
 
 **Optional** _Defaults to `../{component}/build`_ Put artefacts in this path
 
+### `auto-unzip`
+
+**Optional** _Default: `true`_ Automatically unzip artefact files
+
 ### `aws-access-key-id`
 
 **Optional** _Defaults to the AWS_ACCESS_KEY_ID environment variable_ The AWS
