@@ -26,6 +26,8 @@ else
     chmod +x $dex_bin
 fi
 cd $cwd
+which git
+whereis git
 yarn
 node test-which.js
 
