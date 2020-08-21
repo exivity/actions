@@ -7,6 +7,9 @@ inputs:
   channel:
     description: 'Manually set channel'
     required: false
+  accept:
+    description: 'Run acceptance tests'
+    required: false
   tag:
     description: 'Docker tag to use'
     required: false

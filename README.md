@@ -137,6 +137,10 @@ Create, accept and publish artefacts with dex
 
 **Optional** Manually set channel
 
+### `accept`
+
+**Optional** _Default: `false`_ Run acceptance tests
+
 ### `tag`
 
 **Optional** _Default: `latest`_ The `exivity/dex` Docker image tag to use

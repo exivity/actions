@@ -1373,11 +1373,13 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+const ACCEPT_BY_DEFAULT = false;
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
             const channel = Object(core.getInput)('channel');
+            const accept = !!Object(core.getInput)('accept') || ACCEPT_BY_DEFAULT;
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             // Assertions
@@ -1392,13 +1394,18 @@ function run() {
                 AWS_ACCESS_KEY_ID: awsKeyId,
                 AWS_SECRET_ACCESS_KEY: awsSecretKey,
             };
+            // Create artefacts
             yield startDex({ cmd: `artefacts create ${channelArg} .`, env });
-            if (Object(external_os_.platform)() === 'linux') {
-                Object(core.warning)("Linux doesn't support accepting artefacts at the moment.");
+            // Accept artefacts
+            if (accept) {
+                if (Object(external_os_.platform)() === 'linux') {
+                    Object(core.warning)("Linux doesn't support accepting artefacts at the moment.");
+                }
+                else {
+                    yield startDex({ cmd: `artefacts accept ${channelArg} .`, env });
+                }
             }
-            else {
-                yield startDex({ cmd: `artefacts accept ${channelArg} .`, env });
-            }
+            // Publish artefacts
             yield startDex({ cmd: `artefacts publish ${channelArg} .`, env });
         }
         catch (error) {
