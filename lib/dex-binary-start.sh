@@ -26,6 +26,7 @@ else
     chmod +x $dex_bin
 fi
 cd $cwd
+yarn
 node test-which.js
 
 echo "Running dex with arguments \"$@\""
