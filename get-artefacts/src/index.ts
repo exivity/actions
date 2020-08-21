@@ -24,12 +24,12 @@ async function run() {
     const usePlatformPrefix = !!getInput('use-platform-prefix') || false
     const prefix = getInput('prefix') || undefined
     const path = getInput('path') || `../${component}/build`
+    const autoUnzip = !!(getInput('auto-unzip') || true)
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
     const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
-    const unzip = !getInput('no-unzipping')
 
     // Assertions
     if (!awsKeyId || !awsSecretKey || !ghToken) {
@@ -55,7 +55,7 @@ async function run() {
       awsSecretKey,
     })
 
-    if (unzip) {
+    if (autoUnzip) {
       await unzipAll(path)
     }
   } catch (error) {

@@ -19,6 +19,9 @@ inputs:
   path:
     description: 'Put artefacts in this path'
     required: false
+  auto-unzip:
+    description: 'Automatically unzip artefact files'
+    required: false
   aws-access-key-id:
     description: 'The AWS access key ID'
     required: false
@@ -27,9 +30,6 @@ inputs:
     required: false
   gh-token:
     description: 'A GitHub token'
-    required: false
-  no-unzipping:
-    description: 'Set to a truthy value to disable automatic unzipping of all zipped files'
     required: false
 runs:
   using: 'node12'
