@@ -1362,12 +1362,7 @@ function startDexDocker({ cmd, env }) {
         yield Object(exec.exec)(`bash dex-docker-start.sh ${cmd}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                CWD: cwd,
-                TAG: tag,
-                ENV: envOptions,
-                GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
-            },
+            env: Object.assign({}, process.env, { CWD: cwd, TAG: tag, ENV: envOptions, GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'] }),
         });
     });
 }
@@ -1380,7 +1375,7 @@ function startDexBinary({ cmd, env }) {
         yield Object(exec.exec)(`bash dex-binary-start.sh ${cmd}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: Object.assign({ CWD: cwd, GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'] }, env),
+            env: Object.assign({}, process.env, { CWD: cwd, GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'] }, env),
         });
     });
 }

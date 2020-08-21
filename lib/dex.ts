@@ -27,6 +27,7 @@ export async function startDexDocker({ cmd, env }: Options) {
     // Once bundled, executing file will be /{action-name}/dist/index.js
     cwd: path.resolve(__dirname, '..', '..', 'lib'),
     env: {
+      ...process.env,
       CWD: cwd,
       TAG: tag,
       ENV: envOptions,
@@ -46,6 +47,7 @@ export async function startDexBinary({ cmd, env }: Options) {
     // Once bundled, executing file will be /{action-name}/dist/index.js
     cwd: path.resolve(__dirname, '..', '..', 'lib'),
     env: {
+      ...process.env,
       CWD: cwd,
       GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
       ...env,
