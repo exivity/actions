@@ -5145,6 +5145,13 @@ const S3_REGION = 'eu-central-1';
 function getShaFromBranch({ ghToken, component, branch, }) {
     return github_awaiter(this, void 0, void 0, function* () {
         const octokit = Object(github.getOctokit)(ghToken);
+        if (branch === 'develop') {
+            const hasDevelop = (yield octokit.repos.listBranches()).data.some((repoBranch) => repoBranch.name === 'develop');
+            if (!hasDevelop) {
+                Object(core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+                branch = 'master';
+            }
+        }
         const sha = (yield octokit.repos.getBranch({
             owner: 'exivity',
             repo: component,
@@ -5252,7 +5259,9 @@ function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
-            const branch = Object(core.getInput)('branch') || 'develop';
+            const branch = Object(core.getInput)('branch') || process.env.GITHUB_REF === 'refs/heads/master'
+                ? 'master'
+                : 'develop';
             const dbName = Object(core.getInput)('db-name') || 'exdb-test';
             const mode = Object(core.getInput)('mode') || 'host';
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];

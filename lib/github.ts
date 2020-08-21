@@ -1,4 +1,4 @@
-import { info } from '@actions/core'
+import { info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 
 const S3_BUCKET = 'exivity'
@@ -17,6 +17,19 @@ export async function getShaFromBranch({
   branch,
 }: Options) {
   const octokit = getOctokit(ghToken)
+
+  if (branch === 'develop') {
+    const hasDevelop = (await octokit.repos.listBranches()).data.some(
+      (repoBranch) => repoBranch.name === 'develop'
+    )
+    if (!hasDevelop) {
+      warning(
+        `Branch "develop" not available in repository "exivity/${component}", falling back to "master".`
+      )
+      branch = 'master'
+    }
+  }
+
   const sha = (
     await octokit.repos.getBranch({
       owner: 'exivity',
