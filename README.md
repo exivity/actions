@@ -141,6 +141,11 @@ Create, accept and publish artefacts with dex
 
 **Optional** _Default: `false`_ Run acceptance tests
 
+### `mode`
+
+**Optional** _Options: `docker` or `binary`, defaults to `binary`_ Whether to
+run Dex as a Docker container or download and execute a binary on the host
+
 ### `tag`
 
 **Optional** _Default: `latest`_ The `exivity/dex` Docker image tag to use

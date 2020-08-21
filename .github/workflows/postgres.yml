@@ -9,24 +9,14 @@ on:
       - 'postgres/**'
 
 jobs:
-  test-docker:
+  test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        mode: [host, docker]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
       - uses: ./postgres
         with:
-          mode: docker
-
-  test-host:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v1
-      - uses: ./postgres
-        with:
-          mode: host
+          mode: ${{ matrix.mode }}

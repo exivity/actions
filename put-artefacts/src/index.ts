@@ -4,7 +4,7 @@ import { uploadS3object } from '../../lib/s3'
 async function run() {
   try {
     // Input
-    const usePlatformPrefix = !!getInput('use-platform-prefix') || false
+    const usePlatformPrefix = !!(getInput('use-platform-prefix') || false)
     const prefix = getInput('prefix') || undefined
     const path = getInput('path') || 'build'
     const awsKeyId =

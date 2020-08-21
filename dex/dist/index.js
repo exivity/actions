@@ -1346,7 +1346,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-function startDex({ cmd, env }) {
+function startDexDocker({ cmd, env }) {
     return __awaiter(this, void 0, void 0, function* () {
         // Use this Docker image tag
         const tag = Object(core.getInput)('tag') || 'latest';
@@ -1359,7 +1359,7 @@ function startDex({ cmd, env }) {
             .join(' ');
         Object(core.info)(`About to start a Dex container`);
         // Execute docker-start script
-        yield Object(exec.exec)(`bash dex-start.sh ${cmd}`, undefined, {
+        yield Object(exec.exec)(`bash dex-docker-start.sh ${cmd}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
             env: {
@@ -1368,6 +1368,20 @@ function startDex({ cmd, env }) {
                 ENV: envOptions,
                 GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
             },
+        });
+    });
+}
+function startDexBinary({ cmd, env }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Path/cwd input will be used as the Docker mount path in the dex-start bash
+        // script
+        const cwd = Object(core.getInput)('path') || Object(core.getInput)('cwd') || '.';
+        Object(core.info)(`About to start the Dex binary`);
+        // Execute docker-start script
+        yield Object(exec.exec)(`bash dex-binary-start.sh ${cmd}`, undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
+            env: Object.assign({ CWD: cwd, GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'] }, env),
         });
     });
 }
@@ -1392,7 +1406,7 @@ function run() {
             if (!cmd) {
                 throw new Error('A required argument is missing');
             }
-            yield startDex({ cmd });
+            yield startDexDocker({ cmd });
         }
         catch (error) {
             Object(core.setFailed)(error.message);

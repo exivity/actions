@@ -10,6 +10,9 @@ inputs:
   accept:
     description: 'Run acceptance tests'
     required: false
+  mode:
+    description: Run as a Docker container or use binary
+    required: false
   tag:
     description: 'Docker tag to use'
     required: false

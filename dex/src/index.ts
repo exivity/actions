@@ -1,5 +1,5 @@
 import { getInput, setFailed } from '@actions/core'
-import { startDex } from '../../lib/dex'
+import { startDexDocker } from '../../lib/dex'
 
 async function run() {
   try {
@@ -11,7 +11,7 @@ async function run() {
       throw new Error('A required argument is missing')
     }
 
-    await startDex({ cmd })
+    await startDexDocker({ cmd })
   } catch (error) {
     setFailed(error.message)
   }
