@@ -1,11 +1,11 @@
-name: rabbitmq
+name: dex
 
 on:
   push:
     paths:
-      - '.github/workflows/rabbitmq.yml'
-      - 'lib/docker*'
-      - 'rabbitmq/**'
+      - '.github/workflows/dex.yml'
+      - 'lib/dex*'
+      - 'dex/**'
 
 jobs:
   test:
@@ -15,4 +15,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
-      - uses: ./rabbitmq
+      - uses: ./dex
+        with:
+          cmd: help

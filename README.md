@@ -7,6 +7,8 @@ _Available actions:_
 
 - [`accept`](#accept)
 - [`db`](#db)
+- [`dex`](#dex)
+- [`dex-artefacts`](#dex-artefacts)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
@@ -87,6 +89,77 @@ access to the exivity/db repository.
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
 
+# `dex`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/dex)
+
+_🚧 This action is not yet ready for production_
+
+Runs a dex command
+
+## Inputs
+
+### `cmd`
+
+**Required** Dex command to execute.
+
+### `cwd`
+
+**Optional** _Default: `.`_ Working directory
+
+### `tag`
+
+**Optional** _Default: `latest`_ The `exivity/dex` Docker image tag to use
+
+## Example usage
+
+```
+- uses: exivity/actions/dex@master
+  with:
+    cmd: help
+```
+
+# `dex-artefacts`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/dex-artefacts)
+
+_🚧 This action is not yet ready for production_
+
+Create, accept and publish artefacts with dex
+
+## Inputs
+
+### `path`
+
+**Optional** _Default: `.`_ Component root directory
+
+### `channel`
+
+**Optional** Manually set channel
+
+### `tag`
+
+**Optional** _Default: `latest`_ The `exivity/dex` Docker image tag to use
+
+### `aws-access-key-id`
+
+**Optional** _Defaults to the AWS_ACCESS_KEY_ID environment variable_ The AWS
+access key ID
+
+### `aws-secret-access-key`
+
+**Optional** _Defaults to the AWS_SECRET_ACCESS_KEY environment variable_ The
+AWS secret access key
+
+## Example usage
+
+```
+- uses: exivity/actions/dex-artefacts@master
+  with:
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+
 # `get-artefacts`
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/get-artefacts)
@@ -107,8 +180,7 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ### `branch`
 
-**Optional** _Defaults to `develop`_ If no sha is provided, resolve sha from
-branch name
+**Optional** _Defaults to `master` when used on a master branch or if artifact repo has no develop branch, else defaults to `develop`_ If no sha is provided, resolve sha from branch name
 
 ### `use-platform-prefix`
 

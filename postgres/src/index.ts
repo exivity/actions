@@ -1,5 +1,6 @@
 import { getInput, setFailed } from '@actions/core'
-import { startDocker, startPostgres } from '../../lib'
+import { startDocker } from '../../lib/docker'
+import { startPostgres } from '../../lib/postgres'
 
 const image = 'exivity/postgres'
 const defaultVersion = '12.3'

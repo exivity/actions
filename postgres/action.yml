@@ -1,12 +1,12 @@
-name: "PostgreSQL"
-description: "Starts a PostgreSQL server"
+name: 'PostgreSQL'
+description: 'Starts a PostgreSQL server'
 inputs:
   mode:
     description: Run as a Docker container or start the host server
     required: false
   version:
-    description: "PostgreSQL version"
+    description: 'PostgreSQL version'
     required: false
 runs:
-  using: "node12"
-  main: "dist/index.js"
+  using: 'node12'
+  main: 'dist/index.js'

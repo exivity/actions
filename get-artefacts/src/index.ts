@@ -1,16 +1,15 @@
 import { getInput, setFailed } from '@actions/core'
+import { exec } from '@actions/exec'
 import { promises as fsPromises } from 'fs'
 import { join as pathJoin } from 'path'
-import { exec } from '@actions/exec'
-import { downloadS3object, getShaFromBranch } from '../../lib'
+import { getShaFromBranch } from '../../lib/github'
+import { downloadS3object } from '../../lib/s3'
 
 async function unzipAll(path: string) {
   for (const file of await fsPromises.readdir(path)) {
     if (file.endsWith('.zip')) {
-      await exec('7z', ['x',  pathJoin(path, file), '-o', path])
-    } else if (
-      (await fsPromises.lstat(pathJoin(path, file))).isDirectory()
-    ) {
+      await exec('7z', ['x', pathJoin(path, file), '-o', path])
+    } else if ((await fsPromises.lstat(pathJoin(path, file))).isDirectory()) {
       unzipAll(pathJoin(path, file))
     }
   }
@@ -57,7 +56,7 @@ async function run() {
     })
 
     if (unzip) {
-      	await unzipAll(path)
+      await unzipAll(path)
     }
   } catch (error) {
     setFailed(error.message)

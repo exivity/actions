@@ -1,0 +1,15 @@
+name: 'Dex'
+description: 'Runs a dex command'
+inputs:
+  cmd:
+    description: 'Dex command'
+    required: true
+  cwd:
+    description: 'Working directory'
+    required: false
+  tag:
+    description: 'Docker tag to use'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
