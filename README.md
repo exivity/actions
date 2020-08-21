@@ -107,6 +107,11 @@ Runs a dex command
 
 **Optional** _Default: `.`_ Working directory
 
+### `mode`
+
+**Optional** _Options: `docker` or `binary`, defaults to `binary`_ Whether to
+run Dex as a Docker container or download and execute a binary on the host
+
 ### `tag`
 
 **Optional** _Default: `latest`_ The `exivity/dex` Docker image tag to use

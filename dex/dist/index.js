@@ -1401,11 +1401,22 @@ function run() {
         try {
             // Input
             const cmd = Object(core.getInput)('cmd');
+            const mode = Object(core.getInput)('mode') || 'binary';
             // Assertions
             if (!cmd) {
                 throw new Error('A required argument is missing');
             }
-            yield startDexDocker({ cmd });
+            if (mode !== 'docker' && mode !== 'binary') {
+                throw new Error(`Mode must be 'docker' or 'binary'`);
+            }
+            switch (mode) {
+                case 'docker':
+                    yield startDexDocker({ cmd });
+                    break;
+                case 'binary':
+                    yield startDexBinary({ cmd });
+                    break;
+            }
         }
         catch (error) {
             Object(core.setFailed)(error.message);
