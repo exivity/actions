@@ -3,8 +3,10 @@ name: get-artefacts
 on:
   push:
     paths:
-      - ".github/workflows/get-artefacts.yml"
-      - "get-artefacts/**"
+      - '.github/workflows/get-artefacts.yml'
+      - 'lib/github*'
+      - 'lib/s3*'
+      - 'get-artefacts/**'
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

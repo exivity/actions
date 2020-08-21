@@ -1,24 +1,24 @@
-name: "Put artefacts"
-description: "Upload artefacts for this component."
+name: 'Put artefacts'
+description: 'Upload artefacts for this component.'
 inputs:
   use-platform-prefix:
-    description: "Uses `windows` or `linux` prefix depending on current os."
+    description: 'Uses `windows` or `linux` prefix depending on current os.'
     required: false
   prefix:
-    description: "If specified, upload artefacts with this prefix"
+    description: 'If specified, upload artefacts with this prefix'
     required: false
   path:
-    description: "Upload artefacts from this path"
+    description: 'Upload artefacts from this path'
     required: false
   aws-access-key-id:
-    description: "The AWS access key ID"
+    description: 'The AWS access key ID'
     required: false
   aws-secret-access-key:
-    description: "The AWS secret access key"
+    description: 'The AWS secret access key'
     required: false
   gh-token:
-    description: "A GitHub token"
+    description: 'A GitHub token'
     required: false
 runs:
-  using: "node12"
-  main: "dist/index.js"
+  using: 'node12'
+  main: 'dist/index.js'

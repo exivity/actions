@@ -1,2 +1,3 @@
 yarn.lock -diff
-*/dist/index.js linguist-vendored
+*.js linguist-vendored
+* text=auto eol=lf

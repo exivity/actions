@@ -1,5 +1,5 @@
 import { getInput, setFailed } from '@actions/core'
-import { uploadS3object } from '../../lib'
+import { uploadS3object } from '../../lib/s3'
 
 async function run() {
   try {

@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(478);
+/******/ 		return __webpack_require__(660);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -976,13 +976,6 @@ module.exports = require("assert");
 
 /***/ }),
 
-/***/ 417:
-/***/ (function(module) {
-
-module.exports = require("crypto");
-
-/***/ }),
-
 /***/ 431:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -1311,7 +1304,21 @@ exports.getState = getState;
 
 /***/ }),
 
-/***/ 478:
+/***/ 614:
+/***/ (function(module) {
+
+module.exports = require("events");
+
+/***/ }),
+
+/***/ 622:
+/***/ (function(module) {
+
+module.exports = require("path");
+
+/***/ }),
+
+/***/ 660:
 /***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1327,29 +1334,7 @@ var exec = __webpack_require__(986);
 var external_path_ = __webpack_require__(622);
 var external_path_default = /*#__PURE__*/__webpack_require__.n(external_path_);
 
-// EXTERNAL MODULE: external "crypto"
-var external_crypto_ = __webpack_require__(417);
-var external_crypto_default = /*#__PURE__*/__webpack_require__.n(external_crypto_);
-
-// CONCATENATED MODULE: ./lib/string.ts
-
-function sluggify(str) {
-    return str
-        .toString()
-        .toLowerCase()
-        .replace(/\s+/g, '-') // Replace spaces with -
-        .replace(/[^\w-]+/g, '-') // Remove all non-word chars
-        .replace(/--+/g, '-') // Replace multiple - with single -
-        .replace(/^-+/, '') // Trim - from start of text
-        .replace(/-+$/, ''); // Trim - from end of text
-}
-function randomString(length) {
-    return external_crypto_default().randomBytes(Math.ceil(length / 2))
-        .toString('hex')
-        .substr(0, length);
-}
-
-// CONCATENATED MODULE: ./lib/docker.ts
+// CONCATENATED MODULE: ./lib/dex.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1361,25 +1346,35 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
-function startDocker({ defaultVersion, image, ports }) {
+function startDex({ cmd, env }) {
     return __awaiter(this, void 0, void 0, function* () {
-        const version = Object(core.getInput)('version') || defaultVersion;
-        const portsArg = ports.map((port) => `-p ${port}:${port}`).join(' ');
-        Object(core.info)(`About to start a Docker container from ${image}:${version}`);
-        yield Object(exec.exec)(`bash docker-start.sh ${portsArg}`, undefined, {
+        // Use this Docker image tag
+        const tag = Object(core.getInput)('tag') || 'latest';
+        // Path/cwd input will be used as the Docker mount path in the dex-start bash
+        // script
+        const cwd = Object(core.getInput)('path') || Object(core.getInput)('cwd') || '.';
+        // Env vars
+        // const envOptions = Object.keys(env || {})
+        //   .map((key) => `--env "${key}=${env[key]}"`)
+        //   .join(' ')
+        const envOptions = '';
+        console.log(envOptions);
+        Object(core.info)(`About to start a Dex container`);
+        // Execute docker-start script
+        yield Object(exec.exec)(`bash dex-start.sh ${cmd}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
             env: {
-                NAME: sluggify(image),
-                IMAGE: image,
-                TAG: version,
+                CWD: cwd,
+                TAG: tag,
+                ENV: envOptions,
+                GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
             },
         });
     });
 }
 
-// CONCATENATED MODULE: ./rabbitmq/src/index.ts
+// CONCATENATED MODULE: ./dex/src/index.ts
 var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1390,16 +1385,16 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 };
 
 
-const src_image = 'exivity/rabbitmq';
-const src_defaultVersion = '3.8.6';
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
-            yield startDocker({
-                image: src_image,
-                defaultVersion: src_defaultVersion,
-                ports: [4369, 5671, 5672, 15672],
-            });
+            // Input
+            const cmd = Object(core.getInput)('cmd');
+            // Assertions
+            if (!cmd) {
+                throw new Error('A required argument is missing');
+            }
+            yield startDex({ cmd });
         }
         catch (error) {
             Object(core.setFailed)(error.message);
@@ -1408,20 +1403,6 @@ function run() {
 }
 run();
 
-
-/***/ }),
-
-/***/ 614:
-/***/ (function(module) {
-
-module.exports = require("events");
-
-/***/ }),
-
-/***/ 622:
-/***/ (function(module) {
-
-module.exports = require("path");
 
 /***/ }),
 

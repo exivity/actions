@@ -1,12 +1,16 @@
 import { getInput, setFailed } from '@actions/core'
-import { downloadS3object, getShaFromBranch } from '../../lib'
+import { getShaFromBranch } from '../../lib/github'
+import { downloadS3object } from '../../lib/s3'
 
 async function run() {
   try {
     // Input
     const component = getInput('component', { required: true })
     let sha = getInput('sha')
-    const branch = getInput('branch') || process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop'
+    const branch =
+      getInput('branch') || process.env.GITHUB_REF === 'refs/heads/master'
+        ? 'master'
+        : 'develop'
     const usePlatformPrefix = !!getInput('use-platform-prefix') || false
     const prefix = getInput('prefix') || undefined
     const path = getInput('path') || `../${component}/build`

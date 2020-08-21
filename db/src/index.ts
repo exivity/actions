@@ -2,17 +2,18 @@ import { getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { platform } from 'os'
 import path from 'path'
-import {
-  downloadS3object,
-  getShaFromBranch,
-  startDocker,
-  startPostgres,
-} from '../../lib'
+import { startDocker } from '../../lib/docker'
+import { getShaFromBranch } from '../../lib/github'
+import { startPostgres } from '../../lib/postgres'
+import { downloadS3object } from '../../lib/s3'
 
 async function run() {
   try {
     // Input
-    const branch = getInput('branch') || process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop'
+    const branch =
+      getInput('branch') || process.env.GITHUB_REF === 'refs/heads/master'
+        ? 'master'
+        : 'develop'
     const dbName = getInput('db-name') || 'exdb-test'
     const mode = getInput('mode') || 'host'
     const awsKeyId =
