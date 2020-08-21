@@ -156,11 +156,6 @@
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
-"@types/which@^1.3.2":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@types/which/-/which-1.3.2.tgz#9c246fc0c93ded311c8512df2891fb41f6227fdf"
-  integrity sha512-8oDqyLC7eD4HM307boe2QWKyuzdzWBj56xI/imSl2cpL+U3tCMaTAkMJ4ee5JBZ/FsOJlvRGeIShiZDAl1qERA==
-
 "@zeit/ncc@^0.22.3":
   version "0.22.3"
   resolved "https://registry.yarnpkg.com/@zeit/ncc/-/ncc-0.22.3.tgz#fca6b86b4454ce7a7e1e7e755165ec06457f16cd"
@@ -822,13 +817,6 @@ which@^1.2.9:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/which/-/which-1.3.1.tgz#a45043d54f5805316da8d62f9f50918d3da70b0a"
   integrity sha512-HxJdYWq1MTIQbJ3nw0cqssHoTNU267KlrDuGZ1WYlxDStUtKUhOaJmh112/TZmHxxUfuJqPXSOm7tDyas0OSIQ==
-  dependencies:
-    isexe "^2.0.0"
-
-which@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/which/-/which-2.0.2.tgz#7c6a8dd0a636a0327e10b59c9286eee93f3f51b1"
-  integrity sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
   dependencies:
     isexe "^2.0.0"
 

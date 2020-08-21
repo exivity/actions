@@ -26,12 +26,7 @@ else
     chmod +x $dex_bin
 fi
 cd $cwd
-which git
-whereis git
-yarn
-node test-which.js
 
 echo "Running dex with arguments \"$@\""
 cd "$GITHUB_WORKSPACE/$CWD"
-git rev-parse --is-inside-work-tree
 $cwd/bin/$dex_bin "$@"
