@@ -17,4 +17,4 @@ jobs:
       - uses: ./init-ssh
         with:
           private-key: ${{ secrets.PRIVATE_KEY }}
-      - run: ssh -vvv git@github.com
+      - run: (ssh git@github.com 2>&1 | grep "exivity-bot") || ssh -vvv git@github.com
