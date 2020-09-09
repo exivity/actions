@@ -5260,9 +5260,8 @@ function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
-            const branch = Object(core.getInput)('branch') || process.env.GITHUB_REF === 'refs/heads/master'
-                ? 'master'
-                : 'develop';
+            const branch = Object(core.getInput)('branch') ||
+                (process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop');
             const dbName = Object(core.getInput)('db-name') || 'exdb-test';
             const mode = Object(core.getInput)('mode') || 'host';
             const password = Object(core.getInput)('password') || 'postgres';
