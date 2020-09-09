@@ -9,6 +9,8 @@ echo "Unpacking migrations"
 
 export PGPASSWORD=$DB_PASSWORD
 
+echo "$PGPASSWORD"
+
 echo "Creating database"
 if [[ $MODE == 'docker' ]]
 then
@@ -24,4 +26,4 @@ fi
 
 echo "Running migrations"
 chmod u+x bin/$MIGRATE_BIN
-./bin/$MIGRATE_BIN -path=migrations -database="postgres://postgres:${DB_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" up
+./bin/$MIGRATE_BIN -path=migrations -database="postgres://postgres:${PGPASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" up
