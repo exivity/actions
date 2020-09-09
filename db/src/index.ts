@@ -16,7 +16,7 @@ async function run() {
         : 'develop'
     const dbName = getInput('db-name') || 'exdb-test'
     const mode = getInput('mode') || 'host'
-    const password = getInput('password') || 'password'
+    const password = getInput('password') || 'postgres'
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =

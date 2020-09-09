@@ -1087,6 +1087,7 @@ function run() {
         try {
             // Input
             const mode = Object(core.getInput)('mode') || 'host';
+            const password = Object(core.getInput)('password') || 'postgres';
             if (mode !== 'docker' && mode !== 'host') {
                 throw new Error(`Mode must be 'docker' or 'host'`);
             }
@@ -1099,7 +1100,7 @@ function run() {
                     });
                     break;
                 case 'host':
-                    yield startPostgres();
+                    yield startPostgres(password);
                     break;
             }
         }

@@ -5265,7 +5265,7 @@ function run() {
                 : 'develop';
             const dbName = Object(core.getInput)('db-name') || 'exdb-test';
             const mode = Object(core.getInput)('mode') || 'host';
-            const password = Object(core.getInput)('password') || 'password';
+            const password = Object(core.getInput)('password') || 'postgres';
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
