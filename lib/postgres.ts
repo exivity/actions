@@ -2,7 +2,7 @@ import { exec } from '@actions/exec'
 import { platform } from 'os'
 import path from 'path'
 
-export async function startPostgres() {
+export async function startPostgres(password: string = 'postgres') {
   const script =
     platform() === 'win32'
       ? 'postgres-start-windows.sh'
@@ -13,6 +13,7 @@ export async function startPostgres() {
     cwd: path.resolve(__dirname, '..', '..', 'lib'),
     env: {
       ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN',
+      PASSWORD: password,
     },
   })
 }

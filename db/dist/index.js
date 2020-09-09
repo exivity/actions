@@ -5174,7 +5174,7 @@ var postgres_awaiter = (undefined && undefined.__awaiter) || function (thisArg, 
 
 
 
-function startPostgres() {
+function startPostgres(password = 'postgres') {
     return postgres_awaiter(this, void 0, void 0, function* () {
         const script = Object(external_os_.platform)() === 'win32'
             ? 'postgres-start-windows.sh'
@@ -5184,6 +5184,7 @@ function startPostgres() {
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
             env: {
                 ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN',
+                PASSWORD: password,
             },
         });
     });
@@ -5264,6 +5265,7 @@ function run() {
                 : 'develop';
             const dbName = Object(core.getInput)('db-name') || 'exdb-test';
             const mode = Object(core.getInput)('mode') || 'host';
+            const password = Object(core.getInput)('password') || 'password';
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
@@ -5298,7 +5300,7 @@ function run() {
                     });
                     break;
                 case 'host':
-                    yield startPostgres();
+                    yield startPostgres(password);
                     break;
             }
             // Execute unpack-artefacts script
@@ -5310,6 +5312,7 @@ function run() {
                     BASE_DIR: external_path_default().join(process.env['GITHUB_WORKSPACE'], dbDirectory),
                     DB_NAME: dbName,
                     MIGRATE_BIN: migrateBin,
+                    DB_PASSWORD: password,
                 },
             });
         }

@@ -79,6 +79,10 @@ AWS secret access key
 **Optional** _Defaults to the GITHUB_TOKEN environment variable_ A GitHub token with
 access to the exivity/db repository.
 
+### `password`
+
+**Optional** _Defaults to "postgres"_ The password for the postgres user in de database, currently only works with host mode.
+
 ## Example usage
 
 ```

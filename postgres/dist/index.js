@@ -1052,7 +1052,7 @@ var postgres_awaiter = (undefined && undefined.__awaiter) || function (thisArg, 
 
 
 
-function startPostgres() {
+function startPostgres(password = 'postgres') {
     return postgres_awaiter(this, void 0, void 0, function* () {
         const script = Object(external_os_.platform)() === 'win32'
             ? 'postgres-start-windows.sh'
@@ -1062,6 +1062,7 @@ function startPostgres() {
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
             env: {
                 ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN',
+                PASSWORD: password,
             },
         });
     });
