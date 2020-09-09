@@ -11,11 +11,11 @@ async function run() {
   try {
     // Input
     const branch =
-      getInput('branch') || process.env.GITHUB_REF === 'refs/heads/master'
-        ? 'master'
-        : 'develop'
+      getInput('branch') ||
+      (process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop')
     const dbName = getInput('db-name') || 'exdb-test'
     const mode = getInput('mode') || 'host'
+    const password = getInput('password') || 'postgres'
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
@@ -58,7 +58,7 @@ async function run() {
         break
 
       case 'host':
-        await startPostgres()
+        await startPostgres(password)
         break
     }
 
@@ -71,6 +71,7 @@ async function run() {
         BASE_DIR: path.join(process.env['GITHUB_WORKSPACE'], dbDirectory),
         DB_NAME: dbName,
         MIGRATE_BIN: migrateBin,
+        DB_PASSWORD: password,
       },
     })
   } catch (error) {

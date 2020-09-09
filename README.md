@@ -79,6 +79,10 @@ AWS secret access key
 **Optional** _Defaults to the GITHUB_TOKEN environment variable_ A GitHub token with
 access to the exivity/db repository.
 
+### `password`
+
+**Optional** _Defaults to "postgres"_ The password for the postgres user in de database, currently only works with host mode.
+
 ## Example usage
 
 ```
@@ -288,6 +292,10 @@ run PostgreSQL as a Docker container or start the server installed on the host
 
 **Optional** _Default: 12.3_ The PostgreSQL version to use. Currently, only 12.3
 is supported. Only available when using Docker.
+
+### `password`
+
+**Optional** _Defaults to "postgres"_ The password for the postgres user in de database, currently only works with host mode.
 
 ## Example usage
 

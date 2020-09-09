@@ -9,6 +9,7 @@ async function run() {
   try {
     // Input
     const mode = getInput('mode') || 'host'
+    const password = getInput('password') || 'postgres'
 
     if (mode !== 'docker' && mode !== 'host') {
       throw new Error(`Mode must be 'docker' or 'host'`)
@@ -24,7 +25,7 @@ async function run() {
         break
 
       case 'host':
-        await startPostgres()
+        await startPostgres(password)
         break
     }
   } catch (error) {
