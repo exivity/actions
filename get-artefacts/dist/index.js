@@ -5086,7 +5086,10 @@ function getShaFromBranch({ ghToken, component, branch, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const octokit = Object(github.getOctokit)(ghToken);
         if (branch === 'develop') {
-            const hasDevelop = (yield octokit.repos.listBranches()).data.some((repoBranch) => repoBranch.name === 'develop');
+            const hasDevelop = (yield octokit.repos.listBranches({
+                owner: 'exivity',
+                repo: component,
+            })).data.some((repoBranch) => repoBranch.name === 'develop');
             if (!hasDevelop) {
                 Object(core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
                 branch = 'master';
