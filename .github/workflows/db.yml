@@ -27,4 +27,3 @@ jobs:
       - uses: ./db
         with:
           mode: ${{ matrix.mode }}
-          branch: master
