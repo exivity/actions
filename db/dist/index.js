@@ -5146,7 +5146,10 @@ function getShaFromBranch({ ghToken, component, branch, }) {
     return github_awaiter(this, void 0, void 0, function* () {
         const octokit = Object(github.getOctokit)(ghToken);
         if (branch === 'develop') {
-            const hasDevelop = (yield octokit.repos.listBranches()).data.some((repoBranch) => repoBranch.name === 'develop');
+            const hasDevelop = (yield octokit.repos.listBranches({
+                owner: 'exivity',
+                repo: component,
+            })).data.some((repoBranch) => repoBranch.name === 'develop');
             if (!hasDevelop) {
                 Object(core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
                 branch = 'master';
@@ -5268,6 +5271,7 @@ function run() {
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+            Object(core.info)(`using branch "${branch}"`);
             // Assertions
             if (!awsKeyId || !awsSecretKey || !ghToken) {
                 throw new Error('A required argument is missing');

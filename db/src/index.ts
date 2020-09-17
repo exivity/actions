@@ -1,4 +1,4 @@
-import { getInput, setFailed } from '@actions/core'
+import { info, getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { platform } from 'os'
 import path from 'path'
@@ -21,6 +21,8 @@ async function run() {
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
     const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
+
+    info(`using branch "${branch}"`)
 
     // Assertions
     if (!awsKeyId || !awsSecretKey || !ghToken) {
