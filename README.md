@@ -53,7 +53,7 @@ repository migrations and runs them.
 
 ### `branch`
 
-**Optional** _Default: `develop`_ The db repository branch to use.
+**Optional** _Defaults to `master` when used on a master branch or if artifact repo has no develop branch, else defaults to `develop`_ The db repository branch to use.
 
 ### `db-name`
 
