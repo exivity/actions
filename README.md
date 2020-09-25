@@ -25,13 +25,15 @@ Triggers a scaffold repository build on AppVeyor
 
 ### `scaffold-branch`
 
-**Optional** _Defaults to `develop` or `custom` depending on current branch_ The
-scaffold branch to build.
+**Optional**  
+_Defaults to `develop` or `custom` depending on current branch_  
+The scaffold branch to build.
 
 ### `appveyor-token`
 
-**Required** _Defaults to the APPVEYOR_TOKEN environment variable_ AppVeyor API
-token
+**Required**  
+_Defaults to the APPVEYOR_TOKEN environment variable_  
+AppVeyor API token
 
 ## Example usage
 
@@ -53,35 +55,48 @@ repository migrations and runs them.
 
 ### `branch`
 
-**Optional** _Defaults to `master` when used on a master branch or if artifact repo has no develop branch, else defaults to `develop`_ The db repository branch to use.
+**Optional**  
+_Defaults to `master` when used on a master branch or if artifact repo has no
+develop branch, else defaults to `develop`_  
+The db repository branch to use.
 
 ### `db-name`
 
-**Optional** _Default: `exdb-test`_ The db name to create.
+**Optional**  
+_Default: `exdb-test`_  
+The db name to create.
 
 ### `mode`
 
-**Optional** _Options: `docker` or `host`, defaults to `host`_ Whether to
-run PostgreSQL as a Docker container or start the server installed on the host
+**Optional**  
+_Options: `docker` or `host`, defaults to `host`_  
+Whether to run PostgreSQL as a Docker container or start the server installed on
+the host
 
 ### `aws-access-key-id`
 
-**Optional** _Defaults to the AWS_ACCESS_KEY_ID environment variable_ The AWS
-access key ID
+**Optional**  
+_Defaults to the AWS_ACCESS_KEY_ID environment variable_  
+The AWS access key ID
 
 ### `aws-secret-access-key`
 
-**Optional** _Defaults to the AWS_SECRET_ACCESS_KEY environment variable_ The
-AWS secret access key
+**Optional**  
+_Defaults to the AWS_SECRET_ACCESS_KEY environment variable_  
+The AWS secret access key
 
 ### `gh-token`
 
-**Optional** _Defaults to the GITHUB_TOKEN environment variable_ A GitHub token with
-access to the exivity/db repository.
+**Optional**  
+_Defaults to the GITHUB_TOKEN environment variable_  
+A GitHub token with access to the exivity/db repository.
 
 ### `password`
 
-**Optional** _Defaults to "postgres"_ The password for the postgres user in de database, currently only works with host mode.
+**Optional**  
+_Defaults to "postgres"_  
+The password for the postgres user in de database, currently only works with
+host mode.
 
 ## Example usage
 
@@ -105,20 +120,27 @@ Runs a dex command
 
 ### `cmd`
 
-**Required** Dex command to execute.
+**Required**  
+Dex command to execute.
 
 ### `cwd`
 
-**Optional** _Default: `.`_ Working directory
+**Optional**  
+_Default: `.`_  
+Working directory
 
 ### `mode`
 
-**Optional** _Options: `docker` or `binary`, defaults to `binary`_ Whether to
-run Dex as a Docker container or download and execute a binary on the host
+**Optional**  
+_Options: `docker` or `binary`, defaults to `binary`_  
+Whether to run Dex as a Docker container or download and execute a binary on the
+host
 
 ### `tag`
 
-**Optional** _Default: `latest`_ The `exivity/dex` Docker image tag to use
+**Optional**  
+_Default: `latest`_  
+The `exivity/dex` Docker image tag to use
 
 ## Example usage
 
@@ -140,34 +162,45 @@ Create, accept and publish artefacts with dex
 
 ### `path`
 
-**Optional** _Default: `.`_ Component root directory
+**Optional**  
+_Default: `.`_  
+Component root directory
 
 ### `channel`
 
-**Optional** Manually set channel
+**Optional**  
+Manually set channel
 
 ### `accept`
 
-**Optional** _Default: `false`_ Run acceptance tests
+**Optional**  
+_Default: `false`_  
+Run acceptance tests
 
 ### `mode`
 
-**Optional** _Options: `docker` or `binary`, defaults to `binary`_ Whether to
-run Dex as a Docker container or download and execute a binary on the host
+**Optional**  
+_Options: `docker` or `binary`, defaults to `binary`_  
+Whether to run Dex as a Docker container or download and execute a binary on the
+host.
 
 ### `tag`
 
-**Optional** _Default: `latest`_ The `exivity/dex` Docker image tag to use
+**Optional**  
+_Default: `latest`_  
+The `exivity/dex` Docker image tag to use
 
 ### `aws-access-key-id`
 
-**Optional** _Defaults to the AWS_ACCESS_KEY_ID environment variable_ The AWS
-access key ID
+**Optional**  
+_Defaults to the AWS_ACCESS_KEY_ID environment variable_  
+The AWS access key ID
 
 ### `aws-secret-access-key`
 
-**Optional** _Defaults to the AWS_SECRET_ACCESS_KEY environment variable_ The
-AWS secret access key
+**Optional**  
+_Defaults to the AWS_SECRET_ACCESS_KEY environment variable_  
+The AWS secret access key
 
 ## Example usage
 
@@ -190,48 +223,62 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ### `component`
 
-**Required** Component to download artefacts for
+**Required**  
+Component to download artefacts for
 
 ### `sha`
 
-**Optional** Use specific artefacts sha
+**Optional**  
+Use specific artefacts sha
 
 ### `branch`
 
-**Optional** _Defaults to `master` when used on a master branch or if artifact repo has no develop branch, else defaults to `develop`_ If no sha is provided, resolve sha from branch name
+**Optional**  
+_Defaults to `master` when used on a master branch or if artifact repo has no
+develop branch, else defaults to `develop`_  
+If no sha is provided, resolve sha from branch name
 
 ### `use-platform-prefix`
 
-**Optional** _Defaults to `false`_ If `true`, uses `windows` or `linux` prefix
-depending on current os.
+**Optional**  
+_Defaults to `false`_  
+If `true`, uses `windows` or `linux` prefix depending on current os.
 
 ### `prefix`
 
-**Optional** If specified, download artefacts from this prefix (appended after
-platform prefix if specified).
+**Optional**  
+If specified, download artefacts from this prefix (appended after platform
+prefix if specified).
 
 ### `path`
 
-**Optional** _Defaults to `../{component}/build`_ Put artefacts in this path
+**Optional**  
+_Defaults to `../{component}/build`_  
+Put artefacts in this path
 
 ### `auto-unzip`
 
-**Optional** _Default: `true`_ Automatically unzip artefact files
+**Optional**  
+_Default: `true`_  
+Automatically unzip artefact files
 
 ### `aws-access-key-id`
 
-**Optional** _Defaults to the AWS_ACCESS_KEY_ID environment variable_ The AWS
-access key ID
+**Optional**  
+_Defaults to the AWS_ACCESS_KEY_ID environment variable_  
+The AWS access key ID
 
 ### `aws-secret-access-key`
 
-**Optional** _Defaults to the AWS_SECRET_ACCESS_KEY environment variable_ The
-AWS secret access key
+**Optional**  
+_Defaults to the AWS_SECRET_ACCESS_KEY environment variable_  
+The AWS secret access key
 
 ### `gh-token`
 
-**Optional** _Defaults to the GITHUB_TOKEN environment variable_ A GitHub token with
-access to the exivity/{component} repository.
+**Optional**  
+_Defaults to the GITHUB_TOKEN environment variable_  
+A GitHub token with access to the exivity/{component} repository.
 
 ## Example usage
 
@@ -257,7 +304,8 @@ github.com, gitlab.com and bitbucket.org.
 
 ### `private-key`
 
-**Required** The full SSH private key.
+**Required**  
+The full SSH private key.
 
 ## Example usage
 
@@ -285,17 +333,24 @@ Starts a PostgreSQL server
 
 ### `mode`
 
-**Optional** _Options: `docker` or `host`, defaults to `host`_ Whether to
-run PostgreSQL as a Docker container or start the server installed on the host
+**Optional**  
+_Options: `docker` or `host`, defaults to `host`_  
+Whether to run PostgreSQL as a Docker container or start the server installed on
+the host.
 
 ### `version`
 
-**Optional** _Default: 12.3_ The PostgreSQL version to use. Currently, only 12.3
-is supported. Only available when using Docker.
+**Optional**  
+_Default: 12.3_  
+The PostgreSQL version to use. Currently, only 12.3 is supported. Only available
+when using Docker.
 
 ### `password`
 
-**Optional** _Defaults to "postgres"_ The password for the postgres user in de database, currently only works with host mode.
+**Optional**  
+_Defaults to "postgres"_  
+The password for the postgres user in de database, currently only works with
+host mode.
 
 ## Example usage
 
@@ -317,27 +372,33 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ### `use-platform-prefix`
 
-**Optional** _Defaults to `false`_ If `true`, uses `windows` or `linux` prefix
-depending on current os.
+**Optional**  
+_Defaults to `false`_  
+If `true`, uses `windows` or `linux` prefix depending on current os.
 
 ### `prefix`
 
-**Optional** If specified, upload artefacts with this prefix (appended after
+**Optional**  
+If specified, upload artefacts with this prefix (appended after
 platform prefix if specified).
 
 ### `path`
 
-**Optional** _Default: build_ Upload artefacts from this path.
+**Optional**  
+_Default: build_  
+Upload artefacts from this path.
 
 ### `aws-access-key-id`
 
-**Optional** _Defaults to the AWS_ACCESS_KEY_ID environment variable_ The AWS
-access key ID
+**Optional**  
+_Defaults to the AWS_ACCESS_KEY_ID environment variable_  
+The AWS access key ID
 
 ### `aws-secret-access-key`
 
-**Optional** _Defaults to the AWS_SECRET_ACCESS_KEY environment variable_ The
-AWS secret access key
+**Optional**  
+_Defaults to the AWS_SECRET_ACCESS_KEY environment variable_  
+The AWS secret access key
 
 ## Example usage
 
@@ -359,8 +420,9 @@ Starts a RabbitMQ server in a Docker container.
 
 ### `version`
 
-**Optional** _Default: 3.8.6_ The RabbitMQ version to use. Currently, only 3.8.6
-is supported.
+**Optional**  
+_Default: 3.8.6_  
+The RabbitMQ version to use. Currently, only 3.8.6 is supported.
 
 ## Example usage
 
