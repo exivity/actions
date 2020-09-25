@@ -1,4 +1,4 @@
-import { info, getInput, setFailed } from '@actions/core'
+import { getInput, info, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { platform } from 'os'
 import path from 'path'
