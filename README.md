@@ -221,64 +221,18 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ## Inputs
 
-### `component`
-
-**Required**  
-Component to download artefacts for
-
-### `sha`
-
-**Optional**  
-Use specific artefacts sha
-
-### `branch`
-
-**Optional**  
-_Defaults to `master` when used on a master branch or if artifact repo has no
-develop branch, else defaults to `develop`_  
-If no sha is provided, resolve sha from branch name
-
-### `use-platform-prefix`
-
-**Optional**  
-_Defaults to `false`_  
-If `true`, uses `windows` or `linux` prefix depending on current os.
-
-### `prefix`
-
-**Optional**  
-If specified, download artefacts from this prefix (appended after platform
-prefix if specified).
-
-### `path`
-
-**Optional**  
-_Defaults to `../{component}/build`_  
-Put artefacts in this path
-
-### `auto-unzip`
-
-**Optional**  
-_Default: `true`_  
-Automatically unzip artefact files
-
-### `aws-access-key-id`
-
-**Optional**  
-_Defaults to the AWS_ACCESS_KEY_ID environment variable_  
-The AWS access key ID
-
-### `aws-secret-access-key`
-
-**Optional**  
-_Defaults to the AWS_SECRET_ACCESS_KEY environment variable_  
-The AWS secret access key
-
-### `gh-token`
-
-**Optional**  
-_Defaults to the GITHUB_TOKEN environment variable_  
-A GitHub token with access to the exivity/{component} repository.
+| name                    | required | default                                                                                                     | description                                                                                      |
+| ----------------------- | -------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `component`             | ✅       |                                                                                                             | Component to download artefacts for                                                              |
+| `sha`                   |          |                                                                                                             | Use specific artefacts sha                                                                       |
+| `branch`                |          | `master` when used on a master branch or if artifact repo has no develop branch, else defaults to `develop` | If no sha is provided, resolve sha from branch name                                              |
+| `use-platform-prefix`   |          | `false`                                                                                                     | If `true`, uses `windows` or `linux` prefix depending on current os.                             |
+| `prefix`                |          |                                                                                                             | If specified, download artefacts from this prefix (appended after platform prefix if specified). |
+| `path`                  |          | `../{component}/build`                                                                                      | Put artefacts in this path                                                                       |
+| `auto-unzip`            |          | `true`                                                                                                      | Automatically unzip artefact files                                                               |
+| `aws-access-key-id`     |          | AWS_ACCESS_KEY_ID environment variable                                                                      | The AWS access key ID                                                                            |
+| `aws-secret-access-key` |          | AWS_SECRET_ACCESS_KEY environment variable                                                                  | The AWS secret access key                                                                        |
+| `gh-token`              |          | GITHUB_TOKEN environment variable                                                                           | A GitHub token with access to the exivity/{component} repository.                                |
 
 ## Example usage
 
