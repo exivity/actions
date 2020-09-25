@@ -1359,7 +1359,7 @@ function getS3url({ component, sha, usePlatformPrefix, prefix }) {
 function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const src = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const dest = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
+        const dest = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
         const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
         yield Object(exec.exec)(cmd, undefined, {
@@ -1372,7 +1372,7 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
 }
 function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        const src = Object(external_path_.join)(process.env['GITHUB_WORKSPACE'], path);
+        const src = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
         const dest = getS3url({ component, sha, usePlatformPrefix, prefix });
         const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
