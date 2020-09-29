@@ -8,7 +8,7 @@ import { downloadS3object } from '../../lib/s3'
 async function unzipAll(path: string) {
   for (const file of await fsPromises.readdir(path)) {
     if (file.endsWith('.zip')) {
-      await exec('7z', ['x', pathJoin(path, file), '-o', path])
+      await exec('7z', ['x', pathJoin(path, file), `-o${path}`])
     } else if ((await fsPromises.lstat(pathJoin(path, file))).isDirectory()) {
       unzipAll(pathJoin(path, file))
     }
