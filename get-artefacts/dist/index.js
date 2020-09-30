@@ -5176,7 +5176,7 @@ function unzipAll(path) {
     return src_awaiter(this, void 0, void 0, function* () {
         for (const file of yield Object(external_fs_.promises.readdir)(path)) {
             if (file.endsWith('.zip')) {
-                yield Object(exec.exec)('7z', ['x', Object(external_path_.join)(path, file), '-o', path]);
+                yield Object(exec.exec)('7z', ['x', Object(external_path_.join)(path, file), `-o${path}`]);
             }
             else if ((yield Object(external_fs_.promises.lstat)(Object(external_path_.join)(path, file))).isDirectory()) {
                 unzipAll(Object(external_path_.join)(path, file));
