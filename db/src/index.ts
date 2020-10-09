@@ -4,7 +4,7 @@ import { platform } from 'os'
 import path from 'path'
 import { startDocker } from '../../lib/docker'
 import { getShaFromBranch } from '../../lib/github'
-import { startPostgres } from '../../lib/postgres'
+import { defaultVersion, image, startPostgres } from '../../lib/postgres'
 import { downloadS3object } from '../../lib/s3'
 
 async function run() {
@@ -53,8 +53,8 @@ async function run() {
     switch (mode) {
       case 'docker':
         await startDocker({
-          image: 'exivity/postgres',
-          defaultVersion: '12.3',
+          image,
+          defaultVersion,
           ports: [5432],
         })
         break

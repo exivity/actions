@@ -19,7 +19,7 @@ else
     unameOut="$(uname -s)"
     case "${unameOut}" in
         Linux*)     sudo -u postgres createdb $DB_NAME ;;
-        *)          "C:/Program Files/PostgreSQL/12/bin/createdb" -U postgres $DB_NAME
+        *)          "C:/Program Files/PostgreSQL/13/bin/createdb" -U postgres $DB_NAME
     esac
     
 fi
