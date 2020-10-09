@@ -3,7 +3,7 @@ import { platform } from 'os'
 import path from 'path'
 
 export const image = 'exivity/postgres'
-export const defaultVersion = '12.3'
+export const defaultVersion = '13.0'
 
 export async function startPostgres(password: string = 'postgres') {
   const script =
