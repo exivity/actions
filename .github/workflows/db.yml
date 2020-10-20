@@ -31,5 +31,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./db
         with:
+          branch: develop
           mode: ${{ matrix.mode }}
           version: ${{ matrix.version }}
