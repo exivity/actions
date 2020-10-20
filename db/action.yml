@@ -10,6 +10,9 @@ inputs:
   mode:
     description: Run as a Docker container or start the host server
     required: false
+  version:
+    description: 'PostgreSQL version'
+    required: false
   aws-access-key-id:
     description: 'The AWS access key ID'
     required: false
