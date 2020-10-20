@@ -3,8 +3,8 @@
 set -e
 
 echo "Updating postgres config"
-sudo -u postgres chmod 777 /etc/postgresql/12/main/postgresql.conf
-sudo echo max_prepared_transactions = 16 >> /etc/postgresql/12/main/postgresql.conf	
+sudo -u postgres chmod 777 /etc/postgresql/13/main/postgresql.conf
+sudo echo max_prepared_transactions = 16 >> /etc/postgresql/13/main/postgresql.conf	
 
 echo "Starting postgres service"
 sudo service postgresql start

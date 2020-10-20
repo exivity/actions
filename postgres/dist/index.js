@@ -1052,6 +1052,8 @@ var postgres_awaiter = (undefined && undefined.__awaiter) || function (thisArg, 
 
 
 
+const postgres_image = 'exivity/postgres';
+const postgres_defaultVersion = '13.0';
 function startPostgres(password = 'postgres') {
     return postgres_awaiter(this, void 0, void 0, function* () {
         const script = Object(external_os_.platform)() === 'win32'
@@ -1080,8 +1082,6 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
-const src_image = 'exivity/postgres';
-const src_defaultVersion = '12.3';
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
@@ -1094,8 +1094,8 @@ function run() {
             switch (mode) {
                 case 'docker':
                     yield startDocker({
-                        image: src_image,
-                        defaultVersion: src_defaultVersion,
+                        image: postgres_image,
+                        defaultVersion: postgres_defaultVersion,
                         ports: [5432],
                     });
                     break;

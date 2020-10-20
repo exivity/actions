@@ -5177,6 +5177,8 @@ var postgres_awaiter = (undefined && undefined.__awaiter) || function (thisArg, 
 
 
 
+const postgres_image = 'exivity/postgres';
+const postgres_defaultVersion = '13.0';
 function startPostgres(password = 'postgres') {
     return postgres_awaiter(this, void 0, void 0, function* () {
         const script = Object(external_os_.platform)() === 'win32'
@@ -5297,8 +5299,8 @@ function run() {
             switch (mode) {
                 case 'docker':
                     yield startDocker({
-                        image: 'exivity/postgres',
-                        defaultVersion: '12.3',
+                        image: postgres_image,
+                        defaultVersion: postgres_defaultVersion,
                         ports: [5432],
                     });
                     break;
