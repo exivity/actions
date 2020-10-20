@@ -15,6 +15,7 @@ export async function startPostgres(password: string = 'postgres') {
     // Once bundled, executing file will be /{action-name}/dist/index.js
     cwd: path.resolve(__dirname, '..', '..', 'lib'),
     env: {
+      ENCRYPTION: 'scram-sha-256',
       ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN',
       PASSWORD: password,
     },
