@@ -1063,7 +1063,6 @@ function startPostgres(password = 'postgres') {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
             env: {
-                ENCRYPTION: 'scram-sha-256',
                 ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN',
                 PASSWORD: password,
             },

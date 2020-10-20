@@ -10,4 +10,4 @@ echo "Starting postgres service"
 sudo service postgresql start
 
 echo "Change password"
-sudo -u postgres psql -c "SET password_encryption = '$ENCRYPTION';ALTER ROLE postgres $ATTRIBUTES PASSWORD '$PASSWORD';"
+sudo -u postgres psql -c "ALTER ROLE postgres $ATTRIBUTES PASSWORD '$PASSWORD';"

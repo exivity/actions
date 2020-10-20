@@ -10,4 +10,4 @@ sc config postgresql-x64-13 start=demand
 net start postgresql-x64-13
 
 echo "Change password"
-PGPASSWORD=root "C:/Program Files/PostgreSQL/13/bin/psql" -c "SET password_encryption = '$ENCRYPTION';ALTER ROLE postgres $ATTRIBUTES PASSWORD '$PASSWORD';" -U postgres
+PGPASSWORD=root "C:/Program Files/PostgreSQL/13/bin/psql" -c "ALTER ROLE postgres $ATTRIBUTES PASSWORD '$PASSWORD';" -U postgres
