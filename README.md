@@ -73,6 +73,17 @@ _Options: `docker` or `host`, defaults to `host`_
 Whether to run PostgreSQL as a Docker container or start the server installed on
 the host
 
+### `version`
+
+**Optional**  
+_Default: 13.0_  
+The PostgreSQL version to use. Only affects Docker mode (host mode always uses
+default version). Make sure to use a string type to avoid truncation. Available
+versions:
+
+- 13.0
+- 12.3
+
 ### `aws-access-key-id`
 
 **Optional**  
@@ -297,7 +308,8 @@ the host.
 **Optional**  
 _Default: 13.0_  
 The PostgreSQL version to use. Only affects Docker mode (host mode always uses
-default version). Available versions:
+default version). Make sure to use a string type to avoid truncation. Available
+versions:
 
 - 13.0
 - 12.3
