@@ -1370,11 +1370,7 @@ function startDocker({ defaultVersion, image, ports }) {
         yield Object(exec.exec)(`bash docker-start.sh ${portsArg}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                NAME: sluggify(image),
-                IMAGE: image,
-                TAG: version,
-            },
+            env: Object.assign({}, process.env, { NAME: sluggify(image), IMAGE: image, TAG: version }),
         });
     });
 }

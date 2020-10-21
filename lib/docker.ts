@@ -19,6 +19,7 @@ export async function startDocker({ defaultVersion, image, ports }: Options) {
     // Once bundled, executing file will be /{action-name}/dist/index.js
     cwd: path.resolve(__dirname, '..', '..', 'lib'),
     env: {
+      ...process.env,
       NAME: sluggify(image),
       IMAGE: image,
       TAG: version,

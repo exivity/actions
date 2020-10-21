@@ -11,6 +11,7 @@ async function run() {
     await exec('bash init-ssh.sh', undefined, {
       cwd: path.resolve(__dirname, '..'),
       env: {
+        ...process.env,
         PRIVATE_KEY: privateKey,
       },
     })

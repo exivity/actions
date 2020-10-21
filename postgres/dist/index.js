@@ -1028,11 +1028,7 @@ function startDocker({ defaultVersion, image, ports }) {
         yield Object(exec.exec)(`bash docker-start.sh ${portsArg}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                NAME: sluggify(image),
-                IMAGE: image,
-                TAG: version,
-            },
+            env: Object.assign({}, process.env, { NAME: sluggify(image), IMAGE: image, TAG: version }),
         });
     });
 }
@@ -1062,10 +1058,7 @@ function startPostgres(password = 'postgres') {
         yield Object(exec.exec)(`bash ${script}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN',
-                PASSWORD: password,
-            },
+            env: Object.assign({}, process.env, { ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN', PASSWORD: password }),
         });
     });
 }

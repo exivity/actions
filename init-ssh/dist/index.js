@@ -1006,9 +1006,7 @@ function run() {
             // Execute init-ssh bash script
             yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)('bash init-ssh.sh', undefined, {
                 cwd: path__WEBPACK_IMPORTED_MODULE_2___default().resolve(__dirname, '..'),
-                env: {
-                    PRIVATE_KEY: privateKey,
-                },
+                env: Object.assign({}, process.env, { PRIVATE_KEY: privateKey }),
             });
         }
         catch (error) {

@@ -5116,11 +5116,7 @@ function startDocker({ defaultVersion, image, ports }) {
         yield Object(exec.exec)(`bash docker-start.sh ${portsArg}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                NAME: sluggify(image),
-                IMAGE: image,
-                TAG: version,
-            },
+            env: Object.assign({}, process.env, { NAME: sluggify(image), IMAGE: image, TAG: version }),
         });
     });
 }
@@ -5187,10 +5183,7 @@ function startPostgres(password = 'postgres') {
         yield Object(exec.exec)(`bash ${script}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: {
-                ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN',
-                PASSWORD: password,
-            },
+            env: Object.assign({}, process.env, { ATTRIBUTES: 'SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN', PASSWORD: password }),
         });
     });
 }
@@ -5222,10 +5215,7 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
         const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
         yield Object(exec.exec)(cmd, undefined, {
-            env: {
-                AWS_ACCESS_KEY_ID: awsKeyId,
-                AWS_SECRET_ACCESS_KEY: awsSecretKey,
-            },
+            env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
         });
     });
 }
@@ -5236,10 +5226,7 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
         const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
         yield Object(exec.exec)(cmd, undefined, {
-            env: {
-                AWS_ACCESS_KEY_ID: awsKeyId,
-                AWS_SECRET_ACCESS_KEY: awsSecretKey,
-            },
+            env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
         });
     });
 }
@@ -5312,13 +5299,7 @@ function run() {
             const migrateBin = Object(external_os_.platform)() === 'win32' ? 'migrate.exe' : 'migrate';
             yield Object(exec.exec)('bash init-db.sh', undefined, {
                 cwd: external_path_default().resolve(__dirname, '..'),
-                env: {
-                    MODE: mode,
-                    BASE_DIR: external_path_default().join(process.env['GITHUB_WORKSPACE'], dbDirectory),
-                    DB_NAME: dbName,
-                    MIGRATE_BIN: migrateBin,
-                    DB_PASSWORD: password,
-                },
+                env: Object.assign({}, process.env, { MODE: mode, BASE_DIR: external_path_default().join(process.env['GITHUB_WORKSPACE'], dbDirectory), DB_NAME: dbName, MIGRATE_BIN: migrateBin, DB_PASSWORD: password }),
             });
         }
         catch (error) {

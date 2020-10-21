@@ -5135,10 +5135,7 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
         const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
         yield Object(exec.exec)(cmd, undefined, {
-            env: {
-                AWS_ACCESS_KEY_ID: awsKeyId,
-                AWS_SECRET_ACCESS_KEY: awsSecretKey,
-            },
+            env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
         });
     });
 }
@@ -5149,10 +5146,7 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
         const cmd = `aws s3 cp --recursive --region ${s3_S3_REGION} "${src}" "${dest}"`;
         Object(core.info)(`About to execute ${cmd}`);
         yield Object(exec.exec)(cmd, undefined, {
-            env: {
-                AWS_ACCESS_KEY_ID: awsKeyId,
-                AWS_SECRET_ACCESS_KEY: awsSecretKey,
-            },
+            env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
         });
     });
 }
