@@ -69,6 +69,7 @@ async function run() {
     await exec('bash init-db.sh', undefined, {
       cwd: path.resolve(__dirname, '..'),
       env: {
+        ...process.env,
         MODE: mode,
         BASE_DIR: path.join(process.env['GITHUB_WORKSPACE'], dbDirectory),
         DB_NAME: dbName,

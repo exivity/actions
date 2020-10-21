@@ -44,6 +44,7 @@ export async function downloadS3object({
 
   await exec(cmd, undefined, {
     env: {
+      ...process.env,
       AWS_ACCESS_KEY_ID: awsKeyId,
       AWS_SECRET_ACCESS_KEY: awsSecretKey,
     },
@@ -67,6 +68,7 @@ export async function uploadS3object({
 
   await exec(cmd, undefined, {
     env: {
+      ...process.env,
       AWS_ACCESS_KEY_ID: awsKeyId,
       AWS_SECRET_ACCESS_KEY: awsSecretKey,
     },
