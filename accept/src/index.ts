@@ -34,6 +34,7 @@ async function run() {
     await exec('bash trigger-appveyor.sh', undefined, {
       cwd: path.resolve(__dirname, '..'),
       env: {
+        ...process.env,
         BRANCH: branch,
         APPVEYOR_TOKEN: token,
       },

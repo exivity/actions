@@ -1353,10 +1353,7 @@ function run() {
             // Execute trigger-appveyor script
             yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)('bash trigger-appveyor.sh', undefined, {
                 cwd: path__WEBPACK_IMPORTED_MODULE_2___default().resolve(__dirname, '..'),
-                env: {
-                    BRANCH: branch,
-                    APPVEYOR_TOKEN: token,
-                },
+                env: Object.assign({}, process.env, { BRANCH: branch, APPVEYOR_TOKEN: token }),
             });
         }
         catch (error) {
