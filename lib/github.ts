@@ -1,10 +1,6 @@
 import { info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 
-const S3_BUCKET = 'exivity'
-const S3_PREFIX = 'build'
-const S3_REGION = 'eu-central-1'
-
 type Options = {
   ghToken: string
   component: string

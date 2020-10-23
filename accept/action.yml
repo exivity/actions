@@ -4,8 +4,8 @@ inputs:
   scaffold-branch:
     description: 'The scaffold branch to build'
     required: false
-  appveyor-token:
-    description: 'AppVeyor API token'
+  gh-token:
+    description: 'A GitHub token'
     required: false
 runs:
   using: 'node12'

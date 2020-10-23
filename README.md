@@ -29,11 +29,11 @@ Triggers a scaffold repository build on AppVeyor
 _Defaults to `develop` or `custom` depending on current branch_  
 The scaffold branch to build.
 
-### `appveyor-token`
+### `gh-token`
 
-**Required**  
-_Defaults to the APPVEYOR_TOKEN environment variable_  
-AppVeyor API token
+**Optional**  
+_Defaults to the GITHUB_TOKEN environment variable_  
+A GitHub token with access to the exivity/scaffold repository.
 
 ## Example usage
 
@@ -41,7 +41,6 @@ AppVeyor API token
 - uses: exivity/actions/accept@master
   with:
     scaffold-branch: some-feature-branch
-    appveyor-token: ${{ secrets.APPVEYOR_TOKEN }}
 ```
 
 # `db`
