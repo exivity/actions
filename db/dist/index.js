@@ -5329,7 +5329,6 @@ function run() {
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
-            Object(core.info)(`using branch "${branch}"`);
             // Assertions
             if (!awsKeyId || !awsSecretKey || !ghToken) {
                 throw new Error('A required argument is missing');
@@ -5337,6 +5336,7 @@ function run() {
             if (mode !== 'docker' && mode !== 'host') {
                 throw new Error(`Mode must be 'docker' or 'host'`);
             }
+            Object(core.info)(`Using exivity/db branch "${branch}"`);
             // Let's find the sha
             const sha = yield getShaFromBranch({
                 ghToken,

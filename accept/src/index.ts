@@ -1,4 +1,4 @@
-import { getInput, setFailed } from '@actions/core'
+import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
@@ -32,11 +32,14 @@ async function run() {
       throw new Error('A required argument is missing')
     }
 
-    const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
-
     // Create workflow-dispatch event
     // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
     const octokit = getOctokit(ghToken)
+    const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
+
+    info(
+      `Calling GitHub API to trigger new workflow run for branch "${branch}"`
+    )
 
     await octokit.request(
       'POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches',

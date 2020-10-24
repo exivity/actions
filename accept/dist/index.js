@@ -3561,10 +3561,11 @@ function run() {
             if (!ghToken) {
                 throw new Error('A required argument is missing');
             }
-            const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
             // Create workflow-dispatch event
             // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
             const octokit = Object(_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(ghToken);
+            const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
+            Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to trigger new workflow run for branch "${branch}"`);
             yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
                 owner: 'exivity',
                 repo: 'scaffold',
