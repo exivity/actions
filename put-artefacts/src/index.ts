@@ -5,10 +5,9 @@ import { uploadS3object } from '../../lib/s3'
 
 async function zipAll(path: string, component: string) {
   const filename = `${component}.tar.gz`
+  const cwd = resolve(process.env['GITHUB_WORKSPACE'], path)
 
-  await exec('tar', ['-zcv', '-f', filename, '.'], {
-    cwd: resolve(process.env['GITHUB_WORKSPACE'], path),
-  })
+  await exec('tar', ['-zcv', '-C', cwd, '-f', filename, '.'])
 
   return filename
 }

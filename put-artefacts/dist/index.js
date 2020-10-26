@@ -1460,9 +1460,8 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 function zipAll(path, component) {
     return src_awaiter(this, void 0, void 0, function* () {
         const filename = `${component}.tar.gz`;
-        yield Object(exec.exec)('tar', ['-zcv', '-f', filename, '.'], {
-            cwd: Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path),
-        });
+        const cwd = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
+        yield Object(exec.exec)('tar', ['-zcv', '-C', cwd, '-f', filename, '.']);
         return filename;
     });
 }
