@@ -955,6 +955,14 @@ class ExecState extends events.EventEmitter {
 
 /***/ }),
 
+/***/ 52:
+/***/ (function(module) {
+
+module.exports = eval("require")("fs/promises");
+
+
+/***/ }),
+
 /***/ 82:
 /***/ (function(__unusedmodule, exports) {
 
@@ -1398,6 +1406,9 @@ var exec = __webpack_require__(986);
 // EXTERNAL MODULE: external "path"
 var external_path_ = __webpack_require__(622);
 
+// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?fs/promises
+var promises = __webpack_require__(52);
+
 // EXTERNAL MODULE: external "os"
 var external_os_ = __webpack_require__(87);
 
@@ -1410,6 +1421,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -1435,9 +1447,25 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
 function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const src = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
-        const dest = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
-        Object(core.info)(`About to execute ${cmd}`);
+        const isDirectory = (yield Object(promises.lstat)(src)).isDirectory();
+        const dest = getS3url({
+            component,
+            sha,
+            usePlatformPrefix,
+            prefix,
+        });
+        const cmd = [
+            'aws',
+            's3',
+            'cp',
+            isDirectory ? '--recursive' : '',
+            '--region',
+            S3_REGION,
+            `"${src}"`,
+            `"${dest}"`,
+        ]
+            .filter((item) => item)
+            .join(' ');
         yield Object(exec.exec)(cmd, undefined, {
             env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
         });
