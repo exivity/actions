@@ -955,14 +955,6 @@ class ExecState extends events.EventEmitter {
 
 /***/ }),
 
-/***/ 52:
-/***/ (function(module) {
-
-module.exports = eval("require")("fs/promises");
-
-
-/***/ }),
-
 /***/ 82:
 /***/ (function(__unusedmodule, exports) {
 
@@ -1406,8 +1398,8 @@ var exec = __webpack_require__(986);
 // EXTERNAL MODULE: external "path"
 var external_path_ = __webpack_require__(622);
 
-// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?fs/promises
-var promises = __webpack_require__(52);
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(747);
 
 // EXTERNAL MODULE: external "os"
 var external_os_ = __webpack_require__(87);
@@ -1447,7 +1439,7 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
 function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const src = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
-        const isDirectory = (yield Object(promises.lstat)(src)).isDirectory();
+        const isDirectory = (yield Object(external_fs_.promises.lstat)(src)).isDirectory();
         const dest = getS3url({
             component,
             sha,

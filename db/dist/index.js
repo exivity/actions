@@ -1059,14 +1059,6 @@ function onceStrict (fn) {
 
 /***/ }),
 
-/***/ 52:
-/***/ (function(module) {
-
-module.exports = eval("require")("fs/promises");
-
-
-/***/ }),
-
 /***/ 82:
 /***/ (function(__unusedmodule, exports) {
 
@@ -5268,8 +5260,8 @@ function startPostgres(password = 'postgres') {
     });
 }
 
-// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?fs/promises
-var promises = __webpack_require__(52);
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(747);
 
 // CONCATENATED MODULE: ./lib/s3.ts
 var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -5306,7 +5298,7 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
 function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return s3_awaiter(this, void 0, void 0, function* () {
         const src = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
-        const isDirectory = (yield Object(promises.lstat)(src)).isDirectory();
+        const isDirectory = (yield Object(external_fs_.promises.lstat)(src)).isDirectory();
         const dest = getS3url({
             component,
             sha,

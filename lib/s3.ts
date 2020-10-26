@@ -1,6 +1,6 @@
 import { info } from '@actions/core'
 import { exec } from '@actions/exec'
-import { lstat } from 'fs/promises'
+import { promises as fsPromises } from 'fs'
 import { platform } from 'os'
 import { resolve } from 'path'
 
@@ -62,7 +62,7 @@ export async function uploadS3object({
   awsSecretKey,
 }: Options) {
   const src = resolve(process.env['GITHUB_WORKSPACE'], path)
-  const isDirectory = (await lstat(src)).isDirectory()
+  const isDirectory = (await fsPromises.lstat(src)).isDirectory()
 
   const dest = getS3url({
     component,
