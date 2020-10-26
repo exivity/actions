@@ -10,6 +10,9 @@ inputs:
   path:
     description: 'Upload artefacts from this path'
     required: false
+  zip:
+    description: 'Zip artefact files before uploading'
+    required: false
   aws-access-key-id:
     description: 'The AWS access key ID'
     required: false
