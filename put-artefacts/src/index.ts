@@ -1,12 +1,25 @@
 import { getInput, setFailed } from '@actions/core'
+import { exec } from '@actions/exec'
+import { resolve } from 'path'
 import { uploadS3object } from '../../lib/s3'
+
+async function zipAll(path: string, component: string) {
+  const filename = `${component}.tar.gz`
+
+  await exec('tar', ['-zcv', '-f', filename, '.'], {
+    cwd: resolve(process.env['GITHUB_WORKSPACE'], path),
+  })
+
+  return filename
+}
 
 async function run() {
   try {
     // Input
     const usePlatformPrefix = !!(getInput('use-platform-prefix') || false)
     const prefix = getInput('prefix') || undefined
-    const path = getInput('path') || 'build'
+    let path = getInput('path') || 'build'
+    const zip = !!getInput('zip')
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
@@ -19,6 +32,11 @@ async function run() {
     // Assertions
     if (!awsKeyId || !awsSecretKey) {
       throw new Error('A required argument is missing')
+    }
+
+    if (zip) {
+      // This will actually create a tarball instead of a zip archive 🤷‍♂️
+      path = await zipAll(path, component)
     }
 
     await uploadS3object({
