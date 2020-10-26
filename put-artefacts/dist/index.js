@@ -955,10 +955,72 @@ class ExecState extends events.EventEmitter {
 
 /***/ }),
 
+/***/ 82:
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Sanitizes an input into a string so it can be passed into issueCommand safely
+ * @param input input to sanitize into a string
+ */
+function toCommandValue(input) {
+    if (input === null || input === undefined) {
+        return '';
+    }
+    else if (typeof input === 'string' || input instanceof String) {
+        return input;
+    }
+    return JSON.stringify(input);
+}
+exports.toCommandValue = toCommandValue;
+//# sourceMappingURL=utils.js.map
+
+/***/ }),
+
 /***/ 87:
 /***/ (function(module) {
 
 module.exports = require("os");
+
+/***/ }),
+
+/***/ 102:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+// For internal use, subject to change.
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const fs = __importStar(__webpack_require__(747));
+const os = __importStar(__webpack_require__(87));
+const utils_1 = __webpack_require__(82);
+function issueCommand(command, message) {
+    const filePath = process.env[`GITHUB_${command}`];
+    if (!filePath) {
+        throw new Error(`Unable to find environment variable for file command ${command}`);
+    }
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`Missing file at path: ${filePath}`);
+    }
+    fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+        encoding: 'utf8'
+    });
+}
+exports.issueCommand = issueCommand;
+//# sourceMappingURL=file-command.js.map
 
 /***/ }),
 
@@ -990,6 +1052,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const os = __importStar(__webpack_require__(87));
+const utils_1 = __webpack_require__(82);
 /**
  * Commands
  *
@@ -1043,28 +1106,14 @@ class Command {
         return cmdStr;
     }
 }
-/**
- * Sanitizes an input into a string so it can be passed into issueCommand safely
- * @param input input to sanitize into a string
- */
-function toCommandValue(input) {
-    if (input === null || input === undefined) {
-        return '';
-    }
-    else if (typeof input === 'string' || input instanceof String) {
-        return input;
-    }
-    return JSON.stringify(input);
-}
-exports.toCommandValue = toCommandValue;
 function escapeData(s) {
-    return toCommandValue(s)
+    return utils_1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A');
 }
 function escapeProperty(s) {
-    return toCommandValue(s)
+    return utils_1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A')
@@ -1098,6 +1147,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const command_1 = __webpack_require__(431);
+const file_command_1 = __webpack_require__(102);
+const utils_1 = __webpack_require__(82);
 const os = __importStar(__webpack_require__(87));
 const path = __importStar(__webpack_require__(622));
 /**
@@ -1124,9 +1175,17 @@ var ExitCode;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportVariable(name, val) {
-    const convertedVal = command_1.toCommandValue(val);
+    const convertedVal = utils_1.toCommandValue(val);
     process.env[name] = convertedVal;
-    command_1.issueCommand('set-env', { name }, convertedVal);
+    const filePath = process.env['GITHUB_ENV'] || '';
+    if (filePath) {
+        const delimiter = '_GitHubActionsFileCommandDelimeter_';
+        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
+        file_command_1.issueCommand('ENV', commandValue);
+    }
+    else {
+        command_1.issueCommand('set-env', { name }, convertedVal);
+    }
 }
 exports.exportVariable = exportVariable;
 /**
@@ -1142,7 +1201,13 @@ exports.setSecret = setSecret;
  * @param inputPath
  */
 function addPath(inputPath) {
-    command_1.issueCommand('add-path', {}, inputPath);
+    const filePath = process.env['GITHUB_PATH'] || '';
+    if (filePath) {
+        file_command_1.issueCommand('PATH', inputPath);
+    }
+    else {
+        command_1.issueCommand('add-path', {}, inputPath);
+    }
     process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
 }
 exports.addPath = addPath;
@@ -1330,11 +1395,14 @@ var core = __webpack_require__(470);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
 var exec = __webpack_require__(986);
 
-// EXTERNAL MODULE: external "os"
-var external_os_ = __webpack_require__(87);
-
 // EXTERNAL MODULE: external "path"
 var external_path_ = __webpack_require__(622);
+
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(747);
+
+// EXTERNAL MODULE: external "os"
+var external_os_ = __webpack_require__(87);
 
 // CONCATENATED MODULE: ./lib/s3.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -1345,6 +1413,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -1370,9 +1439,25 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
 function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const src = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
-        const dest = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
-        Object(core.info)(`About to execute ${cmd}`);
+        const isDirectory = (yield Object(external_fs_.promises.lstat)(src)).isDirectory();
+        const dest = getS3url({
+            component,
+            sha,
+            usePlatformPrefix,
+            prefix,
+        });
+        const cmd = [
+            'aws',
+            's3',
+            'cp',
+            isDirectory ? '--recursive' : '',
+            '--region',
+            S3_REGION,
+            `"${src}"`,
+            `"${dest}"`,
+        ]
+            .filter((item) => item)
+            .join(' ');
         yield Object(exec.exec)(cmd, undefined, {
             env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
         });
@@ -1390,13 +1475,24 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 };
 
 
+
+
+function zipAll(path, component) {
+    return src_awaiter(this, void 0, void 0, function* () {
+        const filename = `${component}.tar.gz`;
+        const cwd = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
+        yield Object(exec.exec)('tar', ['-zcv', '-C', cwd, '-f', filename, '.']);
+        return filename;
+    });
+}
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Input
             const usePlatformPrefix = !!(Object(core.getInput)('use-platform-prefix') || false);
             const prefix = Object(core.getInput)('prefix') || undefined;
-            const path = Object(core.getInput)('path') || 'build';
+            let path = Object(core.getInput)('path') || 'build';
+            const zip = !!Object(core.getInput)('zip');
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             // From environment
@@ -1405,6 +1501,10 @@ function run() {
             // Assertions
             if (!awsKeyId || !awsSecretKey) {
                 throw new Error('A required argument is missing');
+            }
+            if (zip) {
+                // This will actually create a tarball instead of a zip archive 🤷‍♂️
+                path = yield zipAll(path, component);
             }
             yield uploadS3object({
                 component,
