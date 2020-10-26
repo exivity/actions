@@ -16,9 +16,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        zip: [true, false]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
       - uses: ./put-artefacts
         with:
           path: fixtures/build
+          zip: ${{ matrix.zip }}
