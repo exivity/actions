@@ -19,14 +19,15 @@ _Available actions:_
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/accept)
 
-Triggers a scaffold repository build on AppVeyor
+Triggers a scaffold repository build using the `workflow_dispatch` event. Does
+not trigger for the `master` branch.
 
 ## Inputs
 
 ### `scaffold-branch`
 
 **Optional**  
-_Defaults to `develop` or `custom` depending on current branch_  
+_Defaults to `develop`_  
 The scaffold branch to build.
 
 ### `gh-token`

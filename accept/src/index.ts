@@ -14,12 +14,8 @@ async function run() {
         // Skip accepting master commits
         return
 
-      case 'refs/heads/develop':
-        defaultBranch = 'develop'
-        break
-
       default:
-        defaultBranch = 'custom'
+        defaultBranch = 'develop'
         break
     }
 
@@ -38,7 +34,7 @@ async function run() {
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
 
     info(
-      `Calling GitHub API to trigger new workflow run for branch "${branch}"`
+      `Calling GitHub API to trigger new scaffold build (branch: "${branch}")`
     )
 
     await octokit.request(
