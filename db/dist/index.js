@@ -5257,6 +5257,9 @@ function startPostgres(password = 'postgres') {
     });
 }
 
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(747);
+
 // CONCATENATED MODULE: ./lib/s3.ts
 var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5266,6 +5269,7 @@ var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argum
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -5291,9 +5295,25 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
 function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return s3_awaiter(this, void 0, void 0, function* () {
         const src = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
-        const dest = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
-        Object(core.info)(`About to execute ${cmd}`);
+        const isDirectory = (yield Object(external_fs_.promises.lstat)(src)).isDirectory();
+        const dest = getS3url({
+            component,
+            sha,
+            usePlatformPrefix,
+            prefix,
+        });
+        const cmd = [
+            'aws',
+            's3',
+            'cp',
+            isDirectory ? '--recursive' : '',
+            '--region',
+            S3_REGION,
+            `"${src}"`,
+            `"${dest}"`,
+        ]
+            .filter((item) => item)
+            .join(' ');
         yield Object(exec.exec)(cmd, undefined, {
             env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
         });

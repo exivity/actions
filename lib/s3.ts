@@ -1,5 +1,6 @@
 import { info } from '@actions/core'
 import { exec } from '@actions/exec'
+import { promises as fsPromises } from 'fs'
 import { platform } from 'os'
 import { resolve } from 'path'
 
@@ -61,10 +62,27 @@ export async function uploadS3object({
   awsSecretKey,
 }: Options) {
   const src = resolve(process.env['GITHUB_WORKSPACE'], path)
-  const dest = getS3url({ component, sha, usePlatformPrefix, prefix })
-  const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
+  const isDirectory = (await fsPromises.lstat(src)).isDirectory()
 
-  info(`About to execute ${cmd}`)
+  const dest = getS3url({
+    component,
+    sha,
+    usePlatformPrefix,
+    prefix,
+  })
+
+  const cmd = [
+    'aws',
+    's3',
+    'cp',
+    isDirectory ? '--recursive' : '',
+    '--region',
+    S3_REGION,
+    `"${src}"`,
+    `"${dest}"`,
+  ]
+    .filter((item) => item)
+    .join(' ')
 
   await exec(cmd, undefined, {
     env: {

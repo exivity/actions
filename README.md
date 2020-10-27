@@ -404,6 +404,12 @@ platform prefix if specified).
 _Default: build_  
 Upload artefacts from this path.
 
+### `zip`
+
+**Optional**  
+_Default: false_  
+Zip artefact files before uploading as `{component_name}.tar.gz`
+
 ### `aws-access-key-id`
 
 **Optional**  
