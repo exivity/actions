@@ -25,6 +25,8 @@ async function run() {
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
 
     info(`zip is ${JSON.stringify(zip)}`)
+    info(`getInput('zip') is ${JSON.stringify(getInput('zip'))}`)
+    info(`process.env is ${JSON.stringify(process.env)}`)
 
     // From environment
     const sha = process.env['GITHUB_SHA']
