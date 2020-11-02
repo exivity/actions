@@ -1727,9 +1727,6 @@ function run() {
             const zip = getBooleanInput('zip', false);
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
-            Object(core.info)(`getBooleanInput('zip', false) is ${JSON.stringify(zip)}`);
-            Object(core.info)(`getInput('zip') is ${JSON.stringify(Object(core.getInput)('zip'))}`);
-            Object(core.info)(`process.env is ${JSON.stringify(process.env)}`);
             // From environment
             const sha = process.env['GITHUB_SHA'];
             const [_, component] = process.env['GITHUB_REPOSITORY'].split('/');

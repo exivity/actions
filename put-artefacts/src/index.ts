@@ -1,4 +1,4 @@
-import { getInput, info, setFailed } from '@actions/core'
+import { getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { resolve } from 'path'
 import { getBooleanInput } from '../../lib/core'
@@ -24,10 +24,6 @@ async function run() {
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
-
-    info(`getBooleanInput('zip', false) is ${JSON.stringify(zip)}`)
-    info(`getInput('zip') is ${JSON.stringify(getInput('zip'))}`)
-    info(`process.env is ${JSON.stringify(process.env)}`)
 
     // From environment
     const sha = process.env['GITHUB_SHA']
