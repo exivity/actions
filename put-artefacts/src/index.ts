@@ -1,6 +1,7 @@
 import { getInput, info, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { resolve } from 'path'
+import { getBooleanInput } from '../../lib/core'
 import { uploadS3object } from '../../lib/s3'
 
 async function zipAll(path: string, component: string) {
@@ -15,16 +16,16 @@ async function zipAll(path: string, component: string) {
 async function run() {
   try {
     // Input
-    const usePlatformPrefix = !!(getInput('use-platform-prefix') || false)
+    const usePlatformPrefix = getBooleanInput('use-platform-prefix', false)
     const prefix = getInput('prefix') || undefined
     let path = getInput('path') || 'build'
-    const zip = !!(getInput('zip') || false)
+    const zip = getBooleanInput('zip', false)
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
 
-    info(`zip is ${JSON.stringify(zip)}`)
+    info(`getBooleanInput('zip', false) is ${JSON.stringify(zip)}`)
     info(`getInput('zip') is ${JSON.stringify(getInput('zip'))}`)
     info(`process.env is ${JSON.stringify(process.env)}`)
 

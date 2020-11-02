@@ -2,6 +2,7 @@ import { getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { promises as fsPromises } from 'fs'
 import { join as pathJoin } from 'path'
+import { getBooleanInput } from '../../lib/core'
 import { getShaFromBranch } from '../../lib/github'
 import { downloadS3object } from '../../lib/s3'
 
@@ -23,10 +24,10 @@ async function run() {
     const branch =
       getInput('branch') ||
       (process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop')
-    const usePlatformPrefix = !!(getInput('use-platform-prefix') || false)
+    const usePlatformPrefix = getBooleanInput('use-platform-prefix', false)
     const prefix = getInput('prefix') || undefined
     const path = getInput('path') || `../${component}/build`
-    const autoUnzip = !!(getInput('auto-unzip') || true)
+    const autoUnzip = getBooleanInput('auto-unzip', true)
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =

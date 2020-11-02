@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/get-artefacts.yml'
+      - 'lib/core*'
       - 'lib/github*'
       - 'lib/s3*'
       - 'get-artefacts/**'

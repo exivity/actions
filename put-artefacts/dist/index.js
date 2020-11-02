@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(659);
+/******/ 		return __webpack_require__(957);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -1383,152 +1383,6 @@ module.exports = require("path");
 
 /***/ }),
 
-/***/ 659:
-/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __webpack_require__(470);
-
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __webpack_require__(986);
-
-// EXTERNAL MODULE: external "path"
-var external_path_ = __webpack_require__(622);
-
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __webpack_require__(747);
-
-// EXTERNAL MODULE: external "os"
-var external_os_ = __webpack_require__(87);
-
-// CONCATENATED MODULE: ./lib/s3.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-
-
-const S3_BUCKET = 'exivity';
-const S3_PREFIX = 'build';
-const S3_REGION = 'eu-central-1';
-function getS3url({ component, sha, usePlatformPrefix, prefix }) {
-    const platformPrefix = Object(external_os_.platform)() === 'win32' ? 'windows' : 'linux';
-    return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ''}${prefix ? `/${prefix}` : ''}`;
-}
-function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const src = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const dest = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
-        const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
-        Object(core.info)(`About to execute ${cmd}`);
-        yield Object(exec.exec)(cmd, undefined, {
-            env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
-        });
-    });
-}
-function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const src = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
-        const isDirectory = (yield Object(external_fs_.promises.lstat)(src)).isDirectory();
-        const dest = getS3url({
-            component,
-            sha,
-            usePlatformPrefix,
-            prefix,
-        });
-        const cmd = [
-            'aws',
-            's3',
-            'cp',
-            isDirectory ? '--recursive' : '',
-            '--region',
-            S3_REGION,
-            `"${src}"`,
-            isDirectory ? `"${dest}"` : `"${dest}/${Object(external_path_.basename)(path)}"`,
-        ]
-            .filter((item) => item)
-            .join(' ');
-        yield Object(exec.exec)(cmd, undefined, {
-            env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
-        });
-    });
-}
-
-// CONCATENATED MODULE: ./put-artefacts/src/index.ts
-var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-
-function zipAll(path, component) {
-    return src_awaiter(this, void 0, void 0, function* () {
-        const filename = `${component}.tar.gz`;
-        const cwd = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
-        yield Object(exec.exec)('tar', ['-zcv', '-C', cwd, '-f', filename, '.']);
-        return filename;
-    });
-}
-function run() {
-    return src_awaiter(this, void 0, void 0, function* () {
-        try {
-            // Input
-            const usePlatformPrefix = !!(Object(core.getInput)('use-platform-prefix') || false);
-            const prefix = Object(core.getInput)('prefix') || undefined;
-            let path = Object(core.getInput)('path') || 'build';
-            const zip = !!(Object(core.getInput)('zip') || false);
-            const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
-            const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
-            Object(core.info)(`zip is ${JSON.stringify(zip)}`);
-            Object(core.info)(`getInput('zip') is ${JSON.stringify(Object(core.getInput)('zip'))}`);
-            Object(core.info)(`process.env is ${JSON.stringify(process.env)}`);
-            // From environment
-            const sha = process.env['GITHUB_SHA'];
-            const [_, component] = process.env['GITHUB_REPOSITORY'].split('/');
-            // Assertions
-            if (!awsKeyId || !awsSecretKey) {
-                throw new Error('A required argument is missing');
-            }
-            if (zip) {
-                // This will actually create a tarball instead of a zip archive 🤷‍♂️
-                path = yield zipAll(path, component);
-            }
-            yield uploadS3object({
-                component,
-                sha,
-                usePlatformPrefix,
-                prefix,
-                path,
-                awsKeyId,
-                awsSecretKey,
-            });
-        }
-        catch (error) {
-            Object(core.setFailed)(error.message);
-        }
-    });
-}
-run();
-
-
-/***/ }),
-
 /***/ 669:
 /***/ (function(module) {
 
@@ -1742,6 +1596,166 @@ function isUnixExecutable(stats) {
 /***/ (function(module) {
 
 module.exports = require("fs");
+
+/***/ }),
+
+/***/ 957:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __webpack_require__(470);
+
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __webpack_require__(986);
+
+// EXTERNAL MODULE: external "path"
+var external_path_ = __webpack_require__(622);
+
+// CONCATENATED MODULE: ./lib/core.ts
+
+function getBooleanInput(name, defaultValue) {
+    let inputValue = Object(core.getInput)(name) || defaultValue;
+    switch (inputValue) {
+        case 'true' || false:
+            return true;
+        case 'false' || false:
+            return false;
+    }
+    throw new Error("Can't parse input value as boolean");
+}
+
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(747);
+
+// EXTERNAL MODULE: external "os"
+var external_os_ = __webpack_require__(87);
+
+// CONCATENATED MODULE: ./lib/s3.ts
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+
+const S3_BUCKET = 'exivity';
+const S3_PREFIX = 'build';
+const S3_REGION = 'eu-central-1';
+function getS3url({ component, sha, usePlatformPrefix, prefix }) {
+    const platformPrefix = Object(external_os_.platform)() === 'win32' ? 'windows' : 'linux';
+    return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ''}${prefix ? `/${prefix}` : ''}`;
+}
+function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const src = getS3url({ component, sha, usePlatformPrefix, prefix });
+        const dest = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
+        const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
+        Object(core.info)(`About to execute ${cmd}`);
+        yield Object(exec.exec)(cmd, undefined, {
+            env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
+        });
+    });
+}
+function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const src = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
+        const isDirectory = (yield Object(external_fs_.promises.lstat)(src)).isDirectory();
+        const dest = getS3url({
+            component,
+            sha,
+            usePlatformPrefix,
+            prefix,
+        });
+        const cmd = [
+            'aws',
+            's3',
+            'cp',
+            isDirectory ? '--recursive' : '',
+            '--region',
+            S3_REGION,
+            `"${src}"`,
+            isDirectory ? `"${dest}"` : `"${dest}/${Object(external_path_.basename)(path)}"`,
+        ]
+            .filter((item) => item)
+            .join(' ');
+        yield Object(exec.exec)(cmd, undefined, {
+            env: Object.assign({}, process.env, { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
+        });
+    });
+}
+
+// CONCATENATED MODULE: ./put-artefacts/src/index.ts
+var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+
+function zipAll(path, component) {
+    return src_awaiter(this, void 0, void 0, function* () {
+        const filename = `${component}.tar.gz`;
+        const cwd = Object(external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
+        yield Object(exec.exec)('tar', ['-zcv', '-C', cwd, '-f', filename, '.']);
+        return filename;
+    });
+}
+function run() {
+    return src_awaiter(this, void 0, void 0, function* () {
+        try {
+            // Input
+            const usePlatformPrefix = getBooleanInput('use-platform-prefix', false);
+            const prefix = Object(core.getInput)('prefix') || undefined;
+            let path = Object(core.getInput)('path') || 'build';
+            const zip = getBooleanInput('zip', false);
+            const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
+            const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+            Object(core.info)(`getBooleanInput('zip', false) is ${JSON.stringify(zip)}`);
+            Object(core.info)(`getInput('zip') is ${JSON.stringify(Object(core.getInput)('zip'))}`);
+            Object(core.info)(`process.env is ${JSON.stringify(process.env)}`);
+            // From environment
+            const sha = process.env['GITHUB_SHA'];
+            const [_, component] = process.env['GITHUB_REPOSITORY'].split('/');
+            // Assertions
+            if (!awsKeyId || !awsSecretKey) {
+                throw new Error('A required argument is missing');
+            }
+            if (zip) {
+                // This will actually create a tarball instead of a zip archive 🤷‍♂️
+                path = yield zipAll(path, component);
+            }
+            yield uploadS3object({
+                component,
+                sha,
+                usePlatformPrefix,
+                prefix,
+                path,
+                awsKeyId,
+                awsSecretKey,
+            });
+        }
+        catch (error) {
+            Object(core.setFailed)(error.message);
+        }
+    });
+}
+run();
+
 
 /***/ }),
 
