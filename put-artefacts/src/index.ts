@@ -1,4 +1,4 @@
-import { getInput, setFailed } from '@actions/core'
+import { debug, getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { resolve } from 'path'
 import { uploadS3object } from '../../lib/s3'
@@ -23,6 +23,8 @@ async function run() {
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
+
+    debug(`zip is ${JSON.stringify(zip)}`)
 
     // From environment
     const sha = process.env['GITHUB_SHA']

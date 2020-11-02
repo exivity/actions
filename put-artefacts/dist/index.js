@@ -1495,6 +1495,7 @@ function run() {
             const zip = !!Object(core.getInput)('zip');
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+            Object(core.debug)(`zip is ${JSON.stringify(zip)}`);
             // From environment
             const sha = process.env['GITHUB_SHA'];
             const [_, component] = process.env['GITHUB_REPOSITORY'].split('/');
