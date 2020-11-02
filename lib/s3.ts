@@ -2,7 +2,7 @@ import { info } from '@actions/core'
 import { exec } from '@actions/exec'
 import { promises as fsPromises } from 'fs'
 import { platform } from 'os'
-import { basename, join, resolve } from 'path'
+import { basename, resolve } from 'path'
 
 const S3_BUCKET = 'exivity'
 const S3_PREFIX = 'build'
@@ -79,7 +79,7 @@ export async function uploadS3object({
     '--region',
     S3_REGION,
     `"${src}"`,
-    isDirectory ? `"${dest}"` : `"${join(dest, basename(path))}"`,
+    isDirectory ? `"${dest}"` : `"${dest}/${basename(path)}"`,
   ]
     .filter((item) => item)
     .join(' ')
