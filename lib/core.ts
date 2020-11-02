@@ -1,14 +1,17 @@
 import { getInput } from '@actions/core'
 
-export function getBooleanInput(name: string, defaultValue: unknown) {
+const TRUE_VALUES = [true, 'true', 'TRUE']
+const FALSE_VALUES = [false, 'false', 'FALSE']
+
+export function getBooleanInput(name: string, defaultValue?: boolean) {
   let inputValue = getInput(name) || defaultValue
 
-  switch (inputValue) {
-    case true || 'true' || 'TRUE':
-      return true
+  if (TRUE_VALUES.includes(inputValue)) {
+    return true
+  }
 
-    case false || 'false' || 'FALSE':
-      return false
+  if (FALSE_VALUES.includes(inputValue)) {
+    return false
   }
 
   throw new Error(

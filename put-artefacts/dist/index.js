@@ -1616,13 +1616,15 @@ var external_path_ = __webpack_require__(622);
 
 // CONCATENATED MODULE: ./lib/core.ts
 
+const TRUE_VALUES = [true, 'true', 'TRUE'];
+const FALSE_VALUES = [false, 'false', 'FALSE'];
 function getBooleanInput(name, defaultValue) {
     let inputValue = Object(core.getInput)(name) || defaultValue;
-    switch (inputValue) {
-        case  true || false:
-            return true;
-        case  false || 'false' || false:
-            return false;
+    if (TRUE_VALUES.includes(inputValue)) {
+        return true;
+    }
+    if (FALSE_VALUES.includes(inputValue)) {
+        return false;
     }
     throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
 }
