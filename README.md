@@ -407,7 +407,7 @@ Upload artefacts from this path.
 ### `zip`
 
 **Optional**  
-_Default: false_  
+_Default: `false`_  
 Zip artefact files before uploading as `{component_name}.tar.gz`
 
 ### `aws-access-key-id`

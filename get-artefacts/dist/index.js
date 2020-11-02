@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(646);
+/******/ 		return __webpack_require__(617);
 /******/ 	};
 /******/ 	// initialize runtime
 /******/ 	runtime(__webpack_require__);
@@ -5105,21 +5105,7 @@ module.exports = require("events");
 
 /***/ }),
 
-/***/ 622:
-/***/ (function(module) {
-
-module.exports = require("path");
-
-/***/ }),
-
-/***/ 631:
-/***/ (function(module) {
-
-module.exports = require("net");
-
-/***/ }),
-
-/***/ 646:
+/***/ 617:
 /***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5136,6 +5122,21 @@ var external_fs_ = __webpack_require__(747);
 
 // EXTERNAL MODULE: external "path"
 var external_path_ = __webpack_require__(622);
+
+// CONCATENATED MODULE: ./lib/core.ts
+
+const TRUE_VALUES = [true, 'true', 'TRUE'];
+const FALSE_VALUES = [false, 'false', 'FALSE'];
+function getBooleanInput(name, defaultValue) {
+    let inputValue = Object(core.getInput)(name) || defaultValue;
+    if (TRUE_VALUES.includes(inputValue)) {
+        return true;
+    }
+    if (FALSE_VALUES.includes(inputValue)) {
+        return false;
+    }
+    throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
+}
 
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __webpack_require__(469);
@@ -5230,7 +5231,7 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
             '--region',
             s3_S3_REGION,
             `"${src}"`,
-            `"${dest}"`,
+            isDirectory ? `"${dest}"` : `"${dest}/${Object(external_path_.basename)(path)}"`,
         ]
             .filter((item) => item)
             .join(' ');
@@ -5249,6 +5250,7 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -5275,10 +5277,10 @@ function run() {
             let sha = Object(core.getInput)('sha');
             const branch = Object(core.getInput)('branch') ||
                 (process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop');
-            const usePlatformPrefix = !!(Object(core.getInput)('use-platform-prefix') || false);
+            const usePlatformPrefix = getBooleanInput('use-platform-prefix', false);
             const prefix = Object(core.getInput)('prefix') || undefined;
             const path = Object(core.getInput)('path') || `../${component}/build`;
-            const autoUnzip = !!(Object(core.getInput)('auto-unzip') || true);
+            const autoUnzip = getBooleanInput('auto-unzip', true);
             const awsKeyId = Object(core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = Object(core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = Object(core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
@@ -5314,6 +5316,20 @@ function run() {
 }
 run();
 
+
+/***/ }),
+
+/***/ 622:
+/***/ (function(module) {
+
+module.exports = require("path");
+
+/***/ }),
+
+/***/ 631:
+/***/ (function(module) {
+
+module.exports = require("net");
 
 /***/ }),
 
