@@ -18,7 +18,7 @@ async function run() {
     const usePlatformPrefix = !!(getInput('use-platform-prefix') || false)
     const prefix = getInput('prefix') || undefined
     let path = getInput('path') || 'build'
-    const zip = !!getInput('zip')
+    const zip = !!(getInput('zip') || false)
     const awsKeyId =
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
