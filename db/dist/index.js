@@ -5313,7 +5313,7 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
             '--region',
             s3_S3_REGION,
             `"${src}"`,
-            `"${dest}"`,
+            isDirectory ? `"${dest}"` : `"${Object(external_path_.join)(dest, Object(external_path_.basename)(path))}"`,
         ]
             .filter((item) => item)
             .join(' ');
