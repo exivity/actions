@@ -5133,7 +5133,7 @@ function getBooleanInput(name, defaultValue) {
         case  false || 'false' || false:
             return false;
     }
-    throw new Error("Can't parse input value as boolean");
+    throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
 }
 
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js

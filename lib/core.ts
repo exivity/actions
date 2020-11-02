@@ -11,5 +11,7 @@ export function getBooleanInput(name: string, defaultValue: unknown) {
       return false
   }
 
-  throw new Error("Can't parse input value as boolean")
+  throw new Error(
+    `Can't parse input value (${JSON.stringify(inputValue)}) as boolean`
+  )
 }
