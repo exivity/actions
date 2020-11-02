@@ -4,10 +4,10 @@ export function getBooleanInput(name: string, defaultValue: unknown) {
   let inputValue = getInput(name) || defaultValue
 
   switch (inputValue) {
-    case 'true' || 'TRUE':
+    case true || 'true' || 'TRUE':
       return true
 
-    case 'false' || 'FALSE':
+    case false || 'false' || 'FALSE':
       return false
   }
 

@@ -1619,9 +1619,9 @@ var external_path_ = __webpack_require__(622);
 function getBooleanInput(name, defaultValue) {
     let inputValue = Object(core.getInput)(name) || defaultValue;
     switch (inputValue) {
-        case 'true' || false:
+        case  true || false:
             return true;
-        case 'false' || false:
+        case  false || 'false' || false:
             return false;
     }
     throw new Error("Can't parse input value as boolean");
