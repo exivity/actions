@@ -7,7 +7,7 @@ on:
       - 'accept/**'
 
 env:
-  APPVEYOR_TOKEN: ${{ secrets.APPVEYOR_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
 
 jobs:
   test:

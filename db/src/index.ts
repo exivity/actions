@@ -22,8 +22,6 @@ async function run() {
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
     const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
 
-    info(`using branch "${branch}"`)
-
     // Assertions
     if (!awsKeyId || !awsSecretKey || !ghToken) {
       throw new Error('A required argument is missing')
@@ -32,6 +30,8 @@ async function run() {
     if (mode !== 'docker' && mode !== 'host') {
       throw new Error(`Mode must be 'docker' or 'host'`)
     }
+
+    info(`Using exivity/db branch "${branch}"`)
 
     // Let's find the sha
     const sha = await getShaFromBranch({

@@ -1,6 +1,8 @@
-import { getInput, setFailed } from '@actions/core'
-import { exec } from '@actions/exec'
-import path from 'path'
+import { getInput, info, setFailed } from '@actions/core'
+import { getOctokit } from '@actions/github'
+
+// id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
+const workflowId = 514379
 
 async function run() {
   try {
@@ -12,33 +14,42 @@ async function run() {
         // Skip accepting master commits
         return
 
-      case 'refs/heads/develop':
-        defaultBranch = 'develop'
-        break
-
       default:
-        defaultBranch = 'custom'
+        defaultBranch = 'develop'
         break
     }
 
     // Input
     const branch = getInput('scaffold-branch') || defaultBranch
-    const token = getInput('appveyor-token') || process.env['APPVEYOR_TOKEN']
+    const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
 
     // Assertions
-    if (!token) {
+    if (!ghToken) {
       throw new Error('A required argument is missing')
     }
 
-    // Execute trigger-appveyor script
-    await exec('bash trigger-appveyor.sh', undefined, {
-      cwd: path.resolve(__dirname, '..'),
-      env: {
-        ...process.env,
-        BRANCH: branch,
-        APPVEYOR_TOKEN: token,
-      },
-    })
+    // Create workflow-dispatch event
+    // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+    const octokit = getOctokit(ghToken)
+    const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
+
+    info(
+      `Calling GitHub API to trigger new scaffold build (branch: "${branch}")`
+    )
+
+    await octokit.request(
+      'POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches',
+      {
+        owner: 'exivity',
+        repo: 'scaffold',
+        workflow_id: workflowId,
+        ref: branch,
+        inputs: {
+          custom_component_name: component,
+          custom_component_sha: process.env['GITHUB_SHA'],
+        },
+      }
+    )
   } catch (error) {
     setFailed(error.message)
   }
