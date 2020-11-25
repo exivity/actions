@@ -22,6 +22,9 @@ _Available actions:_
 Triggers a scaffold repository build using the `workflow_dispatch` event. Does
 not trigger for the `master` branch.
 
+If the current branch includes a Jira key (e.g. EXVT-1000), the scaffold build
+will try to resolve matching epic branches for other components.
+
 ## Inputs
 
 ### `scaffold-branch`
