@@ -4,6 +4,12 @@ import { getOctokit } from '@actions/github'
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379
 
+function detectIssueKey(input: string) {
+  const match = input.match(/([A-Z0-9]{1,10}-\d+)/)
+
+  return match !== null && match.length > 0 ? match[0] : undefined
+}
+
 async function run() {
   try {
     // Determine default branch
@@ -11,7 +17,7 @@ async function run() {
     let defaultBranch: string
     switch (ref) {
       case 'refs/heads/master':
-        // Skip accepting master commits
+        // Skip accepting commits on master
         return
 
       default:
@@ -27,6 +33,9 @@ async function run() {
     if (!ghToken) {
       throw new Error('A required argument is missing')
     }
+
+    // Detect issue key in branch name
+    const issue = detectIssueKey(ref)
 
     // Create workflow-dispatch event
     // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
@@ -45,6 +54,7 @@ async function run() {
         workflow_id: workflowId,
         ref: branch,
         inputs: {
+          issue,
           custom_component_name: component,
           custom_component_sha: process.env['GITHUB_SHA'],
         },
