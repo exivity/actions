@@ -3537,6 +3537,10 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379;
+function detectIssueKey(input) {
+    const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
+    return match !== null && match.length > 0 ? match[0] : undefined;
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -3545,7 +3549,7 @@ function run() {
             let defaultBranch;
             switch (ref) {
                 case 'refs/heads/master':
-                    // Skip accepting master commits
+                    // Skip accepting commits on master
                     return;
                 default:
                     defaultBranch = 'develop';
@@ -3558,6 +3562,8 @@ function run() {
             if (!ghToken) {
                 throw new Error('A required argument is missing');
             }
+            // Detect issue key in branch name
+            const issue = detectIssueKey(ref);
             // Create workflow-dispatch event
             // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
             const octokit = Object(_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(ghToken);
@@ -3569,6 +3575,7 @@ function run() {
                 workflow_id: workflowId,
                 ref: branch,
                 inputs: {
+                    issue,
                     custom_component_name: component,
                     custom_component_sha: process.env['GITHUB_SHA'],
                 },
