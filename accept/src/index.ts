@@ -59,7 +59,7 @@ async function run() {
 
     if (!(await hasPR(octokit, ref.slice(11), component, owner))) {
       warning(
-        'Skipping scaffold build because there is no non-wip PR associated with the current branch'
+        'Skipping scaffold build, because there is no non-wip PR associated with the current branch'
       )
       return
     }
