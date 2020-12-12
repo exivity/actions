@@ -1,4 +1,4 @@
-import { getInput, info, setFailed } from '@actions/core'
+import { getInput, info, warning, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
@@ -8,6 +8,21 @@ function detectIssueKey(input: string) {
   const match = input.match(/([A-Z0-9]{1,10}-\d+)/)
 
   return match !== null && match.length > 0 ? match[0] : undefined
+}
+
+async function hasPR(
+  octokit: any,
+  branch: string,
+  repo: string,
+  owner: string
+): Promise<boolean> {
+  const { data: pulls } = await octokit.pulls.list({
+    owner,
+    repo,
+    head: branch,
+  })
+
+  return pulls.some((p: any) => !p.draft)
 }
 
 async function run() {
@@ -41,6 +56,13 @@ async function run() {
     // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
     const octokit = getOctokit(ghToken)
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
+
+    if (!(await hasPR(octokit, ref.slice(11), component, owner))) {
+      warning(
+        'Skipping scaffold build, because there is no non-wip PR associated with the current branch'
+      )
+      return
+    }
 
     info(
       `Calling GitHub API to trigger new scaffold build (branch: "${branch}")`

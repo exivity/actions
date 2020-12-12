@@ -3541,6 +3541,16 @@ function detectIssueKey(input) {
     const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
     return match !== null && match.length > 0 ? match[0] : undefined;
 }
+function hasPR(octokit, branch, repo, owner) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { data: pulls } = yield octokit.pulls.list({
+            owner,
+            repo,
+            head: branch,
+        });
+        return pulls.some((p) => !p.draft);
+    });
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -3568,6 +3578,10 @@ function run() {
             // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
             const octokit = Object(_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(ghToken);
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
+            if (!(yield hasPR(octokit, ref.slice(11), component, owner))) {
+                Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)('Skipping scaffold build, because there is no non-wip PR associated with the current branch');
+                return;
+            }
             Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to trigger new scaffold build (branch: "${branch}")`);
             yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
                 owner: 'exivity',
