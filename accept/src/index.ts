@@ -1,4 +1,4 @@
-import { getInput, info, warning, setFailed } from '@actions/core'
+import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
@@ -11,7 +11,7 @@ function detectIssueKey(input: string) {
 }
 
 async function hasPR(
-  octokit: any,
+  octokit: ReturnType<typeof getOctokit>,
   branch: string,
   repo: string,
   owner: string
@@ -19,7 +19,7 @@ async function hasPR(
   const { data: pulls } = await octokit.pulls.list({
     owner,
     repo,
-    head: branch,
+    head: `exivity:${branch}`,
   })
 
   return pulls.some((p: any) => !p.draft)
@@ -29,19 +29,17 @@ async function run() {
   try {
     // Determine default branch
     const ref = process.env['GITHUB_REF']
-    let defaultBranch: string
-    switch (ref) {
-      case 'refs/heads/master':
-        // Skip accepting commits on master
-        return
+    const branch = ref.slice(11)
+    const defaultScaffoldBranch = 'develop'
 
-      default:
-        defaultBranch = 'develop'
-        break
+    // Skip accepting commits on master
+    if (branch === 'master') {
+      info('Skipping scaffold build for master branch builds.')
+      return
     }
 
-    // Input
-    const branch = getInput('scaffold-branch') || defaultBranch
+    // Inputs
+    const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
     const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
 
     // Assertions
@@ -51,30 +49,33 @@ async function run() {
 
     // Detect issue key in branch name
     const issue = detectIssueKey(ref)
+    if (issue) {
+      info(`Detected issue key ${issue}.`)
+    }
 
-    // Create workflow-dispatch event
-    // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+    // Initialize GH client
     const octokit = getOctokit(ghToken)
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
 
-    if (!(await hasPR(octokit, ref.slice(11), component, owner))) {
+    // No PR found, skip
+    if (!(await hasPR(octokit, branch, component, owner))) {
       warning(
-        'Skipping scaffold build, because there is no non-wip PR associated with the current branch'
+        `Skipping scaffold build, because there is no non-draft PR associated with the current branch "${branch}".`
       )
       return
     }
 
-    info(
-      `Calling GitHub API to trigger new scaffold build (branch: "${branch}")`
-    )
+    info(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`)
 
+    // Create workflow-dispatch event
+    // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
     await octokit.request(
       'POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches',
       {
         owner: 'exivity',
         repo: 'scaffold',
         workflow_id: workflowId,
-        ref: branch,
+        ref: scaffoldBranch,
         inputs: {
           issue,
           custom_component_name: component,
