@@ -3548,6 +3548,7 @@ function hasPR(octokit, branch, repo, owner) {
             repo,
             head: branch,
         });
+        console.log(pulls);
         return pulls.some((p) => !p.draft);
     });
 }
@@ -3574,15 +3575,17 @@ function run() {
             }
             // Detect issue key in branch name
             const issue = detectIssueKey(ref);
-            // Create workflow-dispatch event
-            // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+            // Initialize GH client
             const octokit = Object(_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(ghToken);
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
+            // No PR found, skip
             if (!(yield hasPR(octokit, ref.slice(11), component, owner))) {
                 Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)('Skipping scaffold build, because there is no non-wip PR associated with the current branch');
                 return;
             }
             Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to trigger new scaffold build (branch: "${branch}")`);
+            // Create workflow-dispatch event
+            // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
             yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
                 owner: 'exivity',
                 repo: 'scaffold',
