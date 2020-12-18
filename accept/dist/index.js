@@ -3546,9 +3546,9 @@ function hasPR(octokit, branch, repo, owner) {
         const { data: pulls } = yield octokit.pulls.list({
             owner,
             repo,
-            head: branch,
+            head: `exivity:${branch}`,
         });
-        console.log(pulls);
+        console.log(branch, pulls);
         return pulls.some((p) => !p.draft);
     });
 }
@@ -3557,17 +3557,15 @@ function run() {
         try {
             // Determine default branch
             const ref = process.env['GITHUB_REF'];
-            let defaultBranch;
-            switch (ref) {
-                case 'refs/heads/master':
-                    // Skip accepting commits on master
-                    return;
-                default:
-                    defaultBranch = 'develop';
-                    break;
+            const branch = ref.slice(11);
+            const defaultScaffoldBranch = 'develop';
+            // Skip accepting commits on master
+            if (branch === 'master') {
+                Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)('Skipping scaffold build for master branch builds.');
+                return;
             }
-            // Input
-            const branch = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('scaffold-branch') || defaultBranch;
+            // Inputs
+            const scaffoldBranch = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('scaffold-branch') || defaultScaffoldBranch;
             const ghToken = Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
             // Assertions
             if (!ghToken) {
@@ -3575,22 +3573,25 @@ function run() {
             }
             // Detect issue key in branch name
             const issue = detectIssueKey(ref);
+            if (issue) {
+                Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Detected issue key ${issue}.`);
+            }
             // Initialize GH client
             const octokit = Object(_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(ghToken);
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
             // No PR found, skip
-            if (!(yield hasPR(octokit, ref.slice(11), component, owner))) {
-                Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)('Skipping scaffold build, because there is no non-wip PR associated with the current branch');
+            if (!(yield hasPR(octokit, branch, component, owner))) {
+                Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)(`Skipping scaffold build, because there is no non-draft PR associated with the current branch "${branch}".`);
                 return;
             }
-            Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to trigger new scaffold build (branch: "${branch}")`);
+            Object(_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
             // Create workflow-dispatch event
             // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
             yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
                 owner: 'exivity',
                 repo: 'scaffold',
                 workflow_id: workflowId,
-                ref: branch,
+                ref: scaffoldBranch,
                 inputs: {
                     issue,
                     custom_component_name: component,
