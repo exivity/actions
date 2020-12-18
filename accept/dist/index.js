@@ -3548,7 +3548,6 @@ function hasPR(octokit, branch, repo, owner) {
             repo,
             head: `exivity:${branch}`,
         });
-        console.log(branch, pulls);
         return pulls.some((p) => !p.draft);
     });
 }

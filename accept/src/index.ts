@@ -22,8 +22,6 @@ async function hasPR(
     head: `exivity:${branch}`,
   })
 
-  console.log(branch, pulls)
-
   return pulls.some((p: any) => !p.draft)
 }
 
