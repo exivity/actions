@@ -5814,13 +5814,12 @@ function run() {
                 sort: 'created',
                 head: `exivity:${process.env['GITHUB_REF'].slice(11)}`,
             });
-            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(JSON.stringify(most_recent));
             // get PR number to use
             if (!pull_request && !most_recent) {
                 (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)('No pull request to review, skipping action');
                 return;
             }
-            const pull_number = pull_request || most_recent.id;
+            const pull_number = isNaN(pull_request) ? most_recent.number : pull_request;
             (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to approve PR ${pull_request} of repo ${repo}`);
             // call GH API
             yield octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {

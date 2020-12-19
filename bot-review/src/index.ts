@@ -34,14 +34,12 @@ async function run() {
       head: `exivity:${process.env['GITHUB_REF'].slice(11)}`,
     })
 
-    info(JSON.stringify(most_recent))
-
     // get PR number to use
     if (!pull_request && !most_recent) {
       warning('No pull request to review, skipping action')
       return
     }
-    const pull_number = pull_request || most_recent.id
+    const pull_number = isNaN(pull_request) ? most_recent.number : pull_request
 
     info(`Calling GitHub API to approve PR ${pull_request} of repo ${repo}`)
 
