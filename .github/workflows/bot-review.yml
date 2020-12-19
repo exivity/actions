@@ -19,6 +19,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./bot-review
         with:
-          event: 'REQUEST_CHANGES'
-          body: 'testing...'
+          event: REQUEST_CHANGES
+          body: testing ${{ matrix.os }}...
       - uses: ./bot-review
