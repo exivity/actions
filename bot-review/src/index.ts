@@ -5,6 +5,9 @@ async function run() {
   try {
     // defaults
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
+    const branch = (
+      process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF']
+    ).slice(11)
 
     // inputs
     const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
@@ -29,9 +32,8 @@ async function run() {
     } = await octokit.pulls.list({
       owner,
       repo,
-      state: 'open',
-      sort: 'created',
-      head: `exivity:${process.env['GITHUB_REF'].slice(11)}`,
+      sort: 'updated',
+      head: `exivity:${branch}`,
     })
 
     // get PR number to use

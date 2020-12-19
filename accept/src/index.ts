@@ -12,23 +12,6 @@ function detectIssueKey(input: string) {
   return match !== null && match.length > 0 ? match[0] : undefined
 }
 
-async function hasReviewRequest(
-  octokit: ReturnType<typeof getOctokit>,
-  branch: string,
-  repo: string,
-  owner: string
-): Promise<boolean> {
-  const { data: pulls } = await octokit.pulls.list({
-    owner,
-    repo,
-    head: `exivity:${branch}`,
-  })
-
-  return pulls.some((p: any) =>
-    p.requested_reviewers?.some((r: any) => r.id == EXIVITY_BOT)
-  )
-}
-
 async function run() {
   try {
     // Determine default branch
@@ -67,14 +50,13 @@ async function run() {
     } = await octokit.pulls.list({
       owner,
       repo: component,
-      state: 'open',
       sort: 'updated',
       head: `exivity:${branch}`,
     })
 
     // No PR found, skip
     if (
-      !pull_request.requested_reviewers?.some((r: any) => r.id == EXIVITY_BOT)
+      !pull_request?.requested_reviewers?.some((r: any) => r.id == EXIVITY_BOT)
     ) {
       warning(
         `Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`

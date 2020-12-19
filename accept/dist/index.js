@@ -5797,16 +5797,6 @@ function detectIssueKey(input) {
     const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
     return match !== null && match.length > 0 ? match[0] : undefined;
 }
-function hasReviewRequest(octokit, branch, repo, owner) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { data: pulls } = yield octokit.pulls.list({
-            owner,
-            repo,
-            head: `exivity:${branch}`,
-        });
-        return pulls.some((p) => { var _a; return (_a = p.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((r) => r.id == EXIVITY_BOT); });
-    });
-}
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -5839,12 +5829,11 @@ function run() {
             const { data: [pull_request], } = yield octokit.pulls.list({
                 owner,
                 repo: component,
-                state: 'open',
                 sort: 'updated',
                 head: `exivity:${branch}`,
             });
             // No PR found, skip
-            if (!((_a = pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((r) => r.id == EXIVITY_BOT))) {
+            if (!((_a = pull_request === null || pull_request === void 0 ? void 0 : pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((r) => r.id == EXIVITY_BOT))) {
                 (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`);
                 return;
             }
