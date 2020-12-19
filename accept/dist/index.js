@@ -5808,10 +5808,11 @@ function hasReviewRequest(octokit, branch, repo, owner) {
     });
 }
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Determine default branch
-            const ref = process.env['GITHUB_REF'];
+            const ref = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'];
             const branch = ref.slice(11);
             const defaultScaffoldBranch = 'develop';
             // Skip accepting commits on master
@@ -5834,8 +5835,16 @@ function run() {
             // Initialize GH client
             const octokit = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(ghToken);
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
+            // Get PR
+            const { data: [pull_request], } = yield octokit.pulls.list({
+                owner,
+                repo: component,
+                state: 'open',
+                sort: 'updated',
+                head: `exivity:${branch}`,
+            });
             // No PR found, skip
-            if (!(yield hasReviewRequest(octokit, branch, component, owner))) {
+            if (!((_a = pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((r) => r.id == EXIVITY_BOT))) {
                 (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`);
                 return;
             }
@@ -5851,6 +5860,7 @@ function run() {
                     issue,
                     custom_component_name: component,
                     custom_component_sha: process.env['GITHUB_SHA'],
+                    custom_pull_request: `${pull_request.number}`,
                 },
             });
         }

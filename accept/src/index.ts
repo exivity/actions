@@ -32,7 +32,7 @@ async function hasReviewRequest(
 async function run() {
   try {
     // Determine default branch
-    const ref = process.env['GITHUB_REF']
+    const ref = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF']
     const branch = ref.slice(11)
     const defaultScaffoldBranch = 'develop'
 
@@ -61,8 +61,21 @@ async function run() {
     const octokit = getOctokit(ghToken)
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
 
+    // Get PR
+    const {
+      data: [pull_request],
+    } = await octokit.pulls.list({
+      owner,
+      repo: component,
+      state: 'open',
+      sort: 'updated',
+      head: `exivity:${branch}`,
+    })
+
     // No PR found, skip
-    if (!(await hasReviewRequest(octokit, branch, component, owner))) {
+    if (
+      !pull_request.requested_reviewers?.some((r: any) => r.id == EXIVITY_BOT)
+    ) {
       warning(
         `Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`
       )
@@ -84,6 +97,7 @@ async function run() {
           issue,
           custom_component_name: component,
           custom_component_sha: process.env['GITHUB_SHA'],
+          custom_pull_request: `${pull_request.number}`,
         },
       }
     )
