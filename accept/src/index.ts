@@ -3,6 +3,8 @@ import { getOctokit } from '@actions/github'
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379
+// id of exivity bot
+const EXIVITY_BOT = 53756225
 
 function detectIssueKey(input: string) {
   const match = input.match(/([A-Z0-9]{1,10}-\d+)/)
@@ -10,7 +12,7 @@ function detectIssueKey(input: string) {
   return match !== null && match.length > 0 ? match[0] : undefined
 }
 
-async function hasPR(
+async function hasReviewRequest(
   octokit: ReturnType<typeof getOctokit>,
   branch: string,
   repo: string,
@@ -22,7 +24,11 @@ async function hasPR(
     head: `exivity:${branch}`,
   })
 
-  return pulls.some((p: any) => !p.draft)
+  return pulls.some(
+    (p: any) =>
+      p.requested_reviewers &&
+      p.requested_reviewers.some((r: any) => r.id == EXIVITY_BOT)
+  )
 }
 
 async function run() {
@@ -58,7 +64,7 @@ async function run() {
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
 
     // No PR found, skip
-    if (!(await hasPR(octokit, branch, component, owner))) {
+    if (!(await hasReviewRequest(octokit, branch, component, owner))) {
       warning(
         `Skipping scaffold build, because there is no non-draft PR associated with the current branch "${branch}".`
       )
