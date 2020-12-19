@@ -5802,8 +5802,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Determine default branch
-            const ref = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'];
-            const branch = ref.slice(11);
+            const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
             const defaultScaffoldBranch = 'develop';
             // Skip accepting commits on master
             if (branch === 'master') {
@@ -5818,7 +5817,7 @@ function run() {
                 throw new Error('A required argument is missing');
             }
             // Detect issue key in branch name
-            const issue = detectIssueKey(ref);
+            const issue = detectIssueKey(branch);
             if (issue) {
                 (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Detected issue key ${issue}.`);
             }

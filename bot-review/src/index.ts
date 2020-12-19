@@ -5,9 +5,8 @@ async function run() {
   try {
     // defaults
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
-    const branch = (
-      process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF']
-    ).slice(11)
+    const branch =
+      process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11)
 
     // inputs
     const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']

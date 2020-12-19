@@ -5794,7 +5794,7 @@ function run() {
         try {
             // defaults
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
-            const branch = (process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF']).slice(11);
+            const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
             // inputs
             const ghToken = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
             const pull_request = parseInt((0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('pull'), 10);
