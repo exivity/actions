@@ -5804,8 +5804,7 @@ function hasReviewRequest(octokit, branch, repo, owner) {
             repo,
             head: `exivity:${branch}`,
         });
-        return pulls.some((p) => p.requested_reviewers &&
-            p.requested_reviewers.some((r) => r.id == EXIVITY_BOT));
+        return pulls.some((p) => { var _a; return (_a = p.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((r) => r.id == EXIVITY_BOT); });
     });
 }
 function run() {
@@ -5837,7 +5836,7 @@ function run() {
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
             // No PR found, skip
             if (!(yield hasReviewRequest(octokit, branch, component, owner))) {
-                (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)(`Skipping scaffold build, because there is no non-draft PR associated with the current branch "${branch}".`);
+                (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`);
                 return;
             }
             (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);

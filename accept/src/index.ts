@@ -24,10 +24,8 @@ async function hasReviewRequest(
     head: `exivity:${branch}`,
   })
 
-  return pulls.some(
-    (p: any) =>
-      p.requested_reviewers &&
-      p.requested_reviewers.some((r: any) => r.id == EXIVITY_BOT)
+  return pulls.some((p: any) =>
+    p.requested_reviewers?.some((r: any) => r.id == EXIVITY_BOT)
   )
 }
 
@@ -66,7 +64,7 @@ async function run() {
     // No PR found, skip
     if (!(await hasReviewRequest(octokit, branch, component, owner))) {
       warning(
-        `Skipping scaffold build, because there is no non-draft PR associated with the current branch "${branch}".`
+        `Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`
       )
       return
     }
