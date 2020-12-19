@@ -5801,7 +5801,6 @@ function run() {
             const event = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('event');
             // Assertions
             if (!ghToken ||
-                !pull_request ||
                 !['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)) {
                 throw new Error('A required argument is missing');
             }
