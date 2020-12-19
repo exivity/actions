@@ -5810,8 +5810,11 @@ function run() {
             const { data: [most_recent], } = yield octokit.pulls.list({
                 owner,
                 repo,
+                state: 'open',
+                sort: 'created',
                 head: `exivity:${process.env['GITHUB_REF'].slice(11)}`,
             });
+            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(JSON.stringify(most_recent));
             // get PR number to use
             if (!pull_request && !most_recent) {
                 (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)('No pull request to review, skipping action');

@@ -29,8 +29,12 @@ async function run() {
     } = await octokit.pulls.list({
       owner,
       repo,
+      state: 'open',
+      sort: 'created',
       head: `exivity:${process.env['GITHUB_REF'].slice(11)}`,
     })
+
+    info(JSON.stringify(most_recent))
 
     // get PR number to use
     if (!pull_request && !most_recent) {
