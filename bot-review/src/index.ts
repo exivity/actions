@@ -16,7 +16,7 @@ async function run() {
     if (
       !ghToken ||
       !pull_request ||
-      ['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)
+      !['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)
     ) {
       throw new Error('A required argument is missing')
     }
