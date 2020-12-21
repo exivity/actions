@@ -11,7 +11,7 @@ async function run() {
     // inputs
     const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
     const pull_request = parseInt(getInput('pull'), 10)
-    const repo = getInput('component') || component
+    const repo = getInput('repo') || component
     const event = getInput('event')
 
     // Assertions

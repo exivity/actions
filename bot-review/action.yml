@@ -1,5 +1,5 @@
 name: 'Bot review'
-description: 'Reviews a PR in name of exivity-bot'
+description: 'Reviews a PR'
 inputs:
   pull:
     description: 'PR to review, defaults to latest of current branch'
@@ -8,7 +8,7 @@ inputs:
     description: 'The repository the PR belongs to, defaults to current'
     required: false
   gh-token:
-    description: 'A GitHub token'
+    description: 'A GitHub token from the PR reviewer'
     required: false
   event:
     description: 'What to do, defaults to approve, other options are REQUEST_CHANGES, COMMENT or PENDING'
