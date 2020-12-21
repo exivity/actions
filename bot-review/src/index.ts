@@ -7,7 +7,7 @@ async function run() {
   try {
     // defaults
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
-    const branch =
+    const default_branch =
       process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11)
 
     // inputs
@@ -15,6 +15,7 @@ async function run() {
     const pull_request = parseInt(getInput('pull'), 10)
     const repo = getInput('repo') || component
     const event = getInput('event')
+    const branch = getInput('branch') || default_branch
 
     // Assertions
     if (

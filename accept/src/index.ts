@@ -1,6 +1,5 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { get } from 'https'
 
 import { getPR } from '../../lib/github'
 
@@ -55,7 +54,9 @@ async function run() {
       !pull_request?.requested_reviewers?.some((r: any) => r.id == EXIVITY_BOT)
     ) {
       warning(
-        `Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`
+        `Skipping scaffold build, because exivity-bot hasn't been called upon to review ${
+          pull_request?.number ? `#${pull_request.number}` : 'a PR'
+        } in branch "${branch}".`
       )
       return
     }

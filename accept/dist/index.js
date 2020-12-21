@@ -5879,7 +5879,7 @@ function run() {
             const pull_request = yield getPR(octokit, owner, component, branch);
             // No PR found, skip
             if (!((_a = pull_request === null || pull_request === void 0 ? void 0 : pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((r) => r.id == EXIVITY_BOT))) {
-                (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`);
+                (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review ${(pull_request === null || pull_request === void 0 ? void 0 : pull_request.number) ? `#${pull_request.number}` : 'a PR'} in branch "${branch}".`);
                 return;
             }
             (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);

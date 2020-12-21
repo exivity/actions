@@ -5846,12 +5846,13 @@ function run() {
         try {
             // defaults
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
-            const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
+            const default_branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
             // inputs
             const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
             const pull_request = parseInt((0,core.getInput)('pull'), 10);
             const repo = (0,core.getInput)('repo') || component;
             const event = (0,core.getInput)('event');
+            const branch = (0,core.getInput)('branch') || default_branch;
             // Assertions
             if (!ghToken ||
                 !['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)) {
