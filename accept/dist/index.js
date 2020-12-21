@@ -5769,15 +5769,18 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 285:
+/***/ 849:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
+// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(438);
-/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_actions_github__WEBPACK_IMPORTED_MODULE_1__);
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __webpack_require__(186);
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __webpack_require__(438);
+// CONCATENATED MODULE: ./lib/github.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5787,6 +5790,54 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
+
+function getShaFromBranch({ ghToken, component, branch, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const octokit = getOctokit(ghToken);
+        if (branch === 'develop') {
+            const hasDevelop = (yield octokit.repos.listBranches({
+                owner: 'exivity',
+                repo: component,
+            })).data.some((repoBranch) => repoBranch.name === 'develop');
+            if (!hasDevelop) {
+                warning(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+                branch = 'master';
+            }
+        }
+        const sha = (yield octokit.repos.getBranch({
+            owner: 'exivity',
+            repo: component,
+            branch,
+        })).data.commit.sha;
+        info(`Resolved ${branch} to ${sha}`);
+        return sha;
+    });
+}
+function getPR(octokit, owner, repo, branch) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // get most recent PR of current branch
+        const { data: [most_recent], } = yield octokit.pulls.list({
+            owner,
+            repo,
+            sort: 'updated',
+            head: `exivity:${branch}`,
+        });
+        return most_recent;
+    });
+}
+
+// CONCATENATED MODULE: ./accept/src/index.ts
+var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
 
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
@@ -5799,19 +5850,19 @@ function detectIssueKey(input) {
 }
 function run() {
     var _a;
-    return __awaiter(this, void 0, void 0, function* () {
+    return src_awaiter(this, void 0, void 0, function* () {
         try {
             // Determine default branch
             const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
             const defaultScaffoldBranch = 'develop';
             // Skip accepting commits on master
             if (branch === 'master') {
-                (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)('Skipping scaffold build for master branch builds.');
+                (0,core.info)('Skipping scaffold build for master branch builds.');
                 return;
             }
             // Inputs
-            const scaffoldBranch = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('scaffold-branch') || defaultScaffoldBranch;
-            const ghToken = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+            const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
+            const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
             // Assertions
             if (!ghToken) {
                 throw new Error('A required argument is missing');
@@ -5819,24 +5870,19 @@ function run() {
             // Detect issue key in branch name
             const issue = detectIssueKey(branch);
             if (issue) {
-                (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Detected issue key ${issue}.`);
+                (0,core.info)(`Detected issue key ${issue}.`);
             }
             // Initialize GH client
-            const octokit = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(ghToken);
+            const octokit = (0,github.getOctokit)(ghToken);
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
             // Get PR
-            const { data: [pull_request], } = yield octokit.pulls.list({
-                owner,
-                repo: component,
-                sort: 'updated',
-                head: `exivity:${branch}`,
-            });
+            const pull_request = yield getPR(octokit, owner, component, branch);
             // No PR found, skip
             if (!((_a = pull_request === null || pull_request === void 0 ? void 0 : pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((r) => r.id == EXIVITY_BOT))) {
-                (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`);
+                (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review the PR in branch "${branch}".`);
                 return;
             }
-            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
+            (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
             // Create workflow-dispatch event
             // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
             yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
@@ -5853,7 +5899,7 @@ function run() {
             });
         }
         catch (error) {
-            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(error.message);
+            (0,core.setFailed)(error.message);
         }
     });
 }
@@ -6006,35 +6052,6 @@ module.exports = require("zlib");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => module['default'] :
-/******/ 				() => module;
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -6052,6 +6069,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(285);
+/******/ 	return __webpack_require__(849);
 /******/ })()
 ;

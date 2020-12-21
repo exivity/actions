@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/bot-review.yml'
       - 'bot-review/**'
+      - 'lib/github.ts'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}

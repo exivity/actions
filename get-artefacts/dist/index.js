@@ -6992,6 +6992,18 @@ function getShaFromBranch({ ghToken, component, branch, }) {
         return sha;
     });
 }
+function getPR(octokit, owner, repo, branch) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // get most recent PR of current branch
+        const { data: [most_recent], } = yield octokit.pulls.list({
+            owner,
+            repo,
+            sort: 'updated',
+            head: `exivity:${branch}`,
+        });
+        return most_recent;
+    });
+}
 
 // EXTERNAL MODULE: external "os"
 var external_os_ = __webpack_require__(87);

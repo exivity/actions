@@ -1,6 +1,8 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 
+import { getPR } from '../../lib/github'
+
 async function run() {
   try {
     // defaults
@@ -25,22 +27,15 @@ async function run() {
     // Initialize GH client
     const octokit = getOctokit(ghToken)
 
-    // get most recent PR of current branch
-    const {
-      data: [most_recent],
-    } = await octokit.pulls.list({
-      owner,
-      repo,
-      sort: 'updated',
-      head: `exivity:${branch}`,
-    })
+    const pull_number = isNaN(pull_request)
+      ? (await getPR(octokit, owner, repo, branch))?.number
+      : pull_request
 
     // get PR number to use
-    if (!pull_request && !most_recent) {
+    if (!pull_number) {
       warning('No pull request to review, skipping action')
       return
     }
-    const pull_number = isNaN(pull_request) ? most_recent.number : pull_request
 
     info(`Calling GitHub API to approve PR ${pull_number} of repo ${repo}`)
 

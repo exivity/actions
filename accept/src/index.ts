@@ -1,5 +1,8 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { get } from 'https'
+
+import { getPR } from '../../lib/github'
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379
@@ -45,14 +48,7 @@ async function run() {
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
 
     // Get PR
-    const {
-      data: [pull_request],
-    } = await octokit.pulls.list({
-      owner,
-      repo: component,
-      sort: 'updated',
-      head: `exivity:${branch}`,
-    })
+    const pull_request = await getPR(octokit, owner, component, branch)
 
     // No PR found, skip
     if (

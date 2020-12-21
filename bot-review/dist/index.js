@@ -5769,15 +5769,18 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 365:
+/***/ 704:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
+// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(438);
-/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_actions_github__WEBPACK_IMPORTED_MODULE_1__);
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __webpack_require__(186);
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __webpack_require__(438);
+// CONCATENATED MODULE: ./lib/github.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5789,49 +5792,92 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
-function run() {
+function getShaFromBranch({ ghToken, component, branch, }) {
     return __awaiter(this, void 0, void 0, function* () {
+        const octokit = getOctokit(ghToken);
+        if (branch === 'develop') {
+            const hasDevelop = (yield octokit.repos.listBranches({
+                owner: 'exivity',
+                repo: component,
+            })).data.some((repoBranch) => repoBranch.name === 'develop');
+            if (!hasDevelop) {
+                warning(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+                branch = 'master';
+            }
+        }
+        const sha = (yield octokit.repos.getBranch({
+            owner: 'exivity',
+            repo: component,
+            branch,
+        })).data.commit.sha;
+        info(`Resolved ${branch} to ${sha}`);
+        return sha;
+    });
+}
+function getPR(octokit, owner, repo, branch) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // get most recent PR of current branch
+        const { data: [most_recent], } = yield octokit.pulls.list({
+            owner,
+            repo,
+            sort: 'updated',
+            head: `exivity:${branch}`,
+        });
+        return most_recent;
+    });
+}
+
+// CONCATENATED MODULE: ./bot-review/src/index.ts
+var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function run() {
+    var _a;
+    return src_awaiter(this, void 0, void 0, function* () {
         try {
             // defaults
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
             const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
             // inputs
-            const ghToken = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
-            const pull_request = parseInt((0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('pull'), 10);
-            const repo = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('component') || component;
-            const event = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('event');
+            const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+            const pull_request = parseInt((0,core.getInput)('pull'), 10);
+            const repo = (0,core.getInput)('repo') || component;
+            const event = (0,core.getInput)('event');
             // Assertions
             if (!ghToken ||
                 !['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)) {
                 throw new Error('A required argument is missing');
             }
             // Initialize GH client
-            const octokit = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(ghToken);
-            // get most recent PR of current branch
-            const { data: [most_recent], } = yield octokit.pulls.list({
-                owner,
-                repo,
-                sort: 'updated',
-                head: `exivity:${branch}`,
-            });
+            const octokit = (0,github.getOctokit)(ghToken);
+            const pull_number = isNaN(pull_request)
+                ? (_a = (yield getPR(octokit, owner, repo, branch))) === null || _a === void 0 ? void 0 : _a.number : pull_request;
             // get PR number to use
-            if (!pull_request && !most_recent) {
-                (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)('No pull request to review, skipping action');
+            if (!pull_number) {
+                (0,core.warning)('No pull request to review, skipping action');
                 return;
             }
-            const pull_number = isNaN(pull_request) ? most_recent.number : pull_request;
-            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to approve PR ${pull_number} of repo ${repo}`);
+            (0,core.info)(`Calling GitHub API to approve PR ${pull_number} of repo ${repo}`);
             // call GH API
             yield octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {
                 owner,
                 repo,
                 pull_number,
                 event: event,
-                body: (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('body'),
+                body: (0,core.getInput)('body'),
             });
         }
         catch (err) {
-            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(err.message);
+            (0,core.setFailed)(err.message);
         }
     });
 }
@@ -5984,35 +6030,6 @@ module.exports = require("zlib");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => module['default'] :
-/******/ 				() => module;
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -6030,6 +6047,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(365);
+/******/ 	return __webpack_require__(704);
 /******/ })()
 ;
