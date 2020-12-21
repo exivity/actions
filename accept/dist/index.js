@@ -5848,7 +5848,7 @@ function run() {
                     issue,
                     custom_component_name: component,
                     custom_component_sha: process.env['GITHUB_SHA'],
-                    custom_pull_request: `${pull_request.number}`,
+                    pull_request: `${pull_request.number}`,
                 },
             });
         }

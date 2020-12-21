@@ -5820,7 +5820,7 @@ function run() {
                 return;
             }
             const pull_number = isNaN(pull_request) ? most_recent.number : pull_request;
-            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to approve PR ${pull_request} of repo ${repo}`);
+            (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Calling GitHub API to approve PR ${pull_number} of repo ${repo}`);
             // call GH API
             yield octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {
                 owner,

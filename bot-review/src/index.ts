@@ -42,7 +42,7 @@ async function run() {
     }
     const pull_number = isNaN(pull_request) ? most_recent.number : pull_request
 
-    info(`Calling GitHub API to approve PR ${pull_request} of repo ${repo}`)
+    info(`Calling GitHub API to approve PR ${pull_number} of repo ${repo}`)
 
     // call GH API
     await octokit.request(
