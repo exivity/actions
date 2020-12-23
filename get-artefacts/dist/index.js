@@ -6992,14 +6992,14 @@ function getShaFromBranch({ ghToken, component, branch, }) {
         return sha;
     });
 }
-function getPR(octokit, owner, repo, branch) {
+function getPR(octokit, repo, branch) {
     return __awaiter(this, void 0, void 0, function* () {
         // get most recent PR of current branch
         const { data: [most_recent], } = yield octokit.pulls.list({
-            owner,
+            owner: 'exivity',
             repo,
-            sort: 'updated',
             head: `exivity:${branch}`,
+            sort: 'updated',
         });
         return most_recent;
     });

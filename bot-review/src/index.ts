@@ -28,7 +28,7 @@ async function run() {
     const octokit = getOctokit(ghToken)
 
     const pull_number = isNaN(pull_request)
-      ? (await getPR(octokit, owner, repo, branch))?.number
+      ? (await getPR(octokit, repo, branch))?.number
       : pull_request
 
     // get PR number to use

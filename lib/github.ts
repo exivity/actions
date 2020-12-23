@@ -44,18 +44,18 @@ export async function getShaFromBranch({
 
 export async function getPR(
   octokit: ReturnType<typeof getOctokit>,
-  owner: string,
   repo: string,
   branch: string
-): Promise<any> {
+) {
   // get most recent PR of current branch
   const {
     data: [most_recent],
   } = await octokit.pulls.list({
-    owner,
+    owner: 'exivity',
     repo,
-    sort: 'updated',
     head: `exivity:${branch}`,
+    sort: 'updated',
   })
+
   return most_recent
 }

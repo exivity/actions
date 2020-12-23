@@ -5794,14 +5794,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function getShaFromBranch({ ghToken, component, branch, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        const octokit = getOctokit(ghToken);
+        const octokit = (0,github.getOctokit)(ghToken);
         if (branch === 'develop') {
             const hasDevelop = (yield octokit.repos.listBranches({
                 owner: 'exivity',
                 repo: component,
             })).data.some((repoBranch) => repoBranch.name === 'develop');
             if (!hasDevelop) {
-                warning(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+                (0,core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
                 branch = 'master';
             }
         }
@@ -5810,18 +5810,18 @@ function getShaFromBranch({ ghToken, component, branch, }) {
             repo: component,
             branch,
         })).data.commit.sha;
-        info(`Resolved ${branch} to ${sha}`);
+        (0,core.info)(`Resolved ${branch} to ${sha}`);
         return sha;
     });
 }
-function getPR(octokit, owner, repo, branch) {
+function getPR(octokit, repo, branch) {
     return __awaiter(this, void 0, void 0, function* () {
         // get most recent PR of current branch
         const { data: [most_recent], } = yield octokit.pulls.list({
-            owner,
+            owner: 'exivity',
             repo,
-            sort: 'updated',
             head: `exivity:${branch}`,
+            sort: 'updated',
         });
         return most_recent;
     });
@@ -5854,7 +5854,6 @@ function run() {
         try {
             // Determine default branch
             const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
-            console.log(`Got branch ${branch}`);
             const defaultScaffoldBranch = 'develop';
             // Skip accepting commits on master
             if (branch === 'master') {
@@ -5876,11 +5875,19 @@ function run() {
             // Initialize GH client
             const octokit = (0,github.getOctokit)(ghToken);
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
+            console.log(`Got branch ${branch}`);
+            console.log(`Got GITHUB_SHA ${process.env.GITHUB_SHA}`);
+            console.log(`Got SHA from branch ` +
+                (yield getShaFromBranch({
+                    ghToken,
+                    component,
+                    branch,
+                })));
             // Get PR
-            const pull_request = yield getPR(octokit, owner, component, branch);
+            const pull_request = yield getPR(octokit, component, branch);
             // No PR found, skip
-            if (!((_a = pull_request === null || pull_request === void 0 ? void 0 : pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((r) => r.id == EXIVITY_BOT))) {
-                (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review ${(pull_request === null || pull_request === void 0 ? void 0 : pull_request.number) ? `#${pull_request.number}` : 'a PR'} in branch "${branch}".`);
+            if (!((_a = pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((reviewer) => reviewer.id == EXIVITY_BOT))) {
+                (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review ${pull_request.number ? `#${pull_request.number}` : 'a PR'} in branch "${branch}".`);
                 return;
             }
             (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);

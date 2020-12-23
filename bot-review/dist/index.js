@@ -5814,14 +5814,14 @@ function getShaFromBranch({ ghToken, component, branch, }) {
         return sha;
     });
 }
-function getPR(octokit, owner, repo, branch) {
+function getPR(octokit, repo, branch) {
     return __awaiter(this, void 0, void 0, function* () {
         // get most recent PR of current branch
         const { data: [most_recent], } = yield octokit.pulls.list({
-            owner,
+            owner: 'exivity',
             repo,
-            sort: 'updated',
             head: `exivity:${branch}`,
+            sort: 'updated',
         });
         return most_recent;
     });
@@ -5861,7 +5861,7 @@ function run() {
             // Initialize GH client
             const octokit = (0,github.getOctokit)(ghToken);
             const pull_number = isNaN(pull_request)
-                ? (_a = (yield getPR(octokit, owner, repo, branch))) === null || _a === void 0 ? void 0 : _a.number : pull_request;
+                ? (_a = (yield getPR(octokit, repo, branch))) === null || _a === void 0 ? void 0 : _a.number : pull_request;
             // get PR number to use
             if (!pull_number) {
                 (0,core.warning)('No pull request to review, skipping action');

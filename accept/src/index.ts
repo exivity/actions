@@ -1,9 +1,10 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { getPR } from '../../lib/github'
+import { getPR, getShaFromBranch } from '../../lib/github'
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379
+
 // id of exivity bot
 const EXIVITY_BOT = 53756225
 
@@ -18,9 +19,6 @@ async function run() {
     // Determine default branch
     const branch =
       process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11)
-
-    console.log(`Got branch ${branch}`)
-
     const defaultScaffoldBranch = 'develop'
 
     // Skip accepting commits on master
@@ -48,16 +46,29 @@ async function run() {
     const octokit = getOctokit(ghToken)
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
 
+    console.log(`Got branch ${branch}`)
+    console.log(`Got GITHUB_SHA ${process.env.GITHUB_SHA}`)
+    console.log(
+      `Got SHA from branch ` +
+        (await getShaFromBranch({
+          ghToken,
+          component,
+          branch,
+        }))
+    )
+
     // Get PR
-    const pull_request = await getPR(octokit, owner, component, branch)
+    const pull_request = await getPR(octokit, component, branch)
 
     // No PR found, skip
     if (
-      !pull_request?.requested_reviewers?.some((r: any) => r.id == EXIVITY_BOT)
+      !pull_request.requested_reviewers?.some(
+        (reviewer: any) => reviewer.id == EXIVITY_BOT
+      )
     ) {
       warning(
         `Skipping scaffold build, because exivity-bot hasn't been called upon to review ${
-          pull_request?.number ? `#${pull_request.number}` : 'a PR'
+          pull_request.number ? `#${pull_request.number}` : 'a PR'
         } in branch "${branch}".`
       )
       return
