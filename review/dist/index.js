@@ -5769,7 +5769,7 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 704:
+/***/ 311:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5827,7 +5827,7 @@ function getPR(octokit, repo, branch) {
     });
 }
 
-// CONCATENATED MODULE: ./bot-review/src/index.ts
+// CONCATENATED MODULE: ./review/src/index.ts
 var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5850,7 +5850,7 @@ function run() {
             // inputs
             const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
             const pull_request = parseInt((0,core.getInput)('pull'), 10);
-            const repo = (0,core.getInput)('repo') || component;
+            const repo = (0,core.getInput)('component') || component;
             const event = (0,core.getInput)('event');
             const branch = (0,core.getInput)('branch') || default_branch;
             // Assertions
@@ -6048,6 +6048,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(704);
+/******/ 	return __webpack_require__(311);
 /******/ })()
 ;

@@ -1,10 +1,10 @@
-name: bot-review
+name: review
 
 on:
   push:
     paths:
-      - '.github/workflows/bot-review.yml'
-      - 'bot-review/**'
+      - '.github/workflows/review.yml'
+      - 'review/**'
       - 'lib/github.ts'
 
 env:
@@ -18,8 +18,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: ./bot-review
+      - uses: ./review
         with:
           event: REQUEST_CHANGES
           body: testing ${{ matrix.os }}...
-      - uses: ./bot-review
+      - uses: ./review

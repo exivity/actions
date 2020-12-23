@@ -5769,7 +5769,7 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 849:
+/***/ 398:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5780,7 +5780,13 @@ __webpack_require__.r(__webpack_exports__);
 var core = __webpack_require__(186);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __webpack_require__(438);
-// CONCATENATED MODULE: ./lib/github.ts
+// CONCATENATED MODULE: ./accept/src/detectIssueKey.ts
+function detectIssueKey(input) {
+    const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
+    return match !== null && match.length > 0 ? match[0] : undefined;
+}
+
+// CONCATENATED MODULE: ./accept/src/always.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5792,8 +5798,62 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
-function getShaFromBranch({ ghToken, component, branch, }) {
+
+function runAlways(workflowId) {
     return __awaiter(this, void 0, void 0, function* () {
+        // Determine default branch
+        const ref = process.env['GITHUB_REF'];
+        let defaultBranch;
+        switch (ref) {
+            case 'refs/heads/master':
+                // Skip accepting commits on master
+                return;
+            default:
+                defaultBranch = 'develop';
+                break;
+        }
+        // Input
+        const branch = (0,core.getInput)('scaffold-branch') || defaultBranch;
+        const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+        // Assertions
+        if (!ghToken) {
+            throw new Error('A required argument is missing');
+        }
+        // Detect issue key in branch name
+        const issue = detectIssueKey(ref);
+        // Create workflow-dispatch event
+        // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+        const octokit = (0,github.getOctokit)(ghToken);
+        const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
+        (0,core.info)(`Calling GitHub API to trigger new scaffold build (branch: "${branch}")`);
+        yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
+            owner: 'exivity',
+            repo: 'scaffold',
+            workflow_id: workflowId,
+            ref: branch,
+            inputs: {
+                issue,
+                custom_component_name: component,
+                custom_component_sha: process.env['GITHUB_SHA'],
+            },
+        });
+    });
+}
+
+// CONCATENATED MODULE: ./lib/github.ts
+var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+function getShaFromBranch({ ghToken, component, branch, }) {
+    return github_awaiter(this, void 0, void 0, function* () {
         const octokit = (0,github.getOctokit)(ghToken);
         if (branch === 'develop') {
             const hasDevelop = (yield octokit.repos.listBranches({
@@ -5815,7 +5875,7 @@ function getShaFromBranch({ ghToken, component, branch, }) {
     });
 }
 function getPR(octokit, repo, branch) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return github_awaiter(this, void 0, void 0, function* () {
         // get most recent PR of current branch
         const { data: [most_recent], } = yield octokit.pulls.list({
             owner: 'exivity',
@@ -5824,6 +5884,149 @@ function getPR(octokit, repo, branch) {
             sort: 'updated',
         });
         return most_recent;
+    });
+}
+
+// CONCATENATED MODULE: ./accept/src/botReview.ts
+var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+// id of exivity bot
+const EXIVITY_BOT = 53756225;
+function runBotReview(workflowId) {
+    var _a;
+    return botReview_awaiter(this, void 0, void 0, function* () {
+        // Determine default branch
+        const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
+        const defaultScaffoldBranch = 'develop';
+        // Skip accepting commits on master
+        if (branch === 'master') {
+            (0,core.info)('Skipping scaffold build for master branch builds.');
+            return;
+        }
+        // Inputs
+        const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
+        const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+        // Assertions
+        if (!ghToken) {
+            throw new Error('A required argument is missing');
+        }
+        // Detect issue key in branch name
+        const issue = detectIssueKey(branch);
+        if (issue) {
+            (0,core.info)(`Detected issue key ${issue}.`);
+        }
+        // Initialize GH client
+        const octokit = (0,github.getOctokit)(ghToken);
+        const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
+        const sha = yield getShaFromBranch({
+            ghToken,
+            component,
+            branch,
+        });
+        // Get PR
+        const pull_request = yield getPR(octokit, component, branch);
+        // No PR found, skip
+        if (!((_a = pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((reviewer) => reviewer.id == EXIVITY_BOT))) {
+            (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review ${pull_request.number ? `#${pull_request.number}` : 'a PR'} in branch "${branch}".`);
+            return;
+        }
+        (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
+        // Create workflow-dispatch event
+        // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+        yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
+            owner: 'exivity',
+            repo: 'scaffold',
+            workflow_id: workflowId,
+            ref: scaffoldBranch,
+            inputs: {
+                issue,
+                custom_component_name: component,
+                custom_component_sha: sha,
+                pull_request: `${pull_request.number}`,
+            },
+        });
+    });
+}
+
+// CONCATENATED MODULE: ./accept/src/pr.ts
+var pr_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function hasPR(octokit, branch, repo, owner) {
+    return pr_awaiter(this, void 0, void 0, function* () {
+        const { data: pulls } = yield octokit.pulls.list({
+            owner,
+            repo,
+            head: `exivity:${branch}`,
+        });
+        return pulls.some((p) => !p.draft);
+    });
+}
+function runPr(workflowId) {
+    return pr_awaiter(this, void 0, void 0, function* () {
+        // Determine default branch
+        const ref = process.env['GITHUB_REF'];
+        const branch = ref.slice(11);
+        const defaultScaffoldBranch = 'develop';
+        // Skip accepting commits on master
+        if (branch === 'master') {
+            (0,core.info)('Skipping scaffold build for master branch builds.');
+            return;
+        }
+        // Inputs
+        const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
+        const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+        // Assertions
+        if (!ghToken) {
+            throw new Error('A required argument is missing');
+        }
+        // Detect issue key in branch name
+        const issue = detectIssueKey(ref);
+        if (issue) {
+            (0,core.info)(`Detected issue key ${issue}.`);
+        }
+        // Initialize GH client
+        const octokit = (0,github.getOctokit)(ghToken);
+        const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
+        // No PR found, skip
+        if (!(yield hasPR(octokit, branch, component, owner))) {
+            (0,core.warning)(`Skipping scaffold build, because there is no non-draft PR associated with the current branch "${branch}".`);
+            return;
+        }
+        (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
+        // Create workflow-dispatch event
+        // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+        yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
+            owner: 'exivity',
+            repo: 'scaffold',
+            workflow_id: workflowId,
+            ref: scaffoldBranch,
+            inputs: {
+                issue,
+                custom_component_name: component,
+                custom_component_sha: process.env['GITHUB_SHA'],
+            },
+        });
     });
 }
 
@@ -5840,68 +6043,27 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+
+const defaultMode = 'pr';
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379;
-// id of exivity bot
-const EXIVITY_BOT = 53756225;
-function detectIssueKey(input) {
-    const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
-    return match !== null && match.length > 0 ? match[0] : undefined;
-}
 function run() {
-    var _a;
     return src_awaiter(this, void 0, void 0, function* () {
         try {
-            // Determine default branch
-            const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
-            const defaultScaffoldBranch = 'develop';
-            // Skip accepting commits on master
-            if (branch === 'master') {
-                (0,core.info)('Skipping scaffold build for master branch builds.');
-                return;
+            const mode = (0,core.getInput)('mode') || defaultMode;
+            switch (mode) {
+                case 'bot-review':
+                    yield runBotReview(workflowId);
+                    break;
+                case 'pr':
+                    yield runPr(workflowId);
+                    break;
+                case 'always':
+                    yield runAlways(workflowId);
+                    break;
+                default:
+                    throw new Error('Invalid mode');
             }
-            // Inputs
-            const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
-            const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
-            // Assertions
-            if (!ghToken) {
-                throw new Error('A required argument is missing');
-            }
-            // Detect issue key in branch name
-            const issue = detectIssueKey(branch);
-            if (issue) {
-                (0,core.info)(`Detected issue key ${issue}.`);
-            }
-            // Initialize GH client
-            const octokit = (0,github.getOctokit)(ghToken);
-            const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
-            const sha = yield getShaFromBranch({
-                ghToken,
-                component,
-                branch,
-            });
-            // Get PR
-            const pull_request = yield getPR(octokit, component, branch);
-            // No PR found, skip
-            if (!((_a = pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((reviewer) => reviewer.id == EXIVITY_BOT))) {
-                (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review ${pull_request.number ? `#${pull_request.number}` : 'a PR'} in branch "${branch}".`);
-                return;
-            }
-            (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
-            // Create workflow-dispatch event
-            // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
-            yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
-                owner: 'exivity',
-                repo: 'scaffold',
-                workflow_id: workflowId,
-                ref: scaffoldBranch,
-                inputs: {
-                    issue,
-                    custom_component_name: component,
-                    custom_component_sha: sha,
-                    pull_request: `${pull_request.number}`,
-                },
-            });
         }
         catch (error) {
             (0,core.setFailed)(error.message);
@@ -6074,6 +6236,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(849);
+/******/ 	return __webpack_require__(398);
 /******/ })()
 ;
