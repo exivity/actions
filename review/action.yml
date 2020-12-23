@@ -1,0 +1,25 @@
+name: 'Bot review'
+description: 'Reviews a PR'
+inputs:
+  component:
+    description: 'The component to review a PR for, defaults to current'
+    required: false
+  pull:
+    description: 'PR number to review, defaults to latest of current branch'
+    required: false
+  gh-token:
+    description: 'A GitHub token from the PR reviewer'
+    required: false
+  event:
+    description: 'What to do, defaults to APPROVE, other options are REQUEST_CHANGES, COMMENT or PENDING'
+    default: 'APPROVE'
+    required: false
+  body:
+    description: 'The body of the review text, required when using REQUEST_CHANGES or COMMENT'
+    required: false
+  branch:
+    description: 'The head branch the pull request belongs to in order to get latest pull request, not needed if `pull` has been specified'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

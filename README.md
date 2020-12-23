@@ -14,6 +14,7 @@ _Available actions:_
 - [`postgres`](#postgres)
 - [`put-artefacts`](#put-artefacts)
 - [`rabbitmq`](#rabbitmq)
+- [`review`](#review)
 
 # `accept`
 
@@ -26,6 +27,17 @@ If the current branch includes a Jira key (e.g. EXVT-1000), the scaffold build
 will try to resolve matching epic branches for other components.
 
 ## Inputs
+
+### `mode`
+
+**Optional**  
+_Options: `bot-review`, `pr` or `always`, defaults to `pr`_  
+Choose a trigger mode:
+
+- `bot-review`: Only trigger when [@exivity-bot](https://github.com/exivity-bot)
+  is added as reviewer to a PR
+- `pr`: Only trigger when the commit is part of a non-draft PR
+- `always`: Trigger immediately
 
 ### `scaffold-branch`
 
@@ -455,4 +467,57 @@ The RabbitMQ version to use. Currently, only 3.8.6 is supported.
 - uses: exivity/actions/rabbitmq@master
   with:
     version: 3.8.6
+```
+
+# `review`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/review)
+
+Reviews a PR.
+
+## Inputs
+
+### `component`
+
+**Optional**  
+_Defaults to current component_  
+The component to review a PR for.
+
+### `pull`
+
+**Optional**  
+_Defaults to latest of current branch_  
+PR number to review.
+
+### `gh-token`
+
+**Optional**  
+_Defaults to the GITHUB_TOKEN environment variable_  
+A GitHub token from the PR reviewer.
+
+### `event`
+
+**Optional**  
+_Defaults to `APPROVE`_  
+Choose from APPROVE, REQUEST_CHANGES, COMMENT or PENDING.
+
+### `body`
+
+**Optional**  
+The body of the review text, required when using REQUEST_CHANGES or COMMENT.
+
+### `branch`
+
+**Optional**  
+_Defaults to current branch`_  
+The head branch the pull request belongs to in order to get latest pull request,
+not needed if `pull` has been specified.
+
+## Example usage
+
+```
+- uses: exivity/actions/review@master
+  with:
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+    body: Exivity bot approves everything!
 ```
