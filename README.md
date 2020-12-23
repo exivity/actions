@@ -509,7 +509,7 @@ The body of the review text, required when using REQUEST_CHANGES or COMMENT.
 ### `branch`
 
 **Optional**  
-_Defaults to current branch`_  
+_Defaults to current branch_  
 The head branch the pull request belongs to in order to get latest pull request,
 not needed if `pull` has been specified.
 
