@@ -5875,14 +5875,11 @@ function run() {
             // Initialize GH client
             const octokit = (0,github.getOctokit)(ghToken);
             const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
-            console.log(`Got branch ${branch}`);
-            console.log(`Got GITHUB_SHA ${process.env.GITHUB_SHA}`);
-            console.log(`Got SHA from branch ` +
-                (yield getShaFromBranch({
-                    ghToken,
-                    component,
-                    branch,
-                })));
+            const sha = yield getShaFromBranch({
+                ghToken,
+                component,
+                branch,
+            });
             // Get PR
             const pull_request = yield getPR(octokit, component, branch);
             // No PR found, skip
@@ -5901,7 +5898,7 @@ function run() {
                 inputs: {
                     issue,
                     custom_component_name: component,
-                    custom_component_sha: process.env['GITHUB_SHA'],
+                    custom_component_sha: sha,
                     pull_request: `${pull_request.number}`,
                 },
             });

@@ -45,17 +45,11 @@ async function run() {
     // Initialize GH client
     const octokit = getOctokit(ghToken)
     const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
-
-    console.log(`Got branch ${branch}`)
-    console.log(`Got GITHUB_SHA ${process.env.GITHUB_SHA}`)
-    console.log(
-      `Got SHA from branch ` +
-        (await getShaFromBranch({
-          ghToken,
-          component,
-          branch,
-        }))
-    )
+    const sha = await getShaFromBranch({
+      ghToken,
+      component,
+      branch,
+    })
 
     // Get PR
     const pull_request = await getPR(octokit, component, branch)
@@ -88,7 +82,7 @@ async function run() {
         inputs: {
           issue,
           custom_component_name: component,
-          custom_component_sha: process.env['GITHUB_SHA'],
+          custom_component_sha: sha,
           pull_request: `${pull_request.number}`,
         },
       }
