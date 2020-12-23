@@ -1,6 +1,5 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
-
 import { getPR } from '../../lib/github'
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
@@ -19,6 +18,9 @@ async function run() {
     // Determine default branch
     const branch =
       process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11)
+
+    console.log(`Got branch ${branch}`)
+
     const defaultScaffoldBranch = 'develop'
 
     // Skip accepting commits on master

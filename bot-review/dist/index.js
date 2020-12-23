@@ -5867,7 +5867,7 @@ function run() {
                 (0,core.warning)('No pull request to review, skipping action');
                 return;
             }
-            (0,core.info)(`Calling GitHub API to approve PR ${pull_number} of repo ${repo}`);
+            (0,core.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
             // call GH API
             yield octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {
                 owner,

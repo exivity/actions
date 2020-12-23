@@ -1,6 +1,5 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
-
 import { getPR } from '../../lib/github'
 
 async function run() {
@@ -38,7 +37,7 @@ async function run() {
       return
     }
 
-    info(`Calling GitHub API to approve PR ${pull_number} of repo ${repo}`)
+    info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
 
     // call GH API
     await octokit.request(

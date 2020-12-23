@@ -5854,6 +5854,7 @@ function run() {
         try {
             // Determine default branch
             const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
+            console.log(`Got branch ${branch}`);
             const defaultScaffoldBranch = 'develop';
             // Skip accepting commits on master
             if (branch === 'master') {
