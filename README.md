@@ -31,9 +31,12 @@ will try to resolve matching epic branches for other components.
 ### `mode`
 
 **Optional**  
-_Options: `bot-review`, `pr` or `always`, defaults to `pr`_  
+_Options: `bot-review`, `pr` or `always`, defaults to `auto`_  
 Choose a trigger mode:
 
+- `auto`: runs `always` on `push` events,
+  `bot-review` on `check_run` and `pull_request` events,
+  else defaults to `pr`
 - `bot-review`: Only trigger when [@exivity-bot](https://github.com/exivity-bot)
   is added as reviewer to a PR
 - `pr`: Only trigger when the commit is part of a non-draft PR

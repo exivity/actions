@@ -2,7 +2,7 @@ name: 'Accept'
 description: 'Triggers a scaffold repository build on AppVeyor'
 inputs:
   mode:
-    description: 'Method to trigger scaffold build'
+    description: 'Method to trigger scaffold build, defaults to auto, other options are bot-review, pr and always'
     required: false
   scaffold-branch:
     description: 'The scaffold branch to build'
