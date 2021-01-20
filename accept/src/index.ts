@@ -3,14 +3,30 @@ import { runAlways } from './always'
 import { runBotReview } from './botReview'
 import { runPr } from './pr'
 
-const defaultMode = 'pr'
+const defaultMode = 'auto'
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379
 
+function autoMode(): string {
+  switch (process.env['GITHUB_EVENT_NAME']) {
+    case 'push':
+      return 'always'
+    case 'check_run':
+    case 'pull_request':
+      return 'bot-review'
+    default:
+      return 'pr'
+  }
+}
+
 async function run() {
   try {
-    const mode = getInput('mode') || defaultMode
+    let mode = getInput('mode') || defaultMode
+
+    if (mode === 'auto') {
+      mode = autoMode()
+    }
 
     switch (mode) {
       case 'bot-review':

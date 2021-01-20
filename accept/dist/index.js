@@ -5926,27 +5926,36 @@ var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 
 // id of exivity bot
 const EXIVITY_BOT = 53756225;
+// Checks if all check runs connected to this ref have completed successfully
+function areChecksDone(octokit, ref, repo) {
+    var _a;
+    return botReview_awaiter(this, void 0, void 0, function* () {
+        const checkResult = yield octokit.checks.listForRef({
+            owner: 'exivity',
+            repo,
+            ref,
+        });
+        return (_a = checkResult.data.check_runs) === null || _a === void 0 ? void 0 : _a.every((check) => check.status === 'completed' && check.conclusion === 'success');
+    });
+}
+// Checks if the branch that had the event triggering this action is ready for scaffold to run,
+// or that we need to wait for a next event.
 function checkIfReady(octokit, ref, repo) {
-    var _a, _b;
+    var _a;
     return botReview_awaiter(this, void 0, void 0, function* () {
         const event = process.env['GITHUB_EVENT_NAME'];
-        if (event === 'push')
-            return true;
         const eventData = yield getEventData();
         if (event === 'check_run' && ((_a = eventData.check_run) === null || _a === void 0 ? void 0 : _a.check_suite.pull_requests.requested_reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT))) {
-            const checkResult = yield octokit.checks.listForRef({
-                owner: 'exivity',
-                repo,
-                ref,
-            });
-            return (_b = checkResult.data.check_runs) === null || _b === void 0 ? void 0 : _b.every((check) => check.status === 'completed' && check.conclusion === 'success');
+            return yield areChecksDone(octokit, ref, repo);
         }
         if (event === 'pull_request') {
             let reviewers = eventData.requested_reviewer;
             if (!Array.isArray(reviewers)) {
                 reviewers = [reviewers];
             }
-            return reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT);
+            if (reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT)) {
+                return yield areChecksDone(octokit, ref, repo);
+            }
         }
         return false;
     });
@@ -6098,13 +6107,27 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
-const defaultMode = 'pr';
+const defaultMode = 'auto';
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379;
+function autoMode() {
+    switch (process.env['GITHUB_EVENT_NAME']) {
+        case 'push':
+            return 'always';
+        case 'check_run':
+        case 'pull_request':
+            return 'bot-review';
+        default:
+            return 'pr';
+    }
+}
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
-            const mode = (0,core.getInput)('mode') || defaultMode;
+            let mode = (0,core.getInput)('mode') || defaultMode;
+            if (mode === 'auto') {
+                mode = autoMode();
+            }
             switch (mode) {
                 case 'bot-review':
                     yield runBotReview(workflowId);

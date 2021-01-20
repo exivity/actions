@@ -11,14 +11,31 @@ interface IDObject {
   id: number
 }
 
+// Checks if all check runs connected to this ref have completed successfully
+async function areChecksDone(
+  octokit: ReturnType<typeof getOctokit>,
+  ref: string,
+  repo: string
+): Promise<boolean> {
+  const checkResult = await octokit.checks.listForRef({
+    owner: 'exivity',
+    repo,
+    ref,
+  })
+
+  return checkResult.data.check_runs?.every(
+    (check) => check.status === 'completed' && check.conclusion === 'success'
+  )
+}
+
+// Checks if the branch that had the event triggering this action is ready for scaffold to run,
+// or that we need to wait for a next event.
 async function checkIfReady(
   octokit: ReturnType<typeof getOctokit>,
   ref: string,
   repo: string
 ): Promise<boolean> {
   const event = process.env['GITHUB_EVENT_NAME']
-
-  if (event === 'push') return true
 
   const eventData = await getEventData()
 
@@ -28,15 +45,7 @@ async function checkIfReady(
       (reviewer: IDObject) => reviewer.id === EXIVITY_BOT
     )
   ) {
-    const checkResult = await octokit.checks.listForRef({
-      owner: 'exivity',
-      repo,
-      ref,
-    })
-
-    return checkResult.data.check_runs?.every(
-      (check) => check.status === 'completed' && check.conclusion === 'success'
-    )
+    return await areChecksDone(octokit, ref, repo)
   }
 
   if (event === 'pull_request') {
@@ -46,7 +55,9 @@ async function checkIfReady(
       reviewers = [reviewers]
     }
 
-    return reviewers.some((reviewer: IDObject) => reviewer.id === EXIVITY_BOT)
+    if (reviewers.some((reviewer: IDObject) => reviewer.id === EXIVITY_BOT)) {
+      return await areChecksDone(octokit, ref, repo)
+    }
   }
 
   return false
