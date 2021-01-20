@@ -5927,19 +5927,19 @@ var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 // id of exivity bot
 const EXIVITY_BOT = 53756225;
 function checkIfReady(octokit, ref, repo) {
+    var _a, _b;
     return botReview_awaiter(this, void 0, void 0, function* () {
         const event = process.env['GITHUB_EVENT_NAME'];
         if (event === 'push')
             return true;
         const eventData = yield getEventData();
-        if (event === 'check_run' &&
-            eventData.check_run.check_suite.pull_requests.requested_reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT)) {
+        if (event === 'check_run' && ((_a = eventData.check_run) === null || _a === void 0 ? void 0 : _a.check_suite.pull_requests.requested_reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT))) {
             const checkResult = yield octokit.checks.listForRef({
                 owner: 'exivity',
                 repo,
                 ref,
             });
-            return checkResult.data.check_runs.every((check) => check.status === 'completed' && check.conclusion === 'success');
+            return (_b = checkResult.data.check_runs) === null || _b === void 0 ? void 0 : _b.every((check) => check.status === 'completed' && check.conclusion === 'success');
         }
         if (event === 'pull_request') {
             let reviewers = eventData.requested_reviewer;
@@ -5986,7 +5986,7 @@ function runBotReview(workflowId) {
         // Get PR
         const pull_request = yield getPR(octokit, component, branch);
         // No PR found, skip
-        if (!((_a = pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((reviewer) => reviewer.id == EXIVITY_BOT))) {
+        if (!((_a = pull_request === null || pull_request === void 0 ? void 0 : pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((reviewer) => reviewer.id == EXIVITY_BOT))) {
             (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review ${pull_request.number ? `#${pull_request.number}` : 'a PR'} in branch "${branch}".`);
             return;
         }

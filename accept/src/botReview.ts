@@ -24,7 +24,7 @@ async function checkIfReady(
 
   if (
     event === 'check_run' &&
-    eventData.check_run.check_suite.pull_requests.requested_reviewers.some(
+    eventData.check_run?.check_suite.pull_requests.requested_reviewers.some(
       (reviewer: IDObject) => reviewer.id === EXIVITY_BOT
     )
   ) {
@@ -34,7 +34,7 @@ async function checkIfReady(
       ref,
     })
 
-    return checkResult.data.check_runs.every(
+    return checkResult.data.check_runs?.every(
       (check) => check.status === 'completed' && check.conclusion === 'success'
     )
   }
@@ -97,7 +97,7 @@ export async function runBotReview(workflowId: number) {
 
   // No PR found, skip
   if (
-    !pull_request.requested_reviewers?.some(
+    !pull_request?.requested_reviewers?.some(
       (reviewer: any) => reviewer.id == EXIVITY_BOT
     )
   ) {
