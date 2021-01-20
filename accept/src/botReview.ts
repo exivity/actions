@@ -12,15 +12,17 @@ interface IDObject {
 }
 
 // Checks if all check runs connected to this ref have completed successfully
-async function areChecksDone(
+export async function isCheckDone(
   octokit: ReturnType<typeof getOctokit>,
   ref: string,
-  repo: string
+  repo: string,
+  toCheck: string
 ): Promise<boolean> {
   const checkResult = await octokit.checks.listForRef({
     owner: 'exivity',
     repo,
     ref,
+    check_name: toCheck,
   })
 
   return checkResult.data.check_runs?.every(
@@ -30,11 +32,7 @@ async function areChecksDone(
 
 // Checks if the branch that had the event triggering this action is ready for scaffold to run,
 // or that we need to wait for a next event.
-async function checkIfReady(
-  octokit: ReturnType<typeof getOctokit>,
-  ref: string,
-  repo: string
-): Promise<boolean> {
+async function checkIfReady(): Promise<boolean> {
   const event = process.env['GITHUB_EVENT_NAME']
 
   const eventData = await getEventData()
@@ -45,7 +43,7 @@ async function checkIfReady(
       (reviewer: IDObject) => reviewer.id === EXIVITY_BOT
     )
   ) {
-    return await areChecksDone(octokit, ref, repo)
+    return true
   }
 
   if (event === 'pull_request') {
@@ -56,14 +54,14 @@ async function checkIfReady(
     }
 
     if (reviewers.some((reviewer: IDObject) => reviewer.id === EXIVITY_BOT)) {
-      return await areChecksDone(octokit, ref, repo)
+      return true
     }
   }
 
   return false
 }
 
-export async function runBotReview(workflowId: number) {
+export async function runBotReview(workflowId: number, ghToken: string) {
   // Determine default branch
   const branch =
     process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11)
@@ -77,19 +75,13 @@ export async function runBotReview(workflowId: number) {
 
   // Inputs
   const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
-  const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
-
-  // Assertions
-  if (!ghToken) {
-    throw new Error('A required argument is missing')
-  }
 
   // Initialize GH client
   const octokit = getOctokit(ghToken)
   const component = process.env['GITHUB_REPOSITORY'].split('/')[1]
 
   // Check if we should skip this
-  if (!(await checkIfReady(octokit, branch, component))) {
+  if (!(await checkIfReady())) {
     info(
       'Skipping scaffold build because not all requirements for running it have been met'
     )

@@ -5927,26 +5927,27 @@ var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 // id of exivity bot
 const EXIVITY_BOT = 53756225;
 // Checks if all check runs connected to this ref have completed successfully
-function areChecksDone(octokit, ref, repo) {
+function isCheckDone(octokit, ref, repo, toCheck) {
     var _a;
     return botReview_awaiter(this, void 0, void 0, function* () {
         const checkResult = yield octokit.checks.listForRef({
             owner: 'exivity',
             repo,
             ref,
+            check_name: toCheck,
         });
         return (_a = checkResult.data.check_runs) === null || _a === void 0 ? void 0 : _a.every((check) => check.status === 'completed' && check.conclusion === 'success');
     });
 }
 // Checks if the branch that had the event triggering this action is ready for scaffold to run,
 // or that we need to wait for a next event.
-function checkIfReady(octokit, ref, repo) {
+function checkIfReady() {
     var _a;
     return botReview_awaiter(this, void 0, void 0, function* () {
         const event = process.env['GITHUB_EVENT_NAME'];
         const eventData = yield getEventData();
         if (event === 'check_run' && ((_a = eventData.check_run) === null || _a === void 0 ? void 0 : _a.check_suite.pull_requests.requested_reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT))) {
-            return yield areChecksDone(octokit, ref, repo);
+            return true;
         }
         if (event === 'pull_request') {
             let reviewers = eventData.requested_reviewer;
@@ -5954,13 +5955,13 @@ function checkIfReady(octokit, ref, repo) {
                 reviewers = [reviewers];
             }
             if (reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT)) {
-                return yield areChecksDone(octokit, ref, repo);
+                return true;
             }
         }
         return false;
     });
 }
-function runBotReview(workflowId) {
+function runBotReview(workflowId, ghToken) {
     var _a;
     return botReview_awaiter(this, void 0, void 0, function* () {
         // Determine default branch
@@ -5973,16 +5974,11 @@ function runBotReview(workflowId) {
         }
         // Inputs
         const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
-        const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
-        // Assertions
-        if (!ghToken) {
-            throw new Error('A required argument is missing');
-        }
         // Initialize GH client
         const octokit = (0,github.getOctokit)(ghToken);
         const component = process.env['GITHUB_REPOSITORY'].split('/')[1];
         // Check if we should skip this
-        if (!(yield checkIfReady(octokit, branch, component))) {
+        if (!(yield checkIfReady())) {
             (0,core.info)('Skipping scaffold build because not all requirements for running it have been met');
             return;
         }
@@ -6107,30 +6103,54 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
-const defaultMode = 'auto';
+
+
+const defaultMode = 'pr';
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379;
-function autoMode() {
-    switch (process.env['GITHUB_EVENT_NAME']) {
-        case 'push':
-            return 'always';
-        case 'check_run':
-        case 'pull_request':
-            return 'bot-review';
-        default:
-            return 'pr';
-    }
+function autoMode(ghToken, ref, repo, needs_check) {
+    return src_awaiter(this, void 0, void 0, function* () {
+        const octokit = (0,github.getOctokit)(ghToken);
+        if (needs_check) {
+            if (!(yield isCheckDone(octokit, ref, repo, needs_check))) {
+                return '';
+            }
+        }
+        switch (process.env['GITHUB_EVENT_NAME']) {
+            case 'push':
+                return 'always';
+            case 'check_run':
+                const pr = yield getPR(octokit, repo, ref);
+                return needs_check ? (pr ? 'bot-review' : 'always') : '';
+            case 'pull_request':
+                return 'bot-review';
+            default:
+                return 'pr';
+        }
+    });
 }
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             let mode = (0,core.getInput)('mode') || defaultMode;
+            const needs_check = (0,core.getInput)('needs_check');
+            const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+            // Assertions
+            if (!ghToken) {
+                throw new Error('The GitHub token is missing');
+            }
             if (mode === 'auto') {
-                mode = autoMode();
+                const ref = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
+                const repo = process.env['GITHUB_REPOSITORY'].split('/')[1];
+                mode = yield autoMode(ghToken, ref, repo, needs_check);
+            }
+            if (mode === '') {
+                (0,core.info)('Skipping build because not all requirements for running it under the current mode have been met');
+                return;
             }
             switch (mode) {
                 case 'bot-review':
-                    yield runBotReview(workflowId);
+                    yield runBotReview(workflowId, ghToken);
                     break;
                 case 'pr':
                     yield runPr(workflowId);
