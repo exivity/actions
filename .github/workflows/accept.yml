@@ -6,6 +6,8 @@ on:
       - '.github/workflows/accept.yml'
       - 'accept/**'
       - 'lib/github.ts'
+  check_run:
+    types: [completed]
 
 env:
   GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}

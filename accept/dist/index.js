@@ -5769,7 +5769,7 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 398:
+/***/ 32:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5887,6 +5887,28 @@ function getPR(octokit, repo, branch) {
     });
 }
 
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(747);
+// CONCATENATED MODULE: ./lib/event.ts
+var event_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+function getEventData() {
+    return event_awaiter(this, void 0, void 0, function* () {
+        const fileData = yield external_fs_.promises.readFile(process.env['GITHUB_EVENT_PATH'], {
+            encoding: 'utf8',
+        });
+        return JSON.parse(fileData);
+    });
+}
+
 // CONCATENATED MODULE: ./accept/src/botReview.ts
 var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5901,8 +5923,34 @@ var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 
 
 
+
 // id of exivity bot
 const EXIVITY_BOT = 53756225;
+function checkIfReady(octokit, ref, repo) {
+    return botReview_awaiter(this, void 0, void 0, function* () {
+        const event = process.env['GITHUB_EVENT_NAME'];
+        if (event === 'push')
+            return true;
+        const eventData = yield getEventData();
+        if (event === 'check_run' &&
+            eventData.check_run.check_suite.pull_requests.requested_reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT)) {
+            const checkResult = yield octokit.checks.listForRef({
+                owner: 'exivity',
+                repo,
+                ref,
+            });
+            return checkResult.data.check_runs.every((check) => check.status === 'completed' && check.conclusion === 'success');
+        }
+        if (event === 'pull_request') {
+            let reviewers = eventData.requested_reviewer;
+            if (!Array.isArray(reviewers)) {
+                reviewers = [reviewers];
+            }
+            return reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT);
+        }
+        return false;
+    });
+}
 function runBotReview(workflowId) {
     var _a;
     return botReview_awaiter(this, void 0, void 0, function* () {
@@ -5921,14 +5969,15 @@ function runBotReview(workflowId) {
         if (!ghToken) {
             throw new Error('A required argument is missing');
         }
-        // Detect issue key in branch name
-        const issue = detectIssueKey(branch);
-        if (issue) {
-            (0,core.info)(`Detected issue key ${issue}.`);
-        }
         // Initialize GH client
         const octokit = (0,github.getOctokit)(ghToken);
-        const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
+        const component = process.env['GITHUB_REPOSITORY'].split('/')[1];
+        // Check if we should skip this
+        if (!(yield checkIfReady(octokit, branch, component))) {
+            (0,core.info)('Skipping scaffold build because not all requirements for running it have been met');
+            return;
+        }
+        // Get sha of the most recent commit
         const sha = yield getShaFromBranch({
             ghToken,
             component,
@@ -5940,6 +5989,11 @@ function runBotReview(workflowId) {
         if (!((_a = pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((reviewer) => reviewer.id == EXIVITY_BOT))) {
             (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review ${pull_request.number ? `#${pull_request.number}` : 'a PR'} in branch "${branch}".`);
             return;
+        }
+        // Detect issue key in branch name
+        const issue = detectIssueKey(branch);
+        if (issue) {
+            (0,core.info)(`Detected issue key ${issue}.`);
         }
         (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
         // Create workflow-dispatch event
@@ -6236,6 +6290,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(398);
+/******/ 	return __webpack_require__(32);
 /******/ })()
 ;
