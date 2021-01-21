@@ -1,15 +1,17 @@
 import { getInput, setFailed, info } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { runAlways } from './always'
-import { runBotReview, isCheckDone } from './botReview'
+import { runBotReview } from './botReview'
 import { runPr } from './pr'
 import { getPR } from '../../lib/github'
+import { isCheckDone } from './checks'
 
 const defaultMode = 'pr'
 
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379
 
+// Returns the mode decided on based the event trigger and state of the checks.
 async function autoMode(
   ghToken: string,
   ref: string,
@@ -54,13 +56,13 @@ async function run() {
       const repo = process.env['GITHUB_REPOSITORY'].split('/')[1]
 
       mode = await autoMode(ghToken, ref, repo, needs_check)
-    }
 
-    if (mode === '') {
-      info(
-        'Skipping build because not all requirements for running it under the current mode have been met'
-      )
-      return
+      if (mode === '') {
+        info(
+          'Skipping build because not all requirements for running it under the current mode have been met'
+        )
+        return
+      }
     }
 
     switch (mode) {

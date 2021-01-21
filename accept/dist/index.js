@@ -1214,7 +1214,7 @@ exports.checkBypass = checkBypass;
 
 /***/ }),
 
-/***/ 334:
+/***/ 379:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1283,7 +1283,7 @@ var universalUserAgent = __webpack_require__(429);
 var beforeAfterHook = __webpack_require__(682);
 var request = __webpack_require__(234);
 var graphql = __webpack_require__(668);
-var authToken = __webpack_require__(334);
+var authToken = __webpack_require__(379);
 
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {};
@@ -5769,7 +5769,7 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 32:
+/***/ 334:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5909,8 +5909,8 @@ function getEventData() {
     });
 }
 
-// CONCATENATED MODULE: ./accept/src/botReview.ts
-var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+// CONCATENATED MODULE: ./accept/src/checks.ts
+var checks_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -5921,15 +5921,10 @@ var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 };
 
 
-
-
-
-// id of exivity bot
-const EXIVITY_BOT = 53756225;
 // Checks if all check runs connected to this ref have completed successfully
 function isCheckDone(octokit, ref, repo, toCheck) {
     var _a;
-    return botReview_awaiter(this, void 0, void 0, function* () {
+    return checks_awaiter(this, void 0, void 0, function* () {
         const checkResult = yield octokit.checks.listForRef({
             owner: 'exivity',
             repo,
@@ -5943,7 +5938,7 @@ function isCheckDone(octokit, ref, repo, toCheck) {
 // or that we need to wait for a next event.
 function checkIfReady() {
     var _a;
-    return botReview_awaiter(this, void 0, void 0, function* () {
+    return checks_awaiter(this, void 0, void 0, function* () {
         const event = process.env['GITHUB_EVENT_NAME'];
         const eventData = yield getEventData();
         if (event === 'check_run' && ((_a = eventData.check_run) === null || _a === void 0 ? void 0 : _a.check_suite.pull_requests.requested_reviewers.some((reviewer) => reviewer.id === EXIVITY_BOT))) {
@@ -5961,6 +5956,24 @@ function checkIfReady() {
         return false;
     });
 }
+
+// CONCATENATED MODULE: ./accept/src/botReview.ts
+var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+
+// id of exivity bot
+const EXIVITY_BOT = 53756225;
 function runBotReview(workflowId, ghToken) {
     var _a;
     return botReview_awaiter(this, void 0, void 0, function* () {
@@ -6105,9 +6118,11 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+
 const defaultMode = 'pr';
 // id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const workflowId = 514379;
+// Returns the mode decided on based the event trigger and state of the checks.
 function autoMode(ghToken, ref, repo, needs_check) {
     return src_awaiter(this, void 0, void 0, function* () {
         const octokit = (0,github.getOctokit)(ghToken);
@@ -6143,10 +6158,10 @@ function run() {
                 const ref = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
                 const repo = process.env['GITHUB_REPOSITORY'].split('/')[1];
                 mode = yield autoMode(ghToken, ref, repo, needs_check);
-            }
-            if (mode === '') {
-                (0,core.info)('Skipping build because not all requirements for running it under the current mode have been met');
-                return;
+                if (mode === '') {
+                    (0,core.info)('Skipping build because not all requirements for running it under the current mode have been met');
+                    return;
+                }
             }
             switch (mode) {
                 case 'bot-review':
@@ -6333,6 +6348,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(32);
+/******/ 	return __webpack_require__(334);
 /******/ })()
 ;
