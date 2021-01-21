@@ -31,7 +31,7 @@ will try to resolve matching epic branches for other components.
 ### `mode`
 
 **Optional**  
-_Options: `bot-review`, `pr` or `always`, defaults to `auto`_  
+_Options: `bot-review`, `auto`, `pr` or `always`, defaults to `pr`_  
 Choose a trigger mode:
 
 - `auto`: runs `always` on `push` events,
@@ -53,6 +53,13 @@ The scaffold branch to build.
 **Optional**  
 _Defaults to the GITHUB_TOKEN environment variable_  
 A GitHub token with access to the exivity/scaffold repository.
+
+### `needs_check`
+
+**Optional**
+A check that needs to be done before this action will run.
+
+_Note:_ this only works with auto mode.
 
 ## Example usage
 
