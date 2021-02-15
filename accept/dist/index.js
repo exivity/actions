@@ -3,7 +3,7 @@ module.exports =
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 351:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
@@ -15,8 +15,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const os = __importStar(__webpack_require__(87));
-const utils_1 = __webpack_require__(278);
+const os = __importStar(__nccwpck_require__(87));
+const utils_1 = __nccwpck_require__(278);
 /**
  * Commands
  *
@@ -89,7 +89,7 @@ function escapeProperty(s) {
 /***/ }),
 
 /***/ 186:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
@@ -110,11 +110,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const command_1 = __webpack_require__(351);
-const file_command_1 = __webpack_require__(717);
-const utils_1 = __webpack_require__(278);
-const os = __importStar(__webpack_require__(87));
-const path = __importStar(__webpack_require__(622));
+const command_1 = __nccwpck_require__(351);
+const file_command_1 = __nccwpck_require__(717);
+const utils_1 = __nccwpck_require__(278);
+const os = __importStar(__nccwpck_require__(87));
+const path = __importStar(__nccwpck_require__(622));
 /**
  * The code to exit an action
  */
@@ -334,7 +334,7 @@ exports.getState = getState;
 /***/ }),
 
 /***/ 717:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
@@ -349,9 +349,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const fs = __importStar(__webpack_require__(747));
-const os = __importStar(__webpack_require__(87));
-const utils_1 = __webpack_require__(278);
+const fs = __importStar(__nccwpck_require__(747));
+const os = __importStar(__nccwpck_require__(87));
+const utils_1 = __nccwpck_require__(278);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -396,14 +396,14 @@ exports.toCommandValue = toCommandValue;
 /***/ }),
 
 /***/ 53:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Context = void 0;
-const fs_1 = __webpack_require__(747);
-const os_1 = __webpack_require__(87);
+const fs_1 = __nccwpck_require__(747);
+const os_1 = __nccwpck_require__(87);
 class Context {
     /**
      * Hydrate the context from the environment
@@ -453,7 +453,7 @@ exports.Context = Context;
 /***/ }),
 
 /***/ 438:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
@@ -478,8 +478,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getOctokit = exports.context = void 0;
-const Context = __importStar(__webpack_require__(53));
-const utils_1 = __webpack_require__(30);
+const Context = __importStar(__nccwpck_require__(53));
+const utils_1 = __nccwpck_require__(30);
 exports.context = new Context.Context();
 /**
  * Returns a hydrated octokit ready to use for GitHub Actions
@@ -496,7 +496,7 @@ exports.getOctokit = getOctokit;
 /***/ }),
 
 /***/ 914:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
@@ -521,7 +521,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getApiBaseUrl = exports.getProxyAgent = exports.getAuthString = void 0;
-const httpClient = __importStar(__webpack_require__(925));
+const httpClient = __importStar(__nccwpck_require__(925));
 function getAuthString(token, options) {
     if (!token && !options.auth) {
         throw new Error('Parameter token or opts.auth is required');
@@ -546,7 +546,7 @@ exports.getApiBaseUrl = getApiBaseUrl;
 /***/ }),
 
 /***/ 30:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
@@ -571,12 +571,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getOctokitOptions = exports.GitHub = exports.context = void 0;
-const Context = __importStar(__webpack_require__(53));
-const Utils = __importStar(__webpack_require__(914));
+const Context = __importStar(__nccwpck_require__(53));
+const Utils = __importStar(__nccwpck_require__(914));
 // octokit + plugins
-const core_1 = __webpack_require__(762);
-const plugin_rest_endpoint_methods_1 = __webpack_require__(44);
-const plugin_paginate_rest_1 = __webpack_require__(193);
+const core_1 = __nccwpck_require__(762);
+const plugin_rest_endpoint_methods_1 = __nccwpck_require__(44);
+const plugin_paginate_rest_1 = __nccwpck_require__(193);
 exports.context = new Context.Context();
 const baseUrl = Utils.getApiBaseUrl();
 const defaults = {
@@ -607,14 +607,14 @@ exports.getOctokitOptions = getOctokitOptions;
 /***/ }),
 
 /***/ 925:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const http = __webpack_require__(605);
-const https = __webpack_require__(211);
-const pm = __webpack_require__(443);
+const http = __nccwpck_require__(605);
+const https = __nccwpck_require__(211);
+const pm = __nccwpck_require__(443);
 let tunnel;
 var HttpCodes;
 (function (HttpCodes) {
@@ -1033,7 +1033,7 @@ class HttpClient {
         if (useProxy) {
             // If using proxy, need tunnel
             if (!tunnel) {
-                tunnel = __webpack_require__(294);
+                tunnel = __nccwpck_require__(294);
             }
             const agentOptions = {
                 maxSockets: maxSockets,
@@ -1214,7 +1214,7 @@ exports.checkBypass = checkBypass;
 
 /***/ }),
 
-/***/ 379:
+/***/ 334:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1272,18 +1272,18 @@ exports.createTokenAuth = createTokenAuth;
 /***/ }),
 
 /***/ 762:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var universalUserAgent = __webpack_require__(429);
-var beforeAfterHook = __webpack_require__(682);
-var request = __webpack_require__(234);
-var graphql = __webpack_require__(668);
-var authToken = __webpack_require__(379);
+var universalUserAgent = __nccwpck_require__(429);
+var beforeAfterHook = __nccwpck_require__(682);
+var request = __nccwpck_require__(234);
+var graphql = __nccwpck_require__(668);
+var authToken = __nccwpck_require__(334);
 
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {};
@@ -1321,7 +1321,7 @@ function _objectWithoutProperties(source, excluded) {
   return target;
 }
 
-const VERSION = "3.2.4";
+const VERSION = "3.2.5";
 
 class Octokit {
   constructor(options = {}) {
@@ -1454,15 +1454,15 @@ exports.Octokit = Octokit;
 /***/ }),
 
 /***/ 440:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var isPlainObject = __webpack_require__(287);
-var universalUserAgent = __webpack_require__(429);
+var isPlainObject = __nccwpck_require__(287);
+var universalUserAgent = __nccwpck_require__(429);
 
 function lowercaseKeys(object) {
   if (!object) {
@@ -1825,7 +1825,7 @@ function withDefaults(oldDefaults, newDefaults) {
   });
 }
 
-const VERSION = "6.0.10";
+const VERSION = "6.0.11";
 
 const userAgent = `octokit-endpoint.js/${VERSION} ${universalUserAgent.getUserAgent()}`; // DEFAULTS has all properties set that EndpointOptions has, except url.
 // So we use RequestParameters and add method as additional required property.
@@ -1852,17 +1852,17 @@ exports.endpoint = endpoint;
 /***/ }),
 
 /***/ 668:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var request = __webpack_require__(234);
-var universalUserAgent = __webpack_require__(429);
+var request = __nccwpck_require__(234);
+var universalUserAgent = __nccwpck_require__(429);
 
-const VERSION = "4.5.8";
+const VERSION = "4.6.0";
 
 class GraphqlError extends Error {
   constructor(request, response) {
@@ -1975,7 +1975,7 @@ exports.withCustomRequest = withCustomRequest;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-const VERSION = "2.6.2";
+const VERSION = "2.9.1";
 
 /**
  * Some “list” response that can be paginated have a different response structure
@@ -2250,6 +2250,7 @@ const Endpoints = {
     removeRepoFromInstallation: ["DELETE /user/installations/{installation_id}/repositories/{repository_id}"],
     resetToken: ["PATCH /applications/{client_id}/token"],
     revokeInstallationAccessToken: ["DELETE /installation/token"],
+    scopeToken: ["POST /applications/{client_id}/token/scoped"],
     suspendInstallation: ["PUT /app/installations/{installation_id}/suspended"],
     unsuspendInstallation: ["DELETE /app/installations/{installation_id}/suspended"],
     updateWebhookConfigForApp: ["PATCH /app/hook/config"]
@@ -2358,15 +2359,24 @@ const Endpoints = {
     getTemplate: ["GET /gitignore/templates/{name}"]
   },
   interactions: {
+    getRestrictionsForAuthenticatedUser: ["GET /user/interaction-limits"],
     getRestrictionsForOrg: ["GET /orgs/{org}/interaction-limits"],
     getRestrictionsForRepo: ["GET /repos/{owner}/{repo}/interaction-limits"],
-    getRestrictionsForYourPublicRepos: ["GET /user/interaction-limits"],
+    getRestrictionsForYourPublicRepos: ["GET /user/interaction-limits", {}, {
+      renamed: ["interactions", "getRestrictionsForAuthenticatedUser"]
+    }],
+    removeRestrictionsForAuthenticatedUser: ["DELETE /user/interaction-limits"],
     removeRestrictionsForOrg: ["DELETE /orgs/{org}/interaction-limits"],
     removeRestrictionsForRepo: ["DELETE /repos/{owner}/{repo}/interaction-limits"],
-    removeRestrictionsForYourPublicRepos: ["DELETE /user/interaction-limits"],
+    removeRestrictionsForYourPublicRepos: ["DELETE /user/interaction-limits", {}, {
+      renamed: ["interactions", "removeRestrictionsForAuthenticatedUser"]
+    }],
+    setRestrictionsForAuthenticatedUser: ["PUT /user/interaction-limits"],
     setRestrictionsForOrg: ["PUT /orgs/{org}/interaction-limits"],
     setRestrictionsForRepo: ["PUT /repos/{owner}/{repo}/interaction-limits"],
-    setRestrictionsForYourPublicRepos: ["PUT /user/interaction-limits"]
+    setRestrictionsForYourPublicRepos: ["PUT /user/interaction-limits", {}, {
+      renamed: ["interactions", "setRestrictionsForAuthenticatedUser"]
+    }]
   },
   issues: {
     addAssignees: ["POST /repos/{owner}/{repo}/issues/{issue_number}/assignees"],
@@ -2506,6 +2516,7 @@ const Endpoints = {
   },
   orgs: {
     blockUser: ["PUT /orgs/{org}/blocks/{username}"],
+    cancelInvitation: ["DELETE /orgs/{org}/invitations/{invitation_id}"],
     checkBlockedUser: ["GET /orgs/{org}/blocks/{username}"],
     checkMembershipForUser: ["GET /orgs/{org}/members/{username}"],
     checkPublicMembershipForUser: ["GET /orgs/{org}/public_members/{username}"],
@@ -2521,6 +2532,7 @@ const Endpoints = {
     list: ["GET /organizations"],
     listAppInstallations: ["GET /orgs/{org}/installations"],
     listBlockedUsers: ["GET /orgs/{org}/blocks"],
+    listFailedInvitations: ["GET /orgs/{org}/failed_invitations"],
     listForAuthenticatedUser: ["GET /user/orgs"],
     listForUser: ["GET /users/{username}/orgs"],
     listInvitationTeams: ["GET /orgs/{org}/invitations/{invitation_id}/teams"],
@@ -3002,6 +3014,7 @@ const Endpoints = {
     removeUserAccessRestrictions: ["DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users", {}, {
       mapToData: "users"
     }],
+    renameBranch: ["POST /repos/{owner}/{repo}/branches/{branch}/rename"],
     replaceAllTopics: ["PUT /repos/{owner}/{repo}/topics", {
       mediaType: {
         previews: ["mercy"]
@@ -3143,7 +3156,7 @@ const Endpoints = {
   }
 };
 
-const VERSION = "4.4.1";
+const VERSION = "4.10.3";
 
 function endpointsToMethods(octokit, endpointsMap) {
   const newMethods = {};
@@ -3249,7 +3262,7 @@ exports.restEndpointMethods = restEndpointMethods;
 /***/ }),
 
 /***/ 537:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -3258,8 +3271,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var deprecation = __webpack_require__(932);
-var once = _interopDefault(__webpack_require__(223));
+var deprecation = __nccwpck_require__(932);
+var once = _interopDefault(__nccwpck_require__(223));
 
 const logOnce = once(deprecation => console.warn(deprecation));
 /**
@@ -3312,7 +3325,7 @@ exports.RequestError = RequestError;
 /***/ }),
 
 /***/ 234:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -3321,13 +3334,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var endpoint = __webpack_require__(440);
-var universalUserAgent = __webpack_require__(429);
-var isPlainObject = __webpack_require__(287);
-var nodeFetch = _interopDefault(__webpack_require__(467));
-var requestError = __webpack_require__(537);
+var endpoint = __nccwpck_require__(440);
+var universalUserAgent = __nccwpck_require__(429);
+var isPlainObject = __nccwpck_require__(287);
+var nodeFetch = _interopDefault(__nccwpck_require__(467));
+var requestError = __nccwpck_require__(537);
 
-const VERSION = "5.4.12";
+const VERSION = "5.4.14";
 
 function getBufferResponse(response) {
   return response.arrayBuffer();
@@ -3468,11 +3481,11 @@ exports.request = request;
 /***/ }),
 
 /***/ 682:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var register = __webpack_require__(670)
-var addHook = __webpack_require__(549)
-var removeHook = __webpack_require__(819)
+var register = __nccwpck_require__(670)
+var addHook = __nccwpck_require__(549)
+var removeHook = __nccwpck_require__(819)
 
 // bind with array of arguments: https://stackoverflow.com/a/21792913
 var bind = Function.bind
@@ -3534,51 +3547,51 @@ module.exports.Collection = Hook.Collection
 /***/ 549:
 /***/ ((module) => {
 
-module.exports = addHook
+module.exports = addHook;
 
-function addHook (state, kind, name, hook) {
-  var orig = hook
+function addHook(state, kind, name, hook) {
+  var orig = hook;
   if (!state.registry[name]) {
-    state.registry[name] = []
+    state.registry[name] = [];
   }
 
-  if (kind === 'before') {
+  if (kind === "before") {
     hook = function (method, options) {
       return Promise.resolve()
         .then(orig.bind(null, options))
-        .then(method.bind(null, options))
-    }
+        .then(method.bind(null, options));
+    };
   }
 
-  if (kind === 'after') {
+  if (kind === "after") {
     hook = function (method, options) {
-      var result
+      var result;
       return Promise.resolve()
         .then(method.bind(null, options))
         .then(function (result_) {
-          result = result_
-          return orig(result, options)
+          result = result_;
+          return orig(result, options);
         })
         .then(function () {
-          return result
-        })
-    }
+          return result;
+        });
+    };
   }
 
-  if (kind === 'error') {
+  if (kind === "error") {
     hook = function (method, options) {
       return Promise.resolve()
         .then(method.bind(null, options))
         .catch(function (error) {
-          return orig(error, options)
-        })
-    }
+          return orig(error, options);
+        });
+    };
   }
 
   state.registry[name].push({
     hook: hook,
-    orig: orig
-  })
+    orig: orig,
+  });
 }
 
 
@@ -3587,33 +3600,32 @@ function addHook (state, kind, name, hook) {
 /***/ 670:
 /***/ ((module) => {
 
-module.exports = register
+module.exports = register;
 
-function register (state, name, method, options) {
-  if (typeof method !== 'function') {
-    throw new Error('method for before hook must be a function')
+function register(state, name, method, options) {
+  if (typeof method !== "function") {
+    throw new Error("method for before hook must be a function");
   }
 
   if (!options) {
-    options = {}
+    options = {};
   }
 
   if (Array.isArray(name)) {
     return name.reverse().reduce(function (callback, name) {
-      return register.bind(null, state, name, callback, options)
-    }, method)()
+      return register.bind(null, state, name, callback, options);
+    }, method)();
   }
 
-  return Promise.resolve()
-    .then(function () {
-      if (!state.registry[name]) {
-        return method(options)
-      }
+  return Promise.resolve().then(function () {
+    if (!state.registry[name]) {
+      return method(options);
+    }
 
-      return (state.registry[name]).reduce(function (method, registered) {
-        return registered.hook.bind(null, method, options)
-      }, method)()
-    })
+    return state.registry[name].reduce(function (method, registered) {
+      return registered.hook.bind(null, method, options);
+    }, method)();
+  });
 }
 
 
@@ -3622,22 +3634,24 @@ function register (state, name, method, options) {
 /***/ 819:
 /***/ ((module) => {
 
-module.exports = removeHook
+module.exports = removeHook;
 
-function removeHook (state, name, method) {
+function removeHook(state, name, method) {
   if (!state.registry[name]) {
-    return
+    return;
   }
 
   var index = state.registry[name]
-    .map(function (registered) { return registered.orig })
-    .indexOf(method)
+    .map(function (registered) {
+      return registered.orig;
+    })
+    .indexOf(method);
 
   if (index === -1) {
-    return
+    return;
   }
 
-  state.registry[name].splice(index, 1)
+  state.registry[name].splice(index, 1);
 }
 
 
@@ -3718,7 +3732,7 @@ exports.isPlainObject = isPlainObject;
 /***/ }),
 
 /***/ 467:
-/***/ ((module, exports, __webpack_require__) => {
+/***/ ((module, exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -3727,11 +3741,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var Stream = _interopDefault(__webpack_require__(413));
-var http = _interopDefault(__webpack_require__(605));
-var Url = _interopDefault(__webpack_require__(835));
-var https = _interopDefault(__webpack_require__(211));
-var zlib = _interopDefault(__webpack_require__(761));
+var Stream = _interopDefault(__nccwpck_require__(413));
+var http = _interopDefault(__nccwpck_require__(605));
+var Url = _interopDefault(__nccwpck_require__(835));
+var https = _interopDefault(__nccwpck_require__(211));
+var zlib = _interopDefault(__nccwpck_require__(761));
 
 // Based on https://github.com/tmpvar/jsdom/blob/aa85b2abf07766ff7bf5c1f6daafb3726f2f2db5/lib/jsdom/living/blob.js
 
@@ -3882,7 +3896,7 @@ FetchError.prototype.name = 'FetchError';
 
 let convert;
 try {
-	convert = __webpack_require__(877).convert;
+	convert = __nccwpck_require__(877).convert;
 } catch (e) {}
 
 const INTERNALS = Symbol('Body internals');
@@ -5375,9 +5389,9 @@ exports.FetchError = FetchError;
 /***/ }),
 
 /***/ 223:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var wrappy = __webpack_require__(940)
+var wrappy = __nccwpck_require__(940)
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
 
@@ -5424,26 +5438,26 @@ function onceStrict (fn) {
 /***/ }),
 
 /***/ 294:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = __webpack_require__(219);
+module.exports = __nccwpck_require__(219);
 
 
 /***/ }),
 
 /***/ 219:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var net = __webpack_require__(631);
-var tls = __webpack_require__(16);
-var http = __webpack_require__(605);
-var https = __webpack_require__(211);
-var events = __webpack_require__(614);
-var assert = __webpack_require__(357);
-var util = __webpack_require__(669);
+var net = __nccwpck_require__(631);
+var tls = __nccwpck_require__(16);
+var http = __nccwpck_require__(605);
+var https = __nccwpck_require__(211);
+var events = __nccwpck_require__(614);
+var assert = __nccwpck_require__(357);
+var util = __nccwpck_require__(669);
 
 
 exports.httpOverHttp = httpOverHttp;
@@ -5769,24 +5783,18 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 334:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ 578:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
 // ESM COMPAT FLAG
-__webpack_require__.r(__webpack_exports__);
+__nccwpck_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __webpack_require__(186);
+var core = __nccwpck_require__(186);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
-var github = __webpack_require__(438);
-// CONCATENATED MODULE: ./accept/src/detectIssueKey.ts
-function detectIssueKey(input) {
-    const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
-    return match !== null && match.length > 0 ? match[0] : undefined;
-}
-
-// CONCATENATED MODULE: ./accept/src/always.ts
+var github = __nccwpck_require__(438);
+// CONCATENATED MODULE: ./lib/github.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5797,51 +5805,42 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
-
-
-function runAlways(workflowId) {
+function getShaFromRef({ octokit, component, ref }) {
     return __awaiter(this, void 0, void 0, function* () {
-        // Determine default branch
-        const ref = process.env['GITHUB_REF'];
-        let defaultBranch;
-        switch (ref) {
-            case 'refs/heads/master':
-                // Skip accepting commits on master
-                return;
-            default:
-                defaultBranch = 'develop';
-                break;
+        if (ref === 'develop') {
+            const hasDevelop = (yield octokit.repos.listBranches({
+                owner: 'exivity',
+                repo: component,
+            })).data.some((repoBranch) => repoBranch.name === 'develop');
+            if (!hasDevelop) {
+                (0,core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+                ref = 'master';
+            }
         }
-        // Input
-        const branch = (0,core.getInput)('scaffold-branch') || defaultBranch;
-        const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
-        // Assertions
-        if (!ghToken) {
-            throw new Error('A required argument is missing');
-        }
-        // Detect issue key in branch name
-        const issue = detectIssueKey(ref);
-        // Create workflow-dispatch event
-        // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
-        const octokit = (0,github.getOctokit)(ghToken);
-        const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
-        (0,core.info)(`Calling GitHub API to trigger new scaffold build (branch: "${branch}")`);
-        yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
+        const sha = (yield octokit.repos.getBranch({
             owner: 'exivity',
-            repo: 'scaffold',
-            workflow_id: workflowId,
-            ref: branch,
-            inputs: {
-                issue,
-                custom_component_name: component,
-                custom_component_sha: process.env['GITHUB_SHA'],
-            },
+            repo: component,
+            branch: ref,
+        })).data.commit.sha;
+        (0,core.info)(`Resolved ${ref} to ${sha}`);
+        return sha;
+    });
+}
+function getPR(octokit, repo, ref) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // get most recent PR of current branch
+        const { data: [most_recent], } = yield octokit.pulls.list({
+            owner: 'exivity',
+            repo,
+            head: `exivity:${ref}`,
+            sort: 'updated',
         });
+        return most_recent;
     });
 }
 
-// CONCATENATED MODULE: ./lib/github.ts
-var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+// CONCATENATED MODULE: ./accept/src/dispatch.ts
+var dispatch_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -5851,44 +5850,51 @@ var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
     });
 };
 
-
-function getShaFromBranch({ ghToken, component, branch, }) {
-    return github_awaiter(this, void 0, void 0, function* () {
-        const octokit = (0,github.getOctokit)(ghToken);
-        if (branch === 'develop') {
-            const hasDevelop = (yield octokit.repos.listBranches({
-                owner: 'exivity',
-                repo: component,
-            })).data.some((repoBranch) => repoBranch.name === 'develop');
-            if (!hasDevelop) {
-                (0,core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
-                branch = 'master';
-            }
-        }
-        const sha = (yield octokit.repos.getBranch({
+function dispatch({ octokit, scaffoldWorkflowId, scaffoldBranch, issue, component, sha, pull_request, }) {
+    return dispatch_awaiter(this, void 0, void 0, function* () {
+        (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
+        // Create workflow-dispatch event
+        // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+        yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
             owner: 'exivity',
-            repo: component,
-            branch,
-        })).data.commit.sha;
-        (0,core.info)(`Resolved ${branch} to ${sha}`);
-        return sha;
+            repo: 'scaffold',
+            workflow_id: scaffoldWorkflowId,
+            ref: scaffoldBranch,
+            inputs: {
+                issue,
+                custom_component_name: component,
+                custom_component_sha: sha || process.env['GITHUB_SHA'],
+                pull_request,
+            },
+        });
     });
 }
-function getPR(octokit, repo, branch) {
-    return github_awaiter(this, void 0, void 0, function* () {
-        // get most recent PR of current branch
-        const { data: [most_recent], } = yield octokit.pulls.list({
-            owner: 'exivity',
-            repo,
-            head: `exivity:${branch}`,
-            sort: 'updated',
+
+// CONCATENATED MODULE: ./accept/src/always.ts
+var always_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+function runAlways({ octokit, component, scaffoldBranch, scaffoldWorkflowId, issue, }) {
+    return always_awaiter(this, void 0, void 0, function* () {
+        yield dispatch({
+            octokit,
+            scaffoldWorkflowId,
+            scaffoldBranch,
+            issue,
+            component,
         });
-        return most_recent;
     });
 }
 
 // EXTERNAL MODULE: external "fs"
-var external_fs_ = __webpack_require__(747);
+var external_fs_ = __nccwpck_require__(747);
 // CONCATENATED MODULE: ./lib/event.ts
 var event_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5922,21 +5928,21 @@ var checks_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
 
 
 // Checks if all check runs connected to this ref have completed successfully
-function isCheckDone(octokit, ref, repo, toCheck) {
+function isCheckDone(octokit, ref, repo, checkName) {
     var _a;
     return checks_awaiter(this, void 0, void 0, function* () {
         const checkResult = yield octokit.checks.listForRef({
             owner: 'exivity',
             repo,
             ref,
-            check_name: toCheck,
+            check_name: checkName,
         });
         return (_a = checkResult.data.check_runs) === null || _a === void 0 ? void 0 : _a.every((check) => check.status === 'completed' && check.conclusion === 'success');
     });
 }
 // Checks if the branch that had the event triggering this action is ready for scaffold to run,
 // or that we need to wait for a next event.
-function checkIfReady() {
+function isBotReviewRequested() {
     var _a;
     return checks_awaiter(this, void 0, void 0, function* () {
         const event = process.env['GITHUB_EVENT_NAME'];
@@ -5971,64 +5977,39 @@ var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 
 
 
-
 // id of exivity bot
 const EXIVITY_BOT = 53756225;
-function runBotReview(workflowId, ghToken) {
-    var _a;
+function runBotReview({ octokit, component, ref, scaffoldBranch, scaffoldWorkflowId, issue, }) {
     return botReview_awaiter(this, void 0, void 0, function* () {
-        // Determine default branch
-        const branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
-        const defaultScaffoldBranch = 'develop';
-        // Skip accepting commits on master
-        if (branch === 'master') {
-            (0,core.info)('Skipping scaffold build for master branch builds.');
-            return;
-        }
-        // Inputs
-        const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
-        // Initialize GH client
-        const octokit = (0,github.getOctokit)(ghToken);
-        const component = process.env['GITHUB_REPOSITORY'].split('/')[1];
         // Check if we should skip this
-        if (!(yield checkIfReady())) {
-            (0,core.info)('Skipping scaffold build because not all requirements for running it have been met');
+        if (!(yield isBotReviewRequested())) {
+            (0,core.warning)('Skipping: exivity-bot not requested for review');
             return;
         }
         // Get sha of the most recent commit
-        const sha = yield getShaFromBranch({
-            ghToken,
+        const sha = yield getShaFromRef({
+            octokit,
             component,
-            branch,
+            ref,
         });
         // Get PR
-        const pull_request = yield getPR(octokit, component, branch);
-        // No PR found, skip
-        if (!((_a = pull_request === null || pull_request === void 0 ? void 0 : pull_request.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((reviewer) => reviewer.id == EXIVITY_BOT))) {
-            (0,core.warning)(`Skipping scaffold build, because exivity-bot hasn't been called upon to review ${pull_request.number ? `#${pull_request.number}` : 'a PR'} in branch "${branch}".`);
-            return;
-        }
-        // Detect issue key in branch name
-        const issue = detectIssueKey(branch);
-        if (issue) {
-            (0,core.info)(`Detected issue key ${issue}.`);
-        }
-        (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
-        // Create workflow-dispatch event
-        // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
-        yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
-            owner: 'exivity',
-            repo: 'scaffold',
-            workflow_id: workflowId,
-            ref: scaffoldBranch,
-            inputs: {
-                issue,
-                custom_component_name: component,
-                custom_component_sha: sha,
-                pull_request: `${pull_request.number}`,
-            },
+        const pull_request = yield getPR(octokit, component, ref);
+        yield dispatch({
+            octokit,
+            scaffoldWorkflowId,
+            scaffoldBranch,
+            issue,
+            component,
+            sha,
+            pull_request: `${pull_request.number}`,
         });
     });
+}
+
+// CONCATENATED MODULE: ./accept/src/detectIssueKey.ts
+function detectIssueKey(input) {
+    const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
+    return match !== null && match.length > 0 ? match[0] : undefined;
 }
 
 // CONCATENATED MODULE: ./accept/src/pr.ts
@@ -6043,61 +6024,29 @@ var pr_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argum
 };
 
 
-
-function hasPR(octokit, branch, repo, owner) {
+function hasPR(octokit, branch, repo) {
     return pr_awaiter(this, void 0, void 0, function* () {
         const { data: pulls } = yield octokit.pulls.list({
-            owner,
+            owner: 'exivity',
             repo,
             head: `exivity:${branch}`,
         });
         return pulls.some((p) => !p.draft);
     });
 }
-function runPr(workflowId) {
+function runPr({ octokit, component, ref, scaffoldBranch, scaffoldWorkflowId, issue, }) {
     return pr_awaiter(this, void 0, void 0, function* () {
-        // Determine default branch
-        const ref = process.env['GITHUB_REF'];
-        const branch = ref.slice(11);
-        const defaultScaffoldBranch = 'develop';
-        // Skip accepting commits on master
-        if (branch === 'master') {
-            (0,core.info)('Skipping scaffold build for master branch builds.');
-            return;
-        }
-        // Inputs
-        const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
-        const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
-        // Assertions
-        if (!ghToken) {
-            throw new Error('A required argument is missing');
-        }
-        // Detect issue key in branch name
-        const issue = detectIssueKey(ref);
-        if (issue) {
-            (0,core.info)(`Detected issue key ${issue}.`);
-        }
-        // Initialize GH client
-        const octokit = (0,github.getOctokit)(ghToken);
-        const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
         // No PR found, skip
-        if (!(yield hasPR(octokit, branch, component, owner))) {
-            (0,core.warning)(`Skipping scaffold build, because there is no non-draft PR associated with the current branch "${branch}".`);
+        if (!(yield hasPR(octokit, ref, component))) {
+            (0,core.warning)(`Skipping: no non-draft PR for branch "${ref}"`);
             return;
         }
-        (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
-        // Create workflow-dispatch event
-        // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
-        yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
-            owner: 'exivity',
-            repo: 'scaffold',
-            workflow_id: workflowId,
-            ref: scaffoldBranch,
-            inputs: {
-                issue,
-                custom_component_name: component,
-                custom_component_sha: process.env['GITHUB_SHA'],
-            },
+        yield dispatch({
+            octokit,
+            scaffoldWorkflowId,
+            scaffoldBranch,
+            issue,
+            component,
         });
     });
 }
@@ -6119,59 +6068,83 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
-const defaultMode = 'pr';
-// id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
-const workflowId = 514379;
-// Returns the mode decided on based the event trigger and state of the checks.
-function autoMode(ghToken, ref, repo, needs_check) {
-    return src_awaiter(this, void 0, void 0, function* () {
-        const octokit = (0,github.getOctokit)(ghToken);
-        if (needs_check) {
-            if (!(yield isCheckDone(octokit, ref, repo, needs_check))) {
-                return '';
-            }
-        }
-        switch (process.env['GITHUB_EVENT_NAME']) {
-            case 'push':
-                return 'always';
-            case 'check_run':
-                const pr = yield getPR(octokit, repo, ref);
-                return needs_check ? (pr ? 'bot-review' : 'always') : '';
-            case 'pull_request':
-                return 'bot-review';
-            default:
-                return 'pr';
-        }
-    });
-}
+
+const defaultMode = 'auto';
+// id for exivity/scaffold/.github/workflows/build.yaml
+// obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
+const scaffoldWorkflowId = 514379;
+const defaultScaffoldBranch = 'develop';
 function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             let mode = (0,core.getInput)('mode') || defaultMode;
-            const needs_check = (0,core.getInput)('needs_check');
+            const needsCheck = (0,core.getInput)('needs-check');
             const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+            const octokit = (0,github.getOctokit)(ghToken);
+            const ref = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
+            const component = process.env['GITHUB_REPOSITORY'].split('/')[1];
+            const eventName = process.env['GITHUB_EVENT_NAME'];
             // Assertions
             if (!ghToken) {
                 throw new Error('The GitHub token is missing');
             }
-            if (mode === 'auto') {
-                const ref = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
-                const repo = process.env['GITHUB_REPOSITORY'].split('/')[1];
-                mode = yield autoMode(ghToken, ref, repo, needs_check);
-                if (mode === '') {
-                    (0,core.info)('Skipping build because not all requirements for running it under the current mode have been met');
+            // Skip accepting commits on master
+            if (ref === 'master') {
+                (0,core.warning)('Skipping: master branch is ignored');
+                return;
+            }
+            const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
+            // Check check
+            if (needsCheck) {
+                if (!(yield isCheckDone(octokit, ref, component, needsCheck))) {
+                    (0,core.warning)('Skipping: needs-check constraint is not satisfied');
                     return;
                 }
             }
+            // Detect issue key in branch name
+            const issue = detectIssueKey(ref);
+            if (issue) {
+                (0,core.info)(`Detected issue key ${issue}.`);
+            }
+            // Auto mode decision tree
+            if (mode === 'auto') {
+                switch (eventName) {
+                    case 'push':
+                        mode = 'always';
+                        break;
+                    case 'check_run':
+                        if (!needsCheck) {
+                            (0,core.warning)('Skipping: check_run trigger requires needs-check input');
+                            return '';
+                        }
+                        mode = (yield getPR(octokit, component, ref))
+                            ? 'bot-review'
+                            : 'always';
+                        break;
+                    case 'pull_request':
+                        mode = 'bot-review';
+                        break;
+                    default:
+                        mode = 'pr';
+                }
+            }
+            const params = {
+                octokit,
+                scaffoldWorkflowId,
+                scaffoldBranch,
+                component,
+                ref,
+                issue,
+            };
             switch (mode) {
                 case 'bot-review':
-                    yield runBotReview(workflowId, ghToken);
+                    yield runBotReview(params);
                     break;
                 case 'pr':
-                    yield runPr(workflowId);
+                    yield runPr(params);
                     break;
                 case 'always':
-                    yield runAlways(workflowId);
+                    yield runAlways(params);
                     break;
                 default:
                     throw new Error('Invalid mode');
@@ -6305,7 +6278,7 @@ module.exports = require("zlib");;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
+/******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		if(__webpack_module_cache__[moduleId]) {
 /******/ 			return __webpack_module_cache__[moduleId].exports;
@@ -6320,7 +6293,7 @@ module.exports = require("zlib");;
 /******/ 		// Execute the module function
 /******/ 		var threw = true;
 /******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
 /******/ 			threw = false;
 /******/ 		} finally {
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
@@ -6334,7 +6307,7 @@ module.exports = require("zlib");;
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = (exports) => {
+/******/ 		__nccwpck_require__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -6344,10 +6317,10 @@ module.exports = require("zlib");;
 /******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
-/******/ 	__webpack_require__.ab = __dirname + "/";/************************************************************************/
+/******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(334);
+/******/ 	return __nccwpck_require__(578);
 /******/ })()
 ;

@@ -11,13 +11,13 @@ export async function isCheckDone(
   octokit: ReturnType<typeof getOctokit>,
   ref: string,
   repo: string,
-  toCheck: string
+  checkName: string
 ): Promise<boolean> {
   const checkResult = await octokit.checks.listForRef({
     owner: 'exivity',
     repo,
     ref,
-    check_name: toCheck,
+    check_name: checkName,
   })
 
   return checkResult.data.check_runs?.every(
@@ -27,7 +27,7 @@ export async function isCheckDone(
 
 // Checks if the branch that had the event triggering this action is ready for scaffold to run,
 // or that we need to wait for a next event.
-export async function checkIfReady(): Promise<boolean> {
+export async function isBotReviewRequested(): Promise<boolean> {
   const event = process.env['GITHUB_EVENT_NAME']
 
   const eventData = await getEventData()

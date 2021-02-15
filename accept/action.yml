@@ -7,6 +7,9 @@ inputs:
   scaffold-branch:
     description: 'The scaffold branch to build'
     required: false
+  needs-check:
+    description: 'A check that needs to be done before this action will run.'
+    required: false
   gh-token:
     description: 'A GitHub token'
     required: false

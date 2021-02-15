@@ -1,9 +1,10 @@
 import { getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
+import { getOctokit } from '@actions/github'
 import { promises as fsPromises } from 'fs'
 import { join as pathJoin } from 'path'
 import { getBooleanInput } from '../../lib/core'
-import { getShaFromBranch } from '../../lib/github'
+import { getShaFromRef } from '../../lib/github'
 import { downloadS3object } from '../../lib/s3'
 
 async function unzipAll(path: string) {
@@ -41,10 +42,10 @@ async function run() {
 
     // If we have no sha and a branch, let's find the sha
     if (!sha) {
-      sha = await getShaFromBranch({
-        ghToken,
+      sha = await getShaFromRef({
+        octokit: getOctokit(ghToken),
         component,
-        branch,
+        ref: branch,
       })
     }
 

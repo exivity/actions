@@ -2,19 +2,13 @@ import { info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 
 type Options = {
-  ghToken: string
+  octokit: ReturnType<typeof getOctokit>
   component: string
-  branch: string
+  ref: string
 }
 
-export async function getShaFromBranch({
-  ghToken,
-  component,
-  branch,
-}: Options) {
-  const octokit = getOctokit(ghToken)
-
-  if (branch === 'develop') {
+export async function getShaFromRef({ octokit, component, ref }: Options) {
+  if (ref === 'develop') {
     const hasDevelop = (
       await octokit.repos.listBranches({
         owner: 'exivity',
@@ -25,7 +19,7 @@ export async function getShaFromBranch({
       warning(
         `Branch "develop" not available in repository "exivity/${component}", falling back to "master".`
       )
-      branch = 'master'
+      ref = 'master'
     }
   }
 
@@ -33,11 +27,11 @@ export async function getShaFromBranch({
     await octokit.repos.getBranch({
       owner: 'exivity',
       repo: component,
-      branch,
+      branch: ref,
     })
   ).data.commit.sha
 
-  info(`Resolved ${branch} to ${sha}`)
+  info(`Resolved ${ref} to ${sha}`)
 
   return sha
 }
@@ -45,7 +39,7 @@ export async function getShaFromBranch({
 export async function getPR(
   octokit: ReturnType<typeof getOctokit>,
   repo: string,
-  branch: string
+  ref: string
 ) {
   // get most recent PR of current branch
   const {
@@ -53,7 +47,7 @@ export async function getPR(
   } = await octokit.pulls.list({
     owner: 'exivity',
     repo,
-    head: `exivity:${branch}`,
+    head: `exivity:${ref}`,
     sort: 'updated',
   })
 
