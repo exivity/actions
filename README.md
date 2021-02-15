@@ -50,6 +50,8 @@ In `auto` mode, this is the decision tree:
   - Otherwise: mode set to `always`
 - Other events: mode set to `pr`
 
+This action works best when it's part of a separate workflow ([example](https://github.com/exivity/.github/blob/main/workflow-templates/accept.yml)).
+
 ### `scaffold-branch`
 
 **Optional**  
