@@ -2,10 +2,13 @@ name: 'Accept'
 description: 'Triggers a scaffold repository build on AppVeyor'
 inputs:
   mode:
-    description: 'Method to trigger scaffold build'
+    description: 'Method to trigger scaffold build, defaults to pr, other options are bot-review, auto and always'
     required: false
   scaffold-branch:
     description: 'The scaffold branch to build'
+    required: false
+  needs-check:
+    description: 'A check that needs to be done before this action will run.'
     required: false
   gh-token:
     description: 'A GitHub token'

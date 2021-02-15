@@ -1,9 +1,10 @@
 import { getInput, info, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
+import { getOctokit } from '@actions/github'
 import { platform } from 'os'
 import path from 'path'
 import { startDocker } from '../../lib/docker'
-import { getShaFromBranch } from '../../lib/github'
+import { getShaFromRef } from '../../lib/github'
 import { defaultVersion, image, startPostgres } from '../../lib/postgres'
 import { downloadS3object } from '../../lib/s3'
 
@@ -34,10 +35,11 @@ async function run() {
     info(`Using exivity/db branch "${branch}"`)
 
     // Let's find the sha
-    const sha = await getShaFromBranch({
-      ghToken,
+    const octokit = getOctokit(ghToken)
+    const sha = await getShaFromRef({
+      octokit,
       component: 'db',
-      branch,
+      ref: branch,
     })
 
     // Download db artefacts

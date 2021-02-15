@@ -31,13 +31,24 @@ will try to resolve matching epic branches for other components.
 ### `mode`
 
 **Optional**  
-_Options: `bot-review`, `pr` or `always`, defaults to `pr`_  
+_Options: `auto`, `bot-review`, `pr` or `always`, defaults to `auto`_  
 Choose a trigger mode:
 
+- `auto`: Automatic mode based on event
 - `bot-review`: Only trigger when [@exivity-bot](https://github.com/exivity-bot)
   is added as reviewer to a PR
 - `pr`: Only trigger when the commit is part of a non-draft PR
 - `always`: Trigger immediately
+
+In `auto` mode, this is the decision tree:
+
+- Event is `push`: mode set to `always`
+- Event is `pull_request`: mode set to `bot-review`
+- Event is `check_run`:
+  - If `needs-check` input is not set: ignore
+  - If part of a PR: mode set to `bot-review`
+  - Otherwise: mode set to `always`
+- Other events: mode set to `pr`
 
 ### `scaffold-branch`
 
@@ -50,6 +61,11 @@ The scaffold branch to build.
 **Optional**  
 _Defaults to the GITHUB_TOKEN environment variable_  
 A GitHub token with access to the exivity/scaffold repository.
+
+### `needs-check`
+
+**Optional**
+A check that needs to be done before this action will run.
 
 ## Example usage
 

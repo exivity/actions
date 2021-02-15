@@ -1,26 +1,117 @@
-import { getInput, setFailed } from '@actions/core'
+import { getInput, info, setFailed, warning } from '@actions/core'
+import { getOctokit } from '@actions/github'
+import { getPR } from '../../lib/github'
 import { runAlways } from './always'
 import { runBotReview } from './botReview'
+import { isCheckDone } from './checks'
+import { detectIssueKey } from './detectIssueKey'
 import { runPr } from './pr'
 
-const defaultMode = 'pr'
+export type RunParams = {
+  octokit: ReturnType<typeof getOctokit>
+  scaffoldWorkflowId: number
+  scaffoldBranch: string
+  ref: string
+  component: string
+  issue: string
+}
 
-// id for build.yaml, obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
-const workflowId = 514379
+const defaultMode = 'auto'
+
+// id for exivity/scaffold/.github/workflows/build.yaml
+// obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
+const scaffoldWorkflowId = 514379
+
+const defaultScaffoldBranch = 'develop'
 
 async function run() {
   try {
-    const mode = getInput('mode') || defaultMode
+    let mode = getInput('mode') || defaultMode
+    const needsCheck = getInput('needs-check')
+    const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
+    const octokit = getOctokit(ghToken)
+    const ref =
+      process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11)
+    const component = process.env['GITHUB_REPOSITORY'].split('/')[1]
+    const eventName = process.env['GITHUB_EVENT_NAME']
+
+    // Assertions
+    if (!ghToken) {
+      throw new Error('The GitHub token is missing')
+    }
+
+    // Skip accepting commits on master
+    if (ref === 'master') {
+      warning('Skipping: master branch is ignored')
+      return
+    }
+    const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
+
+    // Check check
+    if (needsCheck) {
+      if (!(await isCheckDone(octokit, ref, component, needsCheck))) {
+        warning('Skipping: needs-check constraint is not satisfied')
+        return
+      }
+    }
+
+    // Detect issue key in branch name
+    const issue = detectIssueKey(ref)
+    if (issue) {
+      info(`Detected issue key: ${issue}`)
+    }
+
+    // Auto mode decision tree
+    if (mode === 'auto') {
+      switch (eventName) {
+        case 'push':
+          info(`Running in 'always' mode (push event)`)
+          mode = 'always'
+          break
+
+        case 'check_run':
+          if (!needsCheck) {
+            warning('Skipping: check_run trigger requires needs-check input')
+            return
+          }
+          if (await getPR(octokit, component, ref)) {
+            info(`Running in 'bot-review' mode (check_run event and PR found)`)
+            mode = 'bot-review'
+          } else {
+            info(`Running in 'always' mode (check_run event and no PR found)`)
+            mode = 'always'
+          }
+          break
+
+        case 'pull_request':
+          info(`Running in 'bot-review' mode (pull_request event)`)
+          mode = 'bot-review'
+          break
+
+        default:
+          info(`Running in 'pr' mode (other event)`)
+          mode = 'pr'
+      }
+    }
+
+    const params: RunParams = {
+      octokit,
+      scaffoldWorkflowId,
+      scaffoldBranch,
+      component,
+      ref,
+      issue,
+    }
 
     switch (mode) {
       case 'bot-review':
-        await runBotReview(workflowId)
+        await runBotReview(params)
         break
       case 'pr':
-        await runPr(workflowId)
+        await runPr(params)
         break
       case 'always':
-        await runAlways(workflowId)
+        await runAlways(params)
         break
       default:
         throw new Error('Invalid mode')
