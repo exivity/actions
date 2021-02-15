@@ -46,7 +46,7 @@ In `auto` mode, this is the decision tree:
 - Event is `pull_request`: mode set to `bot-review`
 - Event is `check_run`:
   - If `needs-check` input is not set: ignore
-  - If _ref_ is part of a PR: mode set to `bot-review`
+  - If part of a PR: mode set to `bot-review`
   - Otherwise: mode set to `always`
 - Other events: mode set to `pr`
 
@@ -66,8 +66,6 @@ A GitHub token with access to the exivity/scaffold repository.
 
 **Optional**
 A check that needs to be done before this action will run.
-
-_Note:_ this only works with auto mode.
 
 ## Example usage
 
