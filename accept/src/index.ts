@@ -58,31 +58,38 @@ async function run() {
     // Detect issue key in branch name
     const issue = detectIssueKey(ref)
     if (issue) {
-      info(`Detected issue key ${issue}.`)
+      info(`Detected issue key: ${issue}`)
     }
 
     // Auto mode decision tree
     if (mode === 'auto') {
       switch (eventName) {
         case 'push':
+          info(`Running in 'always' mode (push event)`)
           mode = 'always'
           break
 
         case 'check_run':
           if (!needsCheck) {
             warning('Skipping: check_run trigger requires needs-check input')
-            return ''
+            return
           }
-          mode = (await getPR(octokit, component, ref))
-            ? 'bot-review'
-            : 'always'
+          if (await getPR(octokit, component, ref)) {
+            info(`Running in 'bot-review' mode (check_run event and PR found)`)
+            mode = 'bot-review'
+          } else {
+            info(`Running in 'always' mode (check_run event and no PR found)`)
+            mode = 'always'
+          }
           break
 
         case 'pull_request':
+          info(`Running in 'bot-review' mode (pull_request event)`)
           mode = 'bot-review'
           break
 
         default:
+          info(`Running in 'pr' mode (other event)`)
           mode = 'pr'
       }
     }

@@ -6104,27 +6104,35 @@ function run() {
             // Detect issue key in branch name
             const issue = detectIssueKey(ref);
             if (issue) {
-                (0,core.info)(`Detected issue key ${issue}.`);
+                (0,core.info)(`Detected issue key: ${issue}`);
             }
             // Auto mode decision tree
             if (mode === 'auto') {
                 switch (eventName) {
                     case 'push':
+                        (0,core.info)(`Running in 'always' mode (push event)`);
                         mode = 'always';
                         break;
                     case 'check_run':
                         if (!needsCheck) {
                             (0,core.warning)('Skipping: check_run trigger requires needs-check input');
-                            return '';
+                            return;
                         }
-                        mode = (yield getPR(octokit, component, ref))
-                            ? 'bot-review'
-                            : 'always';
+                        if (yield getPR(octokit, component, ref)) {
+                            (0,core.info)(`Running in 'bot-review' mode (check_run event and PR found)`);
+                            mode = 'bot-review';
+                        }
+                        else {
+                            (0,core.info)(`Running in 'always' mode (check_run event and no PR found)`);
+                            mode = 'always';
+                        }
                         break;
                     case 'pull_request':
+                        (0,core.info)(`Running in 'bot-review' mode (pull_request event)`);
                         mode = 'bot-review';
                         break;
                     default:
+                        (0,core.info)(`Running in 'pr' mode (other event)`);
                         mode = 'pr';
                 }
             }
