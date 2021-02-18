@@ -77,6 +77,7 @@ async function run() {
         case 'status':
           // debug
           const eventData = await getEventData()
+
           console.log(JSON.stringify(eventData, undefined, 2))
 
           if (!needsCheck) {
