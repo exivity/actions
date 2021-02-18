@@ -13,6 +13,9 @@ inputs:
   gh-token:
     description: 'A GitHub token'
     required: false
+  dry-run:
+    description: 'Run scaffold in dry-run mode'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

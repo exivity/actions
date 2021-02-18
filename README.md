@@ -69,6 +69,12 @@ A GitHub token with access to the exivity/scaffold repository.
 **Optional**
 A check that needs to be done before this action will run.
 
+### `dry-run`
+
+**Optional**  
+_Defaults to `false`_  
+If `true`, scaffold will not build or run any tests.
+
 ## Example usage
 
 ```
