@@ -70,15 +70,20 @@ async function run() {
           break
 
         case 'check_run':
+        case 'status':
           if (!needsCheck) {
-            warning('Skipping: check_run trigger requires needs-check input')
+            warning(`Skipping: ${eventName} trigger requires needs-check input`)
             return
           }
           if (await getPR(octokit, component, ref)) {
-            info(`Running in 'bot-review' mode (check_run event and PR found)`)
+            info(
+              `Running in 'bot-review' mode (${eventName} event and PR found)`
+            )
             mode = 'bot-review'
           } else {
-            info(`Running in 'always' mode (check_run event and no PR found)`)
+            info(
+              `Running in 'always' mode (${eventName} event and no PR found)`
+            )
             mode = 'always'
           }
           break

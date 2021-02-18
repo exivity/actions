@@ -44,7 +44,7 @@ In `auto` mode, this is the decision tree:
 
 - Event is `push`: mode set to `always`
 - Event is `pull_request`: mode set to `bot-review`
-- Event is `check_run`:
+- Event is `check_run` or `status`:
   - If `needs-check` input is not set: ignore
   - If part of a PR: mode set to `bot-review`
   - Otherwise: mode set to `always`

@@ -6114,16 +6114,17 @@ function run() {
                         mode = 'always';
                         break;
                     case 'check_run':
+                    case 'status':
                         if (!needsCheck) {
-                            (0,core.warning)('Skipping: check_run trigger requires needs-check input');
+                            (0,core.warning)(`Skipping: ${eventName} trigger requires needs-check input`);
                             return;
                         }
                         if (yield getPR(octokit, component, ref)) {
-                            (0,core.info)(`Running in 'bot-review' mode (check_run event and PR found)`);
+                            (0,core.info)(`Running in 'bot-review' mode (${eventName} event and PR found)`);
                             mode = 'bot-review';
                         }
                         else {
-                            (0,core.info)(`Running in 'always' mode (check_run event and no PR found)`);
+                            (0,core.info)(`Running in 'always' mode (${eventName} event and no PR found)`);
                             mode = 'always';
                         }
                         break;
