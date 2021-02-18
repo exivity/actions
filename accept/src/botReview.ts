@@ -13,6 +13,7 @@ export async function runBotReview({
   ref,
   scaffoldBranch,
   scaffoldWorkflowId,
+  dryRun,
   issue,
 }: RunParams) {
   // Check if we should skip this
@@ -35,6 +36,7 @@ export async function runBotReview({
     octokit,
     scaffoldWorkflowId,
     scaffoldBranch,
+    dryRun,
     issue,
     component,
     sha,

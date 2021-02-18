@@ -1,5 +1,6 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { getBooleanInput } from '../../lib/core'
 import { getPR } from '../../lib/github'
 import { runAlways } from './always'
 import { runBotReview } from './botReview'
@@ -11,6 +12,7 @@ export type RunParams = {
   octokit: ReturnType<typeof getOctokit>
   scaffoldWorkflowId: number
   scaffoldBranch: string
+  dryRun: boolean
   ref: string
   component: string
   issue: string
@@ -34,6 +36,7 @@ async function run() {
       process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11)
     const component = process.env['GITHUB_REPOSITORY'].split('/')[1]
     const eventName = process.env['GITHUB_EVENT_NAME']
+    const dryRun = getBooleanInput('dry-run', false)
 
     // Assertions
     if (!ghToken) {
@@ -70,15 +73,20 @@ async function run() {
           break
 
         case 'check_run':
+        case 'status':
           if (!needsCheck) {
-            warning('Skipping: check_run trigger requires needs-check input')
+            warning(`Skipping: ${eventName} trigger requires needs-check input`)
             return
           }
           if (await getPR(octokit, component, ref)) {
-            info(`Running in 'bot-review' mode (check_run event and PR found)`)
+            info(
+              `Running in 'bot-review' mode (${eventName} event and PR found)`
+            )
             mode = 'bot-review'
           } else {
-            info(`Running in 'always' mode (check_run event and no PR found)`)
+            info(
+              `Running in 'always' mode (${eventName} event and no PR found)`
+            )
             mode = 'always'
           }
           break
@@ -98,6 +106,7 @@ async function run() {
       octokit,
       scaffoldWorkflowId,
       scaffoldBranch,
+      dryRun,
       component,
       ref,
       issue,

@@ -6,12 +6,14 @@ export async function runAlways({
   component,
   scaffoldBranch,
   scaffoldWorkflowId,
+  dryRun,
   issue,
 }: RunParams) {
   await dispatch({
     octokit,
     scaffoldWorkflowId,
     scaffoldBranch,
+    dryRun,
     issue,
     component,
   })

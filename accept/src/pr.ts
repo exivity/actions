@@ -23,6 +23,7 @@ export async function runPr({
   ref,
   scaffoldBranch,
   scaffoldWorkflowId,
+  dryRun,
   issue,
 }: RunParams) {
   // No PR found, skip
@@ -35,6 +36,7 @@ export async function runPr({
     octokit,
     scaffoldWorkflowId,
     scaffoldBranch,
+    dryRun,
     issue,
     component,
   })

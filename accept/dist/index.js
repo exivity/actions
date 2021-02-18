@@ -5783,7 +5783,7 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 578:
+/***/ 68:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -5794,6 +5794,21 @@ __nccwpck_require__.r(__webpack_exports__);
 var core = __nccwpck_require__(186);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(438);
+// CONCATENATED MODULE: ./lib/core.ts
+
+const TRUE_VALUES = [true, 'true', 'TRUE'];
+const FALSE_VALUES = [false, 'false', 'FALSE'];
+function getBooleanInput(name, defaultValue) {
+    let inputValue = (0,core.getInput)(name) || defaultValue;
+    if (TRUE_VALUES.includes(inputValue)) {
+        return true;
+    }
+    if (FALSE_VALUES.includes(inputValue)) {
+        return false;
+    }
+    throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
+}
+
 // CONCATENATED MODULE: ./lib/github.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5850,9 +5865,17 @@ var dispatch_awaiter = (undefined && undefined.__awaiter) || function (thisArg, 
     });
 };
 
-function dispatch({ octokit, scaffoldWorkflowId, scaffoldBranch, issue, component, sha, pull_request, }) {
+function dispatch({ octokit, scaffoldWorkflowId, scaffoldBranch, dryRun = false, issue, component, sha, pull_request, }) {
     return dispatch_awaiter(this, void 0, void 0, function* () {
+        const inputs = {
+            dry_run: dryRun ? '1' : '0',
+            issue,
+            custom_component_name: component,
+            custom_component_sha: sha || process.env['GITHUB_SHA'],
+            pull_request,
+        };
         (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
+        (0,core.info)(`Inputs: ${JSON.stringify(inputs)}.`);
         // Create workflow-dispatch event
         // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
         yield octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
@@ -5860,12 +5883,7 @@ function dispatch({ octokit, scaffoldWorkflowId, scaffoldBranch, issue, componen
             repo: 'scaffold',
             workflow_id: scaffoldWorkflowId,
             ref: scaffoldBranch,
-            inputs: {
-                issue,
-                custom_component_name: component,
-                custom_component_sha: sha || process.env['GITHUB_SHA'],
-                pull_request,
-            },
+            inputs,
         });
     });
 }
@@ -5881,12 +5899,13 @@ var always_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
     });
 };
 
-function runAlways({ octokit, component, scaffoldBranch, scaffoldWorkflowId, issue, }) {
+function runAlways({ octokit, component, scaffoldBranch, scaffoldWorkflowId, dryRun, issue, }) {
     return always_awaiter(this, void 0, void 0, function* () {
         yield dispatch({
             octokit,
             scaffoldWorkflowId,
             scaffoldBranch,
+            dryRun,
             issue,
             component,
         });
@@ -5979,7 +5998,7 @@ var botReview_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 
 // id of exivity bot
 const EXIVITY_BOT = 53756225;
-function runBotReview({ octokit, component, ref, scaffoldBranch, scaffoldWorkflowId, issue, }) {
+function runBotReview({ octokit, component, ref, scaffoldBranch, scaffoldWorkflowId, dryRun, issue, }) {
     return botReview_awaiter(this, void 0, void 0, function* () {
         // Check if we should skip this
         if (!(yield isBotReviewRequested())) {
@@ -5998,6 +6017,7 @@ function runBotReview({ octokit, component, ref, scaffoldBranch, scaffoldWorkflo
             octokit,
             scaffoldWorkflowId,
             scaffoldBranch,
+            dryRun,
             issue,
             component,
             sha,
@@ -6034,7 +6054,7 @@ function hasPR(octokit, branch, repo) {
         return pulls.some((p) => !p.draft);
     });
 }
-function runPr({ octokit, component, ref, scaffoldBranch, scaffoldWorkflowId, issue, }) {
+function runPr({ octokit, component, ref, scaffoldBranch, scaffoldWorkflowId, dryRun, issue, }) {
     return pr_awaiter(this, void 0, void 0, function* () {
         // No PR found, skip
         if (!(yield hasPR(octokit, ref, component))) {
@@ -6045,6 +6065,7 @@ function runPr({ octokit, component, ref, scaffoldBranch, scaffoldWorkflowId, is
             octokit,
             scaffoldWorkflowId,
             scaffoldBranch,
+            dryRun,
             issue,
             component,
         });
@@ -6069,6 +6090,7 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+
 const defaultMode = 'auto';
 // id for exivity/scaffold/.github/workflows/build.yaml
 // obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
@@ -6084,6 +6106,7 @@ function run() {
             const ref = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
             const component = process.env['GITHUB_REPOSITORY'].split('/')[1];
             const eventName = process.env['GITHUB_EVENT_NAME'];
+            const dryRun = getBooleanInput('dry-run', false);
             // Assertions
             if (!ghToken) {
                 throw new Error('The GitHub token is missing');
@@ -6114,16 +6137,17 @@ function run() {
                         mode = 'always';
                         break;
                     case 'check_run':
+                    case 'status':
                         if (!needsCheck) {
-                            (0,core.warning)('Skipping: check_run trigger requires needs-check input');
+                            (0,core.warning)(`Skipping: ${eventName} trigger requires needs-check input`);
                             return;
                         }
                         if (yield getPR(octokit, component, ref)) {
-                            (0,core.info)(`Running in 'bot-review' mode (check_run event and PR found)`);
+                            (0,core.info)(`Running in 'bot-review' mode (${eventName} event and PR found)`);
                             mode = 'bot-review';
                         }
                         else {
-                            (0,core.info)(`Running in 'always' mode (check_run event and no PR found)`);
+                            (0,core.info)(`Running in 'always' mode (${eventName} event and no PR found)`);
                             mode = 'always';
                         }
                         break;
@@ -6140,6 +6164,7 @@ function run() {
                 octokit,
                 scaffoldWorkflowId,
                 scaffoldBranch,
+                dryRun,
                 component,
                 ref,
                 issue,
@@ -6329,6 +6354,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(578);
+/******/ 	return __nccwpck_require__(68);
 /******/ })()
 ;

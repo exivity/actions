@@ -44,7 +44,7 @@ In `auto` mode, this is the decision tree:
 
 - Event is `push`: mode set to `always`
 - Event is `pull_request`: mode set to `bot-review`
-- Event is `check_run`:
+- Event is `check_run` or `status`:
   - If `needs-check` input is not set: ignore
   - If part of a PR: mode set to `bot-review`
   - Otherwise: mode set to `always`
@@ -68,6 +68,12 @@ A GitHub token with access to the exivity/scaffold repository.
 
 **Optional**
 A check that needs to be done before this action will run.
+
+### `dry-run`
+
+**Optional**  
+_Defaults to `false`_  
+If `true`, scaffold will not build or run any tests.
 
 ## Example usage
 
