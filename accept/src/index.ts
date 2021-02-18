@@ -1,10 +1,16 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getBooleanInput } from '../../lib/core'
-import { getPR } from '../../lib/github'
+import {
+  getEventName,
+  getPR,
+  getRef,
+  getRepository,
+  getToken,
+} from '../../lib/github'
 import { runAlways } from './always'
 import { runBotReview } from './botReview'
-import { isCheckDone } from './checks'
+import { getCheckName, isCheckDone } from './checks'
 import { detectIssueKey } from './detectIssueKey'
 import { runPr } from './pr'
 
@@ -15,7 +21,7 @@ export type RunParams = {
   dryRun: boolean
   ref: string
   component: string
-  issue: string
+  issue?: string
 }
 
 const defaultMode = 'auto'
@@ -30,18 +36,13 @@ async function run() {
   try {
     let mode = getInput('mode') || defaultMode
     const needsCheck = getInput('needs-check')
-    const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
+    const ghToken = getToken()
     const octokit = getOctokit(ghToken)
-    const ref =
-      process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11)
-    const component = process.env['GITHUB_REPOSITORY'].split('/')[1]
-    const eventName = process.env['GITHUB_EVENT_NAME']
-    const dryRun = getBooleanInput('dry-run', false)
+    const ref = getRef()
+    const { component } = getRepository()
+    const eventName = getEventName()
 
-    // Assertions
-    if (!ghToken) {
-      throw new Error('The GitHub token is missing')
-    }
+    const dryRun = getBooleanInput('dry-run', false)
 
     // Skip accepting commits on master
     if (ref === 'master') {
@@ -73,11 +74,18 @@ async function run() {
           break
 
         case 'check_run':
-        case 'status':
           if (!needsCheck) {
-            warning(`Skipping: ${eventName} trigger requires needs-check input`)
+            warning(`Skipping: check_run trigger requires needs-check input`)
             return
           }
+
+          if (needsCheck !== (await getCheckName())) {
+            warning(
+              `Skipping: check_run only triggers when check name matches needs-check input`
+            )
+            return
+          }
+
           if (await getPR(octokit, component, ref)) {
             info(
               `Running in 'bot-review' mode (${eventName} event and PR found)`

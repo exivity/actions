@@ -1,5 +1,6 @@
 import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { getSha } from '../../lib/github'
 
 type DispatchParams = {
   octokit: ReturnType<typeof getOctokit>
@@ -22,13 +23,18 @@ export async function dispatch({
   sha,
   pull_request,
 }: DispatchParams) {
+  const dry_run = dryRun ? '1' : '0'
+  const custom_component_name = component
+  const custom_component_sha = sha || getSha()
+
   const inputs = {
-    dry_run: dryRun ? '1' : '0',
-    issue,
-    custom_component_name: component,
-    custom_component_sha: sha || process.env['GITHUB_SHA'],
-    pull_request,
+    dry_run,
+    custom_component_name,
+    custom_component_sha,
+    ...(issue ? { issue } : {}),
+    ...(pull_request ? { pull_request } : {}),
   }
+
   info(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`)
   info(`Inputs: ${JSON.stringify(inputs)}.`)
 

@@ -5783,7 +5783,7 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 68:
+/***/ 342:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -5809,6 +5809,8 @@ function getBooleanInput(name, defaultValue) {
     throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
 }
 
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(747);
 // CONCATENATED MODULE: ./lib/github.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5819,6 +5821,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 function getShaFromRef({ octokit, component, ref }) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -5853,6 +5856,61 @@ function getPR(octokit, repo, ref) {
         return most_recent;
     });
 }
+function getRepository() {
+    const [owner, component] = (process.env['GITHUB_REPOSITORY'] || '').split('/');
+    if (!owner || !component) {
+        throw new Error('The GitHub repository is missing');
+    }
+    return { owner, component };
+}
+function getSha() {
+    const sha = process.env['GITHUB_SHA'];
+    if (!sha) {
+        throw new Error('The GitHub sha is missing');
+    }
+    return sha;
+}
+function getRef() {
+    var _a;
+    const ref = process.env['GITHUB_HEAD_REF'] || ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(11));
+    if (!ref) {
+        throw new Error('The GitHub ref is missing');
+    }
+    return ref;
+}
+function getWorkspacePath() {
+    const workspacePath = process.env['GITHUB_WORKSPACE'];
+    if (!workspacePath) {
+        throw new Error('The GitHub workspace path is missing');
+    }
+    return workspacePath;
+}
+function getToken(inputName = 'gh-token') {
+    const ghToken = (0,core.getInput)(inputName) || process.env['GITHUB_TOKEN'];
+    if (!ghToken) {
+        throw new Error('The GitHub token is missing');
+    }
+    return ghToken;
+}
+function getEventName() {
+    const eventName = process.env['GITHUB_EVENT_NAME'];
+    if (!eventName) {
+        throw new Error('The GitHub event name is missing');
+    }
+    return eventName;
+}
+function getEventData() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const eventPath = process.env['GITHUB_EVENT_PATH'];
+        if (!eventPath) {
+            throw new Error('The GitHub event path is missing');
+        }
+        const fileData = yield external_fs_.promises.readFile(eventPath, {
+            encoding: 'utf8',
+        });
+        return JSON.parse(fileData);
+    });
+}
 
 // CONCATENATED MODULE: ./accept/src/dispatch.ts
 var dispatch_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -5865,15 +5923,15 @@ var dispatch_awaiter = (undefined && undefined.__awaiter) || function (thisArg, 
     });
 };
 
+
 function dispatch({ octokit, scaffoldWorkflowId, scaffoldBranch, dryRun = false, issue, component, sha, pull_request, }) {
     return dispatch_awaiter(this, void 0, void 0, function* () {
-        const inputs = {
-            dry_run: dryRun ? '1' : '0',
-            issue,
-            custom_component_name: component,
-            custom_component_sha: sha || process.env['GITHUB_SHA'],
-            pull_request,
-        };
+        const dry_run = dryRun ? '1' : '0';
+        const custom_component_name = component;
+        const custom_component_sha = sha || getSha();
+        const inputs = Object.assign(Object.assign({ dry_run,
+            custom_component_name,
+            custom_component_sha }, (issue ? { issue } : {})), (pull_request ? { pull_request } : {}));
         (0,core.info)(`Calling GitHub API to trigger scaffold@${scaffoldBranch} build.`);
         (0,core.info)(`Inputs: ${JSON.stringify(inputs)}.`);
         // Create workflow-dispatch event
@@ -5912,28 +5970,6 @@ function runAlways({ octokit, component, scaffoldBranch, scaffoldWorkflowId, dry
     });
 }
 
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(747);
-// CONCATENATED MODULE: ./lib/event.ts
-var event_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-function getEventData() {
-    return event_awaiter(this, void 0, void 0, function* () {
-        const fileData = yield external_fs_.promises.readFile(process.env['GITHUB_EVENT_PATH'], {
-            encoding: 'utf8',
-        });
-        return JSON.parse(fileData);
-    });
-}
-
 // CONCATENATED MODULE: ./accept/src/checks.ts
 var checks_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5957,6 +5993,13 @@ function isCheckDone(octokit, ref, repo, checkName) {
             check_name: checkName,
         });
         return (_a = checkResult.data.check_runs) === null || _a === void 0 ? void 0 : _a.every((check) => check.status === 'completed' && check.conclusion === 'success');
+    });
+}
+function getCheckName() {
+    var _a;
+    return checks_awaiter(this, void 0, void 0, function* () {
+        const eventData = (yield getEventData());
+        return (_a = eventData.check_run) === null || _a === void 0 ? void 0 : _a.name;
     });
 }
 // Checks if the branch that had the event triggering this action is ready for scaffold to run,
@@ -6101,16 +6144,12 @@ function run() {
         try {
             let mode = (0,core.getInput)('mode') || defaultMode;
             const needsCheck = (0,core.getInput)('needs-check');
-            const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+            const ghToken = getToken();
             const octokit = (0,github.getOctokit)(ghToken);
-            const ref = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
-            const component = process.env['GITHUB_REPOSITORY'].split('/')[1];
-            const eventName = process.env['GITHUB_EVENT_NAME'];
+            const ref = getRef();
+            const { component } = getRepository();
+            const eventName = getEventName();
             const dryRun = getBooleanInput('dry-run', false);
-            // Assertions
-            if (!ghToken) {
-                throw new Error('The GitHub token is missing');
-            }
             // Skip accepting commits on master
             if (ref === 'master') {
                 (0,core.warning)('Skipping: master branch is ignored');
@@ -6137,9 +6176,12 @@ function run() {
                         mode = 'always';
                         break;
                     case 'check_run':
-                    case 'status':
                         if (!needsCheck) {
-                            (0,core.warning)(`Skipping: ${eventName} trigger requires needs-check input`);
+                            (0,core.warning)(`Skipping: check_run trigger requires needs-check input`);
+                            return;
+                        }
+                        if (needsCheck !== (yield getCheckName())) {
+                            (0,core.warning)(`Skipping: check_run only triggers when check name matches needs-check input`);
                             return;
                         }
                         if (yield getPR(octokit, component, ref)) {
@@ -6354,6 +6396,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(68);
+/******/ 	return __nccwpck_require__(342);
 /******/ })()
 ;

@@ -2,11 +2,12 @@ import { getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { resolve } from 'path'
 import { getBooleanInput } from '../../lib/core'
+import { getRepository, getSha, getWorkspacePath } from '../../lib/github'
 import { uploadS3object } from '../../lib/s3'
 
 async function zipAll(path: string, component: string) {
   const filename = `${component}.tar.gz`
-  const cwd = resolve(process.env['GITHUB_WORKSPACE'], path)
+  const cwd = resolve(getWorkspacePath(), path)
 
   await exec('tar', ['-zcv', '-C', cwd, '-f', filename, '.'])
 
@@ -26,8 +27,8 @@ async function run() {
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
 
     // From environment
-    const sha = process.env['GITHUB_SHA']
-    const [_, component] = process.env['GITHUB_REPOSITORY'].split('/')
+    const sha = getSha()
+    const { component } = getRepository()
 
     // Assertions
     if (!awsKeyId || !awsSecretKey) {

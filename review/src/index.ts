@@ -1,27 +1,23 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { getPR } from '../../lib/github'
+import { getPR, getRef, getRepository, getToken } from '../../lib/github'
 
 async function run() {
   try {
     // defaults
-    const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/')
-    const default_branch =
-      process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11)
+    const { owner, component } = getRepository()
+    const default_branch = getRef()
 
     // inputs
-    const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
+    const ghToken = getToken()
     const pull_request = parseInt(getInput('pull'), 10)
     const repo = getInput('component') || component
     const event = getInput('event')
     const branch = getInput('branch') || default_branch
 
     // Assertions
-    if (
-      !ghToken ||
-      !['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)
-    ) {
-      throw new Error('A required argument is missing')
+    if (!['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)) {
+      throw new Error('The event input is missing or invalid')
     }
 
     // Initialize GH client
