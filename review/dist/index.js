@@ -5794,6 +5794,8 @@ __nccwpck_require__.r(__webpack_exports__);
 var core = __nccwpck_require__(186);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(438);
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(747);
 // CONCATENATED MODULE: ./lib/github.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5804,6 +5806,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 function getShaFromRef({ octokit, component, ref }) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -5838,6 +5841,61 @@ function getPR(octokit, repo, ref) {
         return most_recent;
     });
 }
+function getRepository() {
+    const [owner, component] = (process.env['GITHUB_REPOSITORY'] || '').split('/');
+    if (!owner || !component) {
+        throw new Error('The GitHub repository is missing');
+    }
+    return { owner, component };
+}
+function getSha() {
+    const sha = process.env['GITHUB_SHA'];
+    if (!sha) {
+        throw new Error('The GitHub sha is missing');
+    }
+    return sha;
+}
+function getRef() {
+    var _a;
+    const ref = process.env['GITHUB_HEAD_REF'] || ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(11));
+    if (!ref) {
+        throw new Error('The GitHub ref is missing');
+    }
+    return ref;
+}
+function getWorkspacePath() {
+    const workspacePath = process.env['GITHUB_WORKSPACE'];
+    if (!workspacePath) {
+        throw new Error('The GitHub workspace path is missing');
+    }
+    return workspacePath;
+}
+function getToken(inputName = 'gh-token') {
+    const ghToken = (0,core.getInput)(inputName) || process.env['GITHUB_TOKEN'];
+    if (!ghToken) {
+        throw new Error('The GitHub token is missing');
+    }
+    return ghToken;
+}
+function getEventName() {
+    const eventName = process.env['GITHUB_EVENT_NAME'];
+    if (!eventName) {
+        throw new Error('The GitHub event name is missing');
+    }
+    return eventName;
+}
+function getEventData() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const eventPath = process.env['GITHUB_EVENT_PATH'];
+        if (!eventPath) {
+            throw new Error('The GitHub event path is missing');
+        }
+        const fileData = yield fsPromises.readFile(eventPath, {
+            encoding: 'utf8',
+        });
+        return JSON.parse(fileData);
+    });
+}
 
 // CONCATENATED MODULE: ./review/src/index.ts
 var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -5857,18 +5915,17 @@ function run() {
     return src_awaiter(this, void 0, void 0, function* () {
         try {
             // defaults
-            const [owner, component] = process.env['GITHUB_REPOSITORY'].split('/');
-            const default_branch = process.env['GITHUB_HEAD_REF'] || process.env['GITHUB_REF'].slice(11);
+            const { owner, component } = getRepository();
+            const default_branch = getRef();
             // inputs
-            const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+            const ghToken = getToken();
             const pull_request = parseInt((0,core.getInput)('pull'), 10);
             const repo = (0,core.getInput)('component') || component;
             const event = (0,core.getInput)('event');
             const branch = (0,core.getInput)('branch') || default_branch;
             // Assertions
-            if (!ghToken ||
-                !['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)) {
-                throw new Error('A required argument is missing');
+            if (!['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)) {
+                throw new Error('The event input is missing or invalid');
             }
             // Initialize GH client
             const octokit = (0,github.getOctokit)(ghToken);

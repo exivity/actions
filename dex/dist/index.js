@@ -1581,14 +1581,14 @@ function startDexDocker({ cmd, env }) {
         const cwd = (0,core.getInput)('path') || (0,core.getInput)('cwd') || '.';
         // Env vars
         const envOptions = Object.keys(env || {})
-            .map((key) => `--env ${key}=${env[key]}`)
+            .map((key) => `--env ${key}=${(env || {})[key]}`)
             .join(' ');
         (0,core.info)(`About to start a Dex container`);
         // Execute docker-start script
         yield (0,exec.exec)(`bash dex-docker-start.sh ${cmd}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: Object.assign(Object.assign({}, process.env), { CWD: cwd, TAG: tag, ENV: envOptions, GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'] }),
+            env: Object.assign(Object.assign({}, process.env), { CWD: cwd, TAG: tag, ENV: envOptions }),
         });
     });
 }
@@ -1601,7 +1601,7 @@ function startDexBinary({ cmd, env }) {
         yield (0,exec.exec)(`bash dex-binary-start.sh ${cmd}`, undefined, {
             // Once bundled, executing file will be /{action-name}/dist/index.js
             cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: Object.assign(Object.assign(Object.assign({}, process.env), { CWD: cwd, GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'] }), env),
+            env: Object.assign(Object.assign(Object.assign({}, process.env), { CWD: cwd }), env),
         });
     });
 }

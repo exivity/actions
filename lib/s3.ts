@@ -3,6 +3,7 @@ import { exec } from '@actions/exec'
 import { promises as fsPromises } from 'fs'
 import { platform } from 'os'
 import { basename, resolve } from 'path'
+import { getWorkspacePath } from './github'
 
 const S3_BUCKET = 'exivity'
 const S3_PREFIX = 'build'
@@ -37,8 +38,9 @@ export async function downloadS3object({
   awsKeyId,
   awsSecretKey,
 }: Options) {
+  const workspacePath = getWorkspacePath()
   const src = getS3url({ component, sha, usePlatformPrefix, prefix })
-  const dest = resolve(process.env['GITHUB_WORKSPACE'], path)
+  const dest = resolve(workspacePath, path)
   const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
 
   info(`About to execute ${cmd}`)
@@ -61,7 +63,8 @@ export async function uploadS3object({
   awsKeyId,
   awsSecretKey,
 }: Options) {
-  const src = resolve(process.env['GITHUB_WORKSPACE'], path)
+  const workspacePath = getWorkspacePath()
+  const src = resolve(workspacePath, path)
   const isDirectory = (await fsPromises.lstat(src)).isDirectory()
 
   const dest = getS3url({

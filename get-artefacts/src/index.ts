@@ -4,7 +4,7 @@ import { getOctokit } from '@actions/github'
 import { promises as fsPromises } from 'fs'
 import { join as pathJoin } from 'path'
 import { getBooleanInput } from '../../lib/core'
-import { getShaFromRef } from '../../lib/github'
+import { getShaFromRef, getToken } from '../../lib/github'
 import { downloadS3object } from '../../lib/s3'
 
 async function unzipAll(path: string) {
@@ -33,11 +33,11 @@ async function run() {
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
-    const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
+    const ghToken = getToken()
 
     // Assertions
-    if (!awsKeyId || !awsSecretKey || !ghToken) {
-      throw new Error('A required argument is missing')
+    if (!awsKeyId || !awsSecretKey) {
+      throw new Error('A required AWS input is missing')
     }
 
     // If we have no sha and a branch, let's find the sha

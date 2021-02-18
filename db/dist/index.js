@@ -7007,6 +7007,8 @@ function startDocker({ defaultVersion, image, ports }) {
     });
 }
 
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(747);
 // CONCATENATED MODULE: ./lib/github.ts
 var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -7017,6 +7019,7 @@ var github_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 function getShaFromRef({ octokit, component, ref }) {
     return github_awaiter(this, void 0, void 0, function* () {
@@ -7051,6 +7054,61 @@ function getPR(octokit, repo, ref) {
         return most_recent;
     });
 }
+function getRepository() {
+    const [owner, component] = (process.env['GITHUB_REPOSITORY'] || '').split('/');
+    if (!owner || !component) {
+        throw new Error('The GitHub repository is missing');
+    }
+    return { owner, component };
+}
+function getSha() {
+    const sha = process.env['GITHUB_SHA'];
+    if (!sha) {
+        throw new Error('The GitHub sha is missing');
+    }
+    return sha;
+}
+function getRef() {
+    var _a;
+    const ref = process.env['GITHUB_HEAD_REF'] || ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(11));
+    if (!ref) {
+        throw new Error('The GitHub ref is missing');
+    }
+    return ref;
+}
+function github_getWorkspacePath() {
+    const workspacePath = process.env['GITHUB_WORKSPACE'];
+    if (!workspacePath) {
+        throw new Error('The GitHub workspace path is missing');
+    }
+    return workspacePath;
+}
+function getToken(inputName = 'gh-token') {
+    const ghToken = (0,core.getInput)(inputName) || process.env['GITHUB_TOKEN'];
+    if (!ghToken) {
+        throw new Error('The GitHub token is missing');
+    }
+    return ghToken;
+}
+function getEventName() {
+    const eventName = process.env['GITHUB_EVENT_NAME'];
+    if (!eventName) {
+        throw new Error('The GitHub event name is missing');
+    }
+    return eventName;
+}
+function getEventData() {
+    return github_awaiter(this, void 0, void 0, function* () {
+        const eventPath = process.env['GITHUB_EVENT_PATH'];
+        if (!eventPath) {
+            throw new Error('The GitHub event path is missing');
+        }
+        const fileData = yield fsPromises.readFile(eventPath, {
+            encoding: 'utf8',
+        });
+        return JSON.parse(fileData);
+    });
+}
 
 // CONCATENATED MODULE: ./lib/postgres.ts
 var postgres_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -7080,8 +7138,6 @@ function startPostgres(password = 'postgres') {
     });
 }
 
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(747);
 // CONCATENATED MODULE: ./lib/s3.ts
 var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -7097,6 +7153,7 @@ var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argum
 
 
 
+
 const S3_BUCKET = 'exivity';
 const S3_PREFIX = 'build';
 const S3_REGION = 'eu-central-1';
@@ -7106,8 +7163,9 @@ function getS3url({ component, sha, usePlatformPrefix, prefix }) {
 }
 function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return s3_awaiter(this, void 0, void 0, function* () {
+        const workspacePath = github_getWorkspacePath();
         const src = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const dest = (0,external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
+        const dest = (0,external_path_.resolve)(workspacePath, path);
         const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
         (0,core.info)(`About to execute ${cmd}`);
         yield (0,lib_exec.exec)(cmd, undefined, {
@@ -7117,7 +7175,8 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
 }
 function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
     return s3_awaiter(this, void 0, void 0, function* () {
-        const src = resolve(process.env['GITHUB_WORKSPACE'], path);
+        const workspacePath = getWorkspacePath();
+        const src = resolve(workspacePath, path);
         const isDirectory = (yield fsPromises.lstat(src)).isDirectory();
         const dest = getS3url({
             component,
@@ -7173,10 +7232,11 @@ function run() {
             const password = (0,core.getInput)('password') || 'postgres';
             const awsKeyId = (0,core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = (0,core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
-            const ghToken = (0,core.getInput)('gh-token') || process.env['GITHUB_TOKEN'];
+            const ghToken = getToken();
+            const workspacePath = github_getWorkspacePath();
             // Assertions
-            if (!awsKeyId || !awsSecretKey || !ghToken) {
-                throw new Error('A required argument is missing');
+            if (!awsKeyId || !awsSecretKey) {
+                throw new Error('A required AWS input is missing');
             }
             if (mode !== 'docker' && mode !== 'host') {
                 throw new Error(`Mode must be 'docker' or 'host'`);
@@ -7214,7 +7274,7 @@ function run() {
             const migrateBin = (0,external_os_.platform)() === 'win32' ? 'migrate.exe' : 'migrate';
             yield (0,lib_exec.exec)('bash init-db.sh', undefined, {
                 cwd: external_path_default().resolve(__dirname, '..'),
-                env: Object.assign(Object.assign({}, process.env), { MODE: mode, BASE_DIR: external_path_default().join(process.env['GITHUB_WORKSPACE'], dbDirectory), DB_NAME: dbName, MIGRATE_BIN: migrateBin, DB_PASSWORD: password }),
+                env: Object.assign(Object.assign({}, process.env), { MODE: mode, BASE_DIR: external_path_default().join(workspacePath, dbDirectory), DB_NAME: dbName, MIGRATE_BIN: migrateBin, DB_PASSWORD: password }),
             });
         }
         catch (error) {

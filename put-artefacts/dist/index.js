@@ -1545,7 +1545,7 @@ function copyFile(srcFile, destFile, force) {
 
 /***/ }),
 
-/***/ 782:
+/***/ 867:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 // ESM COMPAT FLAG
@@ -1574,10 +1574,111 @@ function getBooleanInput(name, defaultValue) {
 
 // EXTERNAL MODULE: external "fs"
 var external_fs_ = __nccwpck_require__(747);
+// CONCATENATED MODULE: ./lib/github.ts
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+function getShaFromRef({ octokit, component, ref }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (ref === 'develop') {
+            const hasDevelop = (yield octokit.repos.listBranches({
+                owner: 'exivity',
+                repo: component,
+            })).data.some((repoBranch) => repoBranch.name === 'develop');
+            if (!hasDevelop) {
+                warning(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+                ref = 'master';
+            }
+        }
+        const sha = (yield octokit.repos.getBranch({
+            owner: 'exivity',
+            repo: component,
+            branch: ref,
+        })).data.commit.sha;
+        info(`Resolved ${ref} to ${sha}`);
+        return sha;
+    });
+}
+function getPR(octokit, repo, ref) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // get most recent PR of current branch
+        const { data: [most_recent], } = yield octokit.pulls.list({
+            owner: 'exivity',
+            repo,
+            head: `exivity:${ref}`,
+            sort: 'updated',
+        });
+        return most_recent;
+    });
+}
+function getRepository() {
+    const [owner, component] = (process.env['GITHUB_REPOSITORY'] || '').split('/');
+    if (!owner || !component) {
+        throw new Error('The GitHub repository is missing');
+    }
+    return { owner, component };
+}
+function getSha() {
+    const sha = process.env['GITHUB_SHA'];
+    if (!sha) {
+        throw new Error('The GitHub sha is missing');
+    }
+    return sha;
+}
+function getRef() {
+    var _a;
+    const ref = process.env['GITHUB_HEAD_REF'] || ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(11));
+    if (!ref) {
+        throw new Error('The GitHub ref is missing');
+    }
+    return ref;
+}
+function github_getWorkspacePath() {
+    const workspacePath = process.env['GITHUB_WORKSPACE'];
+    if (!workspacePath) {
+        throw new Error('The GitHub workspace path is missing');
+    }
+    return workspacePath;
+}
+function getToken(inputName = 'gh-token') {
+    const ghToken = getInput(inputName) || process.env['GITHUB_TOKEN'];
+    if (!ghToken) {
+        throw new Error('The GitHub token is missing');
+    }
+    return ghToken;
+}
+function getEventName() {
+    const eventName = process.env['GITHUB_EVENT_NAME'];
+    if (!eventName) {
+        throw new Error('The GitHub event name is missing');
+    }
+    return eventName;
+}
+function getEventData() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const eventPath = process.env['GITHUB_EVENT_PATH'];
+        if (!eventPath) {
+            throw new Error('The GitHub event path is missing');
+        }
+        const fileData = yield fsPromises.readFile(eventPath, {
+            encoding: 'utf8',
+        });
+        return JSON.parse(fileData);
+    });
+}
+
 // EXTERNAL MODULE: external "os"
 var external_os_ = __nccwpck_require__(87);
 // CONCATENATED MODULE: ./lib/s3.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1591,6 +1692,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 const S3_BUCKET = 'exivity';
 const S3_PREFIX = 'build';
 const S3_REGION = 'eu-central-1';
@@ -1599,9 +1701,10 @@ function getS3url({ component, sha, usePlatformPrefix, prefix }) {
     return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ''}${prefix ? `/${prefix}` : ''}`;
 }
 function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return s3_awaiter(this, void 0, void 0, function* () {
+        const workspacePath = getWorkspacePath();
         const src = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const dest = resolve(process.env['GITHUB_WORKSPACE'], path);
+        const dest = resolve(workspacePath, path);
         const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
         info(`About to execute ${cmd}`);
         yield exec(cmd, undefined, {
@@ -1610,8 +1713,9 @@ function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, aws
     });
 }
 function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const src = (0,external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
+    return s3_awaiter(this, void 0, void 0, function* () {
+        const workspacePath = github_getWorkspacePath();
+        const src = (0,external_path_.resolve)(workspacePath, path);
         const isDirectory = (yield external_fs_.promises.lstat(src)).isDirectory();
         const dest = getS3url({
             component,
@@ -1652,10 +1756,11 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+
 function zipAll(path, component) {
     return src_awaiter(this, void 0, void 0, function* () {
         const filename = `${component}.tar.gz`;
-        const cwd = (0,external_path_.resolve)(process.env['GITHUB_WORKSPACE'], path);
+        const cwd = (0,external_path_.resolve)(github_getWorkspacePath(), path);
         yield (0,lib_exec.exec)('tar', ['-zcv', '-C', cwd, '-f', filename, '.']);
         return filename;
     });
@@ -1671,8 +1776,8 @@ function run() {
             const awsKeyId = (0,core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
             const awsSecretKey = (0,core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             // From environment
-            const sha = process.env['GITHUB_SHA'];
-            const [_, component] = process.env['GITHUB_REPOSITORY'].split('/');
+            const sha = getSha();
+            const { component } = getRepository();
             // Assertions
             if (!awsKeyId || !awsSecretKey) {
                 throw new Error('A required argument is missing');
@@ -1799,6 +1904,6 @@ module.exports = require("util");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(782);
+/******/ 	return __nccwpck_require__(867);
 /******/ })()
 ;

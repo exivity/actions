@@ -4,7 +4,7 @@ import { getOctokit } from '@actions/github'
 import { platform } from 'os'
 import path from 'path'
 import { startDocker } from '../../lib/docker'
-import { getShaFromRef } from '../../lib/github'
+import { getShaFromRef, getToken, getWorkspacePath } from '../../lib/github'
 import { defaultVersion, image, startPostgres } from '../../lib/postgres'
 import { downloadS3object } from '../../lib/s3'
 
@@ -21,11 +21,12 @@ async function run() {
       getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
     const awsSecretKey =
       getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
-    const ghToken = getInput('gh-token') || process.env['GITHUB_TOKEN']
+    const ghToken = getToken()
+    const workspacePath = getWorkspacePath()
 
     // Assertions
-    if (!awsKeyId || !awsSecretKey || !ghToken) {
-      throw new Error('A required argument is missing')
+    if (!awsKeyId || !awsSecretKey) {
+      throw new Error('A required AWS input is missing')
     }
 
     if (mode !== 'docker' && mode !== 'host') {
@@ -73,7 +74,7 @@ async function run() {
       env: {
         ...process.env,
         MODE: mode,
-        BASE_DIR: path.join(process.env['GITHUB_WORKSPACE'], dbDirectory),
+        BASE_DIR: path.join(workspacePath, dbDirectory),
         DB_NAME: dbName,
         MIGRATE_BIN: migrateBin,
         DB_PASSWORD: password,

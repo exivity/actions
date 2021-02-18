@@ -17,7 +17,7 @@ export async function startDexDocker({ cmd, env }: Options) {
 
   // Env vars
   const envOptions = Object.keys(env || {})
-    .map((key) => `--env ${key}=${env[key]}`)
+    .map((key) => `--env ${key}=${(env || {})[key]}`)
     .join(' ')
 
   info(`About to start a Dex container`)
@@ -31,7 +31,6 @@ export async function startDexDocker({ cmd, env }: Options) {
       CWD: cwd,
       TAG: tag,
       ENV: envOptions,
-      GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
     },
   })
 }
@@ -49,7 +48,6 @@ export async function startDexBinary({ cmd, env }: Options) {
     env: {
       ...process.env,
       CWD: cwd,
-      GITHUB_WORKSPACE: process.env['GITHUB_WORKSPACE'],
       ...env,
     },
   })

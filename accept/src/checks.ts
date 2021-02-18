@@ -1,5 +1,5 @@
 import { getOctokit } from '@actions/github'
-import { getEventData } from '../../lib/event'
+import { getEventData } from '../../lib/github'
 import { EXIVITY_BOT } from './botReview'
 
 interface IDObject {
@@ -23,6 +23,14 @@ export async function isCheckDone(
   return checkResult.data.check_runs?.every(
     (check) => check.status === 'completed' && check.conclusion === 'success'
   )
+}
+
+export async function getCheckName() {
+  const eventData = (await getEventData()) as {
+    check_run?: { name: string }
+  }
+
+  return eventData.check_run?.name
 }
 
 // Checks if the branch that had the event triggering this action is ready for scaffold to run,

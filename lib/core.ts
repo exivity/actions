@@ -3,7 +3,7 @@ import { getInput } from '@actions/core'
 const TRUE_VALUES = [true, 'true', 'TRUE']
 const FALSE_VALUES = [false, 'false', 'FALSE']
 
-export function getBooleanInput(name: string, defaultValue?: boolean) {
+export function getBooleanInput(name: string, defaultValue: boolean) {
   let inputValue = getInput(name) || defaultValue
 
   if (TRUE_VALUES.includes(inputValue)) {
