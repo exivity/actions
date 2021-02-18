@@ -6149,13 +6149,13 @@ function run() {
             const ref = getRef();
             const { component } = getRepository();
             const eventName = getEventName();
+            const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
             const dryRun = getBooleanInput('dry-run', false);
             // Skip accepting commits on master
             if (ref === 'master') {
                 (0,core.warning)('Skipping: master branch is ignored');
                 return;
             }
-            const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
             // Check check
             if (needsCheck) {
                 if (!(yield isCheckDone(octokit, ref, component, needsCheck))) {
@@ -6176,6 +6176,10 @@ function run() {
                         mode = 'always';
                         break;
                     case 'check_run':
+                    case 'status':
+                        // debug
+                        const eventData = yield getEventData();
+                        console.log(JSON.stringify(eventData, undefined, 2));
                         if (!needsCheck) {
                             (0,core.warning)(`Skipping: check_run trigger requires needs-check input`);
                             return;

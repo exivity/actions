@@ -2,6 +2,7 @@ import { getInput, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getBooleanInput } from '../../lib/core'
 import {
+  getEventData,
   getEventName,
   getPR,
   getRef,
@@ -41,7 +42,7 @@ async function run() {
     const ref = getRef()
     const { component } = getRepository()
     const eventName = getEventName()
-
+    const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
     const dryRun = getBooleanInput('dry-run', false)
 
     // Skip accepting commits on master
@@ -49,7 +50,6 @@ async function run() {
       warning('Skipping: master branch is ignored')
       return
     }
-    const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
 
     // Check check
     if (needsCheck) {
@@ -74,6 +74,11 @@ async function run() {
           break
 
         case 'check_run':
+        case 'status':
+          // debug
+          const eventData = await getEventData()
+          console.log(JSON.stringify(eventData, undefined, 2))
+
           if (!needsCheck) {
             warning(`Skipping: check_run trigger requires needs-check input`)
             return
