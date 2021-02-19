@@ -3,7 +3,7 @@ module.exports =
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 351:
+/***/ 286:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -16,7 +16,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const utils_1 = __nccwpck_require__(343);
 /**
  * Commands
  *
@@ -88,7 +88,7 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 186:
+/***/ 985:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -109,9 +109,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const command_1 = __nccwpck_require__(351);
-const file_command_1 = __nccwpck_require__(717);
-const utils_1 = __nccwpck_require__(278);
+const command_1 = __nccwpck_require__(286);
+const file_command_1 = __nccwpck_require__(781);
+const utils_1 = __nccwpck_require__(343);
 const os = __importStar(__nccwpck_require__(87));
 const path = __importStar(__nccwpck_require__(622));
 /**
@@ -332,7 +332,7 @@ exports.getState = getState;
 
 /***/ }),
 
-/***/ 717:
+/***/ 781:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -349,7 +349,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(747));
 const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const utils_1 = __nccwpck_require__(343);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -367,7 +367,7 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
-/***/ 278:
+/***/ 343:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -392,7 +392,7 @@ exports.toCommandValue = toCommandValue;
 
 /***/ }),
 
-/***/ 514:
+/***/ 287:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -413,7 +413,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const tr = __importStar(__nccwpck_require__(159));
+const tr = __importStar(__nccwpck_require__(106));
 /**
  * Exec a command.
  * Output will be streamed to the live console.
@@ -442,7 +442,7 @@ exports.exec = exec;
 
 /***/ }),
 
-/***/ 159:
+/***/ 106:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -467,8 +467,8 @@ const os = __importStar(__nccwpck_require__(87));
 const events = __importStar(__nccwpck_require__(614));
 const child = __importStar(__nccwpck_require__(129));
 const path = __importStar(__nccwpck_require__(622));
-const io = __importStar(__nccwpck_require__(436));
-const ioUtil = __importStar(__nccwpck_require__(962));
+const io = __importStar(__nccwpck_require__(760));
+const ioUtil = __importStar(__nccwpck_require__(665));
 /* eslint-disable @typescript-eslint/unbound-method */
 const IS_WINDOWS = process.platform === 'win32';
 /*
@@ -1048,7 +1048,7 @@ class ExecState extends events.EventEmitter {
 
 /***/ }),
 
-/***/ 962:
+/***/ 665:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -1249,7 +1249,7 @@ function isUnixExecutable(stats) {
 
 /***/ }),
 
-/***/ 436:
+/***/ 760:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -1266,7 +1266,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const childProcess = __nccwpck_require__(129);
 const path = __nccwpck_require__(622);
 const util_1 = __nccwpck_require__(669);
-const ioUtil = __nccwpck_require__(962);
+const ioUtil = __nccwpck_require__(665);
 const exec = util_1.promisify(childProcess.exec);
 /**
  * Copies a file or folder.
@@ -1545,24 +1545,55 @@ function copyFile(srcFile, destFile, force) {
 
 /***/ }),
 
-/***/ 356:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ 963:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(186);
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __nccwpck_require__(514);
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(622);
-var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.startDocker = void 0;
+const core_1 = __nccwpck_require__(985);
+const exec_1 = __nccwpck_require__(287);
+const path_1 = __importDefault(__nccwpck_require__(622));
+const string_1 = __nccwpck_require__(482);
+function startDocker({ defaultVersion, image, ports }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const version = core_1.getInput('version') || defaultVersion;
+        const portsArg = ports.map((port) => `-p ${port}:${port}`).join(' ');
+        core_1.info(`About to start a Docker container from ${image}:${version}`);
+        yield exec_1.exec(`bash docker-start.sh ${portsArg}`, undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: path_1.default.resolve(__dirname, '..', '..', 'lib'),
+            env: Object.assign(Object.assign({}, process.env), { NAME: string_1.sluggify(image), IMAGE: image, TAG: version }),
+        });
+    });
+}
+exports.startDocker = startDocker;
 
-// CONCATENATED MODULE: external "crypto"
-const external_crypto_namespaceObject = require("crypto");;
-// CONCATENATED MODULE: ./lib/string.ts
 
+/***/ }),
+
+/***/ 482:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.randomString = exports.sluggify = void 0;
+const crypto_1 = __importDefault(__nccwpck_require__(417));
 function sluggify(str) {
     return str
         .toString()
@@ -1573,15 +1604,23 @@ function sluggify(str) {
         .replace(/^-+/, '') // Trim - from start of text
         .replace(/-+$/, ''); // Trim - from end of text
 }
+exports.sluggify = sluggify;
 function randomString(length) {
-    return crypto
+    return crypto_1.default
         .randomBytes(Math.ceil(length / 2))
         .toString('hex')
         .substr(0, length);
 }
+exports.randomString = randomString;
 
-// CONCATENATED MODULE: ./lib/docker.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+
+/***/ }),
+
+/***/ 996:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1590,48 +1629,22 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
-
-
-
-function startDocker({ defaultVersion, image, ports }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const version = (0,core.getInput)('version') || defaultVersion;
-        const portsArg = ports.map((port) => `-p ${port}:${port}`).join(' ');
-        (0,core.info)(`About to start a Docker container from ${image}:${version}`);
-        yield (0,exec.exec)(`bash docker-start.sh ${portsArg}`, undefined, {
-            // Once bundled, executing file will be /{action-name}/dist/index.js
-            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: Object.assign(Object.assign({}, process.env), { NAME: sluggify(image), IMAGE: image, TAG: version }),
-        });
-    });
-}
-
-// CONCATENATED MODULE: ./rabbitmq/src/index.ts
-var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-const src_image = 'exivity/rabbitmq';
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __nccwpck_require__(985);
+const docker_1 = __nccwpck_require__(963);
+const image = 'exivity/rabbitmq';
 const defaultVersion = '3.8.6';
 function run() {
-    return src_awaiter(this, void 0, void 0, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield startDocker({
-                image: src_image,
+            yield docker_1.startDocker({
+                image,
                 defaultVersion,
                 ports: [4369, 5671, 5672, 15672],
             });
         }
         catch (error) {
-            (0,core.setFailed)(error.message);
+            core_1.setFailed(error.message);
         }
     });
 }
@@ -1651,6 +1664,13 @@ module.exports = require("assert");;
 /***/ ((module) => {
 
 module.exports = require("child_process");;
+
+/***/ }),
+
+/***/ 417:
+/***/ ((module) => {
+
+module.exports = require("crypto");;
 
 /***/ }),
 
@@ -1721,52 +1741,12 @@ module.exports = require("util");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => module['default'] :
-/******/ 				() => module;
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(356);
+/******/ 	return __nccwpck_require__(996);
 /******/ })()
 ;

@@ -106,17 +106,17 @@ export function getToken(inputName = 'gh-token') {
   return ghToken
 }
 
-export function getEventName() {
+export function getEventName<T extends string = string>() {
   const eventName = process.env['GITHUB_EVENT_NAME']
 
   if (!eventName) {
     throw new Error('The GitHub event name is missing')
   }
 
-  return eventName
+  return eventName as T
 }
 
-export async function getEventData() {
+export async function getEventData<T = any>() {
   const eventPath = process.env['GITHUB_EVENT_PATH']
 
   if (!eventPath) {
@@ -127,5 +127,5 @@ export async function getEventData() {
     encoding: 'utf8',
   })
 
-  return JSON.parse(fileData)
+  return JSON.parse(fileData) as T
 }

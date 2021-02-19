@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["es6"],
+    "strict": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "strict": true
-  }
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["node_modules/checkout/src"]
 }
