@@ -6147,10 +6147,15 @@ function run() {
             const ghToken = getToken();
             const octokit = (0,github.getOctokit)(ghToken);
             const ref = getRef();
+            const sha = getSha();
             const { component } = getRepository();
             const eventName = getEventName();
             const scaffoldBranch = (0,core.getInput)('scaffold-branch') || defaultScaffoldBranch;
             const dryRun = getBooleanInput('dry-run', false);
+            const eventData = yield getEventData();
+            const pr = yield getPR(octokit, component, ref);
+            console.log(JSON.stringify(eventData, undefined, 2));
+            console.log({ ref, sha, pr });
             // Skip accepting commits on master
             if (ref === 'master') {
                 (0,core.warning)('Skipping: master branch is ignored');
@@ -6177,9 +6182,8 @@ function run() {
                         break;
                     case 'check_run':
                     case 'status':
-                        // debug
-                        const eventData = yield getEventData();
-                        console.log(JSON.stringify(eventData, undefined, 2));
+                        // const eventData = await getEventData()
+                        // console.log(JSON.stringify(eventData, undefined, 2))
                         if (!needsCheck) {
                             (0,core.warning)(`Skipping: check_run trigger requires needs-check input`);
                             return;

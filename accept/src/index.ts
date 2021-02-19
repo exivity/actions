@@ -7,6 +7,7 @@ import {
   getPR,
   getRef,
   getRepository,
+  getSha,
   getToken,
 } from '../../lib/github'
 import { runAlways } from './always'
@@ -40,10 +41,16 @@ async function run() {
     const ghToken = getToken()
     const octokit = getOctokit(ghToken)
     const ref = getRef()
+    const sha = getSha()
     const { component } = getRepository()
     const eventName = getEventName()
     const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
     const dryRun = getBooleanInput('dry-run', false)
+
+    const eventData = await getEventData()
+    const pr = await getPR(octokit, component, ref)
+    console.log(JSON.stringify(eventData, undefined, 2))
+    console.log({ ref, sha, pr })
 
     // Skip accepting commits on master
     if (ref === 'master') {
@@ -75,10 +82,8 @@ async function run() {
 
         case 'check_run':
         case 'status':
-          // debug
-          const eventData = await getEventData()
-
-          console.log(JSON.stringify(eventData, undefined, 2))
+          // const eventData = await getEventData()
+          // console.log(JSON.stringify(eventData, undefined, 2))
 
           if (!needsCheck) {
             warning(`Skipping: check_run trigger requires needs-check input`)
