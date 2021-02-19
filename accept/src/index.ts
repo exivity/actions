@@ -1,9 +1,13 @@
-import { debug, getInput, info, setFailed, warning } from '@actions/core'
+import { getInput, group, info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { EmitterWebhookEvent } from '@octokit/webhooks'
 import { EmitterWebhookEventName } from '@octokit/webhooks/dist-types/types'
+import { existsSync } from 'checkout/src/fs-helper'
 import * as gitSourceProvider from 'checkout/src/git-source-provider'
 import * as inputHelper from 'checkout/src/input-helper'
+import { readFileSync } from 'fs'
+import yaml from 'js-yaml'
+import { join } from 'path'
 import { getBooleanInput } from '../../lib/core'
 import {
   getEventData,
@@ -13,6 +17,8 @@ import {
   getRepository,
   getSha,
   getToken,
+  getWorkflowName,
+  getWorkspacePath,
 } from '../../lib/github'
 import { isBotReviewRequested } from './checks'
 import { dispatch } from './dispatch'
@@ -41,6 +47,10 @@ function detectIssueKey(input: string) {
   return match !== null && match.length > 0 ? match[0] : undefined
 }
 
+function table(key: string, value: string) {
+  info(`${key.padEnd(15)}: ${value}`)
+}
+
 function isEvent<T extends PossibleEventNames>(
   input: PossibleEventNames,
   compare: T,
@@ -61,7 +71,7 @@ async function run() {
     const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
     const dryRun = getBooleanInput('dry-run', false)
 
-    info(`Received '${eventName}' event`)
+    table('Event', eventName)
 
     if (!supportedEvents.includes(eventName)) {
       throw new Error(`Event name "${eventName}" not supported`)
@@ -85,14 +95,16 @@ async function run() {
     const pull_request = pr ? `${pr.number}` : undefined
     const issue = detectIssueKey(ref)
 
-    // Some debug output
-    info(`Ref: ${ref}`)
-    info(`Sha: ${sha}`)
-    info(pr ? `Pull request: #${pull_request}` : 'No pull request detected')
-    info(issue ? `Issue key: ${issue}` : 'No issue detected')
+    // Print parameters
+    table('Ref', ref)
+    table('Sha', sha)
+    table('Pull request', pull_request || 'None')
+    table('Jira issue', issue || 'None')
 
     // Debug
-    debug(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2))
+    group('Debug', async function () {
+      info(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2))
+    })
 
     if (pull_request && !isBotReviewRequested(pr)) {
       warning('Skipping: exivity-bot not requested for review')
@@ -109,7 +121,24 @@ async function run() {
       const sourceSettings = inputHelper.getInputs()
       await gitSourceProvider.getSource(sourceSettings)
 
-      // >>>????
+      const workflowName = getWorkflowName()
+      const workspacePath = getWorkspacePath()
+      const workflowPath = join(
+        workspacePath,
+        '.github',
+        'workflows',
+        `${workflowName}.yml`
+      )
+
+      if (!existsSync(workflowPath)) {
+        throw new Error(
+          `Workflow file not found at expected location (${workflowPath})`
+        )
+      }
+
+      const workflow = yaml.load(readFileSync(workflowPath, 'utf8'))
+
+      console.log(workflow)
 
       if (true) {
         warning('Skipping: workflow_run.workflows constraint is not satisfied')

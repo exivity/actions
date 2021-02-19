@@ -7088,7 +7088,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getEventData = exports.getEventName = exports.getToken = exports.getWorkspacePath = exports.getRef = exports.getSha = exports.getRepository = exports.getPR = exports.getShaFromRef = void 0;
+exports.getWorkflowName = exports.getEventData = exports.getEventName = exports.getToken = exports.getWorkspacePath = exports.getRef = exports.getSha = exports.getRepository = exports.getPR = exports.getShaFromRef = void 0;
 const core_1 = __nccwpck_require__(8985);
 const fs_1 = __nccwpck_require__(5747);
 function getShaFromRef({ octokit, component, ref }) {
@@ -7188,6 +7188,14 @@ function getEventData() {
     });
 }
 exports.getEventData = getEventData;
+function getWorkflowName() {
+    const workflowName = process.env['GITHUB_WORKFLOW'];
+    if (!workflowName) {
+        throw new Error('The GitHub workflow name is missing');
+    }
+    return workflowName;
+}
+exports.getWorkflowName = getWorkflowName;
 
 
 /***/ }),

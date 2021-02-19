@@ -129,3 +129,13 @@ export async function getEventData<T = any>() {
 
   return JSON.parse(fileData) as T
 }
+
+export function getWorkflowName() {
+  const workflowName = process.env['GITHUB_WORKFLOW']
+
+  if (!workflowName) {
+    throw new Error('The GitHub workflow name is missing')
+  }
+
+  return workflowName
+}
