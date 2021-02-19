@@ -84,6 +84,13 @@ async function run() {
       sha = eventData['workflow_run']['head_commit']['id']
     }
 
+    // We need to copy sha to correct commit if we received a pull_request
+    // event, because it uses PR merge branch instead of PR branch
+    // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request
+    if (isEvent(eventName, 'pull_request', eventData)) {
+      sha = eventData['pull_request']['head']['sha']
+    }
+
     // Skip accepting commits on release branches
     if (skipBranches.includes(ref)) {
       warning(`Skipping: release branch "${ref}" is ignored`)

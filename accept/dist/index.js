@@ -34799,12 +34799,20 @@ exports.isWorkflowDependencyDone = isWorkflowDependencyDone;
 function isCheckDone(octokit, ref, repo, checkName) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        const allCheckResult = yield octokit.checks.listForRef({
+            owner: 'exivity',
+            repo,
+            ref,
+            check_name: checkName,
+        });
+        console.log('all', allCheckResult);
         const checkResult = yield octokit.checks.listForRef({
             owner: 'exivity',
             repo,
             ref,
             check_name: checkName,
         });
+        console.log('only for', checkName, checkResult);
         return (_a = checkResult.data.check_runs) === null || _a === void 0 ? void 0 : _a.every((check) => check.status === 'completed' && check.conclusion === 'success');
     });
 }
@@ -34925,6 +34933,12 @@ function run() {
             if (isEvent(eventName, 'workflow_run', eventData)) {
                 ref = eventData['workflow_run']['head_branch'];
                 sha = eventData['workflow_run']['head_commit']['id'];
+            }
+            // We need to copy sha to correct commit if we received a pull_request
+            // event, because it uses PR merge branch instead of PR branch
+            // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request
+            if (isEvent(eventName, 'pull_request', eventData)) {
+                sha = eventData['pull_request']['head']['sha'];
             }
             // Skip accepting commits on release branches
             if (skipBranches.includes(ref)) {

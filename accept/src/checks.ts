@@ -80,12 +80,23 @@ export async function isCheckDone(
   repo: string,
   checkName: string
 ): Promise<boolean> {
+  const allCheckResult = await octokit.checks.listForRef({
+    owner: 'exivity',
+    repo,
+    ref,
+    check_name: checkName,
+  })
+
+  console.log('all', allCheckResult)
+
   const checkResult = await octokit.checks.listForRef({
     owner: 'exivity',
     repo,
     ref,
     check_name: checkName,
   })
+
+  console.log('only for', checkName, checkResult)
 
   return checkResult.data.check_runs?.every(
     (check) => check.status === 'completed' && check.conclusion === 'success'
