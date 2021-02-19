@@ -7,8 +7,8 @@ on:
       - 'accept/**'
       - 'lib/github.ts'
   workflow_run:
+    workflows: [accept-test]
     types: [completed]
-  status:
   pull_request:
     types: [review_requested]
 
