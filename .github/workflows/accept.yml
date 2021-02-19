@@ -9,7 +9,7 @@ on:
   pull_request:
     types: [review_requested]
   workflow_run:
-    workflows: [accept-test]
+    workflows: ['accept test']
     types: [completed]
 
 env:

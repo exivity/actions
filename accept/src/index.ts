@@ -1,13 +1,14 @@
-import { getInput, group, info, setFailed, warning } from '@actions/core'
+import {
+  endGroup,
+  getInput,
+  info,
+  setFailed,
+  startGroup,
+  warning,
+} from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { EmitterWebhookEvent } from '@octokit/webhooks'
 import { EmitterWebhookEventName } from '@octokit/webhooks/dist-types/types'
-import { existsSync } from 'checkout/src/fs-helper'
-import * as gitSourceProvider from 'checkout/src/git-source-provider'
-import * as inputHelper from 'checkout/src/input-helper'
-import { readFileSync } from 'fs'
-import yaml from 'js-yaml'
-import { join } from 'path'
 import { getBooleanInput } from '../../lib/core'
 import {
   getEventData,
@@ -17,10 +18,8 @@ import {
   getRepository,
   getSha,
   getToken,
-  getWorkflowName,
-  getWorkspacePath,
 } from '../../lib/github'
-import { isBotReviewRequested } from './checks'
+import { isBotReviewRequested, isWorkflowDependencyDone } from './checks'
 import { dispatch } from './dispatch'
 
 type EventData<
@@ -102,9 +101,9 @@ async function run() {
     table('Jira issue', issue || 'None')
 
     // Debug
-    group('Debug', async function () {
-      info(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2))
-    })
+    startGroup('Debug')
+    info(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2))
+    endGroup()
 
     if (pull_request && !isBotReviewRequested(pr)) {
       warning('Skipping: exivity-bot not requested for review')
@@ -113,36 +112,10 @@ async function run() {
 
     if (eventName === 'pull_request') {
       // We need to check if required workflow has finished
-      info('Checking out repository...')
+      info('Checking if workflow constraint is satisfied...')
 
-      // Need to 'fake' the token, it defaults to ${{ github.token }}
-      // see https://github.com/actions/checkout/blob/main/action.yml
-      process.env['INPUT_TOKEN'] = ghToken
-      const sourceSettings = inputHelper.getInputs()
-      await gitSourceProvider.getSource(sourceSettings)
-
-      const workflowName = getWorkflowName()
-      const workspacePath = getWorkspacePath()
-      const workflowPath = join(
-        workspacePath,
-        '.github',
-        'workflows',
-        `${workflowName}.yml`
-      )
-
-      if (!existsSync(workflowPath)) {
-        throw new Error(
-          `Workflow file not found at expected location (${workflowPath})`
-        )
-      }
-
-      const workflow = yaml.load(readFileSync(workflowPath, 'utf8'))
-
-      console.log(workflow)
-
-      if (true) {
-        warning('Skipping: workflow_run.workflows constraint is not satisfied')
-        return
+      if (!(await isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
+        warning(`Skipping: workflow constraint not satisfied`)
       }
     }
 

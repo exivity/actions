@@ -22206,7 +22206,7 @@ exports.Deprecation = Deprecation;
 
 /***/ }),
 
-/***/ 8011:
+/***/ 2790:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var once = __nccwpck_require__(9655);
@@ -32218,7 +32218,7 @@ module.exports = opts => {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var once = __nccwpck_require__(9655)
-var eos = __nccwpck_require__(8011)
+var eos = __nccwpck_require__(2790)
 var fs = __nccwpck_require__(5747) // we only need fs to get the ReadStream and WriteStream prototypes
 
 var noop = function () {}
@@ -34715,11 +34715,30 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 5383:
+/***/ 8011:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34729,11 +34748,53 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isBotReviewRequested = exports.getCheckName = exports.isCheckDone = exports.EXIVITY_BOT = void 0;
+exports.isBotReviewRequested = exports.getCheckName = exports.isCheckDone = exports.isWorkflowDependencyDone = exports.EXIVITY_BOT = void 0;
+const core_1 = __nccwpck_require__(8985);
+const fs_helper_1 = __nccwpck_require__(8383);
+const gitSourceProvider = __importStar(__nccwpck_require__(3406));
+const inputHelper = __importStar(__nccwpck_require__(5946));
+const fs_1 = __nccwpck_require__(5747);
+const js_yaml_1 = __importDefault(__nccwpck_require__(1170));
+const path_1 = __nccwpck_require__(5622);
 const github_1 = __nccwpck_require__(356);
-// id of exivity bot
+// The id of user exivity-bot
 exports.EXIVITY_BOT = 53756225;
+function isWorkflowDependencyDone(octokit, token, sha, repo) {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        core_1.info('Checking out repository to get workflow contents...');
+        // Need to 'fake' the token, it defaults to ${{ github.token }}
+        // see https://github.com/actions/checkout/blob/main/action.yml
+        process.env['INPUT_TOKEN'] = token;
+        const sourceSettings = inputHelper.getInputs();
+        yield gitSourceProvider.getSource(sourceSettings);
+        const workflowName = github_1.getWorkflowName();
+        const workspacePath = github_1.getWorkspacePath();
+        const workflowPath = path_1.join(workspacePath, '.github', 'workflows', `${workflowName}.yml`);
+        if (!fs_helper_1.existsSync(workflowPath)) {
+            throw new Error(`Workflow file not found at "${workflowPath}"`);
+        }
+        core_1.info(`Workflow file found at "${workflowPath}"`);
+        const workflow = js_yaml_1.default.load(fs_1.readFileSync(workflowPath, 'utf8'));
+        const needsWorkflows = ((_b = (_a = workflow.on) === null || _a === void 0 ? void 0 : _a.workflow_run) === null || _b === void 0 ? void 0 : _b.workflows) || [];
+        core_1.info(`on.workflow_run.workflows resolves to "${JSON.stringify(needsWorkflows)}"`);
+        if (needsWorkflows.length !== 1) {
+            throw new Error('Workflow dependencies must have length 1');
+        }
+        const needsWorkflow = needsWorkflows[0];
+        if (!(yield isCheckDone(octokit, sha, repo, needsWorkflow))) {
+            core_1.info(`Workflow "${needsWorkflow}" has not completed`);
+            return false;
+        }
+        core_1.info(`Workflow "${needsWorkflow}" has completed`);
+        return true;
+    });
+}
+exports.isWorkflowDependencyDone = isWorkflowDependencyDone;
 // Checks if all check runs connected to this ref have completed successfully
 function isCheckDone(octokit, ref, repo, checkName) {
     var _a;
@@ -34810,25 +34871,6 @@ exports.dispatch = dispatch;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34838,21 +34880,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(8985);
 const github_1 = __nccwpck_require__(893);
-const fs_helper_1 = __nccwpck_require__(8383);
-const gitSourceProvider = __importStar(__nccwpck_require__(3406));
-const inputHelper = __importStar(__nccwpck_require__(5946));
-const fs_1 = __nccwpck_require__(5747);
-const js_yaml_1 = __importDefault(__nccwpck_require__(1170));
-const path_1 = __nccwpck_require__(5622);
 const core_2 = __nccwpck_require__(8651);
 const github_2 = __nccwpck_require__(356);
-const checks_1 = __nccwpck_require__(5383);
+const checks_1 = __nccwpck_require__(8011);
 const dispatch_1 = __nccwpck_require__(8417);
 const supportedEvents = ['push', 'pull_request', 'workflow_run'];
 // id for exivity/scaffold/.github/workflows/build.yaml
@@ -34907,34 +34940,18 @@ function run() {
             table('Pull request', pull_request || 'None');
             table('Jira issue', issue || 'None');
             // Debug
-            core_1.group('Debug', function () {
-                return __awaiter(this, void 0, void 0, function* () {
-                    core_1.info(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2));
-                });
-            });
+            core_1.startGroup('Debug');
+            core_1.info(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2));
+            core_1.endGroup();
             if (pull_request && !checks_1.isBotReviewRequested(pr)) {
                 core_1.warning('Skipping: exivity-bot not requested for review');
                 return;
             }
             if (eventName === 'pull_request') {
                 // We need to check if required workflow has finished
-                core_1.info('Checking out repository...');
-                // Need to 'fake' the token, it defaults to ${{ github.token }}
-                // see https://github.com/actions/checkout/blob/main/action.yml
-                process.env['INPUT_TOKEN'] = ghToken;
-                const sourceSettings = inputHelper.getInputs();
-                yield gitSourceProvider.getSource(sourceSettings);
-                const workflowName = github_2.getWorkflowName();
-                const workspacePath = github_2.getWorkspacePath();
-                const workflowPath = path_1.join(workspacePath, '.github', 'workflows', `${workflowName}.yml`);
-                if (!fs_helper_1.existsSync(workflowPath)) {
-                    throw new Error(`Workflow file not found at expected location (${workflowPath})`);
-                }
-                const workflow = js_yaml_1.default.load(fs_1.readFileSync(workflowPath, 'utf8'));
-                console.log(workflow);
-                if (true) {
-                    core_1.warning('Skipping: workflow_run.workflows constraint is not satisfied');
-                    return;
+                core_1.info('Checking if workflow constraint is satisfied...');
+                if (!(yield checks_1.isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
+                    core_1.warning(`Skipping: workflow constraint not satisfied`);
                 }
             }
             yield dispatch_1.dispatch({
