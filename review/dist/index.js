@@ -5917,7 +5917,6 @@ function run() {
             // defaults
             const { owner, component } = getRepository();
             const default_branch = getRef();
-            console.log('debug, remove me!!');
             // inputs
             const ghToken = getToken();
             const pull_request = parseInt((0,core.getInput)('pull'), 10);
