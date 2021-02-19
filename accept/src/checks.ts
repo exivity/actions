@@ -80,15 +80,6 @@ export async function isCheckDone(
   repo: string,
   checkName: string
 ): Promise<boolean> {
-  const allCheckResult = await octokit.checks.listForRef({
-    owner: 'exivity',
-    repo,
-    ref,
-    check_name: checkName,
-  })
-
-  console.log('all', allCheckResult)
-
   const checkResult = await octokit.checks.listForRef({
     owner: 'exivity',
     repo,
@@ -96,9 +87,12 @@ export async function isCheckDone(
     check_name: checkName,
   })
 
-  console.log('only for', checkName, checkResult)
+  if (checkResult.data.check_runs.length === 0) {
+    info('No check runs found')
+    return false
+  }
 
-  return checkResult.data.check_runs?.every(
+  return checkResult.data.check_runs.every(
     (check) => check.status === 'completed' && check.conclusion === 'success'
   )
 }

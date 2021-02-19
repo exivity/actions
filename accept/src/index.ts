@@ -123,6 +123,7 @@ async function run() {
 
       if (!(await isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
         warning(`Skipping: workflow constraint not satisfied`)
+        return
       }
     }
 

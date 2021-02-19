@@ -34797,23 +34797,18 @@ function isWorkflowDependencyDone(octokit, token, sha, repo) {
 exports.isWorkflowDependencyDone = isWorkflowDependencyDone;
 // Checks if all check runs connected to this ref have completed successfully
 function isCheckDone(octokit, ref, repo, checkName) {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const allCheckResult = yield octokit.checks.listForRef({
-            owner: 'exivity',
-            repo,
-            ref,
-            check_name: checkName,
-        });
-        console.log('all', allCheckResult);
         const checkResult = yield octokit.checks.listForRef({
             owner: 'exivity',
             repo,
             ref,
             check_name: checkName,
         });
-        console.log('only for', checkName, checkResult);
-        return (_a = checkResult.data.check_runs) === null || _a === void 0 ? void 0 : _a.every((check) => check.status === 'completed' && check.conclusion === 'success');
+        if (checkResult.data.check_runs.length === 0) {
+            core_1.info('No check runs found');
+            return false;
+        }
+        return checkResult.data.check_runs.every((check) => check.status === 'completed' && check.conclusion === 'success');
     });
 }
 exports.isCheckDone = isCheckDone;
@@ -34966,6 +34961,7 @@ function run() {
                 core_1.info('Checking if workflow constraint is satisfied...');
                 if (!(yield checks_1.isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
                     core_1.warning(`Skipping: workflow constraint not satisfied`);
+                    return;
                 }
             }
             yield dispatch_1.dispatch({
