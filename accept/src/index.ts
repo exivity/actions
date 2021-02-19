@@ -101,6 +101,11 @@ async function run() {
 
     if (eventName === 'pull_request') {
       // We need to check if required workflow has finished
+      info('Checking out repository...')
+
+      // Need to 'fake' the token, it defaults to ${{ github.token }}
+      // see https://github.com/actions/checkout/blob/main/action.yml
+      process.env['INPUT_TOKEN'] = ghToken
       const sourceSettings = inputHelper.getInputs()
       await gitSourceProvider.getSource(sourceSettings)
 

@@ -519,3 +519,12 @@ not needed if `pull` has been specified.
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
     body: Exivity bot approves everything!
 ```
+
+# Todo
+
+Some development hurdles:
+
+- [ ] Add `// @ts-nocheck` to top of file `node_modules\checkout\src\misc\generate-docs.ts`
+- [ ] Problem with `yarn` and `@exivity/ncc` bin file. Open upstream PR to add
+      allowTsInNodeModules? See
+      https://github.com/exivity/ncc/commit/197a9e8dd94d05bffc929750c07d5439f63dc3a6
