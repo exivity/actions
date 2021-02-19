@@ -6,7 +6,7 @@ on:
       - '.github/workflows/accept.yml'
       - 'accept/**'
       - 'lib/github.ts'
-  check_run:
+  workflow_run:
     types: [completed]
   status:
   pull_request:
