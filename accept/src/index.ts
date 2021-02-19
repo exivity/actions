@@ -83,22 +83,20 @@ async function run() {
 
     const pr = await getPR(octokit, component, ref)
     const pull_request = pr ? `${pr.number}` : undefined
+    const issue = detectIssueKey(ref)
+
+    // Some debug output
+    info(`Ref: ${ref}`)
+    info(`Sha: ${sha}`)
+    info(pr ? `Pull request: #${pull_request}` : 'No pull request detected')
+    info(issue ? `Issue key: ${issue}` : 'No issue detected')
 
     // Debug
     debug(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2))
 
-    // Detect issue key in branch name
-    const issue = detectIssueKey(ref)
-    if (issue) {
-      info(`Detected issue key: ${issue}`)
-    }
-
-    if (pull_request) {
-      // We need to check if bot review was requested
-      if (!isBotReviewRequested(pr)) {
-        warning('Skipping: exivity-bot not requested for review')
-        return
-      }
+    if (pull_request && !isBotReviewRequested(pr)) {
+      warning('Skipping: exivity-bot not requested for review')
+      return
     }
 
     if (eventName === 'pull_request') {

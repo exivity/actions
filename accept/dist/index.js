@@ -30800,19 +30800,17 @@ function run() {
             }
             const pr = yield github_2.getPR(octokit, component, ref);
             const pull_request = pr ? `${pr.number}` : undefined;
+            const issue = detectIssueKey(ref);
+            // Some debug output
+            core_1.info(`Ref: ${ref}`);
+            core_1.info(`Sha: ${sha}`);
+            core_1.info(pr ? `Pull request: #${pull_request}` : 'No pull request detected');
+            core_1.info(issue ? `Issue key: ${issue}` : 'No issue detected');
             // Debug
             core_1.debug(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2));
-            // Detect issue key in branch name
-            const issue = detectIssueKey(ref);
-            if (issue) {
-                core_1.info(`Detected issue key: ${issue}`);
-            }
-            if (pull_request) {
-                // We need to check if bot review was requested
-                if (!checks_1.isBotReviewRequested(pr)) {
-                    core_1.warning('Skipping: exivity-bot not requested for review');
-                    return;
-                }
+            if (pull_request && !checks_1.isBotReviewRequested(pr)) {
+                core_1.warning('Skipping: exivity-bot not requested for review');
+                return;
             }
             if (eventName === 'pull_request') {
                 // We need to check if required workflow has finished
