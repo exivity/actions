@@ -21,36 +21,15 @@ _Available actions:_
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/accept)
 
 Triggers a scaffold repository build using the `workflow_dispatch` event. Does
-not trigger for the `master` branch.
+not trigger for the `master` or `main` branch.
 
 If the current branch includes a Jira key (e.g. EXVT-1000), the scaffold build
 will try to resolve matching epic branches for other components.
 
+See [.github repository](https://github.com/exivity/.github#accept) for example
+usage.
+
 ## Inputs
-
-### `mode`
-
-**Optional**  
-_Options: `auto`, `bot-review`, `pr` or `always`, defaults to `auto`_  
-Choose a trigger mode:
-
-- `auto`: Automatic mode based on event
-- `bot-review`: Only trigger when [@exivity-bot](https://github.com/exivity-bot)
-  is added as reviewer to a PR
-- `pr`: Only trigger when the commit is part of a non-draft PR
-- `always`: Trigger immediately
-
-In `auto` mode, this is the decision tree:
-
-- Event is `push`: mode set to `always`
-- Event is `pull_request`: mode set to `bot-review`
-- Event is `check_run` or `status`:
-  - If `needs-check` input is not set: ignore
-  - If part of a PR: mode set to `bot-review`
-  - Otherwise: mode set to `always`
-- Other events: mode set to `pr`
-
-This action works best when it's part of a separate workflow ([example](https://github.com/exivity/.github/blob/main/workflow-templates/accept.yml)).
 
 ### `scaffold-branch`
 
@@ -64,11 +43,6 @@ The scaffold branch to build.
 _Defaults to the GITHUB_TOKEN environment variable_  
 A GitHub token with access to the exivity/scaffold repository.
 
-### `needs-check`
-
-**Optional**
-A check that needs to be done before this action will run.
-
 ### `dry-run`
 
 **Optional**  
@@ -80,7 +54,7 @@ If `true`, scaffold will not build or run any tests.
 ```
 - uses: exivity/actions/accept@master
   with:
-    scaffold-branch: some-feature-branch
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
 
 # `db`
@@ -545,3 +519,12 @@ not needed if `pull` has been specified.
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
     body: Exivity bot approves everything!
 ```
+
+# Todo
+
+Some development hurdles:
+
+- [ ] Add `// @ts-nocheck` to top of file `node_modules\checkout\src\misc\generate-docs.ts`
+- [ ] Problem with `yarn` and `@exivity/ncc` bin file. Open upstream PR to add
+      allowTsInNodeModules? See
+      https://github.com/exivity/ncc/commit/197a9e8dd94d05bffc929750c07d5439f63dc3a6

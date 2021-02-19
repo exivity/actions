@@ -3,7 +3,7 @@ module.exports =
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 351:
+/***/ 286:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -16,7 +16,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const utils_1 = __nccwpck_require__(343);
 /**
  * Commands
  *
@@ -88,7 +88,7 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 186:
+/***/ 985:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -109,9 +109,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const command_1 = __nccwpck_require__(351);
-const file_command_1 = __nccwpck_require__(717);
-const utils_1 = __nccwpck_require__(278);
+const command_1 = __nccwpck_require__(286);
+const file_command_1 = __nccwpck_require__(781);
+const utils_1 = __nccwpck_require__(343);
 const os = __importStar(__nccwpck_require__(87));
 const path = __importStar(__nccwpck_require__(622));
 /**
@@ -332,7 +332,7 @@ exports.getState = getState;
 
 /***/ }),
 
-/***/ 717:
+/***/ 781:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -349,7 +349,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(747));
 const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const utils_1 = __nccwpck_require__(343);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -367,7 +367,7 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
-/***/ 278:
+/***/ 343:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -392,7 +392,7 @@ exports.toCommandValue = toCommandValue;
 
 /***/ }),
 
-/***/ 514:
+/***/ 287:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -413,7 +413,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const tr = __importStar(__nccwpck_require__(159));
+const tr = __importStar(__nccwpck_require__(106));
 /**
  * Exec a command.
  * Output will be streamed to the live console.
@@ -442,7 +442,7 @@ exports.exec = exec;
 
 /***/ }),
 
-/***/ 159:
+/***/ 106:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -467,8 +467,8 @@ const os = __importStar(__nccwpck_require__(87));
 const events = __importStar(__nccwpck_require__(614));
 const child = __importStar(__nccwpck_require__(129));
 const path = __importStar(__nccwpck_require__(622));
-const io = __importStar(__nccwpck_require__(436));
-const ioUtil = __importStar(__nccwpck_require__(962));
+const io = __importStar(__nccwpck_require__(760));
+const ioUtil = __importStar(__nccwpck_require__(665));
 /* eslint-disable @typescript-eslint/unbound-method */
 const IS_WINDOWS = process.platform === 'win32';
 /*
@@ -1048,7 +1048,7 @@ class ExecState extends events.EventEmitter {
 
 /***/ }),
 
-/***/ 962:
+/***/ 665:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -1249,7 +1249,7 @@ function isUnixExecutable(stats) {
 
 /***/ }),
 
-/***/ 436:
+/***/ 760:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -1266,7 +1266,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const childProcess = __nccwpck_require__(129);
 const path = __nccwpck_require__(622);
 const util_1 = __nccwpck_require__(669);
-const ioUtil = __nccwpck_require__(962);
+const ioUtil = __nccwpck_require__(665);
 const exec = util_1.promisify(childProcess.exec);
 /**
  * Copies a file or folder.
@@ -1545,22 +1545,11 @@ function copyFile(srcFile, destFile, force) {
 
 /***/ }),
 
-/***/ 317:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ 111:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(186);
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __nccwpck_require__(514);
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(622);
-var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
-
-// CONCATENATED MODULE: ./lib/dex.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1569,61 +1558,15 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
-
-
-function startDexDocker({ cmd, env }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Use this Docker image tag
-        const tag = (0,core.getInput)('tag') || 'latest';
-        // Path/cwd input will be used as the Docker mount path in the dex-start bash
-        // script
-        const cwd = (0,core.getInput)('path') || (0,core.getInput)('cwd') || '.';
-        // Env vars
-        const envOptions = Object.keys(env || {})
-            .map((key) => `--env ${key}=${(env || {})[key]}`)
-            .join(' ');
-        (0,core.info)(`About to start a Dex container`);
-        // Execute docker-start script
-        yield (0,exec.exec)(`bash dex-docker-start.sh ${cmd}`, undefined, {
-            // Once bundled, executing file will be /{action-name}/dist/index.js
-            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: Object.assign(Object.assign({}, process.env), { CWD: cwd, TAG: tag, ENV: envOptions }),
-        });
-    });
-}
-function startDexBinary({ cmd, env }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Path/cwd input will be used as the cwd for the dex binary
-        const cwd = (0,core.getInput)('path') || (0,core.getInput)('cwd') || '.';
-        (0,core.info)(`About to start the Dex binary`);
-        // Execute docker-start script
-        yield (0,exec.exec)(`bash dex-binary-start.sh ${cmd}`, undefined, {
-            // Once bundled, executing file will be /{action-name}/dist/index.js
-            cwd: external_path_default().resolve(__dirname, '..', '..', 'lib'),
-            env: Object.assign(Object.assign(Object.assign({}, process.env), { CWD: cwd }), env),
-        });
-    });
-}
-
-// CONCATENATED MODULE: ./dex/src/index.ts
-var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __nccwpck_require__(985);
+const dex_1 = __nccwpck_require__(253);
 function run() {
-    return src_awaiter(this, void 0, void 0, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         try {
             // Input
-            const cmd = (0,core.getInput)('cmd');
-            const mode = (0,core.getInput)('mode') || 'binary';
+            const cmd = core_1.getInput('cmd');
+            const mode = core_1.getInput('mode') || 'binary';
             // Assertions
             if (!cmd) {
                 throw new Error('A required argument is missing');
@@ -1633,19 +1576,79 @@ function run() {
             }
             switch (mode) {
                 case 'docker':
-                    yield startDexDocker({ cmd });
+                    yield dex_1.startDexDocker({ cmd });
                     break;
                 case 'binary':
-                    yield startDexBinary({ cmd });
+                    yield dex_1.startDexBinary({ cmd });
                     break;
             }
         }
         catch (error) {
-            (0,core.setFailed)(error.message);
+            core_1.setFailed(error.message);
         }
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 253:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.startDexBinary = exports.startDexDocker = void 0;
+const core_1 = __nccwpck_require__(985);
+const exec_1 = __nccwpck_require__(287);
+const path_1 = __importDefault(__nccwpck_require__(622));
+function startDexDocker({ cmd, env }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Use this Docker image tag
+        const tag = core_1.getInput('tag') || 'latest';
+        // Path/cwd input will be used as the Docker mount path in the dex-start bash
+        // script
+        const cwd = core_1.getInput('path') || core_1.getInput('cwd') || '.';
+        // Env vars
+        const envOptions = Object.keys(env || {})
+            .map((key) => `--env ${key}=${(env || {})[key]}`)
+            .join(' ');
+        core_1.info(`About to start a Dex container`);
+        // Execute docker-start script
+        yield exec_1.exec(`bash dex-docker-start.sh ${cmd}`, undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: path_1.default.resolve(__dirname, '..', '..', 'lib'),
+            env: Object.assign(Object.assign({}, process.env), { CWD: cwd, TAG: tag, ENV: envOptions }),
+        });
+    });
+}
+exports.startDexDocker = startDexDocker;
+function startDexBinary({ cmd, env }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Path/cwd input will be used as the cwd for the dex binary
+        const cwd = core_1.getInput('path') || core_1.getInput('cwd') || '.';
+        core_1.info(`About to start the Dex binary`);
+        // Execute docker-start script
+        yield exec_1.exec(`bash dex-binary-start.sh ${cmd}`, undefined, {
+            // Once bundled, executing file will be /{action-name}/dist/index.js
+            cwd: path_1.default.resolve(__dirname, '..', '..', 'lib'),
+            env: Object.assign(Object.assign(Object.assign({}, process.env), { CWD: cwd }), env),
+        });
+    });
+}
+exports.startDexBinary = startDexBinary;
 
 
 /***/ }),
@@ -1731,52 +1734,12 @@ module.exports = require("util");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => module['default'] :
-/******/ 				() => module;
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(317);
+/******/ 	return __nccwpck_require__(111);
 /******/ })()
 ;

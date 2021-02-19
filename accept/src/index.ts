@@ -1,5 +1,14 @@
-import { getInput, info, setFailed, warning } from '@actions/core'
+import {
+  endGroup,
+  getInput,
+  info,
+  setFailed,
+  startGroup,
+  warning,
+} from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { EmitterWebhookEvent } from '@octokit/webhooks'
+import { EmitterWebhookEventName } from '@octokit/webhooks/dist-types/types'
 import { getBooleanInput } from '../../lib/core'
 import {
   getEventData,
@@ -10,23 +19,18 @@ import {
   getSha,
   getToken,
 } from '../../lib/github'
-import { runAlways } from './always'
-import { runBotReview } from './botReview'
-import { getCheckName, isCheckDone } from './checks'
-import { detectIssueKey } from './detectIssueKey'
-import { runPr } from './pr'
+import { isBotReviewRequested, isWorkflowDependencyDone } from './checks'
+import { dispatch } from './dispatch'
 
-export type RunParams = {
-  octokit: ReturnType<typeof getOctokit>
-  scaffoldWorkflowId: number
-  scaffoldBranch: string
-  dryRun: boolean
-  ref: string
-  component: string
-  issue?: string
-}
+type EventData<
+  T extends EmitterWebhookEventName
+> = EmitterWebhookEvent<T>['payload']
 
-const defaultMode = 'auto'
+type PossibleEventNames = typeof supportedEvents[number]
+
+type PossibleEventData = EventData<PossibleEventNames>
+
+const supportedEvents = ['push', 'pull_request', 'workflow_run'] as const
 
 // id for exivity/scaffold/.github/workflows/build.yaml
 // obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
@@ -34,116 +38,97 @@ const scaffoldWorkflowId = 514379
 
 const defaultScaffoldBranch = 'develop'
 
+const skipBranches = ['master', 'main']
+
+function detectIssueKey(input: string) {
+  const match = input.match(/([A-Z0-9]{1,10}-\d+)/)
+
+  return match !== null && match.length > 0 ? match[0] : undefined
+}
+
+function table(key: string, value: string) {
+  info(`${key.padEnd(15)}: ${value}`)
+}
+
+function isEvent<T extends PossibleEventNames>(
+  input: PossibleEventNames,
+  compare: T,
+  eventData: PossibleEventData
+): eventData is EventData<T> {
+  return input === compare
+}
+
 async function run() {
   try {
-    let mode = getInput('mode') || defaultMode
-    const needsCheck = getInput('needs-check')
     const ghToken = getToken()
     const octokit = getOctokit(ghToken)
-    const ref = getRef()
-    const sha = getSha()
+    let ref = getRef()
+    let sha = getSha()
     const { component } = getRepository()
-    const eventName = getEventName()
+    const eventName = getEventName<PossibleEventNames>()
+    const eventData = await getEventData<PossibleEventData>()
     const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
     const dryRun = getBooleanInput('dry-run', false)
 
-    const eventData = await getEventData()
-    const pr = await getPR(octokit, component, ref)
-    console.log(JSON.stringify(eventData, undefined, 2))
-    console.log({ ref, sha, pr })
+    table('Event', eventName)
 
-    // Skip accepting commits on master
-    if (ref === 'master') {
-      warning('Skipping: master branch is ignored')
+    if (!supportedEvents.includes(eventName)) {
+      throw new Error(`Event name "${eventName}" not supported`)
+    }
+
+    // We need to copy ref and sha to correct commit if we received a
+    // workflow_run event, because it uses default branch head commit by default
+    // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_run
+    if (isEvent(eventName, 'workflow_run', eventData)) {
+      ref = eventData['workflow_run']['head_branch']
+      sha = eventData['workflow_run']['head_commit']['id']
+    }
+
+    // Skip accepting commits on release branches
+    if (skipBranches.includes(ref)) {
+      warning(`Skipping: release branch "${ref}" is ignored`)
       return
     }
 
-    // Check check
-    if (needsCheck) {
-      if (!(await isCheckDone(octokit, ref, component, needsCheck))) {
-        warning('Skipping: needs-check constraint is not satisfied')
-        return
-      }
-    }
-
-    // Detect issue key in branch name
+    const pr = await getPR(octokit, component, ref)
+    const pull_request = pr ? `${pr.number}` : undefined
     const issue = detectIssueKey(ref)
-    if (issue) {
-      info(`Detected issue key: ${issue}`)
+
+    // Print parameters
+    table('Ref', ref)
+    table('Sha', sha)
+    table('Pull request', pull_request || 'None')
+    table('Jira issue', issue || 'None')
+
+    // Debug
+    startGroup('Debug')
+    info(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2))
+    endGroup()
+
+    if (pull_request && !isBotReviewRequested(pr)) {
+      warning('Skipping: exivity-bot not requested for review')
+      return
     }
 
-    // Auto mode decision tree
-    if (mode === 'auto') {
-      switch (eventName) {
-        case 'push':
-          info(`Running in 'always' mode (push event)`)
-          mode = 'always'
-          break
+    if (eventName === 'pull_request') {
+      // We need to check if required workflow has finished
+      info('Checking if workflow constraint is satisfied...')
 
-        case 'check_run':
-        case 'status':
-          // const eventData = await getEventData()
-          // console.log(JSON.stringify(eventData, undefined, 2))
-
-          if (!needsCheck) {
-            warning(`Skipping: check_run trigger requires needs-check input`)
-            return
-          }
-
-          if (needsCheck !== (await getCheckName())) {
-            warning(
-              `Skipping: check_run only triggers when check name matches needs-check input`
-            )
-            return
-          }
-
-          if (await getPR(octokit, component, ref)) {
-            info(
-              `Running in 'bot-review' mode (${eventName} event and PR found)`
-            )
-            mode = 'bot-review'
-          } else {
-            info(
-              `Running in 'always' mode (${eventName} event and no PR found)`
-            )
-            mode = 'always'
-          }
-          break
-
-        case 'pull_request':
-          info(`Running in 'bot-review' mode (pull_request event)`)
-          mode = 'bot-review'
-          break
-
-        default:
-          info(`Running in 'pr' mode (other event)`)
-          mode = 'pr'
+      if (!(await isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
+        warning(`Skipping: workflow constraint not satisfied`)
       }
     }
 
-    const params: RunParams = {
+    await dispatch({
       octokit,
       scaffoldWorkflowId,
       scaffoldBranch,
-      dryRun,
       component,
-      ref,
+      sha,
+      pull_request,
       issue,
-    }
-
-    switch (mode) {
-      case 'bot-review':
-        await runBotReview(params)
-        break
-      case 'pr':
-        await runPr(params)
-        break
-      case 'always':
-        await runAlways(params)
-        break
-      default:
-        throw new Error('Invalid mode')
-    }
+      dryRun,
+    })
   } catch (error) {
     setFailed(error.message)
   }

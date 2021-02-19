@@ -8,8 +8,6 @@ async function run() {
     const { owner, component } = getRepository()
     const default_branch = getRef()
 
-    console.log('debug, remove me!!')
-
     // inputs
     const ghToken = getToken()
     const pull_request = parseInt(getInput('pull'), 10)

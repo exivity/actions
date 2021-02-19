@@ -6,11 +6,11 @@ on:
       - '.github/workflows/accept.yml'
       - 'accept/**'
       - 'lib/github.ts'
-  workflow_run:
-    workflows: [accept-test]
-    types: [completed]
   pull_request:
     types: [review_requested]
+  workflow_run:
+    workflows: ['accept test']
+    types: [completed]
 
 env:
   GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
@@ -20,11 +20,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        mode: [auto, bot-review, pr, always]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - uses: ./accept
         with:
           dry-run: true
-          mode: ${{ matrix.mode }}

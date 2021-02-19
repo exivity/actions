@@ -3,7 +3,7 @@ module.exports =
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 351:
+/***/ 286:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -16,7 +16,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const utils_1 = __nccwpck_require__(343);
 /**
  * Commands
  *
@@ -88,7 +88,7 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 186:
+/***/ 985:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -109,9 +109,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const command_1 = __nccwpck_require__(351);
-const file_command_1 = __nccwpck_require__(717);
-const utils_1 = __nccwpck_require__(278);
+const command_1 = __nccwpck_require__(286);
+const file_command_1 = __nccwpck_require__(781);
+const utils_1 = __nccwpck_require__(343);
 const os = __importStar(__nccwpck_require__(87));
 const path = __importStar(__nccwpck_require__(622));
 /**
@@ -332,7 +332,7 @@ exports.getState = getState;
 
 /***/ }),
 
-/***/ 717:
+/***/ 781:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -349,7 +349,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(747));
 const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const utils_1 = __nccwpck_require__(343);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -367,7 +367,7 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
-/***/ 278:
+/***/ 343:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -392,7 +392,7 @@ exports.toCommandValue = toCommandValue;
 
 /***/ }),
 
-/***/ 514:
+/***/ 287:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -413,7 +413,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const tr = __importStar(__nccwpck_require__(159));
+const tr = __importStar(__nccwpck_require__(106));
 /**
  * Exec a command.
  * Output will be streamed to the live console.
@@ -442,7 +442,7 @@ exports.exec = exec;
 
 /***/ }),
 
-/***/ 159:
+/***/ 106:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -467,8 +467,8 @@ const os = __importStar(__nccwpck_require__(87));
 const events = __importStar(__nccwpck_require__(614));
 const child = __importStar(__nccwpck_require__(129));
 const path = __importStar(__nccwpck_require__(622));
-const io = __importStar(__nccwpck_require__(436));
-const ioUtil = __importStar(__nccwpck_require__(962));
+const io = __importStar(__nccwpck_require__(760));
+const ioUtil = __importStar(__nccwpck_require__(665));
 /* eslint-disable @typescript-eslint/unbound-method */
 const IS_WINDOWS = process.platform === 'win32';
 /*
@@ -1048,7 +1048,7 @@ class ExecState extends events.EventEmitter {
 
 /***/ }),
 
-/***/ 962:
+/***/ 665:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -1249,7 +1249,7 @@ function isUnixExecutable(stats) {
 
 /***/ }),
 
-/***/ 436:
+/***/ 760:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -1266,7 +1266,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const childProcess = __nccwpck_require__(129);
 const path = __nccwpck_require__(622);
 const util_1 = __nccwpck_require__(669);
-const ioUtil = __nccwpck_require__(962);
+const ioUtil = __nccwpck_require__(665);
 const exec = util_1.promisify(childProcess.exec);
 /**
  * Copies a file or folder.
@@ -1545,24 +1545,17 @@ function copyFile(srcFile, destFile, force) {
 
 /***/ }),
 
-/***/ 867:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ 651:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(186);
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var lib_exec = __nccwpck_require__(514);
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(622);
-// CONCATENATED MODULE: ./lib/core.ts
-
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getBooleanInput = void 0;
+const core_1 = __nccwpck_require__(985);
 const TRUE_VALUES = [true, 'true', 'TRUE'];
 const FALSE_VALUES = [false, 'false', 'FALSE'];
 function getBooleanInput(name, defaultValue) {
-    let inputValue = (0,core.getInput)(name) || defaultValue;
+    let inputValue = core_1.getInput(name) || defaultValue;
     if (TRUE_VALUES.includes(inputValue)) {
         return true;
     }
@@ -1571,11 +1564,16 @@ function getBooleanInput(name, defaultValue) {
     }
     throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
 }
+exports.getBooleanInput = getBooleanInput;
 
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(747);
-// CONCATENATED MODULE: ./lib/github.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+
+/***/ }),
+
+/***/ 356:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1584,8 +1582,10 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
-
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getWorkflowName = exports.getEventData = exports.getEventName = exports.getToken = exports.getWorkspacePath = exports.getRef = exports.getSha = exports.getRepository = exports.getPR = exports.getShaFromRef = void 0;
+const core_1 = __nccwpck_require__(985);
+const fs_1 = __nccwpck_require__(747);
 function getShaFromRef({ octokit, component, ref }) {
     return __awaiter(this, void 0, void 0, function* () {
         if (ref === 'develop') {
@@ -1594,7 +1594,7 @@ function getShaFromRef({ octokit, component, ref }) {
                 repo: component,
             })).data.some((repoBranch) => repoBranch.name === 'develop');
             if (!hasDevelop) {
-                warning(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+                core_1.warning(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
                 ref = 'master';
             }
         }
@@ -1603,10 +1603,11 @@ function getShaFromRef({ octokit, component, ref }) {
             repo: component,
             branch: ref,
         })).data.commit.sha;
-        info(`Resolved ${ref} to ${sha}`);
+        core_1.info(`Resolved ${ref} to ${sha}`);
         return sha;
     });
 }
+exports.getShaFromRef = getShaFromRef;
 function getPR(octokit, repo, ref) {
     return __awaiter(this, void 0, void 0, function* () {
         // get most recent PR of current branch
@@ -1619,6 +1620,7 @@ function getPR(octokit, repo, ref) {
         return most_recent;
     });
 }
+exports.getPR = getPR;
 function getRepository() {
     const [owner, component] = (process.env['GITHUB_REPOSITORY'] || '').split('/');
     if (!owner || !component) {
@@ -1626,6 +1628,7 @@ function getRepository() {
     }
     return { owner, component };
 }
+exports.getRepository = getRepository;
 function getSha() {
     const sha = process.env['GITHUB_SHA'];
     if (!sha) {
@@ -1633,6 +1636,7 @@ function getSha() {
     }
     return sha;
 }
+exports.getSha = getSha;
 function getRef() {
     var _a;
     const ref = process.env['GITHUB_HEAD_REF'] || ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(11));
@@ -1641,20 +1645,23 @@ function getRef() {
     }
     return ref;
 }
-function github_getWorkspacePath() {
+exports.getRef = getRef;
+function getWorkspacePath() {
     const workspacePath = process.env['GITHUB_WORKSPACE'];
     if (!workspacePath) {
         throw new Error('The GitHub workspace path is missing');
     }
     return workspacePath;
 }
+exports.getWorkspacePath = getWorkspacePath;
 function getToken(inputName = 'gh-token') {
-    const ghToken = getInput(inputName) || process.env['GITHUB_TOKEN'];
+    const ghToken = core_1.getInput(inputName) || process.env['GITHUB_TOKEN'];
     if (!ghToken) {
         throw new Error('The GitHub token is missing');
     }
     return ghToken;
 }
+exports.getToken = getToken;
 function getEventName() {
     const eventName = process.env['GITHUB_EVENT_NAME'];
     if (!eventName) {
@@ -1662,23 +1669,37 @@ function getEventName() {
     }
     return eventName;
 }
+exports.getEventName = getEventName;
 function getEventData() {
     return __awaiter(this, void 0, void 0, function* () {
         const eventPath = process.env['GITHUB_EVENT_PATH'];
         if (!eventPath) {
             throw new Error('The GitHub event path is missing');
         }
-        const fileData = yield fsPromises.readFile(eventPath, {
+        const fileData = yield fs_1.promises.readFile(eventPath, {
             encoding: 'utf8',
         });
         return JSON.parse(fileData);
     });
 }
+exports.getEventData = getEventData;
+function getWorkflowName() {
+    const workflowName = process.env['GITHUB_WORKFLOW'];
+    if (!workflowName) {
+        throw new Error('The GitHub workflow name is missing');
+    }
+    return workflowName;
+}
+exports.getWorkflowName = getWorkflowName;
 
-// EXTERNAL MODULE: external "os"
-var external_os_ = __nccwpck_require__(87);
-// CONCATENATED MODULE: ./lib/s3.ts
-var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+
+/***/ }),
+
+/***/ 22:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1687,36 +1708,39 @@ var s3_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argum
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
-
-
-
-
-
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.uploadS3object = exports.downloadS3object = void 0;
+const core_1 = __nccwpck_require__(985);
+const exec_1 = __nccwpck_require__(287);
+const fs_1 = __nccwpck_require__(747);
+const os_1 = __nccwpck_require__(87);
+const path_1 = __nccwpck_require__(622);
+const github_1 = __nccwpck_require__(356);
 const S3_BUCKET = 'exivity';
 const S3_PREFIX = 'build';
 const S3_REGION = 'eu-central-1';
 function getS3url({ component, sha, usePlatformPrefix, prefix }) {
-    const platformPrefix = (0,external_os_.platform)() === 'win32' ? 'windows' : 'linux';
+    const platformPrefix = os_1.platform() === 'win32' ? 'windows' : 'linux';
     return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ''}${prefix ? `/${prefix}` : ''}`;
 }
 function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
-    return s3_awaiter(this, void 0, void 0, function* () {
-        const workspacePath = getWorkspacePath();
+    return __awaiter(this, void 0, void 0, function* () {
+        const workspacePath = github_1.getWorkspacePath();
         const src = getS3url({ component, sha, usePlatformPrefix, prefix });
-        const dest = resolve(workspacePath, path);
+        const dest = path_1.resolve(workspacePath, path);
         const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
-        info(`About to execute ${cmd}`);
-        yield exec(cmd, undefined, {
+        core_1.info(`About to execute ${cmd}`);
+        yield exec_1.exec(cmd, undefined, {
             env: Object.assign(Object.assign({}, process.env), { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
         });
     });
 }
+exports.downloadS3object = downloadS3object;
 function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
-    return s3_awaiter(this, void 0, void 0, function* () {
-        const workspacePath = github_getWorkspacePath();
-        const src = (0,external_path_.resolve)(workspacePath, path);
-        const isDirectory = (yield external_fs_.promises.lstat(src)).isDirectory();
+    return __awaiter(this, void 0, void 0, function* () {
+        const workspacePath = github_1.getWorkspacePath();
+        const src = path_1.resolve(workspacePath, path);
+        const isDirectory = (yield fs_1.promises.lstat(src)).isDirectory();
         const dest = getS3url({
             component,
             sha,
@@ -1731,18 +1755,25 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
             '--region',
             S3_REGION,
             `"${src}"`,
-            isDirectory ? `"${dest}"` : `"${dest}/${(0,external_path_.basename)(path)}"`,
+            isDirectory ? `"${dest}"` : `"${dest}/${path_1.basename(path)}"`,
         ]
             .filter((item) => item)
             .join(' ');
-        yield (0,lib_exec.exec)(cmd, undefined, {
+        yield exec_1.exec(cmd, undefined, {
             env: Object.assign(Object.assign({}, process.env), { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
         });
     });
 }
+exports.uploadS3object = uploadS3object;
 
-// CONCATENATED MODULE: ./put-artefacts/src/index.ts
-var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+
+/***/ }),
+
+/***/ 405:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1751,33 +1782,34 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
-
-
-
-
-
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __nccwpck_require__(985);
+const exec_1 = __nccwpck_require__(287);
+const path_1 = __nccwpck_require__(622);
+const core_2 = __nccwpck_require__(651);
+const github_1 = __nccwpck_require__(356);
+const s3_1 = __nccwpck_require__(22);
 function zipAll(path, component) {
-    return src_awaiter(this, void 0, void 0, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         const filename = `${component}.tar.gz`;
-        const cwd = (0,external_path_.resolve)(github_getWorkspacePath(), path);
-        yield (0,lib_exec.exec)('tar', ['-zcv', '-C', cwd, '-f', filename, '.']);
+        const cwd = path_1.resolve(github_1.getWorkspacePath(), path);
+        yield exec_1.exec('tar', ['-zcv', '-C', cwd, '-f', filename, '.']);
         return filename;
     });
 }
 function run() {
-    return src_awaiter(this, void 0, void 0, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         try {
             // Input
-            const usePlatformPrefix = getBooleanInput('use-platform-prefix', false);
-            const prefix = (0,core.getInput)('prefix') || undefined;
-            let path = (0,core.getInput)('path') || 'build';
-            const zip = getBooleanInput('zip', false);
-            const awsKeyId = (0,core.getInput)('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
-            const awsSecretKey = (0,core.getInput)('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+            const usePlatformPrefix = core_2.getBooleanInput('use-platform-prefix', false);
+            const prefix = core_1.getInput('prefix') || undefined;
+            let path = core_1.getInput('path') || 'build';
+            const zip = core_2.getBooleanInput('zip', false);
+            const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
+            const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             // From environment
-            const sha = getSha();
-            const { component } = getRepository();
+            const sha = github_1.getSha();
+            const { component } = github_1.getRepository();
             // Assertions
             if (!awsKeyId || !awsSecretKey) {
                 throw new Error('A required argument is missing');
@@ -1786,7 +1818,7 @@ function run() {
                 // This will actually create a tarball instead of a zip archive 🤷‍♂️
                 path = yield zipAll(path, component);
             }
-            yield uploadS3object({
+            yield s3_1.uploadS3object({
                 component,
                 sha,
                 usePlatformPrefix,
@@ -1797,7 +1829,7 @@ function run() {
             });
         }
         catch (error) {
-            (0,core.setFailed)(error.message);
+            core_1.setFailed(error.message);
         }
     });
 }
@@ -1887,23 +1919,12 @@ module.exports = require("util");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(867);
+/******/ 	return __nccwpck_require__(405);
 /******/ })()
 ;

@@ -1,4 +1,4 @@
-name: accept-test
+name: accept test
 
 on:
   push: {}
