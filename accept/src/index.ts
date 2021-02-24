@@ -38,7 +38,8 @@ const scaffoldWorkflowId = 514379
 
 const defaultScaffoldBranch = 'develop'
 
-const skipBranches = ['master', 'main']
+const releaseBranches = ['master', 'main']
+const developBranches = ['develop']
 
 function detectIssueKey(input: string) {
   const match = input.match(/([A-Z0-9]{1,10}-\d+)/)
@@ -92,7 +93,7 @@ async function run() {
     }
 
     // Skip accepting commits on release branches
-    if (skipBranches.includes(ref)) {
+    if (releaseBranches.includes(ref)) {
       warning(`Skipping: release branch "${ref}" is ignored`)
       return
     }
@@ -127,16 +128,27 @@ async function run() {
       }
     }
 
-    await dispatch({
-      octokit,
-      scaffoldWorkflowId,
-      scaffoldBranch,
-      component,
-      sha,
-      pull_request,
-      issue,
-      dryRun,
-    })
+    // If we're on a development branch, scrub component and sha from dispatch
+    if (developBranches.includes(ref)) {
+      info('On a development branch, dispatching plain run')
+      await dispatch({
+        octokit,
+        scaffoldWorkflowId,
+        scaffoldBranch: defaultScaffoldBranch,
+        dryRun,
+      })
+    } else {
+      await dispatch({
+        octokit,
+        scaffoldWorkflowId,
+        scaffoldBranch,
+        component,
+        sha,
+        pull_request,
+        issue,
+        dryRun,
+      })
+    }
   } catch (error) {
     setFailed(error.message)
   }

@@ -34850,7 +34850,7 @@ exports.dispatch = void 0;
 const core_1 = __nccwpck_require__(8985);
 function dispatch({ octokit, scaffoldWorkflowId, scaffoldBranch, component, sha, pull_request, issue, dryRun = false, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        const inputs = Object.assign(Object.assign(Object.assign({ custom_component_name: component, custom_component_sha: sha }, (issue ? { issue } : {})), (pull_request ? { pull_request } : {})), { dry_run: dryRun ? '1' : '0' });
+        const inputs = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (component ? { custom_component_name: component } : {})), (sha ? { custom_component_sha: sha } : {})), (issue ? { issue } : {})), (pull_request ? { pull_request } : {})), { dry_run: dryRun ? '1' : '0' });
         core_1.info(`Trigger scaffold build on "${scaffoldBranch}" branch`);
         core_1.info(`Inputs: ${JSON.stringify(inputs)}`);
         // Create workflow-dispatch event
@@ -34895,7 +34895,8 @@ const supportedEvents = ['push', 'pull_request', 'workflow_run'];
 // obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
 const scaffoldWorkflowId = 514379;
 const defaultScaffoldBranch = 'develop';
-const skipBranches = ['master', 'main'];
+const releaseBranches = ['master', 'main'];
+const developBranches = ['develop'];
 function detectIssueKey(input) {
     const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
     return match !== null && match.length > 0 ? match[0] : undefined;
@@ -34936,7 +34937,7 @@ function run() {
                 sha = eventData['pull_request']['head']['sha'];
             }
             // Skip accepting commits on release branches
-            if (skipBranches.includes(ref)) {
+            if (releaseBranches.includes(ref)) {
                 core_1.warning(`Skipping: release branch "${ref}" is ignored`);
                 return;
             }
@@ -34964,16 +34965,28 @@ function run() {
                     return;
                 }
             }
-            yield dispatch_1.dispatch({
-                octokit,
-                scaffoldWorkflowId,
-                scaffoldBranch,
-                component,
-                sha,
-                pull_request,
-                issue,
-                dryRun,
-            });
+            // If we're on a development branch, scrub component and sha from dispatch
+            if (developBranches.includes(ref)) {
+                core_1.info('On a development branch, dispatching plain run');
+                yield dispatch_1.dispatch({
+                    octokit,
+                    scaffoldWorkflowId,
+                    scaffoldBranch: defaultScaffoldBranch,
+                    dryRun,
+                });
+            }
+            else {
+                yield dispatch_1.dispatch({
+                    octokit,
+                    scaffoldWorkflowId,
+                    scaffoldBranch,
+                    component,
+                    sha,
+                    pull_request,
+                    issue,
+                    dryRun,
+                });
+            }
         }
         catch (error) {
             core_1.setFailed(error.message);
