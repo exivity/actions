@@ -1,4 +1,4 @@
-import { getInput, info, setFailed, warning } from '@actions/core'
+import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getPR, getRef, getRepository, getToken } from '../../lib/github'
 
@@ -29,7 +29,7 @@ async function run() {
 
     // get PR number to use
     if (!pull_number) {
-      warning('No pull request to review, skipping action')
+      info('No pull request to review, skipping action')
       return
     }
 

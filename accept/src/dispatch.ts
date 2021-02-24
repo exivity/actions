@@ -5,8 +5,8 @@ type DispatchParams = {
   octokit: ReturnType<typeof getOctokit>
   scaffoldWorkflowId: number
   scaffoldBranch: string
-  component: string
-  sha: string
+  component?: string
+  sha?: string
   pull_request?: string
   issue?: string
   dryRun?: boolean
@@ -23,8 +23,8 @@ export async function dispatch({
   dryRun = false,
 }: DispatchParams) {
   const inputs = {
-    custom_component_name: component,
-    custom_component_sha: sha,
+    ...(component ? { custom_component_name: component } : {}),
+    ...(sha ? { custom_component_sha: sha } : {}),
     ...(issue ? { issue } : {}),
     ...(pull_request ? { pull_request } : {}),
     dry_run: dryRun ? '1' : '0',

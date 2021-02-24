@@ -5952,7 +5952,7 @@ function run() {
                 : pull_request;
             // get PR number to use
             if (!pull_number) {
-                core_1.warning('No pull request to review, skipping action');
+                core_1.info('No pull request to review, skipping action');
                 return;
             }
             core_1.info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
