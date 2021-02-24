@@ -5948,7 +5948,8 @@ function run() {
             // Initialize GH client
             const octokit = github_1.getOctokit(ghToken);
             const pull_number = isNaN(pull_request)
-                ? (_a = (yield github_2.getPR(octokit, repo, branch))) === null || _a === void 0 ? void 0 : _a.number : pull_request;
+                ? (_a = (yield github_2.getPR(octokit, repo, branch))) === null || _a === void 0 ? void 0 : _a.number
+                : pull_request;
             // get PR number to use
             if (!pull_number) {
                 core_1.warning('No pull request to review, skipping action');
