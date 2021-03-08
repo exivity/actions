@@ -128,6 +128,14 @@ async function run() {
       }
     }
 
+    if (isEvent(eventName, 'workflow_run', eventData)) {
+      // We need to check if conclusion was successful
+      if (eventData['workflow_run']['conclusion'] !== 'success') {
+        warning(`Skipping: workflow constraint not satisfied`)
+        return
+      }
+    }
+
     // If we're on a development branch, scrub component and sha from dispatch
     if (developBranches.includes(ref)) {
       info('On a development branch, dispatching plain run')
