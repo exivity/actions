@@ -113,6 +113,13 @@ async function run() {
     info(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2))
     endGroup()
 
+    // Skip accepting commits on non-develop branches without PR
+    if (!developBranches.includes(ref) && !pull_request) {
+      warning('Skipping: non-develop branch without pull request')
+      return
+    }
+
+    // Skip accepting commits on PR without exivity-bot review request
     if (pull_request && !isBotReviewRequested(pr)) {
       warning('Skipping: exivity-bot not requested for review')
       return
