@@ -219,18 +219,18 @@
   dependencies:
     "@octokit/openapi-types" "^4.0.3"
 
-"@octokit/webhooks-definitions@3.62.5":
-  version "3.62.5"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks-definitions/-/webhooks-definitions-3.62.5.tgz#3b2443ee07bb00e6333ce6bef8ccf5eadfb08430"
-  integrity sha512-1SWpIFhDLgus9aJ++GOnV/YYcT53glj/YDNzt45S47BfK2/tzYLHWHYFpmEO0frsSEKMFDewDy4c4cWuCpNH/g==
+"@octokit/webhooks-definitions@3.65.2":
+  version "3.65.2"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks-definitions/-/webhooks-definitions-3.65.2.tgz#ca644b8d0439870b6221b46b47e412005f50c1a1"
+  integrity sha512-xOPH/kGbnsHQrPLRTk75F3lkxkpY+1vPWqq74mBCUwfjYVnVv3q9l7yi+ZvyUrZ2O/kqjhuJWbG923G/icd0ag==
 
-"@octokit/webhooks@8.5.3":
-  version "8.5.3"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-8.5.3.tgz#1d4348b9d6fb9709e8c8f5fe943a7af183e58cf5"
-  integrity sha512-hAHYHDC06KClFX2oKGxAZkolX9n9zU6PJ4UVJte87ZhH+Buui+hLPNKnSHYgsV7rn83kNItHTRfnfyRBD9CjkA==
+"@octokit/webhooks@8.8.0":
+  version "8.8.0"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-8.8.0.tgz#bd4560217cfdd9c528739a374d2bea3a7a1e3c91"
+  integrity sha512-IuZNROGyMLegD/67+1YVv6kNIoxCQKhLLGvmNuitmk6okeMvqCuQGXNM6eyBF9LQ5uxQyr+2vVPaXvQU/p7QQQ==
   dependencies:
     "@octokit/request-error" "^2.0.2"
-    "@octokit/webhooks-definitions" "3.62.5"
+    "@octokit/webhooks-definitions" "3.65.2"
     aggregate-error "^3.1.0"
     debug "^4.0.0"
 
@@ -239,7 +239,12 @@
   resolved "https://registry.yarnpkg.com/@types/js-yaml/-/js-yaml-4.0.0.tgz#d1a11688112091f2c711674df3a65ea2f47b5dfb"
   integrity sha512-4vlpCM5KPCL5CfGmTbpjwVKbISRYhduEJvvUWsH5EB7QInhEj94XPZ3ts/9FPiLZFqYO0xoW4ZL8z2AabTGgJA==
 
-"@types/node@14.14.32", "@types/node@>= 8":
+"@types/node@14.14.37":
+  version "14.14.37"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.37.tgz#a3dd8da4eb84a996c36e331df98d82abd76b516e"
+  integrity sha512-XYmBiy+ohOR4Lh5jE379fV2IU+6Jn4g5qASinhitfyO71b/sCo6MKsMLF5tc7Zf2CE8hViVQyYSobJNke8OvUw==
+
+"@types/node@>= 8":
   version "14.14.32"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.32.tgz#90c5c4a8d72bbbfe53033f122341343249183448"
   integrity sha512-/Ctrftx/zp4m8JOujM5ZhwzlWLx22nbQJiVqz8/zE15gOeEW+uly3FSX4fGFpcfEvFzXcMCJwq9lGVWgyARXhg==
@@ -491,10 +496,10 @@ hosted-git-info@^2.1.4:
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.8.8.tgz#7539bd4bc1e0e0a895815a2e0262420b12858488"
   integrity sha512-f/wzC2QaWBs7t9IYqB4T3sR1xviIViXJRJTWBlx2Gf3g0Xi5vI7Yy4koXQ1c9OYDGHN9sBy1DQ2AB8fqZBWhUg==
 
-husky@5.1.3:
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/husky/-/husky-5.1.3.tgz#1a0645a4fe3ffc006c4d0d8bd0bcb4c98787cc9d"
-  integrity sha512-fbNJ+Gz5wx2LIBtMweJNY1D7Uc8p1XERi5KNRMccwfQA+rXlxWNSdUxswo0gT8XqxywTIw7Ywm/F4v/O35RdMg==
+husky@5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-5.2.0.tgz#fc5e1c2300d34855d47de4753607d00943fc0802"
+  integrity sha512-AM8T/auHXRBxlrfPVLKP6jt49GCM2Zz47m8G3FOMsLmTv8Dj/fKVWE0Rh2d4Qrvmy131xEsdQnb3OXRib67PGg==
 
 indent-string@^4.0.0:
   version "4.0.0"
