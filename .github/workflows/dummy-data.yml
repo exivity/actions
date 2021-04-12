@@ -18,4 +18,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
+      - uses: ./db
+        with:
+          branch: develop
+          mode: host
+          version: '12.3'
       - uses: ./dummy-data

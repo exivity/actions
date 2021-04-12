@@ -32,7 +32,7 @@ async function run() {
   const zip = new AdmZip(repoZip as Buffer)
   zip.extractAllTo(dummyPath, true)
 
-  let command = 'npm install && npm run build && npm run start generate'
+  let command = 'npm run start generate'
   if (seed) command += ` --seed ${seed}`
   if (config_location) command += ` --config ${config_location}`
   if (db_string) command += ` --db "${db_string}"`
@@ -45,10 +45,15 @@ async function run() {
   }
 
   info('Executing dummy-data generate')
-  await exec(command, undefined, {
-    cwd: dummyPath,
-    windowsVerbatimArguments: true,
-  }).catch(setFailed)
+  await exec('npm install', undefined, { cwd: dummyPath })
+    .then(() => exec('npm run build', undefined, { cwd: dummyPath }))
+    .then(() =>
+      exec(command, undefined, {
+        cwd: dummyPath,
+        windowsVerbatimArguments: true,
+      })
+    )
+    .catch(setFailed)
 }
 
 run()

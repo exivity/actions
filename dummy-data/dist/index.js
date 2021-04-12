@@ -9628,7 +9628,7 @@ function run() {
         core_1.info(`Extracting dummy-data to ${dummyPath}`);
         const zip = new adm_zip_1.default(repoZip);
         zip.extractAllTo(dummyPath, true);
-        let command = 'npm install && npm run build && npm run start generate';
+        let command = 'npm run start generate';
         if (seed)
             command += ` --seed ${seed}`;
         if (config_location)
@@ -9644,10 +9644,13 @@ function run() {
                 command += ` --db "postgres:postgres@localhost/exdb-test"`;
         }
         core_1.info('Executing dummy-data generate');
-        yield exec_1.exec(command, undefined, {
+        yield exec_1.exec('npm install', undefined, { cwd: dummyPath })
+            .then(() => exec_1.exec('npm run build', undefined, { cwd: dummyPath }))
+            .then(() => exec_1.exec(command, undefined, {
             cwd: dummyPath,
             windowsVerbatimArguments: true,
-        }).catch(core_1.setFailed);
+        }))
+            .catch(core_1.setFailed);
     });
 }
 run();
