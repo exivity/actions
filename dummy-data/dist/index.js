@@ -9624,10 +9624,14 @@ function run() {
             repo: 'dummy-data',
             ref: 'master',
         });
-        const dummyPath = path_1.default.resolve(__dirname, '..', '..', 'dummy-data');
+        const dummyPath = path_1.default.resolve(__dirname, '..', '..', '..', 'dummy-data');
         core_1.info(`Extracting dummy-data to ${dummyPath}`);
         const zip = new adm_zip_1.default(repoZip);
         zip.extractAllTo(dummyPath, true);
+        yield exec_1.exec(`ls`, [dummyPath], {
+            ignoreReturnCode: false,
+            failOnStdErr: false,
+        });
         let command = 'npm run start generate';
         if (seed)
             command += ` --seed ${seed}`;

@@ -26,11 +26,15 @@ async function run() {
     }
   )
 
-  const dummyPath = path.resolve(__dirname, '..', '..', 'dummy-data')
+  const dummyPath = path.resolve(__dirname, '..', '..', '..', 'dummy-data')
   info(`Extracting dummy-data to ${dummyPath}`)
 
   const zip = new AdmZip(repoZip as Buffer)
   zip.extractAllTo(dummyPath, true)
+  await exec(`ls`, [dummyPath], {
+    ignoreReturnCode: false,
+    failOnStdErr: false,
+  })
 
   let command = 'npm run start generate'
   if (seed) command += ` --seed ${seed}`
