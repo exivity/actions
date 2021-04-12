@@ -1,7 +1,7 @@
 import path from 'path'
 import AdmZip from 'adm-zip'
 import { promises as fs } from 'fs'
-import { getInput, info } from '@actions/core'
+import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { exec } from '@actions/exec'
 import { getToken } from '../../lib/github'
@@ -47,7 +47,8 @@ async function run() {
   info('Executing dummy-data generate')
   await exec(command, undefined, {
     cwd: dummyPath,
-  })
+    windowsVerbatimArguments: true,
+  }).catch(setFailed)
 }
 
 run()

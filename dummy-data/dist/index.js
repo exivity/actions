@@ -9646,7 +9646,8 @@ function run() {
         core_1.info('Executing dummy-data generate');
         yield exec_1.exec(command, undefined, {
             cwd: dummyPath,
-        });
+            windowsVerbatimArguments: true,
+        }).catch(core_1.setFailed);
     });
 }
 run();
