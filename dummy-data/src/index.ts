@@ -12,7 +12,7 @@ async function run() {
   const seed = getInput('seed')
   const config_location = getInput('config-file')
   const db_string = getInput('db-credentials')
-   
+
   // Initialize GH client
   const octokit = getOctokit(ghToken)
 
@@ -22,37 +22,32 @@ async function run() {
     {
       owner: 'exivity',
       repo: 'dummy-data',
-      ref: 'master'
+      ref: 'master',
     }
   )
 
   const dummyPath = path.resolve(__dirname, '..', '..', 'dummy-data')
   info(`Extracting dummy-data to ${dummyPath}`)
 
-  const zip = new AdmZip(repoZip)
+  const zip = new AdmZip(repoZip as Buffer)
   zip.extractAllTo(dummyPath, true)
 
   let command = 'npm install && npm run build && npm run start generate'
-  if (seed)
-    command += ` --seed ${seed}`
-  if (config_location)
-    command += ` --config ${config_location}`
-  if (db_string)
-    command += ` --db "${db_string}"`
+  if (seed) command += ` --seed ${seed}`
+  if (config_location) command += ` --config ${config_location}`
+  if (db_string) command += ` --db "${db_string}"`
   else {
-    const access = await fs.access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`).then(() => true).catch(() => false)
-    if (!access)
-      command += ` --db "postgres:postgres@localhost/exdb-test"`
+    const access = await fs
+      .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
+      .then(() => true)
+      .catch(() => false)
+    if (!access) command += ` --db "postgres:postgres@localhost/exdb-test"`
   }
 
   info('Executing dummy-data generate')
   await exec(command, undefined, {
     cwd: dummyPath,
-    env: {
-      ...process.env
-    }
   })
 }
 
 run()
-
