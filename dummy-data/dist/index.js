@@ -7453,7 +7453,8 @@ function run() {
         yield exec_1.exec(command, undefined, {
             cwd: path_1.default.resolve(__dirname, '..'),
             windowsVerbatimArguments: true,
-        }).catch(core_1.setFailed);
+        }))
+            .catch(core_1.setFailed);
     });
 }
 function installComponent(component, octokit) {
