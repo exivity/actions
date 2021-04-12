@@ -4,7 +4,7 @@ import { promises as fs } from 'fs'
 import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { exec } from '@actions/exec'
-import { getToken } from '../../lib/github'
+import { getToken, getShaFromRef } from '../../lib/github'
 
 async function run() {
   // Input
@@ -29,9 +29,20 @@ async function run() {
   const dummyPath = path.resolve(__dirname, '..', '..', '..', 'dummy-data')
   info(`Extracting dummy-data to ${dummyPath}`)
 
+  const sha = await getShaFromRef({
+    octokit,
+    component: 'dummy-data',
+    ref: 'master',
+  })
+  info(`got sha: ${sha}`)
+
   const zip = new AdmZip(repoZip as Buffer)
-  zip.extractAllTo(dummyPath, true)
-  await exec(`ls`, [dummyPath], {
+  zip.extractEntryTo(
+    `exivity-dummy-data-${sha.slice(0, 7)}`,
+    path.resolve(__dirname, '..', '..', '..'),
+    true
+  )
+  await exec(`ls`, [path.resolve(__dirname, '..', '..', '..')], {
     ignoreReturnCode: false,
     failOnStdErr: false,
   })
