@@ -1,0 +1,21 @@
+name: dummy-data
+
+on:
+  push:
+    paths:
+      - '.github/workflows/dummy-data.yml'
+      - 'dummy-data/**'
+      - 'lib/github.ts'
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./dummy-data

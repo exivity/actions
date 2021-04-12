@@ -1,0 +1,18 @@
+name: 'Dummy Data Generator'
+description: 'Pulls the dummy-data script and uses it to generate fake data to fill the exivity database with'
+inputs:
+  gh-token:
+    description: 'The github token to pull dummy-data with'
+    required: false
+  seed:
+    description: 'A seed for the random number generator used by the fake data generator'
+    required: false
+  config-file:
+    description: 'The path to the config file for the fake data generator'
+    required: false
+  db-credentials:
+    description: 'A connection string to conenect to the database'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
