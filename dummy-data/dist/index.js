@@ -9686,7 +9686,7 @@ function installTranscript(octokit) {
             sha,
             prefix: `transcript${os_1.default.platform() === 'win32' ? '.exe' : ''}`,
             usePlatformPrefix: true,
-            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin`,
+            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`,
             awsKeyId,
             awsSecretKey,
         });
@@ -9706,7 +9706,7 @@ function installEdify(octokit) {
             sha,
             prefix: `edify${os_1.default.platform() === 'win32' ? '.exe' : ''}`,
             usePlatformPrefix: true,
-            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin`,
+            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`,
             awsKeyId,
             awsSecretKey,
         });
