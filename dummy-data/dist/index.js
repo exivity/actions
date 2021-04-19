@@ -9666,7 +9666,7 @@ function run() {
             .catch(core_1.setFailed);
         yield fs_1.promises
             .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
-            .catch(() => exec_1.exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`))
+            .catch(() => exec_1.exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`, undefined, { cwd: path_1.default.resolve(__dirname, '..') }))
             .catch(core_1.setFailed);
         core_1.info('Executing dummy-data generate');
         yield exec_1.exec('npm install', undefined, { cwd: dummyPath })

@@ -90,7 +90,11 @@ async function run() {
   await fs
     .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
     .catch(() =>
-      exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`)
+      exec(
+        `mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`,
+        undefined,
+        { cwd: path.resolve(__dirname, '..') }
+      )
     )
     .catch(setFailed)
 
