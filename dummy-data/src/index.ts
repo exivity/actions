@@ -87,6 +87,11 @@ async function run() {
     .catch(() => installComponent('edify', octokit))
     .catch(setFailed)
 
+  await exec(`ls -la ${process.env.EXIVITY_PROGRAM_PATH}/bin`, undefined, {
+    ignoreReturnCode: false,
+    failOnStdErr: false,
+  })
+
   info('Executing dummy-data generate')
   await exec('npm install', undefined, { cwd: dummyPath })
     .then(() => exec('npm run build', undefined, { cwd: dummyPath }))
