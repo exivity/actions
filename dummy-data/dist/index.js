@@ -9686,7 +9686,7 @@ function installComponent(component, octokit) {
         yield s3_1.downloadS3object({
             component,
             sha,
-            prefix: `${component}${os_1.default.platform() === 'win32' ? '.exe' : ''}`,
+            //prefix: `${component}${os.platform() === 'win32' ? '.exe' : ''}`,
             usePlatformPrefix: true,
             path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/`,
             awsKeyId,

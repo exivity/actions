@@ -114,7 +114,7 @@ async function installComponent(
   await downloadS3object({
     component,
     sha,
-    prefix: `${component}${os.platform() === 'win32' ? '.exe' : ''}`,
+    //prefix: `${component}${os.platform() === 'win32' ? '.exe' : ''}`,
     usePlatformPrefix: true,
     path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/`,
     awsKeyId,
