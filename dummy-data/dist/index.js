@@ -9670,7 +9670,7 @@ function run() {
             yield fs_1.promises.mkdir(`${process.env.EXIVITY_HOME_PATH}/system/report`, {
                 recursive: true,
             });
-            yield exec_1.exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`, undefined, { cwd: path_1.default.resolve(__dirname, '..') });
+            yield exec_1.exec(`cp config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`, undefined, { cwd: path_1.default.resolve(__dirname, '..') });
         }))
             .catch(core_1.setFailed);
         if (os_1.default.platform() === 'win32')

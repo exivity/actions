@@ -94,7 +94,7 @@ async function run() {
         recursive: true,
       })
       await exec(
-        `mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`,
+        `cp config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`,
         undefined,
         { cwd: path.resolve(__dirname, '..') }
       )
