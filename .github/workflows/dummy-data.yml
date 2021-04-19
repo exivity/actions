@@ -26,6 +26,7 @@ jobs:
         run: |
           mkdir -p /home/runner/exivity/home
           mkdir -p /home/runner/exivity/program
+          chmod -R 777 /home/runner/exivity/
       - uses: ./db
         with:
           branch: develop
