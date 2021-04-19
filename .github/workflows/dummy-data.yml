@@ -11,6 +11,8 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+  EXIVITY_HOME_PATH: /exivity/home
+  EXIVITY_PROGRAM_PATH: /exivity/program
 
 jobs:
   test:
@@ -20,6 +22,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
+      - name: create exivity dirs
+        run: |
+          mkdir -p /exivity/home
+          mkdir -p /exivity/program
       - uses: ./db
         with:
           branch: develop
