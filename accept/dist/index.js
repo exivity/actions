@@ -35734,7 +35734,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isBotReviewRequested = exports.getCheckName = exports.isCheckDone = exports.isWorkflowDependencyDone = exports.EXIVITY_BOT = void 0;
+exports.includesBotRequest = exports.isBotReviewRequested = exports.getCheckName = exports.isCheckDone = exports.isWorkflowDependencyDone = exports.EXIVITY_BOT_ID = exports.EXIVITY_BOT_LOGIN = void 0;
 const core_1 = __nccwpck_require__(8985);
 const fs_helper_1 = __nccwpck_require__(8383);
 const gitSourceProvider = __importStar(__nccwpck_require__(3406));
@@ -35743,8 +35743,9 @@ const fs_1 = __nccwpck_require__(5747);
 const js_yaml_1 = __importDefault(__nccwpck_require__(1170));
 const path_1 = __nccwpck_require__(5622);
 const github_1 = __nccwpck_require__(356);
-// The id of user exivity-bot
-exports.EXIVITY_BOT = 53756225;
+// The credentials of user exivity-bot
+exports.EXIVITY_BOT_LOGIN = 'exivity-bot';
+exports.EXIVITY_BOT_ID = 53756225;
 function isWorkflowDependencyDone(octokit, token, sha, repo) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
@@ -35806,9 +35807,13 @@ exports.getCheckName = getCheckName;
 // scaffold to run or that we need to wait for a next event.
 function isBotReviewRequested(pr) {
     var _a, _b;
-    return ((_b = (_a = pr.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((reviewer) => (reviewer === null || reviewer === void 0 ? void 0 : reviewer.id) === exports.EXIVITY_BOT)) !== null && _b !== void 0 ? _b : false);
+    return ((_b = (_a = pr.requested_reviewers) === null || _a === void 0 ? void 0 : _a.some((reviewer) => (reviewer === null || reviewer === void 0 ? void 0 : reviewer.login) === exports.EXIVITY_BOT_LOGIN)) !== null && _b !== void 0 ? _b : false);
 }
 exports.isBotReviewRequested = isBotReviewRequested;
+function includesBotRequest(eventData) {
+    return eventData['requested_reviewer']['login'] === exports.EXIVITY_BOT_LOGIN;
+}
+exports.includesBotRequest = includesBotRequest;
 
 
 /***/ }),
@@ -35905,17 +35910,30 @@ function run() {
             if (!supportedEvents.includes(eventName)) {
                 throw new Error(`Event name "${eventName}" not supported`);
             }
-            // We need to copy ref and sha to correct commit if we received a
-            // workflow_run event, because it uses default branch head commit by default
-            // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_run
             if (isEvent(eventName, 'workflow_run', eventData)) {
+                if (eventData['action'] !== 'completed') {
+                    core_1.warning('Skipping: only the "workflow_run.completed" event is supported');
+                    return;
+                }
+                // We need to copy ref and sha to correct commit if we received a
+                // workflow_run event, because it uses default branch head commit by default
+                // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_run
                 ref = eventData['workflow_run']['head_branch'];
                 sha = eventData['workflow_run']['head_commit']['id'];
             }
-            // We need to copy sha to correct commit if we received a pull_request
-            // event, because it uses PR merge branch instead of PR branch
-            // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request
             if (isEvent(eventName, 'pull_request', eventData)) {
+                if (eventData['action'] !== 'review_requested') {
+                    core_1.warning('Skipping: only the "pull_request.review_requested" event is supported');
+                    return;
+                }
+                // Skip accepting commits on PR without exivity-bot review request
+                if (!checks_1.includesBotRequest(eventData)) {
+                    core_1.warning('Skipping: exivity-bot not requested for review');
+                    return;
+                }
+                // We need to copy sha to correct commit if we received a pull_request
+                // event, because it uses PR merge branch instead of PR branch
+                // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request
                 sha = eventData['pull_request']['head']['sha'];
             }
             // Skip accepting commits on release branches
@@ -35938,11 +35956,6 @@ function run() {
             // Skip accepting commits on non-develop branches without PR
             if (!developBranches.includes(ref) && !pull_request) {
                 core_1.warning('Skipping: non-develop branch without pull request');
-                return;
-            }
-            // Skip accepting commits on PR without exivity-bot review request
-            if (pull_request && !checks_1.isBotReviewRequested(pr)) {
-                core_1.warning('Skipping: exivity-bot not requested for review');
                 return;
             }
             if (eventName === 'pull_request') {

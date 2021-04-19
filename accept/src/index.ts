@@ -19,7 +19,7 @@ import {
   getSha,
   getToken,
 } from '../../lib/github'
-import { isBotReviewRequested, isWorkflowDependencyDone } from './checks'
+import { includesBotRequest, isWorkflowDependencyDone } from './checks'
 import { dispatch } from './dispatch'
 
 type EventData<
@@ -77,18 +77,38 @@ async function run() {
       throw new Error(`Event name "${eventName}" not supported`)
     }
 
-    // We need to copy ref and sha to correct commit if we received a
-    // workflow_run event, because it uses default branch head commit by default
-    // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_run
     if (isEvent(eventName, 'workflow_run', eventData)) {
+      if (eventData['action'] !== 'completed') {
+        warning(
+          'Skipping: only the "workflow_run.completed" event is supported'
+        )
+        return
+      }
+
+      // We need to copy ref and sha to correct commit if we received a
+      // workflow_run event, because it uses default branch head commit by default
+      // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_run
       ref = eventData['workflow_run']['head_branch']
       sha = eventData['workflow_run']['head_commit']['id']
     }
 
-    // We need to copy sha to correct commit if we received a pull_request
-    // event, because it uses PR merge branch instead of PR branch
-    // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request
     if (isEvent(eventName, 'pull_request', eventData)) {
+      if (eventData['action'] !== 'review_requested') {
+        warning(
+          'Skipping: only the "pull_request.review_requested" event is supported'
+        )
+        return
+      }
+
+      // Skip accepting commits on PR without exivity-bot review request
+      if (!includesBotRequest(eventData)) {
+        warning('Skipping: exivity-bot not requested for review')
+        return
+      }
+
+      // We need to copy sha to correct commit if we received a pull_request
+      // event, because it uses PR merge branch instead of PR branch
+      // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request
       sha = eventData['pull_request']['head']['sha']
     }
 
@@ -116,12 +136,6 @@ async function run() {
     // Skip accepting commits on non-develop branches without PR
     if (!developBranches.includes(ref) && !pull_request) {
       warning('Skipping: non-develop branch without pull request')
-      return
-    }
-
-    // Skip accepting commits on PR without exivity-bot review request
-    if (pull_request && !isBotReviewRequested(pr)) {
-      warning('Skipping: exivity-bot not requested for review')
       return
     }
 
