@@ -1,6 +1,7 @@
 import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { Endpoints } from '@octokit/types'
+import { PullRequestReviewRequestedEvent } from '@octokit/webhooks-definitions/schema'
 import { existsSync } from 'checkout/src/fs-helper'
 import * as gitSourceProvider from 'checkout/src/git-source-provider'
 import * as inputHelper from 'checkout/src/input-helper'
@@ -13,8 +14,9 @@ import {
   getWorkspacePath,
 } from '../../lib/github'
 
-// The id of user exivity-bot
-export const EXIVITY_BOT = 53756225
+// The credentials of user exivity-bot
+export const EXIVITY_BOT_LOGIN = 'exivity-bot'
+export const EXIVITY_BOT_ID = 53756225
 
 export async function isWorkflowDependencyDone(
   octokit: ReturnType<typeof getOctokit>,
@@ -111,7 +113,12 @@ export function isBotReviewRequested(
   pr: Endpoints['GET /repos/{owner}/{repo}/pulls']['response']['data'][number]
 ) {
   return (
-    pr.requested_reviewers?.some((reviewer) => reviewer?.id === EXIVITY_BOT) ??
-    false
+    pr.requested_reviewers?.some(
+      (reviewer) => reviewer?.login === EXIVITY_BOT_LOGIN
+    ) ?? false
   )
+}
+
+export function includesBotRequest(eventData: PullRequestReviewRequestedEvent) {
+  return eventData['requested_reviewer']['login'] === EXIVITY_BOT_LOGIN
 }
