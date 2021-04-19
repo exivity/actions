@@ -2,7 +2,7 @@ import path from 'path'
 import os from 'os'
 import AdmZip from 'adm-zip'
 import { promises as fs } from 'fs'
-import { getInput, info, setFailed } from '@actions/core'
+import { getInput, info, setFailed, addPath } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { exec } from '@actions/exec'
 import { getToken, getShaFromRef } from '../../lib/github'
@@ -101,6 +101,9 @@ async function run() {
     })
     .catch(setFailed)
 
+  if (os.platform() === 'win32')
+    addPath('C:\\Program Files\\PostgreSQL\\13\\bin')
+
   info('Executing dummy-data generate')
   await exec('npm install', undefined, { cwd: dummyPath })
     .then(() => exec('npm run build', undefined, { cwd: dummyPath }))
@@ -143,7 +146,9 @@ async function installComponent(
       `sudo chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`
     )
 
-  await exec(`mkdir -p ${process.env.EXIVITY_HOME_PATH}/log/${component}`)
+  await fs.mkdir(`${process.env.EXIVITY_HOME_PATH}/log/${component}`, {
+    recursive: true,
+  })
 }
 
 function getAWSCredentials() {

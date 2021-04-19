@@ -9673,6 +9673,8 @@ function run() {
             yield exec_1.exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`, undefined, { cwd: path_1.default.resolve(__dirname, '..') });
         }))
             .catch(core_1.setFailed);
+        if (os_1.default.platform() === 'win32')
+            core_1.addPath('C:\\Program Files\\PostgreSQL\\13\\bin');
         core_1.info('Executing dummy-data generate');
         yield exec_1.exec('npm install', undefined, { cwd: dummyPath })
             .then(() => exec_1.exec('npm run build', undefined, { cwd: dummyPath }))
@@ -9703,7 +9705,9 @@ function installComponent(component, octokit) {
         yield core_2.unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`);
         if (os_1.default.platform() !== 'win32')
             yield exec_1.exec(`sudo chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`);
-        yield exec_1.exec(`mkdir -p ${process.env.EXIVITY_HOME_PATH}/log/${component}`);
+        yield fs_1.promises.mkdir(`${process.env.EXIVITY_HOME_PATH}/log/${component}`, {
+            recursive: true,
+        });
     });
 }
 function getAWSCredentials() {
