@@ -90,7 +90,7 @@ async function run() {
   await fs
     .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
     .catch(async () => {
-      await fs.mkdir(`${process.env.EXIVITY_HOME_PATH}/system`, {
+      await fs.mkdir(`${process.env.EXIVITY_HOME_PATH}/system/report`, {
         recursive: true,
       })
       await exec(

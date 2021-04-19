@@ -9667,7 +9667,7 @@ function run() {
         yield fs_1.promises
             .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
             .catch(() => __awaiter(this, void 0, void 0, function* () {
-            yield fs_1.promises.mkdir(`${process.env.EXIVITY_HOME_PATH}/system`, {
+            yield fs_1.promises.mkdir(`${process.env.EXIVITY_HOME_PATH}/system/report`, {
                 recursive: true,
             });
             yield exec_1.exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`, undefined, { cwd: path_1.default.resolve(__dirname, '..') });
