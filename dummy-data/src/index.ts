@@ -115,7 +115,7 @@ async function installTranscript(octokit: ReturnType<typeof getOctokit>) {
     sha,
     prefix: `transcript${os.platform() === 'win32' ? '.exe' : ''}`,
     usePlatformPrefix: true,
-    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin`,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`,
     awsKeyId,
     awsSecretKey,
   })
@@ -137,7 +137,7 @@ async function installEdify(octokit: ReturnType<typeof getOctokit>) {
     sha,
     prefix: `edify${os.platform() === 'win32' ? '.exe' : ''}`,
     usePlatformPrefix: true,
-    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin`,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`,
     awsKeyId,
     awsSecretKey,
   })
