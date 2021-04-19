@@ -116,7 +116,6 @@ async function installComponent(
   await downloadS3object({
     component,
     sha,
-    //prefix: `${component}${os.platform() === 'win32' ? '.exe' : ''}`,
     usePlatformPrefix: true,
     path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/`,
     awsKeyId,
@@ -125,15 +124,12 @@ async function installComponent(
 
   await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`)
 
-  await exec(`ls -la ${process.env.EXIVITY_PROGRAM_PATH}/bin`, undefined, {
-    ignoreReturnCode: false,
-    failOnStdErr: false,
-  })
-
   if (os.platform() !== 'win32')
     await exec(
       `sudo chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`
     )
+
+  await exec(`mkdir -p ${process.env.EXIVITY_HOME_PATH}/log/${component}`)
 }
 
 function getAWSCredentials() {
