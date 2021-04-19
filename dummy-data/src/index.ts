@@ -101,4 +101,60 @@ async function installComponent(
   })
 }
 
+async function installTranscript(octokit: ReturnType<typeof getOctokit>) {
+  const [awsKeyId, awsSecretKey] = getAWSCredentials()
+
+  const sha = await getShaFromRef({
+    octokit,
+    component: 'transcript',
+    ref: 'master',
+  })
+
+  await downloadS3object({
+    component: 'transcript',
+    sha,
+    usePlatformPrefix: true,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`,
+    awsKeyId,
+    awsSecretKey,
+  })
+
+  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`)
+}
+
+async function installEdify(octokit: ReturnType<typeof getOctokit>) {
+  const [awsKeyId, awsSecretKey] = getAWSCredentials()
+
+  const sha = await getShaFromRef({
+    octokit,
+    component: 'transcript',
+    ref: 'master',
+  })
+
+  await downloadS3object({
+    component: 'edify',
+    sha,
+    usePlatformPrefix: true,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`,
+    awsKeyId,
+    awsSecretKey,
+  })
+
+  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`)
+}
+
+function getAWSCredentials() {
+  const awsKeyId =
+    getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
+  const awsSecretKey =
+    getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
+
+  // Assertions
+  if (!awsKeyId || !awsSecretKey) {
+    throw new Error('A required AWS input is missing')
+  }
+
+  return [awsKeyId, awsSecretKey]
+}
+
 run()
