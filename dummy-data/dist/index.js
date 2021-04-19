@@ -9633,6 +9633,7 @@ function run() {
         });
         core_1.info(`got sha: ${sha}`);
         // FIXME: unzip correctly
+        core_1.info(`req content: ${repoZip}`);
         const zip = new adm_zip_1.default(repoZip);
         core_1.info(`entries in zip: ${zip
             .getEntries()
