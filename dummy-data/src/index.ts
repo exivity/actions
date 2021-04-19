@@ -113,13 +113,14 @@ async function installTranscript(octokit: ReturnType<typeof getOctokit>) {
   await downloadS3object({
     component: 'transcript',
     sha,
+    prefix: `transcript${os.platform() === 'win32' ? '.exe' : ''}`,
     usePlatformPrefix: true,
-    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin`,
     awsKeyId,
     awsSecretKey,
   })
 
-  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`)
+  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`)
 }
 
 async function installEdify(octokit: ReturnType<typeof getOctokit>) {
@@ -127,20 +128,21 @@ async function installEdify(octokit: ReturnType<typeof getOctokit>) {
 
   const sha = await getShaFromRef({
     octokit,
-    component: 'transcript',
+    component: 'edify',
     ref: 'master',
   })
 
   await downloadS3object({
     component: 'edify',
     sha,
+    prefix: `edify${os.platform() === 'win32' ? '.exe' : ''}`,
     usePlatformPrefix: true,
-    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin`,
     awsKeyId,
     awsSecretKey,
   })
 
-  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`)
+  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`)
 }
 
 function getAWSCredentials() {
