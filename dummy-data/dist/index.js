@@ -9684,12 +9684,13 @@ function installTranscript(octokit) {
         yield s3_1.downloadS3object({
             component: 'transcript',
             sha,
+            prefix: `transcript${os_1.default.platform() === 'win32' ? '.exe' : ''}`,
             usePlatformPrefix: true,
-            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`,
+            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin`,
             awsKeyId,
             awsSecretKey,
         });
-        yield core_2.unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`);
+        yield core_2.unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`);
     });
 }
 function installEdify(octokit) {
@@ -9697,18 +9698,19 @@ function installEdify(octokit) {
         const [awsKeyId, awsSecretKey] = getAWSCredentials();
         const sha = yield github_2.getShaFromRef({
             octokit,
-            component: 'transcript',
+            component: 'edify',
             ref: 'master',
         });
         yield s3_1.downloadS3object({
             component: 'edify',
             sha,
+            prefix: `edify${os_1.default.platform() === 'win32' ? '.exe' : ''}`,
             usePlatformPrefix: true,
-            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`,
+            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin`,
             awsKeyId,
             awsSecretKey,
         });
-        yield core_2.unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`);
+        yield core_2.unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`);
     });
 }
 function getAWSCredentials() {
