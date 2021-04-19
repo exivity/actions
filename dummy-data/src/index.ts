@@ -37,7 +37,7 @@ async function run() {
   info(`got sha: ${sha}`)
 
   // FIXME: unzip correctly
-  info(`req content: ${repoZip}`)
+  info(`req content: ${(repoZip as ArrayBuffer).byteLength}`)
   const zip = new AdmZip(repoZip as Buffer)
   info(
     `entries in zip: ${zip
