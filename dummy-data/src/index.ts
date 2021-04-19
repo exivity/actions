@@ -39,9 +39,9 @@ async function run() {
   // FIXME: unzip correctly
   const zip = new AdmZip(Buffer.from(repoZip as ArrayBuffer))
   zip.extractEntryTo(
-    `exivity-dummy-data-${sha}`,
+    `exivity-dummy-data-${sha}/`,
     path.resolve(__dirname, '..', '..', '..'),
-    true
+    false
   )
   await exec(`ls`, [path.resolve(__dirname, '..', '..', '..')], {
     ignoreReturnCode: false,
