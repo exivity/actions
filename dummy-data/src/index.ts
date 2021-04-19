@@ -118,12 +118,17 @@ async function installComponent(
     sha,
     prefix: `${component}${os.platform() === 'win32' ? '.exe' : ''}`,
     usePlatformPrefix: true,
-    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/`,
     awsKeyId,
     awsSecretKey,
   })
 
   await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`)
+
+  await exec(`ls -la ${process.env.EXIVITY_PROGRAM_PATH}/bin`, undefined, {
+    ignoreReturnCode: false,
+    failOnStdErr: false,
+  })
 
   if (os.platform() !== 'win32')
     await exec(
