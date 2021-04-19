@@ -9686,19 +9686,15 @@ function installComponent(component, octokit) {
         yield s3_1.downloadS3object({
             component,
             sha,
-            //prefix: `${component}${os.platform() === 'win32' ? '.exe' : ''}`,
             usePlatformPrefix: true,
             path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/`,
             awsKeyId,
             awsSecretKey,
         });
         yield core_2.unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`);
-        yield exec_1.exec(`ls -la ${process.env.EXIVITY_PROGRAM_PATH}/bin`, undefined, {
-            ignoreReturnCode: false,
-            failOnStdErr: false,
-        });
         if (os_1.default.platform() !== 'win32')
             yield exec_1.exec(`sudo chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`);
+        yield exec_1.exec(`mkdir -p ${process.env.EXIVITY_HOME_PATH}/log/${component}`);
     });
 }
 function getAWSCredentials() {
