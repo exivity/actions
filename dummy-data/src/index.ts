@@ -105,6 +105,8 @@ async function installComponent(
   component: string,
   octokit: ReturnType<typeof getOctokit>
 ) {
+  await fs.mkdir(`${process.env.EXIVITY_PROGRAM_PATH}/bin`, { recursive: true })
+
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
   const sha = await getShaFromRef({
