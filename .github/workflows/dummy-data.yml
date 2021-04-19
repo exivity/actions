@@ -26,9 +26,6 @@ jobs:
         run: |
           mkdir -p /home/runner/exivity/home
           mkdir -p /home/runner/exivity/program
-      - name: fix perms on linux
-        if: matrix.os == 'ubuntu-latest'
-        run: chmod -R 777 /home/runner/exivity/
       - uses: ./db
         with:
           branch: develop

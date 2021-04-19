@@ -76,6 +76,7 @@ async function run() {
       }`
     )
     .catch(() => installTranscript(octokit))
+    .catch(setFailed)
 
   await fs
     .access(
@@ -84,6 +85,7 @@ async function run() {
       }`
     )
     .catch(() => installEdify(octokit))
+    .catch(setFailed)
 
   info('Executing dummy-data generate')
   await exec('npm install', undefined, { cwd: dummyPath })
@@ -117,6 +119,9 @@ async function installTranscript(octokit: ReturnType<typeof getOctokit>) {
   })
 
   await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`)
+
+  if (os.platform() !== 'win32')
+    await exec(`chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`)
 }
 
 async function installEdify(octokit: ReturnType<typeof getOctokit>) {
@@ -139,6 +144,9 @@ async function installEdify(octokit: ReturnType<typeof getOctokit>) {
   })
 
   await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`)
+
+  if (os.platform() !== 'win32')
+    await exec(`chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`)
 }
 
 function getAWSCredentials() {
