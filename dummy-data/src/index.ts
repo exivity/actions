@@ -37,11 +37,9 @@ async function run() {
   info(`got sha: ${sha}`)
 
   // FIXME: unzip correctly
-  info(`req content: ${(repoZip as ArrayBuffer).byteLength}`)
   const zip = new AdmZip(Buffer.from(repoZip as ArrayBuffer))
-  info(`entries in zip: ${zip.getEntries().join(', ')}`)
   zip.extractEntryTo(
-    `exivity-dummy-data-${sha.slice(0, 7)}`,
+    `exivity-dummy-data-${sha}`,
     path.resolve(__dirname, '..', '..', '..'),
     true
   )
