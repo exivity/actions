@@ -45,7 +45,6 @@ async function run() {
   )
   info(`Extracting dummy-data to ${dummyPath}`)
 
-  // FIXME: unzip correctly
   const zip = new AdmZip(Buffer.from(repoZip as ArrayBuffer))
   zip.extractEntryTo(
     `exivity-dummy-data-${sha}/`,
@@ -66,7 +65,8 @@ async function run() {
       .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
       .then(() => true)
       .catch(() => false)
-    if (!access) command += ` --db "postgres:postgres@localhost/exdb-test"`
+    if (!access)
+      command += ` --db "postgres://postgres:postgres@localhost:5432/exdb-test?sslmode=disable"`
   }
 
   await fs
@@ -85,6 +85,13 @@ async function run() {
       }`
     )
     .catch(() => installComponent('edify', octokit))
+    .catch(setFailed)
+
+  await fs
+    .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
+    .catch(() =>
+      exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`)
+    )
     .catch(setFailed)
 
   info('Executing dummy-data generate')

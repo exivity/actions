@@ -1,0 +1,15 @@
+{
+  "db": {
+    "driver": "postgres",
+    "parameters": {
+      "host": "localhost",
+      "port": "5432",
+      "sslmode": "disable",
+      "dbname": "exdb-test",
+      "user": "postgres",
+      "password": "postgres",
+      "connect_timeout": "10",
+      "target_session_attrs": "read-write"
+    }
+  }
+}

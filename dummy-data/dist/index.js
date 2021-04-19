@@ -9635,7 +9635,6 @@ function run() {
         core_1.info(`got sha: ${sha}`);
         const dummyPath = path_1.default.resolve(__dirname, '..', '..', '..', `exivity-dummy-data-${sha}`);
         core_1.info(`Extracting dummy-data to ${dummyPath}`);
-        // FIXME: unzip correctly
         const zip = new adm_zip_1.default(Buffer.from(repoZip));
         zip.extractEntryTo(`exivity-dummy-data-${sha}/`, path_1.default.resolve(__dirname, '..', '..', '..'), true);
         yield exec_1.exec(`ls`, [dummyPath], {
@@ -9655,7 +9654,7 @@ function run() {
                 .then(() => true)
                 .catch(() => false);
             if (!access)
-                command += ` --db "postgres:postgres@localhost/exdb-test"`;
+                command += ` --db "postgres://postgres:postgres@localhost:5432/exdb-test?sslmode=disable"`;
         }
         yield fs_1.promises
             .access(`${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript${os_1.default.platform() === 'win32' ? '.exe' : ''}`)
@@ -9664,6 +9663,10 @@ function run() {
         yield fs_1.promises
             .access(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify${os_1.default.platform() === 'win32' ? '.exe' : ''}`)
             .catch(() => installComponent('edify', octokit))
+            .catch(core_1.setFailed);
+        yield fs_1.promises
+            .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
+            .catch(() => exec_1.exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`))
             .catch(core_1.setFailed);
         core_1.info('Executing dummy-data generate');
         yield exec_1.exec('npm install', undefined, { cwd: dummyPath })
