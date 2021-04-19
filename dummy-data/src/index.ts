@@ -75,7 +75,7 @@ async function run() {
         os.platform() === 'win32' ? '.exe' : ''
       }`
     )
-    .catch(() => installTranscript(octokit))
+    .catch(() => installComponent('transcript', octokit))
     .catch(setFailed)
 
   await fs
@@ -84,7 +84,7 @@ async function run() {
         os.platform() === 'win32' ? '.exe' : ''
       }`
     )
-    .catch(() => installEdify(octokit))
+    .catch(() => installComponent('edify', octokit))
     .catch(setFailed)
 
   info('Executing dummy-data generate')
@@ -99,21 +99,24 @@ async function run() {
     .catch(setFailed)
 }
 
-async function installTranscript(octokit: ReturnType<typeof getOctokit>) {
+async function installComponent(
+  component: string,
+  octokit: ReturnType<typeof getOctokit>
+) {
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
   const sha = await getShaFromRef({
     octokit,
-    component: 'transcript',
+    component,
     ref: 'master',
   })
 
   await downloadS3object({
-    component: 'transcript',
+    component,
     sha,
-    prefix: `transcript${os.platform() === 'win32' ? '.exe' : ''}`,
+    prefix: `${component}${os.platform() === 'win32' ? '.exe' : ''}`,
     usePlatformPrefix: true,
-    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`,
     awsKeyId,
     awsSecretKey,
   })
@@ -121,32 +124,9 @@ async function installTranscript(octokit: ReturnType<typeof getOctokit>) {
   await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`)
 
   if (os.platform() !== 'win32')
-    await exec(`chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`)
-}
-
-async function installEdify(octokit: ReturnType<typeof getOctokit>) {
-  const [awsKeyId, awsSecretKey] = getAWSCredentials()
-
-  const sha = await getShaFromRef({
-    octokit,
-    component: 'edify',
-    ref: 'master',
-  })
-
-  await downloadS3object({
-    component: 'edify',
-    sha,
-    prefix: `edify${os.platform() === 'win32' ? '.exe' : ''}`,
-    usePlatformPrefix: true,
-    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`,
-    awsKeyId,
-    awsSecretKey,
-  })
-
-  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`)
-
-  if (os.platform() !== 'win32')
-    await exec(`chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`)
+    await exec(
+      `sudo chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`
+    )
 }
 
 function getAWSCredentials() {
