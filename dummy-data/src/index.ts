@@ -89,13 +89,16 @@ async function run() {
 
   await fs
     .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
-    .catch(() =>
-      exec(
+    .catch(async () => {
+      await fs.mkdir(`${process.env.EXIVITY_HOME_PATH}/system`, {
+        recursive: true,
+      })
+      await exec(
         `mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`,
         undefined,
         { cwd: path.resolve(__dirname, '..') }
       )
-    )
+    })
     .catch(setFailed)
 
   info('Executing dummy-data generate')
@@ -114,6 +117,8 @@ async function installComponent(
   component: string,
   octokit: ReturnType<typeof getOctokit>
 ) {
+  await fs.mkdir(`${process.env.EXIVITY_PROGRAM_PATH}/bin`, { recursive: true })
+
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
   const sha = await getShaFromRef({

@@ -9666,7 +9666,12 @@ function run() {
             .catch(core_1.setFailed);
         yield fs_1.promises
             .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
-            .catch(() => exec_1.exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`, undefined, { cwd: path_1.default.resolve(__dirname, '..') }))
+            .catch(() => __awaiter(this, void 0, void 0, function* () {
+            yield fs_1.promises.mkdir(`${process.env.EXIVITY_HOME_PATH}/system`, {
+                recursive: true,
+            });
+            yield exec_1.exec(`mv config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`, undefined, { cwd: path_1.default.resolve(__dirname, '..') });
+        }))
             .catch(core_1.setFailed);
         core_1.info('Executing dummy-data generate');
         yield exec_1.exec('npm install', undefined, { cwd: dummyPath })
@@ -9680,6 +9685,7 @@ function run() {
 }
 function installComponent(component, octokit) {
     return __awaiter(this, void 0, void 0, function* () {
+        yield fs_1.promises.mkdir(`${process.env.EXIVITY_PROGRAM_PATH}/bin`, { recursive: true });
         const [awsKeyId, awsSecretKey] = getAWSCredentials();
         const sha = yield github_2.getShaFromRef({
             octokit,
