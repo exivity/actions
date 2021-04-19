@@ -9634,11 +9634,8 @@ function run() {
         core_1.info(`got sha: ${sha}`);
         // FIXME: unzip correctly
         core_1.info(`req content: ${repoZip.byteLength}`);
-        const zip = new adm_zip_1.default(repoZip);
-        core_1.info(`entries in zip: ${zip
-            .getEntries()
-            .map((e) => e.entryName)
-            .join(', ')}`);
+        const zip = new adm_zip_1.default(Buffer.from(repoZip));
+        core_1.info(`entries in zip: ${zip.getEntries().join(', ')}`);
         zip.extractEntryTo(`exivity-dummy-data-${sha.slice(0, 7)}`, path_1.default.resolve(__dirname, '..', '..', '..'), true);
         yield exec_1.exec(`ls`, [path_1.default.resolve(__dirname, '..', '..', '..')], {
             ignoreReturnCode: false,

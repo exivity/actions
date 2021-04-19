@@ -38,13 +38,8 @@ async function run() {
 
   // FIXME: unzip correctly
   info(`req content: ${(repoZip as ArrayBuffer).byteLength}`)
-  const zip = new AdmZip(repoZip as Buffer)
-  info(
-    `entries in zip: ${zip
-      .getEntries()
-      .map((e) => e.entryName)
-      .join(', ')}`
-  )
+  const zip = new AdmZip(Buffer.from(repoZip as ArrayBuffer))
+  info(`entries in zip: ${zip.getEntries().join(', ')}`)
   zip.extractEntryTo(
     `exivity-dummy-data-${sha.slice(0, 7)}`,
     path.resolve(__dirname, '..', '..', '..'),
