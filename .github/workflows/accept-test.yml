@@ -1,7 +1,11 @@
 name: accept test
 
 on:
-  push: {}
+  push:
+    paths:
+      - '.github/workflows/accept-test.yml'
+      - 'accept/**'
+      - 'lib/github.ts'
 
 jobs:
   test:

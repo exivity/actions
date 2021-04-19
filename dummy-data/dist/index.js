@@ -9639,7 +9639,7 @@ function run() {
             ignoreReturnCode: false,
             failOnStdErr: false,
         });
-        let command = 'npm run start generate';
+        let command = 'node dummy-data.js generate';
         if (seed)
             command += ` --seed ${seed}`;
         if (config_location)
