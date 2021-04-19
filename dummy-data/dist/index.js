@@ -9624,18 +9624,18 @@ function run() {
             repo: 'dummy-data',
             ref: 'master',
         });
-        const dummyPath = path_1.default.resolve(__dirname, '..', '..', '..', 'dummy-data');
-        core_1.info(`Extracting dummy-data to ${dummyPath}`);
         const sha = yield github_2.getShaFromRef({
             octokit,
             component: 'dummy-data',
             ref: 'master',
         });
         core_1.info(`got sha: ${sha}`);
+        const dummyPath = path_1.default.resolve(__dirname, '..', '..', '..', `exivity-dummy-data-${sha}`);
+        core_1.info(`Extracting dummy-data to ${dummyPath}`);
         // FIXME: unzip correctly
         const zip = new adm_zip_1.default(Buffer.from(repoZip));
-        zip.extractEntryTo(`exivity-dummy-data-${sha}/`, path_1.default.resolve(__dirname, '..', '..', '..'), false);
-        yield exec_1.exec(`ls`, [path_1.default.resolve(__dirname, '..', '..', '..')], {
+        zip.extractEntryTo(`exivity-dummy-data-${sha}/`, path_1.default.resolve(__dirname, '..', '..', '..'), true);
+        yield exec_1.exec(`ls`, [dummyPath], {
             ignoreReturnCode: false,
             failOnStdErr: false,
         });

@@ -26,9 +26,6 @@ async function run() {
     }
   )
 
-  const dummyPath = path.resolve(__dirname, '..', '..', '..', 'dummy-data')
-  info(`Extracting dummy-data to ${dummyPath}`)
-
   const sha = await getShaFromRef({
     octokit,
     component: 'dummy-data',
@@ -36,14 +33,23 @@ async function run() {
   })
   info(`got sha: ${sha}`)
 
+  const dummyPath = path.resolve(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    `exivity-dummy-data-${sha}`
+  )
+  info(`Extracting dummy-data to ${dummyPath}`)
+
   // FIXME: unzip correctly
   const zip = new AdmZip(Buffer.from(repoZip as ArrayBuffer))
   zip.extractEntryTo(
     `exivity-dummy-data-${sha}/`,
     path.resolve(__dirname, '..', '..', '..'),
-    false
+    true
   )
-  await exec(`ls`, [path.resolve(__dirname, '..', '..', '..')], {
+  await exec(`ls`, [dummyPath], {
     ignoreReturnCode: false,
     failOnStdErr: false,
   })
