@@ -1,21 +1,8 @@
 import { getInput, setFailed } from '@actions/core'
-import { exec } from '@actions/exec'
 import { getOctokit } from '@actions/github'
-import { promises as fsPromises } from 'fs'
-import { join as pathJoin } from 'path'
-import { getBooleanInput } from '../../lib/core'
+import { getBooleanInput, unzipAll } from '../../lib/core'
 import { getShaFromRef, getToken } from '../../lib/github'
 import { downloadS3object } from '../../lib/s3'
-
-async function unzipAll(path: string) {
-  for (const file of await fsPromises.readdir(path)) {
-    if (file.endsWith('.zip')) {
-      await exec('7z', ['x', pathJoin(path, file), `-o${path}`])
-    } else if ((await fsPromises.lstat(pathJoin(path, file))).isDirectory()) {
-      unzipAll(pathJoin(path, file))
-    }
-  }
-}
 
 async function run() {
   try {

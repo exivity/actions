@@ -1,10 +1,13 @@
 import path from 'path'
+import os from 'os'
 import AdmZip from 'adm-zip'
 import { promises as fs } from 'fs'
 import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { exec } from '@actions/exec'
 import { getToken, getShaFromRef } from '../../lib/github'
+import { unzipAll } from '../../lib/core'
+import { downloadS3object } from '../../lib/s3'
 
 async function run() {
   // Input
@@ -66,6 +69,22 @@ async function run() {
     if (!access) command += ` --db "postgres:postgres@localhost/exdb-test"`
   }
 
+  await fs
+    .access(
+      `${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript${
+        os.platform() === 'win32' ? '.exe' : ''
+      }`
+    )
+    .catch(() => installTranscript(octokit))
+
+  await fs
+    .access(
+      `${process.env.EXIVITY_PROGRAM_PATH}/bin/edify${
+        os.platform() === 'win32' ? '.exe' : ''
+      }`
+    )
+    .catch(() => installEdify(octokit))
+
   info('Executing dummy-data generate')
   await exec('npm install', undefined, { cwd: dummyPath })
     .then(() => exec('npm run build', undefined, { cwd: dummyPath }))
@@ -76,6 +95,62 @@ async function run() {
       })
     )
     .catch(setFailed)
+}
+
+async function installTranscript(octokit: ReturnType<typeof getOctokit>) {
+  const [awsKeyId, awsSecretKey] = getAWSCredentials()
+
+  const sha = await getShaFromRef({
+    octokit,
+    component: 'transcript',
+    ref: 'master',
+  })
+
+  await downloadS3object({
+    component: 'transcript',
+    sha,
+    usePlatformPrefix: true,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`,
+    awsKeyId,
+    awsSecretKey,
+  })
+
+  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`)
+}
+
+async function installEdify(octokit: ReturnType<typeof getOctokit>) {
+  const [awsKeyId, awsSecretKey] = getAWSCredentials()
+
+  const sha = await getShaFromRef({
+    octokit,
+    component: 'transcript',
+    ref: 'master',
+  })
+
+  await downloadS3object({
+    component: 'edify',
+    sha,
+    usePlatformPrefix: true,
+    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`,
+    awsKeyId,
+    awsSecretKey,
+  })
+
+  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`)
+}
+
+function getAWSCredentials() {
+  const awsKeyId =
+    getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
+  const awsSecretKey =
+    getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
+
+  // Assertions
+  if (!awsKeyId || !awsSecretKey) {
+    throw new Error('A required AWS input is missing')
+  }
+
+  return [awsKeyId, awsSecretKey]
 }
 
 run()

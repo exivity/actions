@@ -9603,12 +9603,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const path_1 = __importDefault(__nccwpck_require__(5622));
+const os_1 = __importDefault(__nccwpck_require__(2087));
 const adm_zip_1 = __importDefault(__nccwpck_require__(5738));
 const fs_1 = __nccwpck_require__(5747);
 const core_1 = __nccwpck_require__(8985);
 const github_1 = __nccwpck_require__(893);
 const exec_1 = __nccwpck_require__(3287);
 const github_2 = __nccwpck_require__(356);
+const core_2 = __nccwpck_require__(8651);
+const s3_1 = __nccwpck_require__(8022);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         // Input
@@ -9654,6 +9657,12 @@ function run() {
             if (!access)
                 command += ` --db "postgres:postgres@localhost/exdb-test"`;
         }
+        yield fs_1.promises
+            .access(`${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript${os_1.default.platform() === 'win32' ? '.exe' : ''}`)
+            .catch(() => installTranscript(octokit));
+        yield fs_1.promises
+            .access(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify${os_1.default.platform() === 'win32' ? '.exe' : ''}`)
+            .catch(() => installEdify(octokit));
         core_1.info('Executing dummy-data generate');
         yield exec_1.exec('npm install', undefined, { cwd: dummyPath })
             .then(() => exec_1.exec('npm run build', undefined, { cwd: dummyPath }))
@@ -9664,7 +9673,104 @@ function run() {
             .catch(core_1.setFailed);
     });
 }
+function installTranscript(octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const [awsKeyId, awsSecretKey] = getAWSCredentials();
+        const sha = yield github_2.getShaFromRef({
+            octokit,
+            component: 'transcript',
+            ref: 'master',
+        });
+        yield s3_1.downloadS3object({
+            component: 'transcript',
+            sha,
+            usePlatformPrefix: true,
+            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript`,
+            awsKeyId,
+            awsSecretKey,
+        });
+        yield core_2.unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`);
+    });
+}
+function installEdify(octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const [awsKeyId, awsSecretKey] = getAWSCredentials();
+        const sha = yield github_2.getShaFromRef({
+            octokit,
+            component: 'transcript',
+            ref: 'master',
+        });
+        yield s3_1.downloadS3object({
+            component: 'edify',
+            sha,
+            usePlatformPrefix: true,
+            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`,
+            awsKeyId,
+            awsSecretKey,
+        });
+        yield core_2.unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify`);
+    });
+}
+function getAWSCredentials() {
+    const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
+    const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+    // Assertions
+    if (!awsKeyId || !awsSecretKey) {
+        throw new Error('A required AWS input is missing');
+    }
+    return [awsKeyId, awsSecretKey];
+}
 run();
+
+
+/***/ }),
+
+/***/ 8651:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.unzipAll = exports.getBooleanInput = void 0;
+const core_1 = __nccwpck_require__(8985);
+const exec_1 = __nccwpck_require__(3287);
+const fs_1 = __nccwpck_require__(5747);
+const path_1 = __nccwpck_require__(5622);
+const TRUE_VALUES = [true, 'true', 'TRUE'];
+const FALSE_VALUES = [false, 'false', 'FALSE'];
+function getBooleanInput(name, defaultValue) {
+    let inputValue = core_1.getInput(name) || defaultValue;
+    if (TRUE_VALUES.includes(inputValue)) {
+        return true;
+    }
+    if (FALSE_VALUES.includes(inputValue)) {
+        return false;
+    }
+    throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
+}
+exports.getBooleanInput = getBooleanInput;
+function unzipAll(path) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (const file of yield fs_1.promises.readdir(path)) {
+            if (file.endsWith('.zip')) {
+                yield exec_1.exec('7z', ['x', path_1.join(path, file), `-o${path}`]);
+            }
+            else if ((yield fs_1.promises.lstat(path_1.join(path, file))).isDirectory()) {
+                unzipAll(path_1.join(path, file));
+            }
+        }
+    });
+}
+exports.unzipAll = unzipAll;
 
 
 /***/ }),
@@ -9792,6 +9898,81 @@ function getWorkflowName() {
     return workflowName;
 }
 exports.getWorkflowName = getWorkflowName;
+
+
+/***/ }),
+
+/***/ 8022:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.uploadS3object = exports.downloadS3object = void 0;
+const core_1 = __nccwpck_require__(8985);
+const exec_1 = __nccwpck_require__(3287);
+const fs_1 = __nccwpck_require__(5747);
+const os_1 = __nccwpck_require__(2087);
+const path_1 = __nccwpck_require__(5622);
+const github_1 = __nccwpck_require__(356);
+const S3_BUCKET = 'exivity';
+const S3_PREFIX = 'build';
+const S3_REGION = 'eu-central-1';
+function getS3url({ component, sha, usePlatformPrefix, prefix }) {
+    const platformPrefix = os_1.platform() === 'win32' ? 'windows' : 'linux';
+    return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ''}${prefix ? `/${prefix}` : ''}`;
+}
+function downloadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const workspacePath = github_1.getWorkspacePath();
+        const src = getS3url({ component, sha, usePlatformPrefix, prefix });
+        const dest = path_1.resolve(workspacePath, path);
+        const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
+        core_1.info(`About to execute ${cmd}`);
+        yield exec_1.exec(cmd, undefined, {
+            env: Object.assign(Object.assign({}, process.env), { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
+        });
+    });
+}
+exports.downloadS3object = downloadS3object;
+function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKeyId, awsSecretKey, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const workspacePath = github_1.getWorkspacePath();
+        const src = path_1.resolve(workspacePath, path);
+        const isDirectory = (yield fs_1.promises.lstat(src)).isDirectory();
+        const dest = getS3url({
+            component,
+            sha,
+            usePlatformPrefix,
+            prefix,
+        });
+        const cmd = [
+            'aws',
+            's3',
+            'cp',
+            isDirectory ? '--recursive' : '',
+            '--region',
+            S3_REGION,
+            `"${src}"`,
+            isDirectory ? `"${dest}"` : `"${dest}/${path_1.basename(path)}"`,
+        ]
+            .filter((item) => item)
+            .join(' ');
+        yield exec_1.exec(cmd, undefined, {
+            env: Object.assign(Object.assign({}, process.env), { AWS_ACCESS_KEY_ID: awsKeyId, AWS_SECRET_ACCESS_KEY: awsSecretKey }),
+        });
+    });
+}
+exports.uploadS3object = uploadS3object;
 
 
 /***/ }),

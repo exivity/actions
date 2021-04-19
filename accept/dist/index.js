@@ -35207,13 +35207,25 @@ run();
 /***/ }),
 
 /***/ 8651:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getBooleanInput = void 0;
+exports.unzipAll = exports.getBooleanInput = void 0;
 const core_1 = __nccwpck_require__(8985);
+const exec_1 = __nccwpck_require__(3287);
+const fs_1 = __nccwpck_require__(5747);
+const path_1 = __nccwpck_require__(5622);
 const TRUE_VALUES = [true, 'true', 'TRUE'];
 const FALSE_VALUES = [false, 'false', 'FALSE'];
 function getBooleanInput(name, defaultValue) {
@@ -35227,6 +35239,19 @@ function getBooleanInput(name, defaultValue) {
     throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
 }
 exports.getBooleanInput = getBooleanInput;
+function unzipAll(path) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (const file of yield fs_1.promises.readdir(path)) {
+            if (file.endsWith('.zip')) {
+                yield exec_1.exec('7z', ['x', path_1.join(path, file), `-o${path}`]);
+            }
+            else if ((yield fs_1.promises.lstat(path_1.join(path, file))).isDirectory()) {
+                unzipAll(path_1.join(path, file));
+            }
+        }
+    });
+}
+exports.unzipAll = unzipAll;
 
 
 /***/ }),
