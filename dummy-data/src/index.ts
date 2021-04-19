@@ -131,7 +131,9 @@ async function installComponent(
       `sudo chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`
     )
 
-  await exec(`mkdir -p ${process.env.EXIVITY_HOME_PATH}/log/${component}`)
+  await fs.mkdir(`${process.env.EXIVITY_HOME_PATH}/log/${component}`, {
+    recursive: true,
+  })
 }
 
 function getAWSCredentials() {
