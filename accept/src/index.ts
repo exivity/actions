@@ -19,7 +19,11 @@ import {
   getSha,
   getToken,
 } from '../../lib/github'
-import { includesBotRequest, isWorkflowDependencyDone } from './checks'
+import {
+  includesBotRequest,
+  isBotReviewRequested,
+  isWorkflowDependencyDone,
+} from './checks'
 import { dispatch } from './dispatch'
 
 type EventData<
@@ -153,6 +157,12 @@ async function run() {
       // We need to check if conclusion was successful
       if (eventData['workflow_run']['conclusion'] !== 'success') {
         warning(`Skipping: workflow constraint not satisfied`)
+        return
+      }
+
+      // Skip accepting commits on PR without exivity-bot review request
+      if (!isBotReviewRequested(pr)) {
+        warning('Skipping: exivity-bot not requested for review')
         return
       }
     }

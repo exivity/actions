@@ -35972,6 +35972,11 @@ function run() {
                     core_1.warning(`Skipping: workflow constraint not satisfied`);
                     return;
                 }
+                // Skip accepting commits on PR without exivity-bot review request
+                if (!checks_1.isBotReviewRequested(pr)) {
+                    core_1.warning('Skipping: exivity-bot not requested for review');
+                    return;
+                }
             }
             // If we're on a development branch, scrub component and sha from dispatch
             if (developBranches.includes(ref)) {
