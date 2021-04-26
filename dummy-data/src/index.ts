@@ -136,18 +136,4 @@ async function installComponent(
   })
 }
 
-function getAWSCredentials() {
-  const awsKeyId =
-    getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
-  const awsSecretKey =
-    getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
-
-  // Assertions
-  if (!awsKeyId || !awsSecretKey) {
-    throw new Error('A required AWS input is missing')
-  }
-
-  return [awsKeyId, awsSecretKey]
-}
-
 run()
