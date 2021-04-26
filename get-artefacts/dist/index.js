@@ -6972,13 +6972,8 @@ function run() {
             const prefix = core_1.getInput('prefix') || undefined;
             const path = core_1.getInput('path') || `../${component}/build`;
             const autoUnzip = core_2.getBooleanInput('auto-unzip', true);
-            const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
-            const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = github_2.getToken();
-            // Assertions
-            if (!awsKeyId || !awsSecretKey) {
-                throw new Error('A required AWS input is missing');
-            }
+            const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
             // If we have no sha and a branch, let's find the sha
             if (!sha) {
                 sha = yield github_2.getShaFromRef({
@@ -7202,7 +7197,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.uploadS3object = exports.downloadS3object = void 0;
+exports.getAWSCredentials = exports.uploadS3object = exports.downloadS3object = void 0;
 const core_1 = __nccwpck_require__(8985);
 const exec_1 = __nccwpck_require__(3287);
 const fs_1 = __nccwpck_require__(5747);
@@ -7258,6 +7253,16 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
     });
 }
 exports.uploadS3object = uploadS3object;
+function getAWSCredentials() {
+    const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
+    const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+    // Assertions
+    if (!awsKeyId || !awsSecretKey) {
+        throw new Error('A required AWS input is missing');
+    }
+    return [awsKeyId, awsSecretKey];
+}
+exports.getAWSCredentials = getAWSCredentials;
 
 
 /***/ }),

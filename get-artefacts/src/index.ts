@@ -2,7 +2,7 @@ import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getBooleanInput, unzipAll } from '../../lib/core'
 import { getShaFromRef, getToken } from '../../lib/github'
-import { downloadS3object } from '../../lib/s3'
+import { downloadS3object, getAWSCredentials } from '../../lib/s3'
 
 async function run() {
   try {
@@ -16,16 +16,9 @@ async function run() {
     const prefix = getInput('prefix') || undefined
     const path = getInput('path') || `../${component}/build`
     const autoUnzip = getBooleanInput('auto-unzip', true)
-    const awsKeyId =
-      getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
-    const awsSecretKey =
-      getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
     const ghToken = getToken()
 
-    // Assertions
-    if (!awsKeyId || !awsSecretKey) {
-      throw new Error('A required AWS input is missing')
-    }
+    const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
     // If we have no sha and a branch, let's find the sha
     if (!sha) {

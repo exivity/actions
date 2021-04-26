@@ -7,14 +7,14 @@ import { getOctokit } from '@actions/github'
 import { exec } from '@actions/exec'
 import { getToken, getShaFromRef } from '../../lib/github'
 import { unzipAll } from '../../lib/core'
-import { downloadS3object } from '../../lib/s3'
+import { downloadS3object, getAWSCredentials } from '../../lib/s3'
 
 async function run() {
   // Input
   const ghToken = getToken()
   const seed = getInput('seed')
-  const config_location = getInput('config-file')
-  const db_string = getInput('db-credentials')
+  const configLocation = getInput('config-file')
+  const dbString = getInput('db-credentials')
 
   // Initialize GH client
   const octokit = getOctokit(ghToken)
@@ -58,8 +58,8 @@ async function run() {
 
   let command = 'node dummy-data.js generate'
   if (seed) command += ` --seed ${seed}`
-  if (config_location) command += ` --config ${config_location}`
-  if (db_string) command += ` --db "${db_string}"`
+  if (configLocation) command += ` --config ${configLocation}`
+  if (dbString) command += ` --db "${dbString}"`
   else {
     const access = await fs
       .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
@@ -149,20 +149,6 @@ async function installComponent(
   await fs.mkdir(`${process.env.EXIVITY_HOME_PATH}/log/${component}`, {
     recursive: true,
   })
-}
-
-function getAWSCredentials() {
-  const awsKeyId =
-    getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
-  const awsSecretKey =
-    getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
-
-  // Assertions
-  if (!awsKeyId || !awsSecretKey) {
-    throw new Error('A required AWS input is missing')
-  }
-
-  return [awsKeyId, awsSecretKey]
 }
 
 run()

@@ -3,7 +3,7 @@ import { exec } from '@actions/exec'
 import { resolve } from 'path'
 import { getBooleanInput } from '../../lib/core'
 import { getRepository, getSha, getWorkspacePath } from '../../lib/github'
-import { uploadS3object } from '../../lib/s3'
+import { uploadS3object, getAWSCredentials } from '../../lib/s3'
 
 async function zipAll(path: string, component: string) {
   const filename = `${component}.tar.gz`
@@ -21,19 +21,12 @@ async function run() {
     const prefix = getInput('prefix') || undefined
     let path = getInput('path') || 'build'
     const zip = getBooleanInput('zip', false)
-    const awsKeyId =
-      getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
-    const awsSecretKey =
-      getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
 
     // From environment
     const sha = getSha()
     const { component } = getRepository()
 
-    // Assertions
-    if (!awsKeyId || !awsSecretKey) {
-      throw new Error('A required argument is missing')
-    }
+    const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
     if (zip) {
       // This will actually create a tarball instead of a zip archive 🤷‍♂️

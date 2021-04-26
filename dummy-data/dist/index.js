@@ -9617,8 +9617,8 @@ function run() {
         // Input
         const ghToken = github_2.getToken();
         const seed = core_1.getInput('seed');
-        const config_location = core_1.getInput('config-file');
-        const db_string = core_1.getInput('db-credentials');
+        const configLocation = core_1.getInput('config-file');
+        const dbString = core_1.getInput('db-credentials');
         // Initialize GH client
         const octokit = github_1.getOctokit(ghToken);
         // Get dummy-data
@@ -9644,10 +9644,10 @@ function run() {
         let command = 'node dummy-data.js generate';
         if (seed)
             command += ` --seed ${seed}`;
-        if (config_location)
-            command += ` --config ${config_location}`;
-        if (db_string)
-            command += ` --db "${db_string}"`;
+        if (configLocation)
+            command += ` --config ${configLocation}`;
+        if (dbString)
+            command += ` --db "${dbString}"`;
         else {
             const access = yield fs_1.promises
                 .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
@@ -9688,7 +9688,7 @@ function run() {
 function installComponent(component, octokit) {
     return __awaiter(this, void 0, void 0, function* () {
         yield fs_1.promises.mkdir(`${process.env.EXIVITY_PROGRAM_PATH}/bin`, { recursive: true });
-        const [awsKeyId, awsSecretKey] = getAWSCredentials();
+        const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
         const sha = yield github_2.getShaFromRef({
             octokit,
             component,
@@ -9709,15 +9709,6 @@ function installComponent(component, octokit) {
             recursive: true,
         });
     });
-}
-function getAWSCredentials() {
-    const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
-    const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
-    // Assertions
-    if (!awsKeyId || !awsSecretKey) {
-        throw new Error('A required AWS input is missing');
-    }
-    return [awsKeyId, awsSecretKey];
 }
 run();
 
@@ -9916,7 +9907,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.uploadS3object = exports.downloadS3object = void 0;
+exports.getAWSCredentials = exports.uploadS3object = exports.downloadS3object = void 0;
 const core_1 = __nccwpck_require__(8985);
 const exec_1 = __nccwpck_require__(3287);
 const fs_1 = __nccwpck_require__(5747);
@@ -9972,6 +9963,16 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
     });
 }
 exports.uploadS3object = uploadS3object;
+function getAWSCredentials() {
+    const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
+    const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+    // Assertions
+    if (!awsKeyId || !awsSecretKey) {
+        throw new Error('A required AWS input is missing');
+    }
+    return [awsKeyId, awsSecretKey];
+}
+exports.getAWSCredentials = getAWSCredentials;
 
 
 /***/ }),

@@ -6,7 +6,7 @@ import path from 'path'
 import { startDocker } from '../../lib/docker'
 import { getShaFromRef, getToken, getWorkspacePath } from '../../lib/github'
 import { defaultVersion, image, startPostgres } from '../../lib/postgres'
-import { downloadS3object } from '../../lib/s3'
+import { downloadS3object, getAWSCredentials } from '../../lib/s3'
 
 async function run() {
   try {
@@ -17,18 +17,12 @@ async function run() {
     const dbName = getInput('db-name') || 'exdb-test'
     const mode = getInput('mode') || 'host'
     const password = getInput('password') || 'postgres'
-    const awsKeyId =
-      getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
-    const awsSecretKey =
-      getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
     const ghToken = getToken()
     const workspacePath = getWorkspacePath()
 
-    // Assertions
-    if (!awsKeyId || !awsSecretKey) {
-      throw new Error('A required AWS input is missing')
-    }
+    const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
+    // Assertions
     if (mode !== 'docker' && mode !== 'host') {
       throw new Error(`Mode must be 'docker' or 'host'`)
     }

@@ -6976,14 +6976,10 @@ function run() {
             const dbName = core_1.getInput('db-name') || 'exdb-test';
             const mode = core_1.getInput('mode') || 'host';
             const password = core_1.getInput('password') || 'postgres';
-            const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
-            const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             const ghToken = github_2.getToken();
             const workspacePath = github_2.getWorkspacePath();
+            const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
             // Assertions
-            if (!awsKeyId || !awsSecretKey) {
-                throw new Error('A required AWS input is missing');
-            }
             if (mode !== 'docker' && mode !== 'host') {
                 throw new Error(`Mode must be 'docker' or 'host'`);
             }
@@ -7256,7 +7252,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.uploadS3object = exports.downloadS3object = void 0;
+exports.getAWSCredentials = exports.uploadS3object = exports.downloadS3object = void 0;
 const core_1 = __nccwpck_require__(8985);
 const exec_1 = __nccwpck_require__(3287);
 const fs_1 = __nccwpck_require__(5747);
@@ -7312,6 +7308,16 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
     });
 }
 exports.uploadS3object = uploadS3object;
+function getAWSCredentials() {
+    const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
+    const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+    // Assertions
+    if (!awsKeyId || !awsSecretKey) {
+        throw new Error('A required AWS input is missing');
+    }
+    return [awsKeyId, awsSecretKey];
+}
+exports.getAWSCredentials = getAWSCredentials;
 
 
 /***/ }),
