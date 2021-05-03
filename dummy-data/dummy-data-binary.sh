@@ -22,7 +22,7 @@ if [[ -f $dd_bin ]]
 then
     echo "Already present, skip downloading"
 else
-    curl https://tools.exivity.com/$dd_bin -O
+    curl --insecure https://tools.exivity.com/$dd_bin -O
     chmod +x $dd_bin
 fi
 
