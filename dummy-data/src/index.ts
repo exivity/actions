@@ -21,14 +21,6 @@ async function run() {
   if (seed) command += ` --seed ${seed}`
   if (configLocation) command += ` --config ${configLocation}`
   if (dbString) command += ` --db "${dbString}"`
-  else {
-    const access = await fs
-      .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
-      .then(() => true)
-      .catch(() => false)
-    if (!access)
-      command += ` --db "postgres://postgres:postgres@localhost:5432/exdb-test?sslmode=disable"`
-  }
 
   await fs
     .access(

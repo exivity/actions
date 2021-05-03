@@ -6982,14 +6982,6 @@ function run() {
             command += ` --config ${configLocation}`;
         if (dbString)
             command += ` --db "${dbString}"`;
-        else {
-            const access = yield fs_1.promises
-                .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
-                .then(() => true)
-                .catch(() => false);
-            if (!access)
-                command += ` --db "postgres://postgres:postgres@localhost:5432/exdb-test?sslmode=disable"`;
-        }
         yield fs_1.promises
             .access(`${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript${os_1.default.platform() === 'win32' ? '.exe' : ''}`)
             .catch(() => installComponent('transcript', octokit))
