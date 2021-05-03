@@ -16,47 +16,9 @@ async function run() {
   const configLocation = getInput('config-file')
   const dbString = getInput('db-credentials')
 
-  // Initialize GH client
   const octokit = getOctokit(ghToken)
 
-  // Get dummy-data
-  const { data: repoZip } = await octokit.request(
-    'GET /repos/{owner}/{repo}/zipball/{ref}',
-    {
-      owner: 'exivity',
-      repo: 'dummy-data',
-      ref: 'master',
-    }
-  )
-
-  const sha = await getShaFromRef({
-    octokit,
-    component: 'dummy-data',
-    ref: 'master',
-  })
-  info(`got sha: ${sha}`)
-
-  const dummyPath = path.resolve(
-    __dirname,
-    '..',
-    '..',
-    '..',
-    `exivity-dummy-data-${sha}`
-  )
-  info(`Extracting dummy-data to ${dummyPath}`)
-
-  const zip = new AdmZip(Buffer.from(repoZip as ArrayBuffer))
-  zip.extractEntryTo(
-    `exivity-dummy-data-${sha}/`,
-    path.resolve(__dirname, '..', '..', '..'),
-    true
-  )
-  await exec(`ls`, [dummyPath], {
-    ignoreReturnCode: false,
-    failOnStdErr: false,
-  })
-
-  let command = 'node dummy-data.js generate'
+  let command = `dummy-data${os.platform() === 'win32' ? '.exe' : ''} generate`
   if (seed) command += ` --seed ${seed}`
   if (configLocation) command += ` --config ${configLocation}`
   if (dbString) command += ` --db "${dbString}"`
@@ -105,15 +67,10 @@ async function run() {
     addPath('C:\\Program Files\\PostgreSQL\\13\\bin')
 
   info('Executing dummy-data generate')
-  await exec('npm install', undefined, { cwd: dummyPath })
-    .then(() => exec('npm run build', undefined, { cwd: dummyPath }))
-    .then(() =>
-      exec(command, undefined, {
-        cwd: dummyPath,
-        windowsVerbatimArguments: true,
-      })
-    )
-    .catch(setFailed)
+  await exec(command, undefined, {
+    cwd: path.resolve(__dirname, '..'),
+    windowsVerbatimArguments: true,
+  }).catch(setFailed)
 }
 
 async function installComponent(
