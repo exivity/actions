@@ -1,6 +1,5 @@
 import path from 'path'
 import os from 'os'
-import AdmZip from 'adm-zip'
 import { promises as fs } from 'fs'
 import { getInput, info, setFailed, addPath } from '@actions/core'
 import { getOctokit } from '@actions/github'
