@@ -25,8 +25,7 @@
     "@actions/exec": "1.1.0",
     "@actions/github": "5.0.0",
     "checkout": "https://github.com/actions/checkout#v2",
-    "js-yaml": "4.1.0",
-    "adm-zip": "0.5.5"
+    "js-yaml": "4.1.0"
   },
   "devDependencies": {
     "@exivity/ncc": "0.29.0",
