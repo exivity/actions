@@ -10,9 +10,11 @@ unameOut="$(uname -s)"
 case "${unameOut}" in
 	Linux*)     
         dd_bin=dummy-data
+        sudo -- sh -c "echo \"37.97.203.170 tools.exivity.com\" >> /etc/hosts"
 		;;
 	*)
         dd_bin=dummy-data.exe
+        echo "37.97.203.170 tools.exivity.com" >> C:\\Windows\\System32\\drivers\\etc\\hosts
 esac
 
 echo "Downloading $dd_bin"
