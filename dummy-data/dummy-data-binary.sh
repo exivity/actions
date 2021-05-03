@@ -18,8 +18,6 @@ case "${unameOut}" in
 esac
 
 echo "Downloading $dd_bin"
-mkdir -p bin
-cd bin
 if [[ -f $dd_bin ]]
 then
     echo "Already present, skip downloading"
@@ -29,4 +27,4 @@ else
 fi
 
 echo "Running dummy-data with arguments \"$@\""
-$cwd/bin/$dd_bin "$@"
+$dd_bin "$@"
