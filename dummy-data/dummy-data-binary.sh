@@ -27,4 +27,4 @@ else
 fi
 
 echo "Running dummy-data with arguments \"$@\""
-$dd_bin "$@"
+./$dd_bin "$@"
