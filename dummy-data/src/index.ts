@@ -18,7 +18,7 @@ async function run() {
 
   const octokit = getOctokit(ghToken)
 
-  let command = `dummy-data${os.platform() === 'win32' ? '.exe' : ''} generate`
+  let command = `bash dummy-data-binary.sh generate`
   if (seed) command += ` --seed ${seed}`
   if (configLocation) command += ` --config ${configLocation}`
   if (dbString) command += ` --db "${dbString}"`

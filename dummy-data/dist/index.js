@@ -6975,7 +6975,7 @@ function run() {
         const configLocation = core_1.getInput('config-file');
         const dbString = core_1.getInput('db-credentials');
         const octokit = github_1.getOctokit(ghToken);
-        let command = `dummy-data${os_1.default.platform() === 'win32' ? '.exe' : ''} generate`;
+        let command = `bash dummy-data-binary.sh generate`;
         if (seed)
             command += ` --seed ${seed}`;
         if (configLocation)
