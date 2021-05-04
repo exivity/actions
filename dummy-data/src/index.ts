@@ -14,6 +14,7 @@ async function run() {
   const seed = getInput('seed')
   const configLocation = getInput('config-file')
   const dbString = getInput('db-credentials')
+  const truncate = getInput('truncate') === 'true'
 
   const octokit = getOctokit(ghToken)
 
@@ -21,6 +22,7 @@ async function run() {
   if (seed) command += ` --seed ${seed}`
   if (configLocation) command += ` --config ${configLocation}`
   if (dbString) command += ` --db "${dbString}"`
+  if (truncate) command += ' --truncate true'
 
   await fs
     .access(

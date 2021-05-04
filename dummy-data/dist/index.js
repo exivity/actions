@@ -6974,6 +6974,7 @@ function run() {
         const seed = core_1.getInput('seed');
         const configLocation = core_1.getInput('config-file');
         const dbString = core_1.getInput('db-credentials');
+        const truncate = core_1.getInput('truncate') === 'true';
         const octokit = github_1.getOctokit(ghToken);
         let command = `bash dummy-data-binary.sh generate`;
         if (seed)
@@ -6982,6 +6983,8 @@ function run() {
             command += ` --config ${configLocation}`;
         if (dbString)
             command += ` --db "${dbString}"`;
+        if (truncate)
+            command += ' --truncate true';
         yield fs_1.promises
             .access(`${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript${os_1.default.platform() === 'win32' ? '.exe' : ''}`)
             .catch(() => installComponent('transcript', octokit))

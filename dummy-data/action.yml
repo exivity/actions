@@ -11,8 +11,12 @@ inputs:
     description: 'The path to the config file for the fake data generator'
     required: false
   db-credentials:
-    description: 'A connection string to conenect to the database'
+    description: 'A connection string to connect to the database'
     required: false
+  truncate:
+    description: 'to truncate all the exisiting data before generating the new'
+    required: false
+    default: 'false'
 runs:
   using: 'node12'
   main: 'dist/index.js'
