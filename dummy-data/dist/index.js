@@ -6940,7 +6940,7 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 844:
+/***/ 2649:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -6954,50 +6954,86 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const path_1 = __importDefault(__nccwpck_require__(5622));
+const os_1 = __importDefault(__nccwpck_require__(2087));
+const fs_1 = __nccwpck_require__(5747);
 const core_1 = __nccwpck_require__(8985);
 const github_1 = __nccwpck_require__(893);
-const core_2 = __nccwpck_require__(8651);
+const exec_1 = __nccwpck_require__(3287);
 const github_2 = __nccwpck_require__(356);
+const core_2 = __nccwpck_require__(8651);
 const s3_1 = __nccwpck_require__(8022);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // Input
-            const component = core_1.getInput('component', { required: true });
-            let sha = core_1.getInput('sha');
-            const branch = core_1.getInput('branch') ||
-                (process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop');
-            const usePlatformPrefix = core_2.getBooleanInput('use-platform-prefix', false);
-            const prefix = core_1.getInput('prefix') || undefined;
-            const path = core_1.getInput('path') || `../${component}/build`;
-            const autoUnzip = core_2.getBooleanInput('auto-unzip', true);
-            const ghToken = github_2.getToken();
-            const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
-            // If we have no sha and a branch, let's find the sha
-            if (!sha) {
-                sha = yield github_2.getShaFromRef({
-                    octokit: github_1.getOctokit(ghToken),
-                    component,
-                    ref: branch,
-                });
-            }
-            yield s3_1.downloadS3object({
-                component,
-                sha,
-                usePlatformPrefix,
-                prefix,
-                path,
-                awsKeyId,
-                awsSecretKey,
+        // Input
+        const ghToken = github_2.getToken();
+        const seed = core_1.getInput('seed');
+        const configLocation = core_1.getInput('config-file');
+        const dbString = core_1.getInput('db-credentials');
+        const truncate = core_1.getInput('truncate') === 'true';
+        const octokit = github_1.getOctokit(ghToken);
+        let command = `bash dummy-data-binary.sh generate`;
+        if (seed)
+            command += ` --seed ${seed}`;
+        if (configLocation)
+            command += ` --config ${configLocation}`;
+        if (dbString)
+            command += ` --db "${dbString}"`;
+        if (truncate)
+            command += ' --truncate true';
+        yield fs_1.promises
+            .access(`${process.env.EXIVITY_PROGRAM_PATH}/bin/transcript${os_1.default.platform() === 'win32' ? '.exe' : ''}`)
+            .catch(() => installComponent('transcript', octokit))
+            .catch(core_1.setFailed);
+        yield fs_1.promises
+            .access(`${process.env.EXIVITY_PROGRAM_PATH}/bin/edify${os_1.default.platform() === 'win32' ? '.exe' : ''}`)
+            .catch(() => installComponent('edify', octokit))
+            .catch(core_1.setFailed);
+        yield fs_1.promises
+            .access(`${process.env.EXIVITY_HOME_PATH}/system/config.json`)
+            .catch(() => __awaiter(this, void 0, void 0, function* () {
+            yield fs_1.promises.mkdir(`${process.env.EXIVITY_HOME_PATH}/system/report`, {
+                recursive: true,
             });
-            if (autoUnzip) {
-                yield core_2.unzipAll(path);
-            }
-        }
-        catch (error) {
-            core_1.setFailed(error.message);
-        }
+            yield exec_1.exec(`cp config.json ${process.env.EXIVITY_HOME_PATH}/system/config.json`, undefined, { cwd: path_1.default.resolve(__dirname, '..') });
+        }))
+            .catch(core_1.setFailed);
+        if (os_1.default.platform() === 'win32')
+            core_1.addPath('C:\\Program Files\\PostgreSQL\\13\\bin');
+        core_1.info('Executing dummy-data generate');
+        yield exec_1.exec(command, undefined, {
+            cwd: path_1.default.resolve(__dirname, '..'),
+            windowsVerbatimArguments: true,
+        }).catch(core_1.setFailed);
+    });
+}
+function installComponent(component, octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield fs_1.promises.mkdir(`${process.env.EXIVITY_PROGRAM_PATH}/bin`, { recursive: true });
+        const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
+        const sha = yield github_2.getShaFromRef({
+            octokit,
+            component,
+            ref: 'master',
+        });
+        yield s3_1.downloadS3object({
+            component,
+            sha,
+            usePlatformPrefix: true,
+            path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/`,
+            awsKeyId,
+            awsSecretKey,
+        });
+        yield core_2.unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`);
+        if (os_1.default.platform() !== 'win32')
+            yield exec_1.exec(`sudo chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`);
+        yield fs_1.promises.mkdir(`${process.env.EXIVITY_HOME_PATH}/log/${component}`, {
+            recursive: true,
+        });
     });
 }
 run();
@@ -7425,6 +7461,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(844);
+/******/ 	return __nccwpck_require__(2649);
 /******/ })()
 ;

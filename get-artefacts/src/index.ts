@@ -1,21 +1,8 @@
 import { getInput, setFailed } from '@actions/core'
-import { exec } from '@actions/exec'
 import { getOctokit } from '@actions/github'
-import { promises as fsPromises } from 'fs'
-import { join as pathJoin } from 'path'
-import { getBooleanInput } from '../../lib/core'
+import { getBooleanInput, unzipAll } from '../../lib/core'
 import { getShaFromRef, getToken } from '../../lib/github'
-import { downloadS3object } from '../../lib/s3'
-
-async function unzipAll(path: string) {
-  for (const file of await fsPromises.readdir(path)) {
-    if (file.endsWith('.zip')) {
-      await exec('7z', ['x', pathJoin(path, file), `-o${path}`])
-    } else if ((await fsPromises.lstat(pathJoin(path, file))).isDirectory()) {
-      unzipAll(pathJoin(path, file))
-    }
-  }
-}
+import { downloadS3object, getAWSCredentials } from '../../lib/s3'
 
 async function run() {
   try {
@@ -29,16 +16,9 @@ async function run() {
     const prefix = getInput('prefix') || undefined
     const path = getInput('path') || `../${component}/build`
     const autoUnzip = getBooleanInput('auto-unzip', true)
-    const awsKeyId =
-      getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
-    const awsSecretKey =
-      getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
     const ghToken = getToken()
 
-    // Assertions
-    if (!awsKeyId || !awsSecretKey) {
-      throw new Error('A required AWS input is missing')
-    }
+    const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
     // If we have no sha and a branch, let's find the sha
     if (!sha) {

@@ -197,7 +197,6 @@ exports.getInput = getInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
-    process.stdout.write(os.EOL);
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;
@@ -1547,12 +1546,24 @@ function copyFile(srcFile, destFile, force) {
 /***/ }),
 
 /***/ 651:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getBooleanInput = void 0;
+exports.unzipAll = exports.getBooleanInput = void 0;
 const core_1 = __nccwpck_require__(985);
+const exec_1 = __nccwpck_require__(287);
+const fs_1 = __nccwpck_require__(747);
+const path_1 = __nccwpck_require__(622);
 const TRUE_VALUES = [true, 'true', 'TRUE'];
 const FALSE_VALUES = [false, 'false', 'FALSE'];
 function getBooleanInput(name, defaultValue) {
@@ -1566,6 +1577,19 @@ function getBooleanInput(name, defaultValue) {
     throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
 }
 exports.getBooleanInput = getBooleanInput;
+function unzipAll(path) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (const file of yield fs_1.promises.readdir(path)) {
+            if (file.endsWith('.zip')) {
+                yield exec_1.exec('7z', ['x', path_1.join(path, file), `-o${path}`]);
+            }
+            else if ((yield fs_1.promises.lstat(path_1.join(path, file))).isDirectory()) {
+                unzipAll(path_1.join(path, file));
+            }
+        }
+    });
+}
+exports.unzipAll = unzipAll;
 
 
 /***/ }),
@@ -1710,7 +1734,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.uploadS3object = exports.downloadS3object = void 0;
+exports.getAWSCredentials = exports.uploadS3object = exports.downloadS3object = void 0;
 const core_1 = __nccwpck_require__(985);
 const exec_1 = __nccwpck_require__(287);
 const fs_1 = __nccwpck_require__(747);
@@ -1766,6 +1790,16 @@ function uploadS3object({ component, sha, usePlatformPrefix, prefix, path, awsKe
     });
 }
 exports.uploadS3object = uploadS3object;
+function getAWSCredentials() {
+    const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
+    const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
+    // Assertions
+    if (!awsKeyId || !awsSecretKey) {
+        throw new Error('A required AWS input is missing');
+    }
+    return [awsKeyId, awsSecretKey];
+}
+exports.getAWSCredentials = getAWSCredentials;
 
 
 /***/ }),
@@ -1806,15 +1840,10 @@ function run() {
             const prefix = core_1.getInput('prefix') || undefined;
             let path = core_1.getInput('path') || 'build';
             const zip = core_2.getBooleanInput('zip', false);
-            const awsKeyId = core_1.getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID'];
-            const awsSecretKey = core_1.getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY'];
             // From environment
             const sha = github_1.getSha();
             const { component } = github_1.getRepository();
-            // Assertions
-            if (!awsKeyId || !awsSecretKey) {
-                throw new Error('A required argument is missing');
-            }
+            const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
             if (zip) {
                 // This will actually create a tarball instead of a zip archive 🤷‍♂️
                 path = yield zipAll(path, component);

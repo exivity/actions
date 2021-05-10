@@ -1,0 +1,32 @@
+name: dummy-data
+
+on:
+  push:
+    paths:
+      - '.github/workflows/dummy-data.yml'
+      - 'dummy-data/**'
+      - 'lib/github.ts'
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+  EXIVITY_HOME_PATH: ${{ github.workspace }}/exivity/home
+  EXIVITY_PROGRAM_PATH: ${{ github.workspace }}/exivity/program
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: create exivity dirs
+        run: |
+          mkdir -p ${{ env.EXIVITY_HOME_PATH }}
+          mkdir -p ${{ env.EXIVITY_PROGRAM_PATH }}
+      - uses: ./db
+        with:
+          branch: develop
+      - uses: ./dummy-data
