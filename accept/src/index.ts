@@ -26,9 +26,8 @@ import {
 } from './checks'
 import { dispatch } from './dispatch'
 
-type EventData<
-  T extends EmitterWebhookEventName
-> = EmitterWebhookEvent<T>['payload']
+type EventData<T extends EmitterWebhookEventName> =
+  EmitterWebhookEvent<T>['payload']
 
 type PossibleEventNames = typeof supportedEvents[number]
 

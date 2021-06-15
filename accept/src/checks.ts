@@ -1,7 +1,7 @@
 import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { Endpoints } from '@octokit/types'
-import { PullRequestReviewRequestedEvent } from '@octokit/webhooks-definitions/schema'
+import { PullRequestReviewRequestedEvent } from '@octokit/webhooks-types'
 import { existsSync } from 'checkout/src/fs-helper'
 import * as gitSourceProvider from 'checkout/src/git-source-provider'
 import * as inputHelper from 'checkout/src/input-helper'
@@ -82,7 +82,7 @@ export async function isCheckDone(
   repo: string,
   checkName: string
 ): Promise<boolean> {
-  const checkResult = await octokit.checks.listForRef({
+  const checkResult = await octokit.rest.checks.listForRef({
     owner: 'exivity',
     repo,
     ref,

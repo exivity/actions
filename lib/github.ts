@@ -11,7 +11,7 @@ type Options = {
 export async function getShaFromRef({ octokit, component, ref }: Options) {
   if (ref === 'develop') {
     const hasDevelop = (
-      await octokit.repos.listBranches({
+      await octokit.rest.repos.listBranches({
         owner: 'exivity',
         repo: component,
       })
@@ -25,7 +25,7 @@ export async function getShaFromRef({ octokit, component, ref }: Options) {
   }
 
   const sha = (
-    await octokit.repos.getBranch({
+    await octokit.rest.repos.getBranch({
       owner: 'exivity',
       repo: component,
       branch: ref,
@@ -45,7 +45,7 @@ export async function getPR(
   // get most recent PR of current branch
   const {
     data: [most_recent],
-  } = await octokit.pulls.list({
+  } = await octokit.rest.pulls.list({
     owner: 'exivity',
     repo,
     head: `exivity:${ref}`,
