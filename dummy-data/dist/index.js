@@ -7579,13 +7579,15 @@ exports.getShaFromRef = getShaFromRef;
 function getPR(octokit, repo, ref) {
     return __awaiter(this, void 0, void 0, function* () {
         // get most recent PR of current branch
-        const { data: [most_recent], } = yield octokit.rest.pulls.list({
+        const { data } = yield octokit.rest.pulls.list({
             owner: 'exivity',
             repo,
             head: `exivity:${ref}`,
             sort: 'updated',
         });
-        return most_recent;
+        if (data.length > 0) {
+            return data[0];
+        }
     });
 }
 exports.getPR = getPR;

@@ -43,16 +43,16 @@ export async function getPR(
   ref: string
 ) {
   // get most recent PR of current branch
-  const {
-    data: [most_recent],
-  } = await octokit.rest.pulls.list({
+  const { data } = await octokit.rest.pulls.list({
     owner: 'exivity',
     repo,
     head: `exivity:${ref}`,
     sort: 'updated',
   })
 
-  return most_recent
+  if (data.length > 0) {
+    return data[0]
+  }
 }
 
 export function getRepository() {

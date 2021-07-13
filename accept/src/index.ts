@@ -160,7 +160,7 @@ async function run() {
       }
 
       // Skip accepting commits on PR without exivity-bot review request
-      if (!isBotReviewRequested(pr)) {
+      if (pr && !isBotReviewRequested(pr)) {
         warning('Skipping: exivity-bot not requested for review')
         return
       }
