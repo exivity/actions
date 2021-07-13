@@ -5,9 +5,10 @@
     "lib": ["es6"],
     "strict": true,
     "noImplicitAny": false,
+    "strictNullChecks": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["node_modules/checkout/src"]
+  "include": ["node_modules/checkout/src", "*/src/*.ts", "lib/*.ts"]
 }
