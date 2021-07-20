@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@exivity/ncc": "0.29.0",
-    "@octokit/webhooks": "9.7.0",
+    "@octokit/webhooks": "9.11.0",
     "@types/adm-zip": "0.4.34",
     "@types/js-yaml": "4.0.2",
     "@types/node": "15.12.2",
