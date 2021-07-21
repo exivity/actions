@@ -120,5 +120,5 @@ export function isBotReviewRequested(
 }
 
 export function includesBotRequest(eventData: PullRequestReviewRequestedEvent) {
-  return eventData['requested_reviewer']['login'] === EXIVITY_BOT_LOGIN
+  return eventData['requested_reviewer']?.['login'] === EXIVITY_BOT_LOGIN
 }
