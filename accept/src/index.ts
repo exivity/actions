@@ -133,7 +133,7 @@ async function run() {
 
     // Debug
     startGroup('Debug')
-    info(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2))
+    info(JSON.stringify({ eventData, pr }, undefined, 2))
     endGroup()
 
     // Skip accepting commits on non-develop branches without PR

@@ -35904,7 +35904,8 @@ function isBotReviewRequested(pr) {
 }
 exports.isBotReviewRequested = isBotReviewRequested;
 function includesBotRequest(eventData) {
-    return eventData['requested_reviewer']['login'] === exports.EXIVITY_BOT_LOGIN;
+    var _a;
+    return ((_a = eventData['requested_reviewer']) === null || _a === void 0 ? void 0 : _a['login']) === exports.EXIVITY_BOT_LOGIN;
 }
 exports.includesBotRequest = includesBotRequest;
 
@@ -36044,7 +36045,7 @@ function run() {
             table('Jira issue', issue || 'None');
             // Debug
             core_1.startGroup('Debug');
-            core_1.info(JSON.stringify({ eventData, ref, sha, pr }, undefined, 2));
+            core_1.info(JSON.stringify({ eventData, pr }, undefined, 2));
             core_1.endGroup();
             // Skip accepting commits on non-develop branches without PR
             if (!developBranches.includes(ref) && !pull_request) {
