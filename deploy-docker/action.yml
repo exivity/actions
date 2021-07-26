@@ -1,0 +1,21 @@
+name: 'Deploy Docker'
+description: Deploys the build to docker
+inputs:
+  component:
+    description: 'Component name to build the image for'
+    required: true
+  docker-user:
+    description: Username of the user to use when logging in to docker to deploy
+    required: true
+  docker-password:
+    description: Password of the docker user
+    required: true
+  private-key:
+    description: Private key to pass to the container as an build-arg when calling docker build, default empty
+    required: false
+  dry-run:
+    description: Do everything except for building and deployting to docker, default false
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

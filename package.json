@@ -15,6 +15,7 @@
     "build:put-artefacts": "ncc build put-artefacts/src/index.ts -o put-artefacts/dist",
     "build:rabbitmq": "ncc build rabbitmq/src/index.ts -o rabbitmq/dist",
     "build:review": "ncc build review/src/index.ts -o review/dist",
+    "build:deploy-docker": "ncc build deploy-docker/src/index.ts -o deploy-docker/dist",
     "build:dummy-data": "ncc build dummy-data/src/index.ts -o dummy-data/dist",
     "format": "prettier --write .",
     "prepublishOnly": "pinst --disable",

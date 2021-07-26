@@ -1,0 +1,23 @@
+name: deploy-docker
+
+on:
+  push:
+    paths:
+      - '.github/workflows/deploy-docker.yml'
+      - 'lib/core*'
+      - 'lib/github*'
+      - 'lib/s3*'
+      - 'deploy-docker/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./deploy-docker
+        with:
+          component: test
+          docker-user: ${{ secrets.DOCKER_HUB_USER }}
+          docker-password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          dry-run: true
+      - run: cat ./metadata.json
