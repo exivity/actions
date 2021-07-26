@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs'
-import { getInput } from '@actions/core'
+import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getBooleanInput } from '../../lib/core'
 import { getShaFromRef, getToken } from '../../lib/github'
@@ -85,4 +85,4 @@ async function run() {
   }
 }
 
-run()
+run().catch(setFailed)

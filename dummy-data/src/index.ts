@@ -101,39 +101,4 @@ async function installComponent(
   })
 }
 
-async function installComponent(
-  component: string,
-  octokit: ReturnType<typeof getOctokit>
-) {
-  await fs.mkdir(`${process.env.EXIVITY_PROGRAM_PATH}/bin`, { recursive: true })
-
-  const [awsKeyId, awsSecretKey] = getAWSCredentials()
-
-  const sha = await getShaFromRef({
-    octokit,
-    component,
-    ref: 'master',
-  })
-
-  await downloadS3object({
-    component,
-    sha,
-    usePlatformPrefix: true,
-    path: `${process.env.EXIVITY_PROGRAM_PATH}/bin/`,
-    awsKeyId,
-    awsSecretKey,
-  })
-
-  await unzipAll(`${process.env.EXIVITY_PROGRAM_PATH}/bin`)
-
-  if (os.platform() !== 'win32')
-    await exec(
-      `sudo chmod 777 ${process.env.EXIVITY_PROGRAM_PATH}/bin/${component}`
-    )
-
-  await fs.mkdir(`${process.env.EXIVITY_HOME_PATH}/log/${component}`, {
-    recursive: true,
-  })
-}
-
 run()
