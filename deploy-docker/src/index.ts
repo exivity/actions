@@ -56,7 +56,7 @@ async function run() {
 
   console.log('Logging in to Docker Hub')
   await exec(
-    'echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USER --password-stdin',
+    'docker login --username=$DOCKER_HUB_USER --password=$DOCKER_HUB_TOKEN',
     undefined,
     {
       env: {
