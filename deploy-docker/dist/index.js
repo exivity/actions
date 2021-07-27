@@ -7444,7 +7444,7 @@ function run() {
             awsSecretKey,
         });
         console.log('Logging in to Docker Hub');
-        yield exec_1.exec('docker login --username=$DOCKER_HUB_USER --password=$DOCKER_HUB_TOKEN', undefined, {
+        yield exec_1.exec('bash -c "echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USER --password-stdin"', undefined, {
             env: Object.assign(Object.assign({}, process.env), { DOCKER_HUB_TOKEN: dockerPassword, DOCKER_HUB_USER: dockerUser }),
         });
         let privateKeyArg = '';
