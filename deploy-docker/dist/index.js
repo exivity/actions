@@ -7408,7 +7408,7 @@ const github_2 = __nccwpck_require__(356);
 const s3_1 = __nccwpck_require__(8022);
 const exec_1 = __nccwpck_require__(3287);
 function run() {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
         const component = core_1.getInput('component', { required: true });
         const dockerUser = core_1.getInput('docker-user', { required: true });
@@ -7417,12 +7417,12 @@ function run() {
         const privateKey = core_1.getInput('private-key');
         const ghToken = github_2.getToken();
         const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
-        const imageVersion = ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
-            ? (_b = process.env['GITHUB_REF']) === null || _b === void 0 ? void 0 : _b.slice(10)
-            : (_c = process.env['GITHUB_REF']) === null || _c === void 0 ? void 0 : _c.slice(11);
+        const imageVersion = (_b = (((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
+            ? process.env['GITHUB_REF']
+            : process.env['GITHUB_REF'])) === null || _b === void 0 ? void 0 : _b.split('/').reverse()[0];
         console.log(`Image version will be: ${imageVersion}`);
-        const compVersion = ((_d = process.env['GITHUB_REF']) === null || _d === void 0 ? void 0 : _d.slice(0, 10)) == 'refs/tags/'
-            ? (_e = process.env['GITHUB_REF']) === null || _e === void 0 ? void 0 : _e.slice(10)
+        const compVersion = ((_c = process.env['GITHUB_REF']) === null || _c === void 0 ? void 0 : _c.slice(0, 10)) == 'refs/tags/'
+            ? (_d = process.env['GITHUB_REF']) === null || _d === void 0 ? void 0 : _d.slice(10)
             : process.env['GIHUB_SHA'];
         console.log(`Component version will be: ${compVersion}`);
         console.log('Writing metadata to metadata.json');
@@ -7457,7 +7457,7 @@ function run() {
             }));
         console.log('Pushing to docker hub');
         !dryRun && (yield exec_1.exec(`docker push exivity/${component}:${imageVersion}`));
-        if (((_f = process.env['GITHUB_REF']) === null || _f === void 0 ? void 0 : _f.slice(11)) === 'develop' && !dryRun) {
+        if (((_e = process.env['GITHUB_REF']) === null || _e === void 0 ? void 0 : _e.slice(11)) === 'develop' && !dryRun) {
             console.log('running on develop, so also pushing as latest');
             yield exec_1.exec(`docker tag exivity/${component}:${imageVersion} exivity/${component}:latest`);
             yield exec_1.exec(`docker push exivity/${component}:latest`);

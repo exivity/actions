@@ -16,10 +16,13 @@ async function run() {
 
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
-  const imageVersion =
+  const imageVersion = (
     process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
-      ? process.env['GITHUB_REF']?.slice(10)
-      : process.env['GITHUB_REF']?.slice(11)
+      ? process.env['GITHUB_REF']
+      : process.env['GITHUB_REF']
+  )
+    ?.split('/')
+    .reverse()[0]
   console.log(`Image version will be: ${imageVersion}`)
   const compVersion =
     process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
