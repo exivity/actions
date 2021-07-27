@@ -12,6 +12,7 @@ async function run() {
   const dockerPassword = getInput('docker-password', { required: true })
   const dryRun = getBooleanInput('dry-run', false)
   const privateKey = getInput('private-key')
+  const dockerfile = getInput('dockerfile') || './Dockerfile'
   const ghToken = getToken()
 
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
@@ -74,7 +75,7 @@ async function run() {
   console.log('Running docker build')
   !dryRun &&
     (await exec(
-      `docker build ${privateKeyArg}--tag exivity/${component}:${imageVersion} .`,
+      `docker build -f ${dockerfile} ${privateKeyArg}--tag exivity/${component}:${imageVersion} .`,
       undefined,
       {
         env: {

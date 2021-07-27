@@ -7415,6 +7415,7 @@ function run() {
         const dockerPassword = core_1.getInput('docker-password', { required: true });
         const dryRun = core_2.getBooleanInput('dry-run', false);
         const privateKey = core_1.getInput('private-key');
+        const dockerfile = core_1.getInput('dockerfile') || './Dockerfile';
         const ghToken = github_2.getToken();
         const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
         const imageVersion = (_b = (((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
@@ -7452,7 +7453,7 @@ function run() {
         }
         console.log('Running docker build');
         !dryRun &&
-            (yield exec_1.exec(`docker build ${privateKeyArg}--tag exivity/${component}:${imageVersion} .`, undefined, {
+            (yield exec_1.exec(`docker build -f ${dockerfile} ${privateKeyArg}--tag exivity/${component}:${imageVersion} .`, undefined, {
                 env: Object.assign(Object.assign({}, process.env), { PRIVATE_KEY: privateKey }),
             }));
         console.log('Pushing to docker hub');
