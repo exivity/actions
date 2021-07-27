@@ -7420,14 +7420,19 @@ function run() {
         const imageVersion = ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
             ? (_b = process.env['GITHUB_REF']) === null || _b === void 0 ? void 0 : _b.slice(10)
             : (_c = process.env['GITHUB_REF']) === null || _c === void 0 ? void 0 : _c.slice(11);
+        console.log(`Image version will be: ${imageVersion}`);
         const compVersion = ((_d = process.env['GITHUB_REF']) === null || _d === void 0 ? void 0 : _d.slice(0, 10)) == 'refs/tags/'
             ? (_e = process.env['GITHUB_REF']) === null || _e === void 0 ? void 0 : _e.slice(10)
             : process.env['GIHUB_SHA'];
+        console.log(`Component version will be: ${compVersion}`);
+        console.log('Writing metadata to metadata.json');
+        yield fs_1.promises.writeFile('./metadata.json', JSON.stringify({ version: compVersion }));
         const sha = yield github_2.getShaFromRef({
             octokit: github_1.getOctokit(ghToken),
             component: 'env-to-config',
             ref: 'main',
         });
+        console.log('Downloading env-to-config');
         yield s3_1.downloadS3object({
             component: 'env-to-config',
             sha,
@@ -7437,20 +7442,23 @@ function run() {
             awsKeyId,
             awsSecretKey,
         });
+        console.log('Logging in to Docker Hub');
         yield exec_1.exec('echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USER --password-stdin', undefined, {
             env: Object.assign(Object.assign({}, process.env), { DOCKER_HUB_TOKEN: dockerPassword, DOCKER_HUB_USER: dockerUser }),
         });
-        yield fs_1.promises.writeFile('./metadata.json', JSON.stringify({ version: compVersion }));
         let privateKeyArg = '';
         if (privateKey) {
             privateKeyArg = '--build-arg PRIVATE_KEY="$PRIVATE_KEY" ';
         }
+        console.log('Running docker build');
         !dryRun &&
             (yield exec_1.exec(`docker build ${privateKeyArg}--tag exivity/${component}:${imageVersion} .`, undefined, {
                 env: Object.assign(Object.assign({}, process.env), { PRIVATE_KEY: privateKey }),
             }));
+        console.log('Pushing to docker hub');
         !dryRun && (yield exec_1.exec(`docker push exivity/${component}:${imageVersion}`));
         if (((_f = process.env['GITHUB_REF']) === null || _f === void 0 ? void 0 : _f.slice(11)) === 'develop' && !dryRun) {
+            console.log('running on develop, so also pushing as latest');
             yield exec_1.exec(`docker tag exivity/${component}:${imageVersion} exivity/${component}:latest`);
             yield exec_1.exec(`docker push exivity/${component}:latest`);
         }

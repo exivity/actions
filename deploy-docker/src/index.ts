@@ -20,10 +20,18 @@ async function run() {
     process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
       ? process.env['GITHUB_REF']?.slice(10)
       : process.env['GITHUB_REF']?.slice(11)
+  console.log(`Image version will be: ${imageVersion}`)
   const compVersion =
     process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
       ? process.env['GITHUB_REF']?.slice(10)
       : process.env['GIHUB_SHA']
+  console.log(`Component version will be: ${compVersion}`)
+
+  console.log('Writing metadata to metadata.json')
+  await fs.writeFile(
+    './metadata.json',
+    JSON.stringify({ version: compVersion })
+  )
 
   const sha = await getShaFromRef({
     octokit: getOctokit(ghToken),
@@ -31,6 +39,7 @@ async function run() {
     ref: 'main',
   })
 
+  console.log('Downloading env-to-config')
   await downloadS3object({
     component: 'env-to-config',
     sha,
@@ -41,6 +50,7 @@ async function run() {
     awsSecretKey,
   })
 
+  console.log('Logging in to Docker Hub')
   await exec(
     'echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USER --password-stdin',
     undefined,
@@ -53,16 +63,12 @@ async function run() {
     }
   )
 
-  await fs.writeFile(
-    './metadata.json',
-    JSON.stringify({ version: compVersion })
-  )
-
   let privateKeyArg = ''
   if (privateKey) {
     privateKeyArg = '--build-arg PRIVATE_KEY="$PRIVATE_KEY" '
   }
 
+  console.log('Running docker build')
   !dryRun &&
     (await exec(
       `docker build ${privateKeyArg}--tag exivity/${component}:${imageVersion} .`,
@@ -75,9 +81,11 @@ async function run() {
       }
     ))
 
+  console.log('Pushing to docker hub')
   !dryRun && (await exec(`docker push exivity/${component}:${imageVersion}`))
 
   if (process.env['GITHUB_REF']?.slice(11) === 'develop' && !dryRun) {
+    console.log('running on develop, so also pushing as latest')
     await exec(
       `docker tag exivity/${component}:${imageVersion} exivity/${component}:latest`
     )
