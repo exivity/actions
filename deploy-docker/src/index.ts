@@ -2,12 +2,20 @@ import { promises as fs } from 'fs'
 import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getBooleanInput } from '../../lib/core'
-import { getShaFromRef, getToken } from '../../lib/github'
+import {
+  getShaFromRef,
+  getToken,
+  getRepository,
+  getRef,
+} from '../../lib/github'
 import { downloadS3object, getAWSCredentials } from '../../lib/s3'
 import { exec } from '@actions/exec'
 
+const METADATA_FILENAME = 'metadata.json'
+
 async function run() {
-  const component = getInput('component', { required: true })
+  const { component: defaultComponent } = getRepository()
+  const component = getInput('component') || defaultComponent
   const dockerUser = getInput('docker-user', { required: true })
   const dockerPassword = getInput('docker-password', { required: true })
   const dryRun = getBooleanInput('dry-run', false)
@@ -17,24 +25,18 @@ async function run() {
 
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
-  const imageVersion = (
-    process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
-      ? process.env['GITHUB_REF']
-      : process.env['GITHUB_REF']
-  )
-    ?.split('/')
-    .reverse()[0]
+  const imageVersion = getRef().split('/').reverse()[0]
   console.log(`Image version will be: ${imageVersion}`)
-  const compVersion =
+  const componentVersion =
     process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
       ? process.env['GITHUB_REF']?.slice(10)
       : process.env['GIHUB_SHA']
-  console.log(`Component version will be: ${compVersion}`)
+  console.log(`Component version will be: ${componentVersion}`)
 
-  console.log('Writing metadata to metadata.json')
+  console.log(`Writing metadata to ${METADATA_FILENAME}`)
   await fs.writeFile(
-    './metadata.json',
-    JSON.stringify({ version: compVersion })
+    './' + METADATA_FILENAME,
+    JSON.stringify({ version: componentVersion })
   )
 
   const sha = await getShaFromRef({
@@ -88,7 +90,7 @@ async function run() {
   console.log('Pushing to docker hub')
   !dryRun && (await exec(`docker push exivity/${component}:${imageVersion}`))
 
-  if (process.env['GITHUB_REF']?.slice(11) === 'develop' && !dryRun) {
+  if (getRef() === 'develop' && !dryRun) {
     console.log('running on develop, so also pushing as latest')
     await exec(
       `docker tag exivity/${component}:${imageVersion} exivity/${component}:latest`

@@ -3,7 +3,7 @@ description: Deploys the build to docker
 inputs:
   component:
     description: 'Component name to build the image for'
-    required: true
+    required: false
   docker-user:
     description: Username of the user to use when logging in to docker to deploy
     required: true

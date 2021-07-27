@@ -7407,10 +7407,12 @@ const core_2 = __nccwpck_require__(8651);
 const github_2 = __nccwpck_require__(356);
 const s3_1 = __nccwpck_require__(8022);
 const exec_1 = __nccwpck_require__(3287);
+const METADATA_FILENAME = 'metadata.json';
 function run() {
-    var _a, _b, _c, _d, _e;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        const component = core_1.getInput('component', { required: true });
+        const { component: defaultComponent } = github_2.getRepository();
+        const component = core_1.getInput('component') || defaultComponent;
         const dockerUser = core_1.getInput('docker-user', { required: true });
         const dockerPassword = core_1.getInput('docker-password', { required: true });
         const dryRun = core_2.getBooleanInput('dry-run', false);
@@ -7418,16 +7420,14 @@ function run() {
         const dockerfile = core_1.getInput('dockerfile') || './Dockerfile';
         const ghToken = github_2.getToken();
         const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
-        const imageVersion = (_b = (((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
-            ? process.env['GITHUB_REF']
-            : process.env['GITHUB_REF'])) === null || _b === void 0 ? void 0 : _b.split('/').reverse()[0];
+        const imageVersion = github_2.getRef().split('/').reverse()[0];
         console.log(`Image version will be: ${imageVersion}`);
-        const compVersion = ((_c = process.env['GITHUB_REF']) === null || _c === void 0 ? void 0 : _c.slice(0, 10)) == 'refs/tags/'
-            ? (_d = process.env['GITHUB_REF']) === null || _d === void 0 ? void 0 : _d.slice(10)
+        const componentVersion = ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
+            ? (_b = process.env['GITHUB_REF']) === null || _b === void 0 ? void 0 : _b.slice(10)
             : process.env['GIHUB_SHA'];
-        console.log(`Component version will be: ${compVersion}`);
-        console.log('Writing metadata to metadata.json');
-        yield fs_1.promises.writeFile('./metadata.json', JSON.stringify({ version: compVersion }));
+        console.log(`Component version will be: ${componentVersion}`);
+        console.log(`Writing metadata to ${METADATA_FILENAME}`);
+        yield fs_1.promises.writeFile('./' + METADATA_FILENAME, JSON.stringify({ version: componentVersion }));
         const sha = yield github_2.getShaFromRef({
             octokit: github_1.getOctokit(ghToken),
             component: 'env-to-config',
@@ -7458,7 +7458,7 @@ function run() {
             }));
         console.log('Pushing to docker hub');
         !dryRun && (yield exec_1.exec(`docker push exivity/${component}:${imageVersion}`));
-        if (((_e = process.env['GITHUB_REF']) === null || _e === void 0 ? void 0 : _e.slice(11)) === 'develop' && !dryRun) {
+        if (github_2.getRef() === 'develop' && !dryRun) {
             console.log('running on develop, so also pushing as latest');
             yield exec_1.exec(`docker tag exivity/${component}:${imageVersion} exivity/${component}:latest`);
             yield exec_1.exec(`docker push exivity/${component}:latest`);
@@ -7592,8 +7592,11 @@ function getSha() {
 }
 exports.getSha = getSha;
 function getRef() {
-    var _a;
-    const ref = process.env['GITHUB_HEAD_REF'] || ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(11));
+    var _a, _b, _c;
+    const ref = process.env['GITHUB_HEAD_REF'] ||
+        ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
+        ? (_b = process.env['GITHUB_REF']) === null || _b === void 0 ? void 0 : _b.slice(10)
+        : (_c = process.env['GITHUB_REF']) === null || _c === void 0 ? void 0 : _c.slice(11);
     if (!ref) {
         throw new Error('The GitHub ref is missing');
     }

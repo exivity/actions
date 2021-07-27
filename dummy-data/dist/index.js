@@ -7608,8 +7608,11 @@ function getSha() {
 }
 exports.getSha = getSha;
 function getRef() {
-    var _a;
-    const ref = process.env['GITHUB_HEAD_REF'] || ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(11));
+    var _a, _b, _c;
+    const ref = process.env['GITHUB_HEAD_REF'] ||
+        ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
+        ? (_b = process.env['GITHUB_REF']) === null || _b === void 0 ? void 0 : _b.slice(10)
+        : (_c = process.env['GITHUB_REF']) === null || _c === void 0 ? void 0 : _c.slice(11);
     if (!ref) {
         throw new Error('The GitHub ref is missing');
     }
