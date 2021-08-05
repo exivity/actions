@@ -19,14 +19,19 @@ async function run() {
   const dockerUser = getInput('docker-user', { required: true })
   const dockerPassword = getInput('docker-password', { required: true })
   const dryRun = getBooleanInput('dry-run', false)
-  const privateKey = getInput('private-key')
   const dockerfile = getInput('dockerfile') || './Dockerfile'
   const ghToken = getToken()
 
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
-  const imageVersion = getRef().split('/').reverse()[0]
+  let imageVersion = getRef().split('/').reverse()[0]
+  if (getRef() === 'master' || getRef() === 'main') {
+    imageVersion = 'latest'
+  } else if (getRef() === 'develop') {
+    imageVersion = 'next'
+  }
   console.log(`Image version will be: ${imageVersion}`)
+
   const componentVersion =
     process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
       ? process.env['GITHUB_REF']?.slice(10)
@@ -69,34 +74,17 @@ async function run() {
     }
   )
 
-  let privateKeyArg = ''
-  if (privateKey) {
-    privateKeyArg = '--build-arg PRIVATE_KEY="$PRIVATE_KEY" '
+  if (dryRun) {
+    return
   }
 
   console.log('Running docker build')
-  !dryRun &&
-    (await exec(
-      `docker build -f ${dockerfile} ${privateKeyArg}--tag exivity/${component}:${imageVersion} .`,
-      undefined,
-      {
-        env: {
-          ...process.env,
-          PRIVATE_KEY: privateKey,
-        },
-      }
-    ))
+  await exec(
+    `docker build -f ${dockerfile} --tag exivity/${component}:${imageVersion} .`
+  )
 
   console.log('Pushing to docker hub')
-  !dryRun && (await exec(`docker push exivity/${component}:${imageVersion}`))
-
-  if (getRef() === 'develop' && !dryRun) {
-    console.log('running on develop, so also pushing as latest')
-    await exec(
-      `docker tag exivity/${component}:${imageVersion} exivity/${component}:latest`
-    )
-    await exec(`docker push exivity/${component}:latest`)
-  }
+  await exec(`docker push exivity/${component}:${imageVersion}`)
 }
 
 run().catch(setFailed)

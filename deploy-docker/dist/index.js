@@ -7416,11 +7416,16 @@ function run() {
         const dockerUser = core_1.getInput('docker-user', { required: true });
         const dockerPassword = core_1.getInput('docker-password', { required: true });
         const dryRun = core_2.getBooleanInput('dry-run', false);
-        const privateKey = core_1.getInput('private-key');
         const dockerfile = core_1.getInput('dockerfile') || './Dockerfile';
         const ghToken = github_2.getToken();
         const [awsKeyId, awsSecretKey] = s3_1.getAWSCredentials();
-        const imageVersion = github_2.getRef().split('/').reverse()[0];
+        let imageVersion = github_2.getRef().split('/').reverse()[0];
+        if (github_2.getRef() === 'master' || github_2.getRef() === 'main') {
+            imageVersion = 'latest';
+        }
+        else if (github_2.getRef() === 'develop') {
+            imageVersion = 'next';
+        }
         console.log(`Image version will be: ${imageVersion}`);
         const componentVersion = ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
             ? (_b = process.env['GITHUB_REF']) === null || _b === void 0 ? void 0 : _b.slice(10)
@@ -7447,22 +7452,13 @@ function run() {
         yield exec_1.exec('bash -c "echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USER --password-stdin"', undefined, {
             env: Object.assign(Object.assign({}, process.env), { DOCKER_HUB_TOKEN: dockerPassword, DOCKER_HUB_USER: dockerUser }),
         });
-        let privateKeyArg = '';
-        if (privateKey) {
-            privateKeyArg = '--build-arg PRIVATE_KEY="$PRIVATE_KEY" ';
+        if (dryRun) {
+            return;
         }
         console.log('Running docker build');
-        !dryRun &&
-            (yield exec_1.exec(`docker build -f ${dockerfile} ${privateKeyArg}--tag exivity/${component}:${imageVersion} .`, undefined, {
-                env: Object.assign(Object.assign({}, process.env), { PRIVATE_KEY: privateKey }),
-            }));
+        yield exec_1.exec(`docker build -f ${dockerfile} --tag exivity/${component}:${imageVersion} .`);
         console.log('Pushing to docker hub');
-        !dryRun && (yield exec_1.exec(`docker push exivity/${component}:${imageVersion}`));
-        if (github_2.getRef() === 'develop' && !dryRun) {
-            console.log('running on develop, so also pushing as latest');
-            yield exec_1.exec(`docker tag exivity/${component}:${imageVersion} exivity/${component}:latest`);
-            yield exec_1.exec(`docker push exivity/${component}:latest`);
-        }
+        yield exec_1.exec(`docker push exivity/${component}:${imageVersion}`);
     });
 }
 run().catch(core_1.setFailed);
