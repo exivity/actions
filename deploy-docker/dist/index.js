@@ -7429,7 +7429,7 @@ function run() {
         console.log(`Image version will be: ${imageVersion}`);
         const componentVersion = ((_a = process.env['GITHUB_REF']) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) == 'refs/tags/'
             ? (_b = process.env['GITHUB_REF']) === null || _b === void 0 ? void 0 : _b.slice(10)
-            : process.env['GIHUB_SHA'];
+            : process.env['GITHUB_SHA'];
         console.log(`Component version will be: ${componentVersion}`);
         console.log(`Writing metadata to ${METADATA_FILENAME}`);
         yield fs_1.promises.writeFile('./' + METADATA_FILENAME, JSON.stringify({ version: componentVersion }));

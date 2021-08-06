@@ -35,7 +35,7 @@ async function run() {
   const componentVersion =
     process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
       ? process.env['GITHUB_REF']?.slice(10)
-      : process.env['GIHUB_SHA']
+      : process.env['GITHUB_SHA']
   console.log(`Component version will be: ${componentVersion}`)
 
   console.log(`Writing metadata to ${METADATA_FILENAME}`)
