@@ -1,0 +1,16 @@
+name: build
+
+on:
+  push:
+    paths:
+      - '.github/workflows/build.yml'
+      - 'yarn.lock'
+      - '**/*.ts'
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: yarn
+      - run: yarn build
