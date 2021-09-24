@@ -4,18 +4,28 @@ inputs:
   component:
     description: 'Component name to build the image for'
     required: false
-  docker-user:
-    description: Username of the user to use when logging in to docker to deploy
+  docker-hub-user:
+    description: Username for Docker Hub
     required: true
-  docker-password:
-    description: Password of the docker user
+  docker-hub-password:
+    description: Password for Docker Hub
+    required: true
+  ghcr-user:
+    description: Username for GitHub Container Registry
+    required: true
+  ghcr-password:
+    description: Password for GitHub Container Registry
     required: true
   dockerfile:
     description: Path to the Dockerfile, defaults to ./Dockerfile
     required: false
   dry-run:
-    description: Do everything except for building and deployting to docker, default false
+    description: Do not deploy build artefacts
     required: false
+outputs:
+  random-number:
+    description: 'Random number'
+    value: ${{ steps.random-number-generator.outputs.random-id }}
 runs:
   using: 'node12'
   main: 'dist/index.js'

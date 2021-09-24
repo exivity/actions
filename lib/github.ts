@@ -79,14 +79,20 @@ export function getRef() {
   const ref =
     process.env['GITHUB_HEAD_REF'] ||
     process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
-      ? process.env['GITHUB_REF']?.slice(10)
-      : process.env['GITHUB_REF']?.slice(11)
+      ? process.env['GITHUB_REF']?.slice(10) // slice 'refs/tags/'
+      : process.env['GITHUB_REF']?.slice(11) // slice 'refs/heads/'
 
   if (!ref) {
     throw new Error('The GitHub ref is missing')
   }
 
   return ref
+}
+
+export function getTag() {
+  return process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
+    ? process.env['GITHUB_REF']?.slice(10) // slice 'refs/tags/'
+    : null
 }
 
 export function getWorkspacePath() {
