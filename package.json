@@ -23,7 +23,7 @@
     "postpublish": "pinst --enable"
   },
   "dependencies": {
-    "@actions/core": "1.5.0",
+    "@actions/core": "1.6.0",
     "@actions/exec": "1.1.0",
     "@actions/github": "5.0.0",
     "checkout": "https://github.com/actions/checkout#v2",
@@ -34,13 +34,13 @@
     "@octokit/webhooks": "9.15.0",
     "@types/adm-zip": "0.4.34",
     "@types/js-yaml": "4.0.3",
-    "@types/node": "16.4.0",
+    "@types/node": "16.10.1",
     "@types/semver": "^7.3.8",
     "@types/uuid": "8.3.1",
-    "esbuild": "0.13.2",
+    "esbuild": "0.13.3",
     "husky": "7.0.2",
     "npm-run-all": "4.1.5",
     "prettier": "2.4.1",
-    "typescript": "4.3.5"
+    "typescript": "4.4.3"
   }
 }

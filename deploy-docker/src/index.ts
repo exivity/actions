@@ -1,4 +1,4 @@
-import { getInput, info, setFailed, warning } from '@actions/core'
+import { debug, getInput, info, setFailed, warning } from '@actions/core'
 import { exec } from '@actions/exec'
 import { promises as fs } from 'fs'
 import { getBooleanInput } from '../../lib/core'
@@ -101,9 +101,9 @@ async function run() {
   const labelOptions = Object.entries(labels)
     .map(([key, value]) => `--label "${key}=${value}"`)
     .join(' ')
-  const cmd = `docker build -f ${dockerfile} --tag ${component} ${labelOptions} .`
+  const buildCmd = `docker build -f ${dockerfile} --tag ${component} ${labelOptions} .`
   info(`Building image`)
-  await exec(cmd)
+  await exec(buildCmd)
 
   info(`Tagging image`)
   for (const tag of tags) {
@@ -112,9 +112,13 @@ async function run() {
     )
   }
 
+  info('Pushing to registry')
+  const pushCmd = `docker push --all-tags ${prefix}exivity/${component}`
   if (!dryRun) {
-    info('Pushing to registry')
-    await exec(`docker push --all-tags ${prefix}exivity/${component}`)
+    await exec(pushCmd)
+  } else {
+    debug(pushCmd)
+    info('dry-run set, would have executed push command')
   }
 }
 
