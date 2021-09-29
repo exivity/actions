@@ -26756,14 +26756,20 @@ function getToken(inputName = "gh-token") {
   }
   return ghToken;
 }
-function getEventName() {
+function getEventName(supportedEvents2) {
   const eventName = process.env["GITHUB_EVENT_NAME"];
   if (!eventName) {
     throw new Error("The GitHub event name is missing");
   }
+  if (supportedEvents2 && !supportedEvents2.includes(eventName)) {
+    throw new Error(`The event ${eventName} is not supported by this action`);
+  }
   return eventName;
 }
-async function getEventData() {
+function isEvent(input, compare, eventData) {
+  return input === compare;
+}
+async function getEventData(eventName) {
   const eventPath = process.env["GITHUB_EVENT_PATH"];
   if (!eventPath) {
     throw new Error("The GitHub event path is missing");
@@ -30786,103 +30792,93 @@ function detectIssueKey(input) {
 function table(key, value) {
   (0, import_core5.info)(`${key.padEnd(15)}: ${value}`);
 }
-function isEvent(input, compare, eventData) {
-  return input === compare;
-}
 async function run() {
-  try {
-    const ghToken = getToken();
-    const octokit = (0, import_github2.getOctokit)(ghToken);
-    let ref = getRef();
-    let sha = getSha();
-    const { component } = getRepository();
-    const eventName = getEventName();
-    const eventData = await getEventData();
-    const scaffoldBranch = (0, import_core5.getInput)("scaffold-branch") || defaultScaffoldBranch;
-    const dryRun = getBooleanInput("dry-run", false);
-    table("Event", eventName);
-    if (!supportedEvents.includes(eventName)) {
-      throw new Error(`Event name "${eventName}" not supported`);
-    }
-    if (isEvent(eventName, "workflow_run", eventData)) {
-      if (eventData["action"] !== "completed") {
-        (0, import_core5.warning)('Skipping: only the "workflow_run.completed" event is supported');
-        return;
-      }
-      ref = eventData["workflow_run"]["head_branch"];
-      sha = eventData["workflow_run"]["head_commit"]["id"];
-    }
-    if (isEvent(eventName, "pull_request", eventData)) {
-      if (eventData["action"] !== "review_requested") {
-        (0, import_core5.warning)('Skipping: only the "pull_request.review_requested" event is supported');
-        return;
-      }
-      if (!includesBotRequest(eventData)) {
-        (0, import_core5.warning)("Skipping: exivity-bot not requested for review");
-        return;
-      }
-      sha = eventData["pull_request"]["head"]["sha"];
-    }
-    if (releaseBranches.includes(ref)) {
-      (0, import_core5.warning)(`Skipping: release branch "${ref}" is ignored`);
+  const ghToken = getToken();
+  const octokit = (0, import_github2.getOctokit)(ghToken);
+  let ref = getRef();
+  let sha = getSha();
+  const { component } = getRepository();
+  const eventName = getEventName(supportedEvents);
+  const eventData = await getEventData(eventName);
+  const scaffoldBranch = (0, import_core5.getInput)("scaffold-branch") || defaultScaffoldBranch;
+  const dryRun = getBooleanInput("dry-run", false);
+  table("Event", eventName);
+  if (isEvent(eventName, "workflow_run", eventData)) {
+    if (eventData["action"] !== "completed") {
+      (0, import_core5.warning)('Skipping: only the "workflow_run.completed" event is supported');
       return;
     }
-    const pr = await getPR(octokit, component, ref);
-    const pull_request = pr ? `${pr.number}` : void 0;
-    const issue = detectIssueKey(ref);
-    table("Ref", ref);
-    table("Sha", sha);
-    table("Pull request", pull_request || "None");
-    table("Jira issue", issue || "None");
-    (0, import_core5.startGroup)("Debug");
-    (0, import_core5.info)(JSON.stringify({ eventData, pr }, void 0, 2));
-    (0, import_core5.endGroup)();
-    if (!developBranches.includes(ref) && !pull_request) {
-      (0, import_core5.warning)("Skipping: non-develop branch without pull request");
+    ref = eventData["workflow_run"]["head_branch"];
+    sha = eventData["workflow_run"]["head_commit"]["id"];
+  }
+  if (isEvent(eventName, "pull_request", eventData)) {
+    if (eventData["action"] !== "review_requested") {
+      (0, import_core5.warning)('Skipping: only the "pull_request.review_requested" event is supported');
       return;
     }
-    if (eventName === "pull_request") {
-      (0, import_core5.info)("Checking if workflow constraint is satisfied...");
-      if (!await isWorkflowDependencyDone(octokit, ghToken, sha, component)) {
-        (0, import_core5.warning)(`Skipping: workflow constraint not satisfied`);
-        return;
-      }
+    if (!includesBotRequest(eventData)) {
+      (0, import_core5.warning)("Skipping: exivity-bot not requested for review");
+      return;
     }
-    if (isEvent(eventName, "workflow_run", eventData)) {
-      if (eventData["workflow_run"]["conclusion"] !== "success") {
-        (0, import_core5.warning)(`Skipping: workflow constraint not satisfied`);
-        return;
-      }
-      if (pr && !isBotReviewRequested(pr)) {
-        (0, import_core5.warning)("Skipping: exivity-bot not requested for review");
-        return;
-      }
+    sha = eventData["pull_request"]["head"]["sha"];
+  }
+  if (releaseBranches.includes(ref)) {
+    (0, import_core5.warning)(`Skipping: release branch "${ref}" is ignored`);
+    return;
+  }
+  const pr = await getPR(octokit, component, ref);
+  const pull_request = pr ? `${pr.number}` : void 0;
+  const issue = detectIssueKey(ref);
+  table("Ref", ref);
+  table("Sha", sha);
+  table("Pull request", pull_request || "None");
+  table("Jira issue", issue || "None");
+  (0, import_core5.startGroup)("Debug");
+  (0, import_core5.info)(JSON.stringify({ eventData, pr }, void 0, 2));
+  (0, import_core5.endGroup)();
+  if (!developBranches.includes(ref) && !pull_request) {
+    (0, import_core5.warning)("Skipping: non-develop branch without pull request");
+    return;
+  }
+  if (eventName === "pull_request") {
+    (0, import_core5.info)("Checking if workflow constraint is satisfied...");
+    if (!await isWorkflowDependencyDone(octokit, ghToken, sha, component)) {
+      (0, import_core5.warning)(`Skipping: workflow constraint not satisfied`);
+      return;
     }
-    if (developBranches.includes(ref)) {
-      (0, import_core5.info)("On a development branch, dispatching plain run");
-      await dispatch({
-        octokit,
-        scaffoldWorkflowId,
-        scaffoldBranch: defaultScaffoldBranch,
-        dryRun
-      });
-    } else {
-      await dispatch({
-        octokit,
-        scaffoldWorkflowId,
-        scaffoldBranch,
-        component,
-        sha,
-        pull_request,
-        issue,
-        dryRun
-      });
+  }
+  if (isEvent(eventName, "workflow_run", eventData)) {
+    if (eventData["workflow_run"]["conclusion"] !== "success") {
+      (0, import_core5.warning)(`Skipping: workflow constraint not satisfied`);
+      return;
     }
-  } catch (error) {
-    (0, import_core5.setFailed)(error.message);
+    if (pr && !isBotReviewRequested(pr)) {
+      (0, import_core5.warning)("Skipping: exivity-bot not requested for review");
+      return;
+    }
+  }
+  if (developBranches.includes(ref)) {
+    (0, import_core5.info)("On a development branch, dispatching plain run");
+    await dispatch({
+      octokit,
+      scaffoldWorkflowId,
+      scaffoldBranch: defaultScaffoldBranch,
+      dryRun
+    });
+  } else {
+    await dispatch({
+      octokit,
+      scaffoldWorkflowId,
+      scaffoldBranch,
+      component,
+      sha,
+      pull_request,
+      issue,
+      dryRun
+    });
   }
 }
-run();
+run().catch(import_core5.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

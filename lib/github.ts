@@ -1,6 +1,10 @@
 import { getInput, info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { EmitterWebhookEvent, EmitterWebhookEventName } from '@octokit/webhooks'
 import { promises as fsPromises } from 'fs'
+
+export type EventData<T extends EmitterWebhookEventName> =
+  EmitterWebhookEvent<T>['payload']
 
 type Options = {
   octokit: ReturnType<typeof getOctokit>
@@ -115,17 +119,33 @@ export function getToken(inputName = 'gh-token') {
   return ghToken
 }
 
-export function getEventName<T extends string = string>() {
+export function getEventName<T extends EmitterWebhookEventName>(
+  supportedEvents?: readonly T[]
+) {
   const eventName = process.env['GITHUB_EVENT_NAME']
 
   if (!eventName) {
     throw new Error('The GitHub event name is missing')
   }
 
+  if (supportedEvents && !supportedEvents.includes(eventName as any)) {
+    throw new Error(`The event ${eventName} is not supported by this action`)
+  }
+
   return eventName as T
 }
 
-export async function getEventData<T = any>() {
+export function isEvent<T extends EmitterWebhookEventName, U extends T>(
+  input: T,
+  compare: U,
+  eventData: EventData<T>
+): eventData is EventData<U> {
+  return input === compare
+}
+
+export async function getEventData<T extends EmitterWebhookEventName>(
+  eventName?: T
+): Promise<EventData<T>> {
   const eventPath = process.env['GITHUB_EVENT_PATH']
 
   if (!eventPath) {
@@ -136,7 +156,7 @@ export async function getEventData<T = any>() {
     encoding: 'utf8',
   })
 
-  return JSON.parse(fileData) as T
+  return JSON.parse(fileData)
 }
 
 export function getWorkflowName() {

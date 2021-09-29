@@ -2505,9 +2505,8 @@ var require_semver = __commonJS({
 
 // deploy-docker/src/index.ts
 var import_core3 = __toModule(require_core());
-var import_exec2 = __toModule(require_exec());
+var import_exec3 = __toModule(require_exec());
 var import_fs3 = __toModule(require("fs"));
-var import_semver = __toModule(require_semver());
 
 // lib/core.ts
 var import_core = __toModule(require_core());
@@ -2556,10 +2555,34 @@ function getTag() {
   var _a, _b;
   return ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : null;
 }
+function getEventName(supportedEvents) {
+  const eventName = process.env["GITHUB_EVENT_NAME"];
+  if (!eventName) {
+    throw new Error("The GitHub event name is missing");
+  }
+  if (supportedEvents && !supportedEvents.includes(eventName)) {
+    throw new Error(`The event ${eventName} is not supported by this action`);
+  }
+  return eventName;
+}
+function isEvent(input, compare, eventData) {
+  return input === compare;
+}
+async function getEventData(eventName) {
+  const eventPath = process.env["GITHUB_EVENT_PATH"];
+  if (!eventPath) {
+    throw new Error("The GitHub event path is missing");
+  }
+  const fileData = await import_fs2.promises.readFile(eventPath, {
+    encoding: "utf8"
+  });
+  return JSON.parse(fileData);
+}
 
-// deploy-docker/src/index.ts
+// deploy-docker/src/metadata.ts
+var import_exec2 = __toModule(require_exec());
+var import_semver = __toModule(require_semver());
 var GHCR = "ghcr.io/";
-var METADATA_FILENAME = "metadata.json";
 var RELEASE_BRANCHES = ["main", "master"];
 var PREVIEW_BRANCHES = [];
 var CANARY_BRANCHES = ["develop"];
@@ -2615,6 +2638,10 @@ function getComponentVersion() {
   const { semverTag } = getTagData();
   return (semverTag != null ? semverTag : process.env["GITHUB_SHA"]) || "unknown";
 }
+
+// deploy-docker/src/index.ts
+var GHCR2 = "ghcr.io/";
+var METADATA_FILENAME = "metadata.json";
 async function run() {
   const { component: defaultComponent } = getRepository();
   const component = (0, import_core3.getInput)("component") || defaultComponent;
@@ -2624,8 +2651,15 @@ async function run() {
   const ghcrPassword = (0, import_core3.getInput)("ghcr-password", { required: true });
   const dryRun = getBooleanInput("dry-run", false);
   const dockerfile = (0, import_core3.getInput)("dockerfile") || "./Dockerfile";
+  const eventName = getEventName(["push", "delete"]);
+  const eventData = await getEventData(eventName);
+  if (isEvent(eventName, "delete", eventData)) {
+    (0, import_core3.setFailed)("To be implemented");
+    return;
+  }
   const { prefix, tags } = await getImagePrefixAndTags();
   (0, import_core3.info)(`Image prefix will be: ${prefix != null ? prefix : "none"}`);
+  (0, import_core3.info)(`Image name will be: exivity/${component}`);
   (0, import_core3.info)(`Image tags will be: ${tags.join(",")}`);
   if (tags.length === 0) {
     (0, import_core3.warning)("No tags set, skipping deploy docker action");
@@ -2644,17 +2678,17 @@ ${JSON.stringify(labels, void 0, 2)}`);
   (0, import_core3.info)(`Writing metadata to ${METADATA_FILENAME}:
 ${JSON.stringify(metadata, void 0, 2)}`);
   await import_fs3.promises.writeFile("./" + METADATA_FILENAME, JSON.stringify(metadata, void 0, 2));
-  if (prefix === GHCR) {
+  if (prefix === GHCR2) {
     (0, import_core3.info)("Logging in to GitHub Packages");
-    await (0, import_exec2.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {
+    await (0, import_exec3.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {
       env: __spreadProps(__spreadValues({}, process.env), {
         GHCR_PASSWORD: ghcrPassword,
-        GHCR_USER: dockerUser
+        GHCR_USER: ghcrUser
       })
     });
   } else {
     (0, import_core3.info)("Logging in to Docker Hub");
-    await (0, import_exec2.exec)('bash -c "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin"', void 0, {
+    await (0, import_exec3.exec)('bash -c "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin"', void 0, {
       env: __spreadProps(__spreadValues({}, process.env), {
         DOCKER_HUB_PASSWORD: dockerPassword,
         DOCKER_HUB_USER: dockerUser
@@ -2664,15 +2698,14 @@ ${JSON.stringify(metadata, void 0, 2)}`);
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
   const cmd = `docker build -f ${dockerfile} --tag ${component} ${labelOptions} .`;
   (0, import_core3.info)(`Building image`);
-  await (0, import_exec2.exec)(cmd);
+  await (0, import_exec3.exec)(cmd);
   (0, import_core3.info)(`Tagging image`);
   for (const tag of tags) {
-    await (0, import_exec2.exec)(`docker image tag ${component} ${prefix}exivity/${component}:${tag}`);
+    await (0, import_exec3.exec)(`docker image tag ${component} ${prefix}exivity/${component}:${tag}`);
   }
-  if (dryRun) {
-    return;
+  if (!dryRun) {
+    (0, import_core3.info)("Pushing to registry");
+    await (0, import_exec3.exec)(`docker push --all-tags ${prefix}exivity/${component}`);
   }
-  (0, import_core3.info)("Pushing to registry");
-  await (0, import_exec2.exec)(`docker push --all-tags ${prefix}exivity/${component}`);
 }
 run().catch(import_core3.setFailed);

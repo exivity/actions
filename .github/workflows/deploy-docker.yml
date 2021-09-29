@@ -21,11 +21,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./deploy-docker
         with:
+          component: actions-test
+          dockerfile: fixtures/Dockerfile
           docker-hub-user: ${{ secrets.DOCKER_HUB_USER }}
           docker-hub-password: ${{ secrets.DOCKER_HUB_TOKEN }}
           ghcr-user: ${{ github.actor }}
           ghcr-password: ${{ secrets.GITHUB_TOKEN }}
-          dockerfile: fixtures/Dockerfile
           dry-run: true
-      - run: docker images ls
-      - run: cat ./metadata.json
