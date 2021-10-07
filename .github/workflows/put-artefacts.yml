@@ -16,7 +16,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-16.04, windows-latest]
         zip: [true, false]
     runs-on: ${{ matrix.os }}
     steps:

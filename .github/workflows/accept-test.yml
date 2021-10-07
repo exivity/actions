@@ -9,6 +9,6 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
       - run: echo 'Hello world!'
