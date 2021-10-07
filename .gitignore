@@ -3,3 +3,6 @@
 yarn-error.log
 .db-artefacts
 .vscode
+
+# Exclude IntelliJ files
+.idea/*
