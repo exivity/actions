@@ -92,6 +92,7 @@ The PostgreSQL version to use. Only affects Docker mode (host mode always uses
 default version). Make sure to use a string type to avoid truncation. Available
 versions:
 
+- 14.0
 - 13.0
 - 12.3
 
