@@ -87,11 +87,12 @@ the host
 ### `version`
 
 **Optional**  
-_Default: 13.0_  
+_Default: 14.0_  
 The PostgreSQL version to use. Only affects Docker mode (host mode always uses
 default version). Make sure to use a string type to avoid truncation. Available
 versions:
 
+- 14.0
 - 13.0
 - 12.3
 
@@ -260,11 +261,12 @@ the host.
 ### `version`
 
 **Optional**  
-_Default: 13.0_  
+_Default: 14.0_  
 The PostgreSQL version to use. Only affects Docker mode (host mode always uses
 default version). Make sure to use a string type to avoid truncation. Available
 versions:
 
+- 14.0
 - 13.0
 - 12.3
 
@@ -414,3 +416,8 @@ not needed if `pull` has been specified.
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
     body: Exivity bot approves everything!
 ```
+
+# Development guide
+
+When committing code to this repository, make sure to have Node & Yarn installed
+since code needs to be compiled in a pre-commit hook.
