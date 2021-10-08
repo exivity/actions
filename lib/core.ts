@@ -31,3 +31,20 @@ export async function unzipAll(path: string) {
     }
   }
 }
+
+/**
+ * Iterates an array, and returns the first element for which the predicate
+ * returns a value.
+ */
+export function shortCircuit<T, R>(
+  input: T[],
+  predicate: (value: T, index: number, array: typeof input) => R | undefined
+) {
+  let output: R | undefined
+
+  input.some(
+    (value, index, array) => !!(output = predicate(value, index, array))
+  )
+
+  return output
+}

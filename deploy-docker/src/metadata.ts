@@ -1,5 +1,5 @@
 import { getExecOutput } from '@actions/exec'
-import semver from 'semver'
+import { parse as semverParse } from 'semver'
 import { getRef, getSha, getTag } from '../../lib/github'
 
 const GHCR = 'ghcr.io/'
@@ -12,60 +12,97 @@ const RELEASE_TAG = 'latest'
 const PREVIEW_TAG = 'next'
 const CANARY_TAG = 'canary'
 
+export function getTagType() {
+  const { repoTag, semver } = getTagData()
+
+  if (semver) {
+    return 'tag:semver'
+  }
+
+  if (repoTag) {
+    return 'tag'
+  }
+
+  const ref = getRef()
+
+  if (RELEASE_BRANCHES.includes(ref)) {
+    return 'branch:release'
+  }
+
+  if (PREVIEW_BRANCHES.includes(ref)) {
+    return 'branch:preview'
+  }
+
+  if (CANARY_BRANCHES.includes(ref)) {
+    return 'branch:canary'
+  }
+
+  return 'branch'
+}
+
 export function getTagData() {
   const repoTag = getTag()
 
-  return { repoTag, semverTag: semver.valid(repoTag) }
+  return { repoTag, semver: semverParse(repoTag) }
 }
 
 export async function getImagePrefixAndTags() {
-  const { repoTag, semverTag } = getTagData()
+  const type = getTagType()
 
-  if (semverTag) {
-    const major = semver.major.toString()
-    const majorMinor = `${semver.major}.${semver.minor}`
+  switch (type) {
+    case 'tag:semver':
+      const { repoTag, semver } = getTagData()
 
-    // Figure out if there are any commits on top of tag
-    // First, find SHA of commit which has the tag
-    const repoShaOfTagCommit = (
-      await getExecOutput(`git rev-list -n 1 tags/${repoTag}`)
-    ).stdout.trim()
+      // Figure out if there are any commits on top of tag
+      // First, find SHA of commit which has the tag
+      const repoShaOfTagCommit = (
+        await getExecOutput(`git rev-list -n 1 tags/${repoTag}`)
+      ).stdout.trim()
 
-    // Now, find number of commits between commit and HEAD
-    const commitsSinceTagCommit = (
-      await getExecOutput(`git rev-list --count ${repoShaOfTagCommit}..HEAD`)
-    ).stdout.trim()
+      // Now, find number of commits between commit and HEAD
+      const commitsSinceTagCommit = (
+        await getExecOutput(`git rev-list --count ${repoShaOfTagCommit}..HEAD`)
+      ).stdout.trim()
 
-    // Add all tags if repo tag is latest in series, to prevent overriding more
-    // recent tags
-    if (Number(commitsSinceTagCommit) === 0) {
-      return { prefix: null, tags: [semverTag, majorMinor, major, RELEASE_TAG] }
-    }
+      // Add all tags if repo tag is latest in series, to prevent overriding more
+      // recent tags
+      if (Number(commitsSinceTagCommit) === 0) {
+        return {
+          prefix: null,
+          tags: [
+            semver!.version,
+            `${semver!.major}.${semver!.minor}`,
+            semver!.major.toString(),
+            RELEASE_TAG,
+          ],
+        }
+      }
 
-    return { prefix: null, tags: [semverTag] }
-  }
+      return { prefix: null, tags: [semver!.version] }
 
-  const repoRef = getRef()
+    case 'branch:release':
+      // Only release latest tag with version
+      return { prefix: null, tags: [] }
 
-  if (RELEASE_BRANCHES.includes(repoRef)) {
-    // Only release latest tag with version
-    return { prefix: null, tags: [] }
-  }
+    case 'branch:preview':
+      // No preview tags at this point
+      return { prefix: null, tags: [] }
 
-  if (PREVIEW_BRANCHES.includes(repoRef)) {
-    // No preview tags at this point
-    return { prefix: null, tags: [] }
-  }
+    case 'branch:canary':
+      // Release develop branches as canary tag
+      return { prefix: GHCR, tags: [CANARY_TAG] }
 
-  if (CANARY_BRANCHES.includes(repoRef)) {
-    // Release develop branches as canary tag
-    return { prefix: GHCR, tags: [CANARY_TAG] }
-  }
+    case 'branch':
+      // Image tags should comform with [\w][\w.-]{0,127}
+      const ref = getRef()
+      return {
+        prefix: GHCR,
+        tags: [ref.replace(/[^\w\w.-]/g, '-').substr(0, 127)],
+      }
 
-  // Image tags should comform with [\w][\w.-]{0,127}
-  return {
-    prefix: GHCR,
-    tags: [repoRef.replace(/[^\w\w.-]/g, '-').substr(0, 127)],
+    case 'tag':
+      // No non-semver repo tags at this point
+      return { prefix: GHCR, tags: [] }
   }
 }
 
@@ -89,7 +126,7 @@ export function getImageLabels({
 }
 
 export function getComponentVersion() {
-  const { semverTag } = getTagData()
+  const { semver } = getTagData()
 
-  return (semverTag ?? process.env['GITHUB_SHA']) || 'unknown'
+  return (semver?.version ?? process.env['GITHUB_SHA']) || 'unknown'
 }

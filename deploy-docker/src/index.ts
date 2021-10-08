@@ -1,17 +1,20 @@
 import { debug, getInput, info, setFailed, warning } from '@actions/core'
 import { exec } from '@actions/exec'
+import { getOctokit } from '@actions/github'
 import { promises as fs } from 'fs'
 import { getBooleanInput } from '../../lib/core'
 import {
   getEventData,
   getEventName,
   getRepository,
+  getToken,
   isEvent,
 } from '../../lib/github'
 import {
   getComponentVersion,
   getImageLabels,
   getImagePrefixAndTags,
+  getTagType,
 } from './metadata'
 
 const GHCR = 'ghcr.io/'
@@ -30,17 +33,53 @@ async function run() {
   const eventName = getEventName(['push', 'delete'])
   const eventData = await getEventData(eventName)
 
+  const type = getTagType()
+  const { prefix, tags } = await getImagePrefixAndTags()
+  info(`Image type will be: ${type}`)
+  info(`Image prefix will be: ${prefix ?? 'none'}`)
+  info(`Image name will be: exivity/${component}`)
+  info(`Image tags will be: ${tags.join(',')}`)
+
   if (isEvent(eventName, 'delete', eventData)) {
+    const type = getTagType()
+
+    if (type !== 'branch') {
+      info(`Not deleting image type ${type}`)
+      return
+    }
+
+    const ghToken = getToken()
+    const octokit = getOctokit(ghToken)
+
+    const versions =
+      await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
+        org: 'exivity',
+        package_type: 'container',
+        package_name: `exivity/${component}`,
+      })
+
+    // Look for versions with the same tags as the ones we'll delete
+    for (const version of versions.data) {
+      const tagOverlap = tags.filter((tag) =>
+        version.metadata?.docker?.tag?.includes(tag)
+      )
+
+      if (tagOverlap.length > 0) {
+        info(`Tag `)
+        await octokit.rest.packages.deletePackageVersionForOrg({
+          org: 'exivity',
+          package_type: 'container',
+          package_name: `exivity/${component}`,
+          package_version_id: version.id,
+        })
+      }
+    }
+
     // @todo
     setFailed('To be implemented')
 
     return
   }
-
-  const { prefix, tags } = await getImagePrefixAndTags()
-  info(`Image prefix will be: ${prefix ?? 'none'}`)
-  info(`Image name will be: exivity/${component}`)
-  info(`Image tags will be: ${tags.join(',')}`)
 
   if (tags.length === 0) {
     warning('No tags set, skipping deploy docker action')

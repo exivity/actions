@@ -1,8 +1,11 @@
-name: 'Deploy Docker'
+name: Deploy Docker
 description: Deploys the build to docker
 inputs:
+  gh-token:
+    description: The github token to delete image tags (only for 'delete' event)
+    required: false
   component:
-    description: 'Component name to build the image for'
+    description: Component name to build the image for
     required: false
   docker-hub-user:
     description: Username for Docker Hub
@@ -24,8 +27,8 @@ inputs:
     required: false
 outputs:
   random-number:
-    description: 'Random number'
+    description: Random number
     value: ${{ steps.random-number-generator.outputs.random-id }}
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: node12
+  main: dist/index.js
