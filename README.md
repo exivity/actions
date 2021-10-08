@@ -416,3 +416,8 @@ not needed if `pull` has been specified.
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
     body: Exivity bot approves everything!
 ```
+
+# Development guide
+
+When committing code to this repository, make sure to have Node & Yarn installed
+since code needs to be compiled in a pre-commit hook.
