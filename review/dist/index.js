@@ -5047,6 +5047,10 @@ function getToken(inputName = "gh-token") {
 }
 
 // review/src/index.ts
+var validEvents = ["APPROVE", "COMMENT", "REQUEST_CHANGES"];
+function isValidEvent(event) {
+  return validEvents.includes(event);
+}
 async function run() {
   var _a;
   const { owner, component } = getRepository();
@@ -5056,7 +5060,8 @@ async function run() {
   const repo = (0, import_core2.getInput)("component") || component;
   const event = (0, import_core2.getInput)("event");
   const branch = (0, import_core2.getInput)("branch") || default_branch;
-  if (!["APPROVE", "COMMENT", "REQUEST_CHANGES"].includes(event)) {
+  const customBody = (0, import_core2.getInput)("body");
+  if (!isValidEvent(event)) {
     throw new Error("The event input is missing or invalid");
   }
   const octokit = (0, import_github.getOctokit)(ghToken);
@@ -5066,12 +5071,13 @@ async function run() {
     return;
   }
   (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
+  const body = `${customBody}${customBody ? "\n---\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${owner}/${repo}**](https://github.com/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
   await octokit.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews", {
     owner,
     repo,
     pull_number,
     event,
-    body: (0, import_core2.getInput)("body")
+    body
   });
 }
 run().catch(import_core2.setFailed);
