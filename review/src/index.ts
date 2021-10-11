@@ -2,6 +2,12 @@ import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getPR, getRef, getRepository, getToken } from '../../lib/github'
 
+const validEvents = ['APPROVE', 'COMMENT', 'REQUEST_CHANGES'] as const
+
+function isValidEvent(event: string): event is typeof validEvents[number] {
+  return validEvents.includes(event as any)
+}
+
 async function run() {
   // defaults
   const { owner, component } = getRepository()
@@ -13,20 +19,21 @@ async function run() {
   const repo = getInput('component') || component
   const event = getInput('event')
   const branch = getInput('branch') || default_branch
+  const body = getInput('body')
 
   // Assertions
-  if (!['APPROVE', 'COMMENT', 'REQUEST_CHANGES'].includes(event)) {
+  if (!isValidEvent(event)) {
     throw new Error('The event input is missing or invalid')
   }
 
   // Initialize GH client
   const octokit = getOctokit(ghToken)
 
+  // Get PR number to use
   const pull_number = isNaN(pull_request)
     ? (await getPR(octokit, repo, branch))?.number
     : pull_request
 
-  // get PR number to use
   if (!pull_number) {
     info('No pull request to review, skipping action')
     return
@@ -34,15 +41,19 @@ async function run() {
 
   info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
 
-  // call GH API
+  const footer = `\n\
+Automated review from [${process.env.GITHUB_WORKFLOW} \
+workflow in ${owner}/${repo}](https://github.com/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID})`
+
+  // Post a review to the GitHub API
   await octokit.request(
     'POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
     {
       owner,
       repo,
       pull_number,
-      event: event as any,
-      body: getInput('body'),
+      event,
+      body: body + footer,
     }
   )
 }
