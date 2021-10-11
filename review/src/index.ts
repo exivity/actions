@@ -41,7 +41,7 @@ async function run() {
 
   info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
 
-  const body = `${customBody}${customBody ? '\n---\n' : ''}\
+  const body = `${customBody}${customBody ? '\n\n---\n\n' : ''}\
 _Automated review from [**${process.env.GITHUB_WORKFLOW}** \
 workflow in **${owner}/${repo}**]\
 (https://github.com/${owner}/${repo}/actions/runs/${

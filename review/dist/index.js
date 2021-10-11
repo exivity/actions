@@ -5071,7 +5071,7 @@ async function run() {
     return;
   }
   (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
-  const body = `${customBody}${customBody ? "\n---\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${owner}/${repo}**](https://github.com/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
+  const body = `${customBody}${customBody ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${owner}/${repo}**](https://github.com/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
   await octokit.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews", {
     owner,
     repo,
