@@ -2394,14 +2394,10 @@ async function startDocker({ defaultVersion: defaultVersion2, image: image2, por
 var image = "exivity/rabbitmq";
 var defaultVersion = "3.8.6";
 async function run() {
-  try {
-    await startDocker({
-      image,
-      defaultVersion,
-      ports: [4369, 5671, 5672, 15672]
-    });
-  } catch (error) {
-    (0, import_core2.setFailed)(error.message);
-  }
+  await startDocker({
+    image,
+    defaultVersion,
+    ports: [4369, 5671, 5672, 15672]
+  });
 }
-run();
+run().catch(import_core2.setFailed);

@@ -2366,16 +2366,12 @@ var import_core = __toModule(require_core());
 var import_exec = __toModule(require_exec());
 var import_path = __toModule(require("path"));
 async function run() {
-  try {
-    const privateKey = (0, import_core.getInput)("private-key");
-    await (0, import_exec.exec)("bash init-ssh.sh", void 0, {
-      cwd: import_path.default.resolve(__dirname, ".."),
-      env: __spreadProps(__spreadValues({}, process.env), {
-        PRIVATE_KEY: privateKey
-      })
-    });
-  } catch (error) {
-    (0, import_core.setFailed)(error.message);
-  }
+  const privateKey = (0, import_core.getInput)("private-key");
+  await (0, import_exec.exec)("bash init-ssh.sh", void 0, {
+    cwd: import_path.default.resolve(__dirname, ".."),
+    env: __spreadProps(__spreadValues({}, process.env), {
+      PRIVATE_KEY: privateKey
+    })
+  });
 }
-run();
+run().catch(import_core.setFailed);

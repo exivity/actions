@@ -6187,60 +6187,56 @@ function getAWSCredentials() {
 
 // db/src/index.ts
 async function run() {
-  try {
-    const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
-    const dbName = (0, import_core4.getInput)("db-name") || "exdb-test";
-    const mode = (0, import_core4.getInput)("mode") || "host";
-    const password = (0, import_core4.getInput)("password") || "postgres";
-    const ghToken = getToken();
-    const workspacePath = getWorkspacePath();
-    const [awsKeyId, awsSecretKey] = getAWSCredentials();
-    if (mode !== "docker" && mode !== "host") {
-      throw new Error(`Mode must be 'docker' or 'host'`);
-    }
-    (0, import_core4.info)(`Using exivity/db branch "${branch}"`);
-    const octokit = (0, import_github2.getOctokit)(ghToken);
-    const sha = await getShaFromRef({
-      octokit,
-      component: "db",
-      ref: branch
-    });
-    const dbDirectory = "../db";
-    await downloadS3object({
-      component: "db",
-      sha,
-      path: dbDirectory,
-      awsKeyId,
-      awsSecretKey
-    });
-    switch (mode) {
-      case "docker":
-        await startDocker({
-          image,
-          defaultVersion,
-          ports: [5432]
-        });
-        break;
-      case "host":
-        await startPostgres(password);
-        break;
-    }
-    const migrateBin = (0, import_os3.platform)() === "win32" ? "migrate.exe" : "migrate";
-    await (0, import_exec4.exec)("bash init-db.sh", void 0, {
-      cwd: import_path4.default.resolve(__dirname, ".."),
-      env: __spreadProps(__spreadValues({}, process.env), {
-        MODE: mode,
-        BASE_DIR: import_path4.default.join(workspacePath, dbDirectory),
-        DB_NAME: dbName,
-        MIGRATE_BIN: migrateBin,
-        DB_PASSWORD: password
-      })
-    });
-  } catch (error) {
-    (0, import_core4.setFailed)(error.message);
+  const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
+  const dbName = (0, import_core4.getInput)("db-name") || "exdb-test";
+  const mode = (0, import_core4.getInput)("mode") || "host";
+  const password = (0, import_core4.getInput)("password") || "postgres";
+  const ghToken = getToken();
+  const workspacePath = getWorkspacePath();
+  const [awsKeyId, awsSecretKey] = getAWSCredentials();
+  if (mode !== "docker" && mode !== "host") {
+    throw new Error(`Mode must be 'docker' or 'host'`);
   }
+  (0, import_core4.info)(`Using exivity/db branch "${branch}"`);
+  const octokit = (0, import_github2.getOctokit)(ghToken);
+  const sha = await getShaFromRef({
+    octokit,
+    component: "db",
+    ref: branch
+  });
+  const dbDirectory = "../db";
+  await downloadS3object({
+    component: "db",
+    sha,
+    path: dbDirectory,
+    awsKeyId,
+    awsSecretKey
+  });
+  switch (mode) {
+    case "docker":
+      await startDocker({
+        image,
+        defaultVersion,
+        ports: [5432]
+      });
+      break;
+    case "host":
+      await startPostgres(password);
+      break;
+  }
+  const migrateBin = (0, import_os3.platform)() === "win32" ? "migrate.exe" : "migrate";
+  await (0, import_exec4.exec)("bash init-db.sh", void 0, {
+    cwd: import_path4.default.resolve(__dirname, ".."),
+    env: __spreadProps(__spreadValues({}, process.env), {
+      MODE: mode,
+      BASE_DIR: import_path4.default.join(workspacePath, dbDirectory),
+      DB_NAME: dbName,
+      MIGRATE_BIN: migrateBin,
+      DB_PASSWORD: password
+    })
+  });
 }
-run();
+run().catch(import_core4.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
