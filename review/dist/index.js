@@ -5031,8 +5031,8 @@ function getRepository() {
   return { owner, component };
 }
 function getRef() {
-  var _a;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(11));
+  var _a, _b, _c;
+  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
   if (!ref) {
     throw new Error("The GitHub ref is missing");
   }
@@ -5049,36 +5049,32 @@ function getToken(inputName = "gh-token") {
 // review/src/index.ts
 async function run() {
   var _a;
-  try {
-    const { owner, component } = getRepository();
-    const default_branch = getRef();
-    const ghToken = getToken();
-    const pull_request = parseInt((0, import_core2.getInput)("pull"), 10);
-    const repo = (0, import_core2.getInput)("component") || component;
-    const event = (0, import_core2.getInput)("event");
-    const branch = (0, import_core2.getInput)("branch") || default_branch;
-    if (!["APPROVE", "COMMENT", "REQUEST_CHANGES"].includes(event)) {
-      throw new Error("The event input is missing or invalid");
-    }
-    const octokit = (0, import_github.getOctokit)(ghToken);
-    const pull_number = isNaN(pull_request) ? (_a = await getPR(octokit, repo, branch)) == null ? void 0 : _a.number : pull_request;
-    if (!pull_number) {
-      (0, import_core2.info)("No pull request to review, skipping action");
-      return;
-    }
-    (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
-    await octokit.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews", {
-      owner,
-      repo,
-      pull_number,
-      event,
-      body: (0, import_core2.getInput)("body")
-    });
-  } catch (err) {
-    (0, import_core2.setFailed)(err.message);
+  const { owner, component } = getRepository();
+  const default_branch = getRef();
+  const ghToken = getToken();
+  const pull_request = parseInt((0, import_core2.getInput)("pull"), 10);
+  const repo = (0, import_core2.getInput)("component") || component;
+  const event = (0, import_core2.getInput)("event");
+  const branch = (0, import_core2.getInput)("branch") || default_branch;
+  if (!["APPROVE", "COMMENT", "REQUEST_CHANGES"].includes(event)) {
+    throw new Error("The event input is missing or invalid");
   }
+  const octokit = (0, import_github.getOctokit)(ghToken);
+  const pull_number = isNaN(pull_request) ? (_a = await getPR(octokit, repo, branch)) == null ? void 0 : _a.number : pull_request;
+  if (!pull_number) {
+    (0, import_core2.info)("No pull request to review, skipping action");
+    return;
+  }
+  (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
+  await octokit.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews", {
+    owner,
+    repo,
+    pull_number,
+    event,
+    body: (0, import_core2.getInput)("body")
+  });
 }
-run();
+run().catch(import_core2.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

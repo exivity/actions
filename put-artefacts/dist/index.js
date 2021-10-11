@@ -2474,28 +2474,24 @@ async function zipAll(path, component) {
   return filename;
 }
 async function run() {
-  try {
-    const usePlatformPrefix = getBooleanInput("use-platform-prefix", false);
-    const prefix = (0, import_core4.getInput)("prefix") || void 0;
-    let path = (0, import_core4.getInput)("path") || "build";
-    const zip = getBooleanInput("zip", false);
-    const sha = getSha();
-    const { component } = getRepository();
-    const [awsKeyId, awsSecretKey] = getAWSCredentials();
-    if (zip) {
-      path = await zipAll(path, component);
-    }
-    await uploadS3object({
-      component,
-      sha,
-      usePlatformPrefix,
-      prefix,
-      path,
-      awsKeyId,
-      awsSecretKey
-    });
-  } catch (error) {
-    (0, import_core4.setFailed)(error.message);
+  const usePlatformPrefix = getBooleanInput("use-platform-prefix", false);
+  const prefix = (0, import_core4.getInput)("prefix") || void 0;
+  let path = (0, import_core4.getInput)("path") || "build";
+  const zip = getBooleanInput("zip", false);
+  const sha = getSha();
+  const { component } = getRepository();
+  const [awsKeyId, awsSecretKey] = getAWSCredentials();
+  if (zip) {
+    path = await zipAll(path, component);
   }
+  await uploadS3object({
+    component,
+    sha,
+    usePlatformPrefix,
+    prefix,
+    path,
+    awsKeyId,
+    awsSecretKey
+  });
 }
-run();
+run().catch(import_core4.setFailed);

@@ -6168,40 +6168,36 @@ function getAWSCredentials() {
 
 // get-artefacts/src/index.ts
 async function run() {
-  try {
-    const component = (0, import_core4.getInput)("component", { required: true });
-    let sha = (0, import_core4.getInput)("sha");
-    const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
-    const usePlatformPrefix = getBooleanInput("use-platform-prefix", false);
-    const prefix = (0, import_core4.getInput)("prefix") || void 0;
-    const path = (0, import_core4.getInput)("path") || `../${component}/build`;
-    const autoUnzip = getBooleanInput("auto-unzip", true);
-    const ghToken = getToken();
-    const [awsKeyId, awsSecretKey] = getAWSCredentials();
-    if (!sha) {
-      sha = await getShaFromRef({
-        octokit: (0, import_github2.getOctokit)(ghToken),
-        component,
-        ref: branch
-      });
-    }
-    await downloadS3object({
+  const component = (0, import_core4.getInput)("component", { required: true });
+  let sha = (0, import_core4.getInput)("sha");
+  const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
+  const usePlatformPrefix = getBooleanInput("use-platform-prefix", false);
+  const prefix = (0, import_core4.getInput)("prefix") || void 0;
+  const path = (0, import_core4.getInput)("path") || `../${component}/build`;
+  const autoUnzip = getBooleanInput("auto-unzip", true);
+  const ghToken = getToken();
+  const [awsKeyId, awsSecretKey] = getAWSCredentials();
+  if (!sha) {
+    sha = await getShaFromRef({
+      octokit: (0, import_github2.getOctokit)(ghToken),
       component,
-      sha,
-      usePlatformPrefix,
-      prefix,
-      path,
-      awsKeyId,
-      awsSecretKey
+      ref: branch
     });
-    if (autoUnzip) {
-      await unzipAll(path);
-    }
-  } catch (error) {
-    (0, import_core4.setFailed)(error.message);
+  }
+  await downloadS3object({
+    component,
+    sha,
+    usePlatformPrefix,
+    prefix,
+    path,
+    awsKeyId,
+    awsSecretKey
+  });
+  if (autoUnzip) {
+    await unzipAll(path);
   }
 }
-run();
+run().catch(import_core4.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

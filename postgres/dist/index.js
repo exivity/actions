@@ -2409,26 +2409,22 @@ async function startPostgres(password = "postgres") {
 
 // postgres/src/index.ts
 async function run() {
-  try {
-    const mode = (0, import_core2.getInput)("mode") || "host";
-    const password = (0, import_core2.getInput)("password") || "postgres";
-    if (mode !== "docker" && mode !== "host") {
-      throw new Error(`Mode must be 'docker' or 'host'`);
-    }
-    switch (mode) {
-      case "docker":
-        await startDocker({
-          image,
-          defaultVersion,
-          ports: [5432]
-        });
-        break;
-      case "host":
-        await startPostgres(password);
-        break;
-    }
-  } catch (error) {
-    (0, import_core2.setFailed)(error.message);
+  const mode = (0, import_core2.getInput)("mode") || "host";
+  const password = (0, import_core2.getInput)("password") || "postgres";
+  if (mode !== "docker" && mode !== "host") {
+    throw new Error(`Mode must be 'docker' or 'host'`);
+  }
+  switch (mode) {
+    case "docker":
+      await startDocker({
+        image,
+        defaultVersion,
+        ports: [5432]
+      });
+      break;
+    case "host":
+      await startPostgres(password);
+      break;
   }
 }
-run();
+run().catch(import_core2.setFailed);
