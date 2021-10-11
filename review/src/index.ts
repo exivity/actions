@@ -19,7 +19,7 @@ async function run() {
   const repo = getInput('component') || component
   const event = getInput('event')
   const branch = getInput('branch') || default_branch
-  const body = getInput('body')
+  const customBody = getInput('body')
 
   // Assertions
   if (!isValidEvent(event)) {
@@ -41,9 +41,12 @@ async function run() {
 
   info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
 
-  const footer = `\n\
-Automated review from [${process.env.GITHUB_WORKFLOW} \
-workflow in ${owner}/${repo}](https://github.com/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID})`
+  const body = `${customBody}${customBody ? '\n---\n' : ''}\
+_Automated review from [**${process.env.GITHUB_WORKFLOW}** \
+workflow in **${owner}/${repo}**]\
+(https://github.com/${owner}/${repo}/actions/runs/${
+    process.env.GITHUB_RUN_ID
+  })_`
 
   // Post a review to the GitHub API
   await octokit.request(
@@ -53,7 +56,7 @@ workflow in ${owner}/${repo}](https://github.com/${owner}/${repo}/actions/runs/$
       repo,
       pull_number,
       event,
-      body: body + footer,
+      body,
     }
   )
 }

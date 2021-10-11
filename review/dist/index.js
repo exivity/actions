@@ -5060,7 +5060,7 @@ async function run() {
   const repo = (0, import_core2.getInput)("component") || component;
   const event = (0, import_core2.getInput)("event");
   const branch = (0, import_core2.getInput)("branch") || default_branch;
-  const body = (0, import_core2.getInput)("body");
+  const customBody = (0, import_core2.getInput)("body");
   if (!isValidEvent(event)) {
     throw new Error("The event input is missing or invalid");
   }
@@ -5071,14 +5071,13 @@ async function run() {
     return;
   }
   (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
-  const footer = `
-Automated review from [${process.env.GITHUB_WORKFLOW} workflow in ${owner}/${repo}](https://github.com/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID})`;
+  const body = `${customBody}${customBody ? "\n---\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${owner}/${repo}**](https://github.com/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
   await octokit.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews", {
     owner,
     repo,
     pull_number,
     event,
-    body: body + footer
+    body
   });
 }
 run().catch(import_core2.setFailed);
