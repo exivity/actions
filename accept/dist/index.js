@@ -20193,9 +20193,9 @@ var require_readShebang = __commonJS({
   }
 });
 
-// node_modules/cross-spawn/node_modules/semver/semver.js
+// node_modules/semver/semver.js
 var require_semver = __commonJS({
-  "node_modules/cross-spawn/node_modules/semver/semver.js"(exports2, module2) {
+  "node_modules/semver/semver.js"(exports2, module2) {
     exports2 = module2.exports = SemVer;
     var debug6;
     if (typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG)) {
@@ -30980,6 +30980,7 @@ async function run() {
       (0, import_core5.warning)("Skipping: exivity-bot not requested for review");
       return;
     }
+    ref = eventData["pull_request"]["head"]["ref"];
     sha = eventData["pull_request"]["head"]["sha"];
   }
   if (releaseBranches.includes(ref)) {
