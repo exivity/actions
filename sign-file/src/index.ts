@@ -41,7 +41,7 @@ async function run() {
        * See https://docs.microsoft.com/en-us/dotnet/framework/tools/signtool-exe
        */
       const signToolPath =
-        'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\SignTool.exe'
+        '"C:/Program Files (x86)/Windows Kits/10/bin/x64/SignTool.exe"'
       await getExecOutput(signToolPath, [
         /**
          * Digitally signs files. Digital signatures protect files from

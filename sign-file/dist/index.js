@@ -2386,7 +2386,7 @@ async function run() {
       (0, import_core.debug)(`Written temporary pfx file to "${certificatePath}"`);
       const absPath = (0, import_path.resolve)(path);
       (0, import_core.debug)(`Absolute path to file: "${absPath}"`);
-      const signToolPath = "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\SignTool.exe";
+      const signToolPath = '"C:/Program Files (x86)/Windows Kits/10/bin/x64/SignTool.exe"';
       await (0, import_exec.getExecOutput)(signToolPath, [
         "sign",
         "/f",
