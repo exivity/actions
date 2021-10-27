@@ -2387,12 +2387,12 @@ async function run() {
       const absPath = (0, import_path.resolve)(path);
       (0, import_core.debug)(`Absolute path to file: "${absPath}"`);
       const signToolPath = '"C:/Program Files (x86)/Windows Kits/10/bin/x64/SignTool.exe"';
-      await (0, import_exec.getExecOutput)(signToolPath, [
+      const { exitCode, stderr, stdout } = await (0, import_exec.getExecOutput)(signToolPath, [
         "sign",
         "/f",
         certificatePath,
         "/p",
-        "ps",
+        certificatePassword,
         "/tr",
         "http://timestamp.entrust.net/TSS/RFC3161sha2TS",
         "/td",
@@ -2401,6 +2401,10 @@ async function run() {
         "sha256",
         absPath
       ]);
+      if (exitCode !== 0) {
+        throw new Error(`signtool.exe failed with code ${exitCode}: ${stderr}`);
+      }
+      (0, import_core.debug)(`signtool.exe output: ${stdout}`);
       break;
     default:
       throw new Error("Method is invalid");

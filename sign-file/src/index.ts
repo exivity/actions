@@ -42,7 +42,7 @@ async function run() {
        */
       const signToolPath =
         '"C:/Program Files (x86)/Windows Kits/10/bin/x64/SignTool.exe"'
-      await getExecOutput(signToolPath, [
+      const { exitCode, stderr, stdout } = await getExecOutput(signToolPath, [
         /**
          * Digitally signs files. Digital signatures protect files from
          * tampering, and enable users to verify the signer based on a signing
@@ -66,7 +66,7 @@ async function run() {
          * option to specify a PFX file.)
          */
         '/p',
-        'ps',
+        certificatePassword,
 
         /**
          * Specifies the URL of the RFC 3161 time stamp server. If this option
@@ -105,6 +105,12 @@ async function run() {
 
         absPath,
       ])
+
+      if (exitCode !== 0) {
+        throw new Error(`signtool.exe failed with code ${exitCode}: ${stderr}`)
+      }
+
+      debug(`signtool.exe output: ${stdout}`)
 
       break
 
