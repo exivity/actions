@@ -438,12 +438,12 @@ The path to the file to sign, glob patterns allowed
 
 ### `certificate-base64`
 
-**Required**
+**Required**  
 The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string
 
 ### `certificate-password`
 
-**Required**
+**Required**  
 The password for the `.pfx` file
 
 ### `method`
