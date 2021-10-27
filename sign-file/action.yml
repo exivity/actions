@@ -1,0 +1,19 @@
+name: sign-file
+description: 'Digitally sign a file'
+inputs:
+  path:
+    description: 'The path to the file to sign, glob patterns allowed'
+    required: true
+  certificate-base64:
+    description: 'The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string'
+    required: true
+  certificate-password:
+    description: 'The password for the `.pfx` file'
+    required: true
+  method:
+    description: 'The signature tool to use'
+    required: false
+    default: 'Sign Tool'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

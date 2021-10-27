@@ -13,6 +13,7 @@ _Available actions:_
 - [`put-artefacts`](#put-artefacts)
 - [`rabbitmq`](#rabbitmq)
 - [`review`](#review)
+- [`sign-file`](#sign-file)
 
 # `accept`
 
@@ -415,6 +416,52 @@ not needed if `pull` has been specified.
   with:
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
     body: Exivity bot approves everything!
+```
+
+# Development guide
+
+When committing code to this repository, make sure to have Node & Yarn installed
+since code needs to be compiled in a pre-commit hook.
+
+# `sign-file`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/sign-file)
+
+Digitally sign a file
+
+## Inputs
+
+### `path`
+
+**Required**  
+The path to the file to sign, glob patterns allowed
+
+### `certificate-base64`
+
+**Required**
+The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string
+
+### `certificate-password`
+
+**Required**
+The password for the `.pfx` file
+
+### `method`
+
+**Optional**  
+_Defaults to `Sign Tool`_  
+The signature tool to use. Available options:
+
+- `Sign Tool`
+
+## Example usage
+
+```
+- uses: exivity/actions/sign-file@master
+  with:
+    path: build/foo.exe
+    certificate-base64: ${{ secrets.CERTIFICATE_BASE64 }}
+    certificate-password: ${{ secrets.CERTIFICATE_PASSWORD }}
 ```
 
 # Development guide
