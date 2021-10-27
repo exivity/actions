@@ -434,7 +434,7 @@ Digitally sign a file
 ### `path`
 
 **Required**  
-The path to the file to sign
+The path to the file to sign, glob patterns allowed
 
 ### `certificate-base64`
 

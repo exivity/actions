@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./sign-file
         with:
-          path: fixtures/build/dummy.txt
+          path: fixtures/build/*.exe
           certificate-base64: |
             MIIJqQIBAzCCCW8GCSqGSIb3DQEHAaCCCWAEgglcMIIJWDCCBA8GCSqGSIb3DQEHBqCCBAAwggP8
             AgEAMIID9QYJKoZIhvcNAQcBMBwGCiqGSIb3DQEMAQYwDgQIOZlatogQriwCAggAgIIDyCjxNwgj
