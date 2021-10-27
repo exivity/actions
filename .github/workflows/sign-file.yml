@@ -17,3 +17,5 @@ jobs:
       - uses: ./sign-file
         with:
           path: fixtures/build/dummy.txt
+          certificate-base64: Zm9vCg==
+          certificate-password: bar
