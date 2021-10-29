@@ -18,7 +18,8 @@ jobs:
         with:
           path: fixtures/build/*.exe
           file-description: Hello world test program
-          file-version: '1.0.0'
+          file-version: ${{ env.GITHUB_SHA }}
+          product-version: ${{ env.GITHUB_SHA }}
       - uses: actions/upload-artifact@v2
         with:
           path: fixtures/build/*.exe
