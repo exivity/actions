@@ -4733,7 +4733,7 @@ var import_fs = __toModule(require("fs"));
 var import_glob_promise = __toModule(require_lib());
 var import_os = __toModule(require("os"));
 var import_path = __toModule(require("path"));
-var METHOD_SIGN_TOOL = "Sign Tool";
+var METHOD_SIGN_TOOL = "signtool";
 async function signTool(filePath, certificatePath, certificatePassword) {
   const signToolPath = '"C:/Program Files (x86)/Windows Kits/10/bin/x64/SignTool.exe"';
   const { exitCode, stderr, stdout } = await (0, import_exec.getExecOutput)(signToolPath, [
@@ -4765,7 +4765,7 @@ async function run() {
   switch (method) {
     case METHOD_SIGN_TOOL:
       if ((0, import_os.platform)() !== "win32") {
-        throw new Error("Sign Tool is only available on Windows");
+        throw new Error("signtool is only available on Windows");
       }
       const tmpDir = await import_fs.promises.mkdtemp((0, import_path.join)((0, import_os.tmpdir)()));
       const certificatePath = (0, import_path.resolve)(tmpDir, "cert.pfx");

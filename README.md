@@ -12,6 +12,7 @@ _Available actions:_
 - [`postgres`](#postgres)
 - [`put-artefacts`](#put-artefacts)
 - [`rabbitmq`](#rabbitmq)
+- [`rcedit`](#rcedit)
 - [`review`](#review)
 - [`sign-file`](#sign-file)
 
@@ -365,6 +366,101 @@ The RabbitMQ version to use. Currently, only 3.8.6 is supported.
     version: 3.8.6
 ```
 
+# `rcedit`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/rcedit)
+
+Edit resources of a Windows executable
+
+⚠️ Currently only works on 64 bit Windows hosts
+
+## Inputs
+
+### `path`
+
+**Required**  
+The path to the file to sign, glob patterns allowed
+
+### `comments`
+
+**Optional**  
+Additional information that should be displayed for diagnostic purposes.
+
+### `company-name`
+
+**Optional**  
+Company that produced the executable.
+
+### `file-description`
+
+**Optional**  
+File description to be presented to users.
+
+### `internal-filename`
+
+**Optional**  
+Internal name of the file. Usually, this string should be the original filename, without the extension.
+
+### `legal-copyright`
+
+**Optional**  
+Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.
+
+### `legal-trademarks1`
+
+**Optional**  
+Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc.
+
+### `legal-trademarks2`
+
+**Optional**  
+Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc.
+
+### `original-filename`
+
+**Optional**  
+Original name of the file, not including a path.
+
+### `product-name`
+
+**Optional**  
+Name of the product with which the file is distributed.
+
+### `file-version`
+
+**Optional**  
+File's version to change to.
+
+### `product-version`
+
+**Optional**  
+Product's version to change to.
+
+### `icon`
+
+**Optional**  
+Path to the icon file (.ico) to set as the exePath's default icon.
+
+### `requested-execution-level`
+
+**Optional**  
+Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator.
+
+### `application-manifest`
+
+**Optional**  
+String path to a local manifest file to use.
+
+## Example usage
+
+```
+- uses: exivity/actions/rcedit@master
+  with:
+    path: build/foo.exe
+    file-description: Hello world test program
+    file-version: 1.0.0.0
+```
+
 # `review`
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/review)
@@ -429,6 +525,8 @@ since code needs to be compiled in a pre-commit hook.
 
 Digitally sign a file
 
+⚠️ Currently only works on Windows hosts
+
 ## Inputs
 
 ### `path`
@@ -449,10 +547,10 @@ The password for the `.pfx` file
 ### `method`
 
 **Optional**  
-_Defaults to `Sign Tool`_  
+_Defaults to `signtool`_  
 The signature tool to use. Available options:
 
-- `Sign Tool`
+- `signtool`
 
 ## Example usage
 
