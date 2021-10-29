@@ -36,7 +36,7 @@
     "@types/adm-zip": "0.4.34",
     "@types/glob": "^7.2.0",
     "@types/js-yaml": "4.0.4",
-    "@types/node": "16.4.0",
+    "@types/node": "16.11.6",
     "@types/uuid": "8.3.1",
     "esbuild": "0.13.5",
     "husky": "7.0.4",
