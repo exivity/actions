@@ -18,7 +18,7 @@ jobs:
         with:
           path: fixtures/build/*.exe
           product-name: Hello world test program
-          file-description: Built from ${{ env.GITHUB_SHA }}
+          file-description: Built from ${{ github.sha }}
       - uses: actions/upload-artifact@v2
         with:
           path: fixtures/build/*.exe

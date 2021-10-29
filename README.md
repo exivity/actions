@@ -458,7 +458,7 @@ String path to a local manifest file to use.
   with:
     path: build/foo.exe
     file-description: Hello world test program
-    file-version: 1.0.0
+    file-version: 1.0.0.0
 ```
 
 # `review`
