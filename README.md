@@ -372,7 +372,7 @@ The RabbitMQ version to use. Currently, only 3.8.6 is supported.
 
 Edit resources of a Windows executable
 
-⚠️ Currently only works on Windows hosts
+⚠️ Currently only works on 64 bit Windows hosts
 
 ## Inputs
 
