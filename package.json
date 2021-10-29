@@ -15,6 +15,7 @@
     "build:postgres": "yarn esbuild:generic postgres/src/index.ts --outfile=postgres/dist/index.js",
     "build:put-artefacts": "yarn esbuild:generic put-artefacts/src/index.ts --outfile=put-artefacts/dist/index.js",
     "build:rabbitmq": "yarn esbuild:generic rabbitmq/src/index.ts --outfile=rabbitmq/dist/index.js",
+    "build:rcedit": "yarn esbuild:generic rcedit/src/index.ts --outfile=rcedit/dist/index.js",
     "build:review": "yarn esbuild:generic review/src/index.ts --outfile=review/dist/index.js",
     "build:sign-file": "yarn esbuild:generic sign-file/src/index.ts --outfile=sign-file/dist/index.js",
     "esbuild:generic": "esbuild --bundle --platform=node --target=node12",
@@ -29,7 +30,8 @@
     "checkout": "https://github.com/actions/checkout#v2",
     "glob": "^7.2.0",
     "glob-promise": "^4.2.2",
-    "js-yaml": "4.1.0"
+    "js-yaml": "4.1.0",
+    "rcedit": "^3.0.1"
   },
   "devDependencies": {
     "@octokit/webhooks": "9.17.0",

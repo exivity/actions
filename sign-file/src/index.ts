@@ -5,7 +5,7 @@ import glob from 'glob-promise'
 import { platform, tmpdir } from 'os'
 import { join, resolve } from 'path'
 
-const METHOD_SIGN_TOOL = 'Sign Tool'
+const METHOD_SIGN_TOOL = 'signtool'
 
 async function signTool(
   filePath: string,
@@ -100,11 +100,10 @@ async function run() {
   })
   const method = getInput('method')
 
-  // Assertions
   switch (method) {
     case METHOD_SIGN_TOOL:
       if (platform() !== 'win32') {
-        throw new Error('Sign Tool is only available on Windows')
+        throw new Error('signtool is only available on Windows')
       }
 
       // Write temp pfx file

@@ -19945,9 +19945,9 @@ var require_isexe = __commonJS({
   }
 });
 
-// node_modules/which/which.js
+// node_modules/cross-spawn/node_modules/which/which.js
 var require_which = __commonJS({
-  "node_modules/which/which.js"(exports2, module2) {
+  "node_modules/cross-spawn/node_modules/which/which.js"(exports2, module2) {
     module2.exports = which3;
     which3.sync = whichSync;
     var isWindows = process.platform === "win32" || process.env.OSTYPE === "cygwin" || process.env.OSTYPE === "msys";
