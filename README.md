@@ -457,7 +457,8 @@ String path to a local manifest file to use.
 - uses: exivity/actions/rcedit@master
   with:
     path: build/foo.exe
-    company-name: Exivity
+    file-description: Hello world test program
+    file-version: 1.0.0
 ```
 
 # `review`

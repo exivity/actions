@@ -17,7 +17,8 @@ jobs:
       - uses: ./rcedit
         with:
           path: fixtures/build/*.exe
-          company-name: Exivity
+          file-description: Hello world test program
+          file-version: '1.0.0'
       - uses: actions/upload-artifact@v2
         with:
           path: fixtures/build/*.exe
