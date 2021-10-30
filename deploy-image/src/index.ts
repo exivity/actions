@@ -12,12 +12,11 @@ import {
 } from '../../lib/github'
 import {
   getComponentVersion,
+  getDeployType,
   getImageLabels,
   getImagePrefixAndTags,
-  getTagType,
+  GHCR,
 } from './metadata'
-
-const GHCR = 'ghcr.io/'
 
 const METADATA_FILENAME = 'metadata.json'
 
@@ -31,20 +30,18 @@ async function run() {
   const dryRun = getBooleanInput('dry-run', false)
   const dockerfile = getInput('dockerfile') || './Dockerfile'
   const eventName = getEventName(['push', 'delete'])
-  const eventData = await getEventData(eventName)
+  const eventData = await getEventData<typeof eventName>()
 
-  const type = getTagType()
+  const type = getDeployType()
   const { prefix, tags } = await getImagePrefixAndTags()
-  info(`Image type will be: ${type}`)
-  info(`Image prefix will be: ${prefix ?? 'none'}`)
-  info(`Image name will be: exivity/${component}`)
-  info(`Image tags will be: ${tags.join(',')}`)
+  info(`Image deploy type: ${type}`)
+  info(`Image prefix: ${prefix ?? 'none'}`)
+  info(`Image name: exivity/${component}`)
+  info(`Image tags: ${tags.join(',')}`)
 
   if (isEvent(eventName, 'delete', eventData)) {
-    const type = getTagType()
-
     if (type !== 'branch') {
-      info(`Not deleting image type ${type}`)
+      info(`Not deleting image deploy type "${type}"`)
       return
     }
 

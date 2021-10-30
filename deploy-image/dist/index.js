@@ -9891,7 +9891,7 @@ var require_semver2 = __commonJS({
   }
 });
 
-// deploy-docker/src/index.ts
+// deploy-image/src/index.ts
 var import_core3 = __toModule(require_core());
 var import_exec3 = __toModule(require_exec());
 var import_github2 = __toModule(require_github());
@@ -9964,7 +9964,7 @@ function getEventName(supportedEvents) {
 function isEvent(input, compare, eventData) {
   return input === compare;
 }
-async function getEventData(eventName) {
+async function getEventData() {
   const eventPath = process.env["GITHUB_EVENT_PATH"];
   if (!eventPath) {
     throw new Error("The GitHub event path is missing");
@@ -9975,45 +9975,43 @@ async function getEventData(eventName) {
   return JSON.parse(fileData);
 }
 
-// deploy-docker/src/metadata.ts
+// deploy-image/src/metadata.ts
 var import_exec2 = __toModule(require_exec());
 var import_semver = __toModule(require_semver2());
 var GHCR = "ghcr.io/";
 var RELEASE_BRANCHES = ["main", "master"];
-var PREVIEW_BRANCHES = [];
+var BETA_BRANCHES = [];
 var CANARY_BRANCHES = ["develop"];
 var RELEASE_TAG = "latest";
 var CANARY_TAG = "canary";
-function getTagType() {
-  const { repoTag, semver } = getTagData();
+function getDeployType() {
+  const tag = getTag();
+  const semver = (0, import_semver.parse)(tag);
   if (semver) {
     return "tag:semver";
   }
-  if (repoTag) {
+  if (tag) {
     return "tag";
   }
   const ref = getRef();
   if (RELEASE_BRANCHES.includes(ref)) {
     return "branch:release";
   }
-  if (PREVIEW_BRANCHES.includes(ref)) {
-    return "branch:preview";
+  if (BETA_BRANCHES.includes(ref)) {
+    return "branch:beta";
   }
   if (CANARY_BRANCHES.includes(ref)) {
     return "branch:canary";
   }
   return "branch";
 }
-function getTagData() {
-  const repoTag = getTag();
-  return { repoTag, semver: (0, import_semver.parse)(repoTag) };
-}
 async function getImagePrefixAndTags() {
-  const type = getTagType();
+  const type = getDeployType();
   switch (type) {
     case "tag:semver":
-      const { repoTag, semver } = getTagData();
-      const repoShaOfTagCommit = (await (0, import_exec2.getExecOutput)(`git rev-list -n 1 tags/${repoTag}`)).stdout.trim();
+      const tag = getTag();
+      const semver = (0, import_semver.parse)(tag);
+      const repoShaOfTagCommit = (await (0, import_exec2.getExecOutput)(`git rev-list -n 1 tags/${tag}`)).stdout.trim();
       const commitsSinceTagCommit = (await (0, import_exec2.getExecOutput)(`git rev-list --count ${repoShaOfTagCommit}..HEAD`)).stdout.trim();
       if (Number(commitsSinceTagCommit) === 0) {
         return {
@@ -10027,9 +10025,11 @@ async function getImagePrefixAndTags() {
         };
       }
       return { prefix: null, tags: [semver.version] };
+    case "tag":
+      return { prefix: GHCR, tags: [] };
     case "branch:release":
       return { prefix: null, tags: [] };
-    case "branch:preview":
+    case "branch:beta":
       return { prefix: null, tags: [] };
     case "branch:canary":
       return { prefix: GHCR, tags: [CANARY_TAG] };
@@ -10039,8 +10039,6 @@ async function getImagePrefixAndTags() {
         prefix: GHCR,
         tags: [ref.replace(/[^\w\w.-]/g, "-").substr(0, 127)]
       };
-    case "tag":
-      return { prefix: GHCR, tags: [] };
   }
 }
 function getImageLabels({
@@ -10060,12 +10058,12 @@ function getImageLabels({
 }
 function getComponentVersion() {
   var _a;
-  const { semver } = getTagData();
+  const tag = getTag();
+  const semver = (0, import_semver.parse)(tag);
   return ((_a = semver == null ? void 0 : semver.version) != null ? _a : process.env["GITHUB_SHA"]) || "unknown";
 }
 
-// deploy-docker/src/index.ts
-var GHCR2 = "ghcr.io/";
+// deploy-image/src/index.ts
 var METADATA_FILENAME = "metadata.json";
 async function run() {
   const { component: defaultComponent } = getRepository();
@@ -10077,17 +10075,16 @@ async function run() {
   const dryRun = getBooleanInput("dry-run", false);
   const dockerfile = (0, import_core3.getInput)("dockerfile") || "./Dockerfile";
   const eventName = getEventName(["push", "delete"]);
-  const eventData = await getEventData(eventName);
-  const type = getTagType();
+  const eventData = await getEventData();
+  const type = getDeployType();
   const { prefix, tags } = await getImagePrefixAndTags();
-  (0, import_core3.info)(`Image type will be: ${type}`);
-  (0, import_core3.info)(`Image prefix will be: ${prefix != null ? prefix : "none"}`);
-  (0, import_core3.info)(`Image name will be: exivity/${component}`);
-  (0, import_core3.info)(`Image tags will be: ${tags.join(",")}`);
+  (0, import_core3.info)(`Image deploy type: ${type}`);
+  (0, import_core3.info)(`Image prefix: ${prefix != null ? prefix : "none"}`);
+  (0, import_core3.info)(`Image name: exivity/${component}`);
+  (0, import_core3.info)(`Image tags: ${tags.join(",")}`);
   if (isEvent(eventName, "delete", eventData)) {
-    const type2 = getTagType();
-    if (type2 !== "branch") {
-      (0, import_core3.info)(`Not deleting image type ${type2}`);
+    if (type !== "branch") {
+      (0, import_core3.info)(`Not deleting image deploy type "${type}"`);
       return;
     }
     const ghToken = getToken();
@@ -10132,7 +10129,7 @@ ${JSON.stringify(labels, void 0, 2)}`);
   (0, import_core3.info)(`Writing metadata to ${METADATA_FILENAME}:
 ${JSON.stringify(metadata, void 0, 2)}`);
   await import_fs3.promises.writeFile("./" + METADATA_FILENAME, JSON.stringify(metadata, void 0, 2));
-  if (prefix === GHCR2) {
+  if (prefix === GHCR) {
     (0, import_core3.info)("Logging in to GitHub Packages");
     await (0, import_exec3.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {
       env: __spreadProps(__spreadValues({}, process.env), {

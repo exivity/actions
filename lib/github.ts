@@ -144,9 +144,9 @@ export function isEvent<T extends EmitterWebhookEventName, U extends T>(
   return input === compare
 }
 
-export async function getEventData<T extends EmitterWebhookEventName>(
-  eventName?: T
-): Promise<EventData<T>> {
+export async function getEventData<
+  T extends EmitterWebhookEventName
+>(): Promise<EventData<T>> {
   const eventPath = process.env['GITHUB_EVENT_PATH']
 
   if (!eventPath) {

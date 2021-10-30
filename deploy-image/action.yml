@@ -1,9 +1,6 @@
-name: Deploy Docker
-description: Deploys the build to docker
+name: deploy-image
+description: Builds and deploys a component image
 inputs:
-  gh-token:
-    description: The github token to delete image tags (only for 'delete' event)
-    required: false
   component:
     description: Component name to build the image for
     required: false
@@ -15,20 +12,19 @@ inputs:
     required: true
   ghcr-user:
     description: Username for GitHub Container Registry
-    required: true
+    required: false
   ghcr-password:
     description: Password for GitHub Container Registry
-    required: true
+    required: false
   dockerfile:
     description: Path to the Dockerfile, defaults to ./Dockerfile
+    required: false
+  gh-token:
+    description: The github token to delete image tags (only for 'delete' event)
     required: false
   dry-run:
     description: Do not deploy build artefacts
     required: false
-outputs:
-  random-number:
-    description: Random number
-    value: ${{ steps.random-number-generator.outputs.random-id }}
 runs:
   using: node12
   main: dist/index.js

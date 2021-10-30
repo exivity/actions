@@ -1,13 +1,13 @@
-name: deploy-docker
+name: deploy-image
 
 on:
   push:
     paths:
-      - '.github/workflows/deploy-docker.yml'
+      - '.github/workflows/deploy-image.yml'
       - 'lib/core*'
       - 'lib/github*'
       - 'lib/s3*'
-      - 'deploy-docker/**'
+      - 'deploy-image/**'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./deploy-docker
+      - uses: ./deploy-image
         with:
           component: actions-test
           dockerfile: fixtures/Dockerfile
@@ -27,4 +27,3 @@ jobs:
           docker-hub-password: ${{ secrets.DOCKER_HUB_TOKEN }}
           ghcr-user: ${{ github.actor }}
           ghcr-password: ${{ secrets.GITHUB_TOKEN }}
-          dry-run: true

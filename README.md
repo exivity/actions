@@ -7,6 +7,7 @@ _Available actions:_
 
 - [`accept`](#accept)
 - [`db`](#db)
+- [`deploy-image`](#deploy-image)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
@@ -131,6 +132,68 @@ host mode.
     branch: some-feature-branch
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+
+# `deploy-image`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/deploy-image)
+
+Builds and deploys a component image.
+
+## Inputs
+
+### `component`
+
+**Optional**  
+_Defaults to name of repository_  
+Component name to build the image for
+
+### `docker-hub-user`
+
+**Required**  
+Username for Docker Hub
+
+### `docker-hub-password`
+
+**Required**  
+Password for Docker Hub
+
+### `ghcr-user`
+
+**Optional**  
+_Defaults to github.actor context_  
+Username for GitHub Container Registry
+
+### `ghcr-password`
+
+**Optional**  
+_Defaults to the GITHUB_TOKEN environment variable_  
+Password for GitHub Container Registry
+
+### `dockerfile`
+
+**Optional**  
+_Defaults to ./Dockerfile_  
+Path to the Dockerfile
+
+### `gh-token`
+
+**Optional**  
+_Defaults to the GITHUB_TOKEN environment variable_  
+The github token to delete image tags (only for 'delete' event)
+
+### `dry-run`
+
+**Optional**  
+Do not deploy build artefacts when set to true
+
+## Example usage
+
+```
+- uses: exivity/actions/deploy-image@main
+  with:
+    docker-hub-user: ${{ secrets.DOCKER_HUB_USER }}
+    docker-hub-password: ${{ secrets.DOCKER_HUB_TOKEN }}
 ```
 
 # `get-artefacts`

@@ -28076,7 +28076,7 @@ function getEventName(supportedEvents2) {
 function isEvent(input, compare, eventData) {
   return input === compare;
 }
-async function getEventData(eventName) {
+async function getEventData() {
   const eventPath = process.env["GITHUB_EVENT_PATH"];
   if (!eventPath) {
     throw new Error("The GitHub event path is missing");
