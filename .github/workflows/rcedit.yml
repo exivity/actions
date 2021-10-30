@@ -1,0 +1,24 @@
+name: rcedit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/rcedit.yml'
+      - 'rcedit/**'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./rcedit
+        with:
+          path: fixtures/build/*.exe
+          product-name: Hello world test program
+          file-description: Built from ${{ github.sha }}
+      - uses: actions/upload-artifact@v2
+        with:
+          path: fixtures/build/*.exe

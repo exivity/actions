@@ -12,7 +12,9 @@ _Available actions:_
 - [`postgres`](#postgres)
 - [`put-artefacts`](#put-artefacts)
 - [`rabbitmq`](#rabbitmq)
+- [`rcedit`](#rcedit)
 - [`review`](#review)
+- [`sign-file`](#sign-file)
 
 # `accept`
 
@@ -50,7 +52,7 @@ If `true`, scaffold will not build or run any tests.
 ## Example usage
 
 ```
-- uses: exivity/actions/accept@master
+- uses: exivity/actions/accept@main
   with:
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
@@ -87,11 +89,12 @@ the host
 ### `version`
 
 **Optional**  
-_Default: 13.0_  
+_Default: 14.0_  
 The PostgreSQL version to use. Only affects Docker mode (host mode always uses
 default version). Make sure to use a string type to avoid truncation. Available
 versions:
 
+- 14.0
 - 13.0
 - 12.3
 
@@ -123,7 +126,7 @@ host mode.
 ## Example usage
 
 ```
-- uses: exivity/actions/db@master
+- uses: exivity/actions/db@main
   with:
     branch: some-feature-branch
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -202,7 +205,7 @@ A GitHub token with access to the exivity/{component} repository.
 ## Example usage
 
 ```
-- uses: exivity/actions/get-artefacts@master
+- uses: exivity/actions/get-artefacts@main
   with:
     component: db
     branch: master
@@ -229,7 +232,7 @@ The full SSH private key.
 ## Example usage
 
 ```
-- uses: exivity/actions/init-ssh@master
+- uses: exivity/actions/init-ssh@main
   with:
     private-key: ${{ secrets.PRIVATE_KEY }}
 ```
@@ -260,11 +263,12 @@ the host.
 ### `version`
 
 **Optional**  
-_Default: 13.0_  
+_Default: 14.0_  
 The PostgreSQL version to use. Only affects Docker mode (host mode always uses
 default version). Make sure to use a string type to avoid truncation. Available
 versions:
 
+- 14.0
 - 13.0
 - 12.3
 
@@ -278,7 +282,7 @@ host mode.
 ## Example usage
 
 ```
-- uses: exivity/actions/postgres@master
+- uses: exivity/actions/postgres@main
   with:
     mode: docker
     version: 12.3
@@ -333,7 +337,7 @@ The AWS secret access key
 ## Example usage
 
 ```
-- uses: exivity/actions/put-artefacts@master
+- uses: exivity/actions/put-artefacts@main
   with:
     path: artefacts
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -357,9 +361,104 @@ The RabbitMQ version to use. Currently, only 3.8.6 is supported.
 ## Example usage
 
 ```
-- uses: exivity/actions/rabbitmq@master
+- uses: exivity/actions/rabbitmq@main
   with:
     version: 3.8.6
+```
+
+# `rcedit`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/rcedit)
+
+Edit resources of a Windows executable
+
+⚠️ Currently only works on 64 bit Windows hosts
+
+## Inputs
+
+### `path`
+
+**Required**  
+The path to the file to sign, glob patterns allowed
+
+### `comments`
+
+**Optional**  
+Additional information that should be displayed for diagnostic purposes.
+
+### `company-name`
+
+**Optional**  
+Company that produced the executable.
+
+### `file-description`
+
+**Optional**  
+File description to be presented to users.
+
+### `internal-filename`
+
+**Optional**  
+Internal name of the file. Usually, this string should be the original filename, without the extension.
+
+### `legal-copyright`
+
+**Optional**  
+Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.
+
+### `legal-trademarks1`
+
+**Optional**  
+Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc.
+
+### `legal-trademarks2`
+
+**Optional**  
+Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc.
+
+### `original-filename`
+
+**Optional**  
+Original name of the file, not including a path.
+
+### `product-name`
+
+**Optional**  
+Name of the product with which the file is distributed.
+
+### `file-version`
+
+**Optional**  
+File's version to change to.
+
+### `product-version`
+
+**Optional**  
+Product's version to change to.
+
+### `icon`
+
+**Optional**  
+Path to the icon file (.ico) to set as the exePath's default icon.
+
+### `requested-execution-level`
+
+**Optional**  
+Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator.
+
+### `application-manifest`
+
+**Optional**  
+String path to a local manifest file to use.
+
+## Example usage
+
+```
+- uses: exivity/actions/rcedit@main
+  with:
+    path: build/foo.exe
+    file-description: Hello world test program
+    file-version: 1.0.0.0
 ```
 
 # `review`
@@ -409,8 +508,56 @@ not needed if `pull` has been specified.
 ## Example usage
 
 ```
-- uses: exivity/actions/review@master
+- uses: exivity/actions/review@main
   with:
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
     body: Exivity bot approves everything!
 ```
+
+# `sign-file`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/sign-file)
+
+Digitally sign a file
+
+⚠️ Currently only works on Windows hosts
+
+## Inputs
+
+### `path`
+
+**Required**  
+The path to the file to sign, glob patterns allowed
+
+### `certificate-base64`
+
+**Required**  
+The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string
+
+### `certificate-password`
+
+**Required**  
+The password for the `.pfx` file
+
+### `method`
+
+**Optional**  
+_Defaults to `signtool`_  
+The signature tool to use. Available options:
+
+- `signtool`
+
+## Example usage
+
+```
+- uses: exivity/actions/sign-file@main
+  with:
+    path: build/foo.exe
+    certificate-base64: ${{ secrets.CERTIFICATE_BASE64 }}
+    certificate-password: ${{ secrets.CERTIFICATE_PASSWORD }}
+```
+
+# Development guide
+
+When committing code to this repository, make sure to have Node & Yarn installed
+since code needs to be compiled in a pre-commit hook.

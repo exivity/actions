@@ -89,6 +89,7 @@ async function run() {
     // We need to copy sha to correct commit if we received a pull_request
     // event, because it uses PR merge branch instead of PR branch
     // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request
+    ref = eventData['pull_request']['head']['ref']
     sha = eventData['pull_request']['head']['sha']
   }
 
