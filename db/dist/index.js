@@ -7753,7 +7753,7 @@ function getAWSCredentials() {
 
 // db/src/index.ts
 async function run() {
-  const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
+  const branch = (0, import_core4.getInput)("branch") || (process.env["GITHUB_REF"] === "refs/heads/master" ? "master" : "develop");
   const dbName = (0, import_core4.getInput)("db-name") || "exdb-test";
   const mode = (0, import_core4.getInput)("mode") || "host";
   const password = (0, import_core4.getInput)("password") || "postgres";
