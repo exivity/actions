@@ -10,7 +10,7 @@ async function run() {
   let sha = getInput('sha')
   const branch =
     getInput('branch') ||
-    (process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop')
+    (process.env['GITHUB_REF'] === 'refs/heads/master' ? 'master' : 'develop')
   const usePlatformPrefix = getBooleanInput('use-platform-prefix', false)
   const prefix = getInput('prefix') || undefined
   const path = getInput('path') || `../${component}/build`

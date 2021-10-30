@@ -10082,7 +10082,7 @@ async function run() {
   (0, import_core3.info)(`Image prefix: ${prefix != null ? prefix : "none"}`);
   (0, import_core3.info)(`Image name: exivity/${component}`);
   (0, import_core3.info)(`Image tags: ${tags.join(",")}`);
-  if (isEvent(eventName, "delete", eventData || !!process.env["EMULATE_DELETE"])) {
+  if (isEvent(eventName, "delete", eventData) || !!process.env["EMULATE_DELETE"]) {
     if (type !== "branch") {
       (0, import_core3.info)(`Not deleting image deploy type "${type}"`);
       return;

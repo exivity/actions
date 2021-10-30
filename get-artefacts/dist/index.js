@@ -7736,7 +7736,7 @@ function getAWSCredentials() {
 async function run() {
   const component = (0, import_core4.getInput)("component", { required: true });
   let sha = (0, import_core4.getInput)("sha");
-  const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
+  const branch = (0, import_core4.getInput)("branch") || (process.env["GITHUB_REF"] === "refs/heads/master" ? "master" : "develop");
   const usePlatformPrefix = getBooleanInput("use-platform-prefix", false);
   const prefix = (0, import_core4.getInput)("prefix") || void 0;
   const path = (0, import_core4.getInput)("path") || `../${component}/build`;

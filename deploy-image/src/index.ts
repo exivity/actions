@@ -39,9 +39,10 @@ async function run() {
   info(`Image name: exivity/${component}`)
   info(`Image tags: ${tags.join(',')}`)
 
-  // This is hard to test so we allow emulating this event with a env var
+  // This is hard to test so we allow emulating this event with an env var
   if (
-    isEvent(eventName, 'delete', eventData || !!process.env['EMULATE_DELETE'])
+    isEvent(eventName, 'delete', eventData) ||
+    !!process.env['EMULATE_DELETE']
   ) {
     if (type !== 'branch') {
       info(`Not deleting image deploy type "${type}"`)
