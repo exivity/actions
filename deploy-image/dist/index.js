@@ -10067,6 +10067,7 @@ function getComponentVersion() {
 // deploy-image/src/index.ts
 var METADATA_FILENAME = "metadata.json";
 async function run() {
+  var _a, _b, _c;
   const { component: defaultComponent } = getRepository();
   const component = (0, import_core3.getInput)("component") || defaultComponent;
   const dockerUser = (0, import_core3.getInput)("docker-hub-user", { required: true });
@@ -10085,32 +10086,40 @@ async function run() {
   (0, import_core3.info)(`Image tags: ${tags.join(",")}`);
   if (isEvent(eventName, "delete", eventData) || !!process.env["EMULATE_DELETE"]) {
     if (type !== "branch") {
-      (0, import_core3.info)(`Not deleting image deploy type "${type}"`);
+      (0, import_core3.info)(`Not deleting images for deploy type "${type}"`);
       return;
     }
     const ghToken = getToken();
     const octokit = (0, import_github2.getOctokit)(ghToken);
-    const versions = await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
+    const { data: versions } = await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
       org: "exivity",
       package_type: "container",
-      package_name: component
+      package_name: component,
+      per_page: 100
     });
-    for (const version of versions.data) {
+    if (versions.length === 100) {
+      (0, import_core3.warning)(`Please clean up package versions or implement pagination, we found 100 or more!`);
+    }
+    if (!versions.length) {
+      (0, import_core3.info)("No package versions found");
+    }
+    for (const version of versions) {
       const tagOverlap = tags.filter((tag) => {
-        var _a, _b, _c;
-        return (_c = (_b = (_a = version.metadata) == null ? void 0 : _a.docker) == null ? void 0 : _b.tag) == null ? void 0 : _c.includes(tag);
+        var _a2, _b2, _c2;
+        return (_c2 = (_b2 = (_a2 = version.metadata) == null ? void 0 : _a2.container) == null ? void 0 : _b2.tags) == null ? void 0 : _c2.includes(tag);
       });
       if (tagOverlap.length > 0) {
-        (0, import_core3.info)(`Tag `);
+        (0, import_core3.info)(`Deleting package version ${version.id}, it was tagged with "${(_c = (_b = (_a = version.metadata) == null ? void 0 : _a.container) == null ? void 0 : _b.tags) == null ? void 0 : _c.join(",")}"`);
         await octokit.rest.packages.deletePackageVersionForOrg({
           org: "exivity",
           package_type: "container",
-          package_name: `exivity/${component}`,
+          package_name: component,
           package_version_id: version.id
         });
+      } else {
+        (0, import_core3.warning)("Could not find matching package version to delete");
       }
     }
-    (0, import_core3.setFailed)("To be implemented");
     return;
   }
   if (tags.length === 0) {

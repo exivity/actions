@@ -45,39 +45,55 @@ async function run() {
     !!process.env['EMULATE_DELETE']
   ) {
     if (type !== 'branch') {
-      info(`Not deleting image deploy type "${type}"`)
+      info(`Not deleting images for deploy type "${type}"`)
       return
     }
 
     const ghToken = getToken()
     const octokit = getOctokit(ghToken)
 
-    const versions =
+    const { data: versions } =
       await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
         org: 'exivity',
         package_type: 'container',
         package_name: component,
+        per_page: 100,
       })
 
+    if (versions.length === 100) {
+      warning(
+        `Please clean up package versions or implement pagination, we found 100 or more!`
+      )
+    }
+
+    if (!versions.length) {
+      info('No package versions found')
+    }
+
     // Look for versions with the same tags as the ones we'll delete
-    for (const version of versions.data) {
+    for (const version of versions) {
       const tagOverlap = tags.filter((tag) =>
-        version.metadata?.docker?.tag?.includes(tag)
+        version.metadata?.container?.tags?.includes(tag)
       )
 
       if (tagOverlap.length > 0) {
-        info(`Tag `)
+        info(
+          `Deleting package version ${
+            version.id
+          }, it was tagged with "${version.metadata?.container?.tags?.join(
+            ','
+          )}"`
+        )
         await octokit.rest.packages.deletePackageVersionForOrg({
           org: 'exivity',
           package_type: 'container',
-          package_name: `exivity/${component}`,
+          package_name: component,
           package_version_id: version.id,
         })
+      } else {
+        warning('Could not find matching package version to delete')
       }
     }
-
-    // @todo
-    setFailed('To be implemented')
 
     return
   }
