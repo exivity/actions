@@ -131,6 +131,7 @@ export function getImageLabels({
   return {
     'org.opencontainers.image.vendor': 'Exivity',
     'org.opencontainers.image.title': component,
+    'org.opencontainers.image.description': component,
     'org.opencontainers.image.url': 'https://exivity.com',
     'org.opencontainers.image.documentation': 'https://docs.exivity.com',
     'org.opencontainers.image.source': `https://github.com/${process.env['GITHUB_REPOSITORY']}`,

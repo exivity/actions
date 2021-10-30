@@ -10048,6 +10048,7 @@ function getImageLabels({
   return {
     "org.opencontainers.image.vendor": "Exivity",
     "org.opencontainers.image.title": component,
+    "org.opencontainers.image.description": component,
     "org.opencontainers.image.url": "https://exivity.com",
     "org.opencontainers.image.documentation": "https://docs.exivity.com",
     "org.opencontainers.image.source": `https://github.com/${process.env["GITHUB_REPOSITORY"]}`,
@@ -10092,7 +10093,7 @@ async function run() {
     const versions = await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
       org: "exivity",
       package_type: "container",
-      package_name: `exivity/${component}`
+      package_name: component
     });
     for (const version of versions.data) {
       const tagOverlap = tags.filter((tag) => {
@@ -10150,17 +10151,17 @@ ${JSON.stringify(metadata, void 0, 2)}`);
   const buildCmd = `docker build -f ${dockerfile} --tag ${component} ${labelOptions} .`;
   (0, import_core3.info)(`Building image`);
   await (0, import_exec3.exec)(buildCmd);
-  (0, import_core3.info)(`Tagging image`);
+  (0, import_core3.info)(`Tagging and pushing image`);
   for (const tag of tags) {
-    await (0, import_exec3.exec)(`docker image tag ${component} ${prefix}exivity/${component}:${tag}`);
-  }
-  (0, import_core3.info)("Pushing to registry");
-  const pushCmd = `docker push --all-tags ${prefix}exivity/${component}`;
-  if (!dryRun) {
-    await (0, import_exec3.exec)(pushCmd);
-  } else {
-    (0, import_core3.debug)(pushCmd);
-    (0, import_core3.info)("dry-run set, would have executed push command");
+    const name = `${prefix}exivity/${component}:${tag}`;
+    await (0, import_exec3.exec)(`docker image tag ${component} ${name}`);
+    const pushCmd = `docker push ${name}`;
+    if (!dryRun) {
+      await (0, import_exec3.exec)(pushCmd);
+    } else {
+      (0, import_core3.debug)(pushCmd);
+      (0, import_core3.info)("dry-run set, would have executed push command");
+    }
   }
 }
 run().catch(import_core3.setFailed);

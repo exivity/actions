@@ -56,7 +56,7 @@ async function run() {
       await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
         org: 'exivity',
         package_type: 'container',
-        package_name: `exivity/${component}`,
+        package_name: component,
       })
 
     // Look for versions with the same tags as the ones we'll delete
@@ -145,20 +145,18 @@ async function run() {
   info(`Building image`)
   await exec(buildCmd)
 
-  info(`Tagging image`)
+  info(`Tagging and pushing image`)
   for (const tag of tags) {
-    await exec(
-      `docker image tag ${component} ${prefix}exivity/${component}:${tag}`
-    )
-  }
+    const name = `${prefix}exivity/${component}:${tag}`
+    await exec(`docker image tag ${component} ${name}`)
 
-  info('Pushing to registry')
-  const pushCmd = `docker push --all-tags ${prefix}exivity/${component}`
-  if (!dryRun) {
-    await exec(pushCmd)
-  } else {
-    debug(pushCmd)
-    info('dry-run set, would have executed push command')
+    const pushCmd = `docker push ${name}`
+    if (!dryRun) {
+      await exec(pushCmd)
+    } else {
+      debug(pushCmd)
+      info('dry-run set, would have executed push command')
+    }
   }
 }
 
