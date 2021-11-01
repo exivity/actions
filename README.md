@@ -381,20 +381,28 @@ Edit resources of a Windows executable
 **Required**  
 The path to the file to sign, glob patterns allowed
 
-### `comments`
-
-**Optional**  
-Additional information that should be displayed for diagnostic purposes.
-
 ### `company-name`
 
 **Optional**  
+_Defaults to 'Exivity'_  
 Company that produced the executable.
+
+### `product-name`
+
+**Optional**  
+_Defaults to 'Exivity'_  
+Name of the product with which the file is distributed.
 
 ### `file-description`
 
 **Optional**  
+_Defaults to '$repo:$sha'_  
 File description to be presented to users.
+
+### `comments`
+
+**Optional**  
+Additional information that should be displayed for diagnostic purposes.
 
 ### `internal-filename`
 
@@ -420,11 +428,6 @@ Trademarks and registered trademarks, including the full text of all notices, le
 
 **Optional**  
 Original name of the file, not including a path.
-
-### `product-name`
-
-**Optional**  
-Name of the product with which the file is distributed.
 
 ### `file-version`
 
@@ -457,8 +460,6 @@ String path to a local manifest file to use.
 - uses: exivity/actions/rcedit@main
   with:
     path: build/foo.exe
-    file-description: Hello world test program
-    file-version: 1.0.0.0
 ```
 
 # `review`
