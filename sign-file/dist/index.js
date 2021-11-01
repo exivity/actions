@@ -2684,6 +2684,9 @@ var require_balanced_match = __commonJS({
       var bi = str.indexOf(b, ai + 1);
       var i = ai;
       if (ai >= 0 && bi > 0) {
+        if (a === b) {
+          return [ai, bi];
+        }
         begs = [];
         left = str.length;
         while (i >= 0 && !result) {
