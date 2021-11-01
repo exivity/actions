@@ -1,6 +1,7 @@
 import { debug, getInput, setFailed } from '@actions/core'
 import glob from 'glob-promise'
 import rcedit from 'rcedit'
+import { getRepository, getSha } from '../../lib/github'
 
 const executionLevels = [
   'asInvoker',
@@ -13,14 +14,15 @@ async function run() {
   const path = getInput('path', { required: true })
 
   const comments = getInput('comments')
-  const companyName = getInput('company-name')
-  const fileDescription = getInput('file-description')
+  const companyName = getInput('company-name') || 'Exivity'
+  const productName = getInput('product-name') || 'Exivity'
+  const fileDescription =
+    getInput('file-description') || `${getRepository().component}:${getSha()}`
   const internalFilename = getInput('internal-filename')
   const legalCopyright = getInput('legal-copyright')
   const legalTrademarks1 = getInput('legal-trademarks1')
   const legalTrademarks2 = getInput('legal-trademarks2')
   const originalFilename = getInput('original-filename')
-  const productName = getInput('product-name')
   const fileVersion = getInput('file-version')
   const productVersion = getInput('product-version')
   const icon = getInput('icon')
