@@ -1,6 +1,6 @@
 import { debug, getInput, info, setFailed, warning } from '@actions/core'
 import { exec } from '@actions/exec'
-import { getOctokit } from '@actions/github'
+import { context, getOctokit } from '@actions/github'
 import { promises as fs } from 'fs'
 import { getBooleanInput } from '../../lib/core'
 import {
@@ -25,8 +25,8 @@ async function run() {
   const component = getInput('component') || defaultComponent
   const dockerUser = getInput('docker-hub-user', { required: true })
   const dockerPassword = getInput('docker-hub-password', { required: true })
-  const ghcrUser = getInput('ghcr-user', { required: true })
-  const ghcrPassword = getInput('ghcr-password', { required: true })
+  const ghcrUser = getInput('ghcr-user') || context.actor
+  const ghcrPassword = getInput('ghcr-password') || getToken()
   const dryRun = getBooleanInput('dry-run', false)
   const dockerfile = getInput('dockerfile') || './Dockerfile'
   const eventName = getEventName(['push', 'delete'])
