@@ -53,7 +53,7 @@ If `true`, scaffold will not build or run any tests.
 ## Example usage
 
 ```
-- uses: exivity/actions/accept@master
+- uses: exivity/actions/accept@main
   with:
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
@@ -127,7 +127,7 @@ host mode.
 ## Example usage
 
 ```
-- uses: exivity/actions/db@master
+- uses: exivity/actions/db@main
   with:
     branch: some-feature-branch
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -206,7 +206,7 @@ A GitHub token with access to the exivity/{component} repository.
 ## Example usage
 
 ```
-- uses: exivity/actions/get-artefacts@master
+- uses: exivity/actions/get-artefacts@main
   with:
     component: db
     branch: master
@@ -233,7 +233,7 @@ The full SSH private key.
 ## Example usage
 
 ```
-- uses: exivity/actions/init-ssh@master
+- uses: exivity/actions/init-ssh@main
   with:
     private-key: ${{ secrets.PRIVATE_KEY }}
 ```
@@ -283,7 +283,7 @@ host mode.
 ## Example usage
 
 ```
-- uses: exivity/actions/postgres@master
+- uses: exivity/actions/postgres@main
   with:
     mode: docker
     version: 12.3
@@ -338,7 +338,7 @@ The AWS secret access key
 ## Example usage
 
 ```
-- uses: exivity/actions/put-artefacts@master
+- uses: exivity/actions/put-artefacts@main
   with:
     path: artefacts
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -362,7 +362,7 @@ The RabbitMQ version to use. Currently, only 3.8.6 is supported.
 ## Example usage
 
 ```
-- uses: exivity/actions/rabbitmq@master
+- uses: exivity/actions/rabbitmq@main
   with:
     version: 3.8.6
 ```
@@ -382,20 +382,28 @@ Edit resources of a Windows executable
 **Required**  
 The path to the file to sign, glob patterns allowed
 
-### `comments`
-
-**Optional**  
-Additional information that should be displayed for diagnostic purposes.
-
 ### `company-name`
 
 **Optional**  
+_Defaults to 'Exivity'_  
 Company that produced the executable.
+
+### `product-name`
+
+**Optional**  
+_Defaults to 'Exivity'_  
+Name of the product with which the file is distributed.
 
 ### `file-description`
 
 **Optional**  
+_Defaults to '$repo:$sha'_  
 File description to be presented to users.
+
+### `comments`
+
+**Optional**  
+Additional information that should be displayed for diagnostic purposes.
 
 ### `internal-filename`
 
@@ -421,11 +429,6 @@ Trademarks and registered trademarks, including the full text of all notices, le
 
 **Optional**  
 Original name of the file, not including a path.
-
-### `product-name`
-
-**Optional**  
-Name of the product with which the file is distributed.
 
 ### `file-version`
 
@@ -455,11 +458,9 @@ String path to a local manifest file to use.
 ## Example usage
 
 ```
-- uses: exivity/actions/rcedit@master
+- uses: exivity/actions/rcedit@main
   with:
     path: build/foo.exe
-    file-description: Hello world test program
-    file-version: 1.0.0.0
 ```
 
 # `review`
@@ -509,16 +510,11 @@ not needed if `pull` has been specified.
 ## Example usage
 
 ```
-- uses: exivity/actions/review@master
+- uses: exivity/actions/review@main
   with:
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
     body: Exivity bot approves everything!
 ```
-
-# Development guide
-
-When committing code to this repository, make sure to have Node & Yarn installed
-since code needs to be compiled in a pre-commit hook.
 
 # `sign-file`
 
@@ -556,7 +552,7 @@ The signature tool to use. Available options:
 ## Example usage
 
 ```
-- uses: exivity/actions/sign-file@master
+- uses: exivity/actions/sign-file@main
   with:
     path: build/foo.exe
     certificate-base64: ${{ secrets.CERTIFICATE_BASE64 }}
