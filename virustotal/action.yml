@@ -1,0 +1,12 @@
+name: virustotal
+description: Analyse artefacts with VirusTotal
+inputs:
+  vt_api_key:
+    description: The VirusTotal API key
+    required: true
+  files:
+    description: Newline-delimited list of path globs for asset files to upload for analysis
+    required: true
+runs:
+  using: node12
+  main: dist/index.js

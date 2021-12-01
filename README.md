@@ -15,6 +15,7 @@ _Available actions:_
 - [`rcedit`](#rcedit)
 - [`review`](#review)
 - [`sign-file`](#sign-file)
+- [`virustotal`](#virustotal)
 
 # `accept`
 
