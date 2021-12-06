@@ -1,3 +1,4 @@
+import { debug } from '@actions/core'
 import { HttpClient } from '@actions/http-client'
 import FormData from 'form-data'
 import { createReadStream, lstatSync } from 'fs'
@@ -6,8 +7,10 @@ import { basename } from 'path'
 import { z } from 'zod'
 
 const UploadData = z.object({
-  id: z.string(),
-  type: z.string(),
+  data: z.object({
+    id: z.string(),
+    type: z.string(),
+  }),
 })
 
 const VIRUSTOTAL_BASE_URL = 'https://www.virustotal.com/api/v3'
@@ -32,12 +35,20 @@ export class VirusTotal {
       'x-apikey': this.apiKey,
       ...formData.getHeaders(),
     })
-    const data = JSON.parse(await response.readBody())
-    const uploadData = UploadData.parse(data)
+    const responseRaw = await response.readBody()
+    const responseJson = JSON.parse(responseRaw)
+    debug(
+      `Received response from VirusTotal:\n${JSON.stringify(
+        responseJson,
+        undefined,
+        2
+      )}`
+    )
+    const responseData = UploadData.parse(responseJson).data
 
     return {
-      ...uploadData,
-      url: `https://www.virustotal.com/gui/file-analysis/${data.id}/detection`,
+      ...responseData,
+      url: `https://www.virustotal.com/gui/file-analysis/${responseData.id}/detection`,
     }
   }
 }

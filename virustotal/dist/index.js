@@ -366,7 +366,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug2("making CONNECT request");
+      debug3("making CONNECT request");
       var connectReq = self.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -386,7 +386,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug2("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug3("tunneling socket could not be established, statusCode=%d", res.statusCode);
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -395,7 +395,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug2("got illegal response body from proxy");
+          debug3("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -403,13 +403,13 @@ var require_tunnel = __commonJS({
           self.removeSocket(placeholder);
           return;
         }
-        debug2("tunneling connection has established");
+        debug3("tunneling connection has established");
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug2("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug3("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
@@ -467,9 +467,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug2;
+    var debug3;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug2 = function() {
+      debug3 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -479,10 +479,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug2 = function() {
+      debug3 = function() {
       };
     }
-    exports2.debug = debug2;
+    exports2.debug = debug3;
   }
 });
 
@@ -1253,10 +1253,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports2.isDebug = isDebug;
-    function debug2(message) {
+    function debug3(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports2.debug = debug2;
+    exports2.debug = debug3;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -13123,10 +13123,11 @@ var require_mime = __commonJS({
 });
 
 // virustotal/src/index.ts
-var import_core = __toModule(require_core());
+var import_core2 = __toModule(require_core());
 var import_glob_promise = __toModule(require_lib());
 
 // virustotal/src/virustotal.ts
+var import_core = __toModule(require_core());
 var import_http_client = __toModule(require_http_client());
 var import_form_data = __toModule(require_form_data());
 var import_fs = __toModule(require("fs"));
@@ -14944,8 +14945,10 @@ var external = Object.freeze({ __proto__: null, ZodParsedType, getParsedType, ma
 
 // virustotal/src/virustotal.ts
 var UploadData = external.object({
-  id: external.string(),
-  type: external.string()
+  data: external.object({
+    id: external.string(),
+    type: external.string()
+  })
 });
 var VIRUSTOTAL_BASE_URL = "https://www.virustotal.com/api/v3";
 var VirusTotal = class {
@@ -14965,10 +14968,13 @@ var VirusTotal = class {
     const response = await this.httpClient.sendStream("POST", url, formData, __spreadValues({
       "x-apikey": this.apiKey
     }, formData.getHeaders()));
-    const data = JSON.parse(await response.readBody());
-    const uploadData = UploadData.parse(data);
-    return __spreadProps(__spreadValues({}, uploadData), {
-      url: `https://www.virustotal.com/gui/file-analysis/${data.id}/detection`
+    const responseRaw = await response.readBody();
+    const responseJson = JSON.parse(responseRaw);
+    (0, import_core.debug)(`Received response from VirusTotal:
+${JSON.stringify(responseJson, void 0, 2)}`);
+    const responseData = UploadData.parse(responseJson).data;
+    return __spreadProps(__spreadValues({}, responseData), {
+      url: `https://www.virustotal.com/gui/file-analysis/${responseData.id}/detection`
     });
   }
 };
@@ -14987,22 +14993,22 @@ function mimeOrDefault(path) {
 // virustotal/src/index.ts
 async function analyse(vt, filePath) {
   const result = await vt.scanFile(filePath);
-  (0, import_core.info)(`File "${filePath}" has been scanned`);
-  (0, import_core.info)(JSON.stringify(result, void 0, 2));
+  (0, import_core2.info)(`File "${filePath}" has been scanned`);
+  (0, import_core2.info)(JSON.stringify(result, void 0, 2));
 }
 async function run() {
-  const path = (0, import_core.getInput)("path", { required: true });
-  const virustotalApiKey = (0, import_core.getInput)("virustotal_api_key", {
+  const path = (0, import_core2.getInput)("path", { required: true });
+  const virustotalApiKey = (0, import_core2.getInput)("virustotal_api_key", {
     required: true
   });
   const vt = new VirusTotal(virustotalApiKey);
   const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
-  (0, import_core.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
+  (0, import_core2.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
   for (const absPath of absPaths) {
     await analyse(vt, absPath);
   }
 }
-run().catch(import_core.setFailed);
+run().catch(import_core2.setFailed);
 /*!
  * mime-db
  * Copyright(c) 2014 Jonathan Ong
