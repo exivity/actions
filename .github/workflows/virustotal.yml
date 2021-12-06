@@ -1,4 +1,4 @@
-name: sign-file
+name: virustotal
 
 on:
   push:
