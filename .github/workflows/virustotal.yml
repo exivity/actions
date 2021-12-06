@@ -1,0 +1,26 @@
+name: sign-file
+
+on:
+  push:
+    paths:
+      - '.github/workflows/virustotal.yml'
+      - 'virustotal/**'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - if: matrix.os == 'ubuntu-latest'
+        uses: ./virustotal
+        with:
+          virustotal_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          path: fixtures/build/hello
+      - if: matrix.os == 'windows-latest'
+        uses: ./virustotal
+        with:
+          virustotal_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          path: fixtures/build/hello.exe

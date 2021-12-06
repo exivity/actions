@@ -559,6 +559,35 @@ The signature tool to use. Available options:
     certificate-password: ${{ secrets.CERTIFICATE_PASSWORD }}
 ```
 
+# `virustotal`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/virustotal)
+
+Analyse artefacts with VirusTotal
+
+_Forked from: [crazy-max/ghaction-virustotal](https://github.com/crazy-max/ghaction-virustotal)_
+
+## Inputs
+
+### `virustotal_api_key`
+
+**Required**  
+The VirusTotal API key
+
+### `path`
+
+**Required**  
+The path to the file to analyse, glob patterns allowed
+
+## Example usage
+
+```
+- uses: exivity/actions/virustotal@main
+  with:
+    virustotal_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+    path: build/foo.exe
+```
+
 # Development guide
 
 When committing code to this repository, make sure to have Node & Yarn installed
