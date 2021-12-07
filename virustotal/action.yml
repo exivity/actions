@@ -1,12 +1,15 @@
 name: virustotal
 description: Analyse artefacts with VirusTotal
 inputs:
-  virustotal_api_key:
-    description: The VirusTotal API key
-    required: true
   path:
     description: The path to the file to analyse, glob patterns allowed
     required: true
+  virustotal-api-key:
+    description: The VirusTotal API key
+    required: true
+  gh-token:
+    description: GitHub token used for writing commit status
+    required: false
 runs:
   using: node12
   main: dist/index.js

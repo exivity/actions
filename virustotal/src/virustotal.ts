@@ -6,6 +6,8 @@ import { getType } from 'mime'
 import { basename } from 'path'
 import { z } from 'zod'
 
+export type AnalysisResult = Awaited<ReturnType<VirusTotal['scanFile']>>
+
 const UploadData = z.object({
   data: z.object({
     id: z.string(),
@@ -20,13 +22,13 @@ export class VirusTotal {
 
   constructor(private apiKey: string | undefined) {}
 
-  async scanFile(filename: string) {
+  async scanFile(path: string) {
     const url = `${VIRUSTOTAL_BASE_URL}/files`
     const formData = new FormData()
 
-    const { name, mimeType, size, readStream } = asset(filename)
+    const { filename, mimeType, size, readStream } = asset(path)
     formData.append('file', readStream, {
-      filename: name,
+      filename,
       contentType: mimeType,
       knownLength: size,
     })
@@ -48,6 +50,7 @@ export class VirusTotal {
 
     return {
       ...responseData,
+      filename,
       url: `https://www.virustotal.com/gui/file-analysis/${responseData.id}/detection`,
     }
   }
@@ -55,7 +58,7 @@ export class VirusTotal {
 
 export function asset(path: string) {
   return {
-    name: basename(path),
+    filename: basename(path),
     mimeType: mimeOrDefault(path),
     size: lstatSync(path).size,
     readStream: createReadStream(path),

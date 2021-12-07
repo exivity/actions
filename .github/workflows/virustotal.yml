@@ -17,10 +17,12 @@ jobs:
       - if: matrix.os == 'ubuntu-latest'
         uses: ./virustotal
         with:
-          virustotal_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
           path: fixtures/build/hello
+          virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
       - if: matrix.os == 'windows-latest'
         uses: ./virustotal
         with:
-          virustotal_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
           path: fixtures/build/hello.exe
+          virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}

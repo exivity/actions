@@ -16,7 +16,9 @@ import {
   getRepository,
   getSha,
   getToken,
+  isDevelopBranch,
   isEvent,
+  isReleaseBranch,
 } from '../../lib/github'
 import {
   includesBotRequest,
@@ -32,9 +34,6 @@ const supportedEvents = ['push', 'pull_request', 'workflow_run'] as const
 const scaffoldWorkflowId = 514379
 
 const defaultScaffoldBranch = 'develop'
-
-const releaseBranches = ['master', 'main']
-const developBranches = ['develop']
 
 function detectIssueKey(input: string) {
   const match = input.match(/([A-Z0-9]{1,10}-\d+)/)
@@ -61,7 +60,9 @@ async function run() {
 
   if (isEvent(eventName, 'workflow_run', eventData)) {
     if (eventData['action'] !== 'completed') {
-      warning('Skipping: only the "workflow_run.completed" event is supported')
+      warning(
+        '[accept] Skipping: only the "workflow_run.completed" event is supported'
+      )
       return
     }
 
@@ -75,14 +76,14 @@ async function run() {
   if (isEvent(eventName, 'pull_request', eventData)) {
     if (eventData['action'] !== 'review_requested') {
       warning(
-        'Skipping: only the "pull_request.review_requested" event is supported'
+        '[accept] Skipping: only the "pull_request.review_requested" event is supported'
       )
       return
     }
 
     // Skip accepting commits on PR without exivity-bot review request
     if (!includesBotRequest(eventData)) {
-      warning('Skipping: exivity-bot not requested for review')
+      warning('[accept] Skipping: exivity-bot not requested for review')
       return
     }
 
@@ -94,8 +95,8 @@ async function run() {
   }
 
   // Skip accepting commits on release branches
-  if (releaseBranches.includes(ref)) {
-    warning(`Skipping: release branch "${ref}" is ignored`)
+  if (isReleaseBranch(ref)) {
+    warning(`[accept] Skipping: release branch "${ref}" is ignored`)
     return
   }
 
@@ -115,8 +116,8 @@ async function run() {
   endGroup()
 
   // Skip accepting commits on non-develop branches without PR
-  if (!developBranches.includes(ref) && !pull_request) {
-    warning('Skipping: non-develop branch without pull request')
+  if (!isDevelopBranch(ref) && !pull_request) {
+    warning('[accept] Skipping: non-develop branch without pull request')
     return
   }
 
@@ -125,7 +126,7 @@ async function run() {
     info('Checking if workflow constraint is satisfied...')
 
     if (!(await isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
-      warning(`Skipping: workflow constraint not satisfied`)
+      warning(`[accept] Skipping: workflow constraint not satisfied`)
       return
     }
   }
@@ -133,19 +134,19 @@ async function run() {
   if (isEvent(eventName, 'workflow_run', eventData)) {
     // We need to check if conclusion was successful
     if (eventData['workflow_run']['conclusion'] !== 'success') {
-      warning(`Skipping: workflow constraint not satisfied`)
+      warning(`[accept] Skipping: workflow constraint not satisfied`)
       return
     }
 
     // Skip accepting commits on PR without exivity-bot review request
     if (pr && !isBotReviewRequested(pr)) {
-      warning('Skipping: exivity-bot not requested for review')
+      warning('[accept] Skipping: exivity-bot not requested for review')
       return
     }
   }
 
   // If we're on a development branch, scrub component and sha from dispatch
-  if (developBranches.includes(ref)) {
+  if (isDevelopBranch(ref)) {
     info('On a development branch, dispatching plain run')
     await dispatch({
       octokit,
