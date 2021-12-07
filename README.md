@@ -10,11 +10,13 @@ _Available actions:_
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
+- [`process-binary`](#process-binary)
 - [`put-artefacts`](#put-artefacts)
 - [`rabbitmq`](#rabbitmq)
 - [`rcedit`](#rcedit)
 - [`review`](#review)
 - [`sign-file`](#sign-file)
+- [`virustotal`](#virustotal)
 
 # `accept`
 
@@ -288,6 +290,29 @@ host mode.
     version: 12.3
 ```
 
+# `process-binary`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/process-binary)
+
+A composite action running [`rcedit`](#rcedit), [`sign-file`](#sign-file) and
+[`virustotal`](#virustotal) (in that order).
+
+## Inputs
+
+See individual actions for inputs.
+
+## Example usage
+
+```
+- uses: exivity/actions/process-binary@main
+  with:
+    path: build/foo.exe
+    certificate-base64: ${{ secrets.CODESIGN_CERTIFICATE_BASE64 }}
+    certificate-password: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
+    virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+    gh-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
 # `put-artefacts`
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/put-artefacts)
@@ -554,8 +579,44 @@ The signature tool to use. Available options:
 - uses: exivity/actions/sign-file@main
   with:
     path: build/foo.exe
-    certificate-base64: ${{ secrets.CERTIFICATE_BASE64 }}
-    certificate-password: ${{ secrets.CERTIFICATE_PASSWORD }}
+    certificate-base64: ${{ secrets.CODESIGN_CERTIFICATE_BASE64 }}
+    certificate-password: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
+```
+
+# `virustotal`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/virustotal)
+
+Analyse artefacts with VirusTotal
+
+_Forked from: [crazy-max/ghaction-virustotal](https://github.com/crazy-max/ghaction-virustotal)_
+
+## Inputs
+
+### `path`
+
+**Required**  
+The path to the file to analyse, glob patterns allowed
+
+### `virustotal-api-key`
+
+**Required**  
+The VirusTotal API key
+
+### `gh-token`
+
+**Optional**  
+_Defaults to the GITHUB_TOKEN environment variable_  
+GitHub token used for writing commit status
+
+## Example usage
+
+```
+- uses: exivity/actions/virustotal@main
+  with:
+    path: build/foo.exe
+    virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+    gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 # Development guide

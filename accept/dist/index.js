@@ -8,8 +8,6 @@ var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __reflectGet = Reflect.get;
-var __reflectSet = Reflect.set;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues = (a, b) => {
   for (var prop in b || (b = {}))
@@ -26871,6 +26869,8 @@ function getBooleanInput(name, defaultValue) {
 // lib/github.ts
 var import_core2 = __toModule(require_core());
 var import_fs2 = __toModule(require("fs"));
+var ReleaseBranches = ["master", "main"];
+var DevelopBranches = ["develop"];
 async function getPR(octokit, repo, ref) {
   const { data } = await octokit.rest.pulls.list({
     owner: "exivity",
@@ -26947,6 +26947,18 @@ function getWorkflowName() {
     throw new Error("The GitHub workflow name is missing");
   }
   return workflowName;
+}
+function isReleaseBranch(ref) {
+  if (!ref) {
+    ref = getRef();
+  }
+  return ReleaseBranches.includes(ref);
+}
+function isDevelopBranch(ref) {
+  if (!ref) {
+    ref = getRef();
+  }
+  return DevelopBranches.includes(ref);
 }
 
 // accept/src/checks.ts
@@ -30945,8 +30957,6 @@ async function dispatch({
 var supportedEvents = ["push", "pull_request", "workflow_run"];
 var scaffoldWorkflowId = 514379;
 var defaultScaffoldBranch = "develop";
-var releaseBranches = ["master", "main"];
-var developBranches = ["develop"];
 function detectIssueKey(input) {
   const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
   return match !== null && match.length > 0 ? match[0] : void 0;
@@ -30967,7 +30977,7 @@ async function run() {
   table("Event", eventName);
   if (isEvent(eventName, "workflow_run", eventData)) {
     if (eventData["action"] !== "completed") {
-      (0, import_core5.warning)('Skipping: only the "workflow_run.completed" event is supported');
+      (0, import_core5.warning)('[accept] Skipping: only the "workflow_run.completed" event is supported');
       return;
     }
     ref = eventData["workflow_run"]["head_branch"];
@@ -30975,18 +30985,18 @@ async function run() {
   }
   if (isEvent(eventName, "pull_request", eventData)) {
     if (eventData["action"] !== "review_requested") {
-      (0, import_core5.warning)('Skipping: only the "pull_request.review_requested" event is supported');
+      (0, import_core5.warning)('[accept] Skipping: only the "pull_request.review_requested" event is supported');
       return;
     }
     if (!includesBotRequest(eventData)) {
-      (0, import_core5.warning)("Skipping: exivity-bot not requested for review");
+      (0, import_core5.warning)("[accept] Skipping: exivity-bot not requested for review");
       return;
     }
     ref = eventData["pull_request"]["head"]["ref"];
     sha = eventData["pull_request"]["head"]["sha"];
   }
-  if (releaseBranches.includes(ref)) {
-    (0, import_core5.warning)(`Skipping: release branch "${ref}" is ignored`);
+  if (isReleaseBranch(ref)) {
+    (0, import_core5.warning)(`[accept] Skipping: release branch "${ref}" is ignored`);
     return;
   }
   const pr = await getPR(octokit, component, ref);
@@ -30999,28 +31009,28 @@ async function run() {
   (0, import_core5.startGroup)("Debug");
   (0, import_core5.info)(JSON.stringify({ eventData, pr }, void 0, 2));
   (0, import_core5.endGroup)();
-  if (!developBranches.includes(ref) && !pull_request) {
-    (0, import_core5.warning)("Skipping: non-develop branch without pull request");
+  if (!isDevelopBranch(ref) && !pull_request) {
+    (0, import_core5.warning)("[accept] Skipping: non-develop branch without pull request");
     return;
   }
   if (eventName === "pull_request") {
     (0, import_core5.info)("Checking if workflow constraint is satisfied...");
     if (!await isWorkflowDependencyDone(octokit, ghToken, sha, component)) {
-      (0, import_core5.warning)(`Skipping: workflow constraint not satisfied`);
+      (0, import_core5.warning)(`[accept] Skipping: workflow constraint not satisfied`);
       return;
     }
   }
   if (isEvent(eventName, "workflow_run", eventData)) {
     if (eventData["workflow_run"]["conclusion"] !== "success") {
-      (0, import_core5.warning)(`Skipping: workflow constraint not satisfied`);
+      (0, import_core5.warning)(`[accept] Skipping: workflow constraint not satisfied`);
       return;
     }
     if (pr && !isBotReviewRequested(pr)) {
-      (0, import_core5.warning)("Skipping: exivity-bot not requested for review");
+      (0, import_core5.warning)("[accept] Skipping: exivity-bot not requested for review");
       return;
     }
   }
-  if (developBranches.includes(ref)) {
+  if (isDevelopBranch(ref)) {
     (0, import_core5.info)("On a development branch, dispatching plain run");
     await dispatch({
       octokit,

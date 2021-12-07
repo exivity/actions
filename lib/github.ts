@@ -12,6 +12,9 @@ type Options = {
   ref: string
 }
 
+export const ReleaseBranches = ['master', 'main']
+export const DevelopBranches = ['develop']
+
 export async function getShaFromRef({ octokit, component, ref }: Options) {
   if (ref === 'develop') {
     const hasDevelop = (
@@ -168,4 +171,20 @@ export function getWorkflowName() {
   }
 
   return workflowName
+}
+
+export function isReleaseBranch(ref?: string) {
+  if (!ref) {
+    ref = getRef()
+  }
+
+  return ReleaseBranches.includes(ref)
+}
+
+export function isDevelopBranch(ref?: string) {
+  if (!ref) {
+    ref = getRef()
+  }
+
+  return DevelopBranches.includes(ref)
 }

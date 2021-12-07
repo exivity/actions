@@ -1,0 +1,36 @@
+name: process-binary
+description: A composite action running rcedit, sign-file and virustotal
+inputs:
+  path:
+    description: The path to the binary to process, glob patterns allowed
+    required: true
+  certificate-base64:
+    description: The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string
+    required: true
+  certificate-password:
+    description: The password for the `.pfx` file
+    required: true
+  virustotal-api-key:
+    description: The VirusTotal API key
+    required: true
+  gh-token:
+    description: GitHub token used for writing commit status
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - uses: exivity/actions/rcedit@main
+      if: runner.os == 'Windows'
+      with:
+        path: ${{ inputs.path }}
+    - uses: exivity/actions/sign-file@main
+      if: runner.os == 'Windows'
+      with:
+        path: ${{ inputs.path }}
+        certificate-base64: ${{ inputs.certificate-base64 }}
+        certificate-password: ${{ inputs.certificate-password }}
+    - uses: exivity/actions/virustotal@main
+      with:
+        path: ${{ inputs.path }}
+        virustotal-api-key: ${{ inputs.virustotal-api-key }}
+        gh-token: ${{ inputs.gh-token }}
