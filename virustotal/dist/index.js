@@ -17371,7 +17371,7 @@ var ZodType = function() {
       return t.data;
     throw t.error;
   }, e.prototype.safeParse = function(e2, t) {
-    t = { path: (t == null ? void 0 : t.path) || [], issues: [], contextualErrorMap: t == null ? void 0 : t.errorMap, schemaErrorMap: this._def.errorMap, async: (t = t == null ? void 0 : t.async) !== null && t !== void 0 && t, typeCache: new Map(), parent: null, data: e2, parsedType: getParsedType(e2) }, e2 = this._parseSync({ data: e2, path: t.path, parent: t });
+    t = { path: (t == null ? void 0 : t.path) || [], issues: [], contextualErrorMap: t == null ? void 0 : t.errorMap, schemaErrorMap: this._def.errorMap, async: (t = t == null ? void 0 : t.async) !== null && t !== void 0 && t, typeCache: /* @__PURE__ */ new Map(), parent: null, data: e2, parsedType: getParsedType(e2) }, e2 = this._parseSync({ data: e2, path: t.path, parent: t });
     return handleResult(t, e2);
   }, e.prototype.parseAsync = function(r, n) {
     return __awaiter(this, void 0, void 0, function() {
@@ -17393,7 +17393,7 @@ var ZodType = function() {
       return __generator(this, function(e2) {
         switch (e2.label) {
           case 0:
-            return t = { path: (a == null ? void 0 : a.path) || [], issues: [], contextualErrorMap: a == null ? void 0 : a.errorMap, schemaErrorMap: this._def.errorMap, async: true, typeCache: new Map(), parent: null, data: n, parsedType: getParsedType(n) }, r = this._parse({ data: n, path: [], parent: t }), [4, isAsync(r) ? r : Promise.resolve(r)];
+            return t = { path: (a == null ? void 0 : a.path) || [], issues: [], contextualErrorMap: a == null ? void 0 : a.errorMap, schemaErrorMap: this._def.errorMap, async: true, typeCache: /* @__PURE__ */ new Map(), parent: null, data: n, parsedType: getParsedType(n) }, r = this._parse({ data: n, path: [], parent: t }), [4, isAsync(r) ? r : Promise.resolve(r)];
           case 1:
             return r = e2.sent(), [2, handleResult(t, r)];
         }
@@ -18162,7 +18162,7 @@ var ZodMap = function(e) {
       return { key: o._parse({ data: e3, path: __spreadArray(__spreadArray([], __read(a.path), false), [t2, "key"], false), parent: a }), value: s._parse({ data: r2, path: __spreadArray(__spreadArray([], __read(a.path), false), [t2, "value"], false), parent: a }) };
     });
     if (a.async) {
-      var p = new Map();
+      var p = /* @__PURE__ */ new Map();
       return Promise.resolve().then(function() {
         return __awaiter(n2, void 0, void 0, function() {
           var t2, r2, n3, a2, o2, s2, i2;
@@ -18199,7 +18199,7 @@ var ZodMap = function(e) {
         });
       });
     }
-    var i = new Map();
+    var i = /* @__PURE__ */ new Map();
     try {
       for (var c = __values(d), l = c.next(); !l.done; l = c.next()) {
         var y = l.value, f = y.key, _ = y.value;
@@ -18232,7 +18232,7 @@ var ZodSet = function(e) {
       return addIssueToContext(r2, { code: ZodIssueCode.invalid_type, expected: ZodParsedType.set, received: r2.parsedType }), INVALID;
     var n = this._def.valueType;
     function t(e3) {
-      var t2, r3, n2 = new Set();
+      var t2, r3, n2 = /* @__PURE__ */ new Set();
       try {
         for (var a = __values(e3), o = a.next(); !o.done; o = a.next()) {
           var s = o.value;

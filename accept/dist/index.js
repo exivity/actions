@@ -19772,7 +19772,7 @@ var require_macos_release = __commonJS({
   "node_modules/macos-release/index.js"(exports2, module2) {
     "use strict";
     var os2 = require("os");
-    var nameMap = new Map([
+    var nameMap = /* @__PURE__ */ new Map([
       [21, ["Monterey", "12"]],
       [20, ["Big Sur", "11"]],
       [19, ["Catalina", "10.15"]],
@@ -22278,7 +22278,7 @@ var require_windows_release = __commonJS({
     "use strict";
     var os2 = require("os");
     var execa = require_execa();
-    var names = new Map([
+    var names = /* @__PURE__ */ new Map([
       ["10.0", "10"],
       ["6.3", "8.1"],
       ["6.2", "8"],
@@ -26394,8 +26394,8 @@ var require_tool_cache = __commonJS({
         const maxAttempts = 3;
         const minSeconds = _getGlobal("TEST_DOWNLOAD_TOOL_RETRY_MIN_SECONDS", 10);
         const maxSeconds = _getGlobal("TEST_DOWNLOAD_TOOL_RETRY_MAX_SECONDS", 20);
-        const retryHelper3 = new retry_helper_1.RetryHelper(maxAttempts, minSeconds, maxSeconds);
-        return yield retryHelper3.execute(() => __awaiter(this, void 0, void 0, function* () {
+        const retryHelper = new retry_helper_1.RetryHelper(maxAttempts, minSeconds, maxSeconds);
+        return yield retryHelper.execute(() => __awaiter(this, void 0, void 0, function* () {
           return yield downloadToolAttempt(url, dest || "", auth, headers);
         }), (err) => {
           if (err instanceof HTTPError && err.httpStatusCode) {
@@ -27086,12 +27086,12 @@ function createAuthHelper(git, settings) {
   return new GitAuthHelper(git, settings);
 }
 var GitAuthHelper = class {
-  constructor(gitCommandManager2, gitSourceSettings) {
+  constructor(gitCommandManager, gitSourceSettings) {
     this.sshCommand = "";
     this.sshKeyPath = "";
     this.sshKnownHostsPath = "";
     this.temporaryHomePath = "";
-    this.git = gitCommandManager2;
+    this.git = gitCommandManager;
     this.settings = gitSourceSettings || {};
     const serverUrl = getServerUrl();
     this.tokenConfigKey = `http.${serverUrl.origin}/.extraheader`;
@@ -27485,8 +27485,8 @@ var RetryHelper = class {
   }
 };
 async function execute(action) {
-  const retryHelper3 = new RetryHelper();
-  return await retryHelper3.execute(action);
+  const retryHelper = new RetryHelper();
+  return await retryHelper.execute(action);
 }
 
 // node_modules/checkout/src/git-version.ts
