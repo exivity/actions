@@ -18670,8 +18670,7 @@ async function writeStatus(octokit, result) {
     repo: getRepository().component,
     sha: getSha(),
     state: "pending",
-    description: `VirusTotal scan of ${result.filename}`,
-    context: "virustotal",
+    context: `virustotal (${result.filename})`,
     target_url: result.url
   });
   (0, import_core3.info)("Written commit status");
@@ -18684,6 +18683,7 @@ async function run() {
   const ghToken = getToken();
   if (!isReleaseBranch() && !isDevelopBranch()) {
     (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
+    return;
   }
   const vt = new VirusTotal(virustotalApiKey);
   const octokit = (0, import_github.getOctokit)(ghToken);

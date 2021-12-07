@@ -27,8 +27,7 @@ async function writeStatus(
     repo: getRepository().component,
     sha: getSha(),
     state: 'pending',
-    description: `VirusTotal scan of ${result.filename}`,
-    context: 'virustotal',
+    context: `virustotal (${result.filename})`,
     target_url: result.url,
   })
   info('Written commit status')
@@ -45,8 +44,7 @@ async function run() {
   // Do not run on non-release and non-develop branches
   if (!isReleaseBranch() && !isDevelopBranch()) {
     info(`Skipping: feature branch "${getRef()}" is ignored`)
-    // @TODO: uncomment
-    // return
+    return
   }
 
   const vt = new VirusTotal(virustotalApiKey)
