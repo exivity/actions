@@ -45,9 +45,10 @@ async function getPendingVirusTotalStatuses(
 ) {
   const refs = [...ReleaseBranches, ...DevelopBranches]
   for (const ref of refs) {
+    info(`Checking statuses for ${ref}`)
     const { data: statuses } = await octokit.rest.checks.listForRef({
       owner: 'exivity',
-      repo: getRepository().component,
+      repo: 'merlin', // @TODO: getRepository().component, // also revert GH_BOT_TOKEN -> GITHUB_TOKEN
       ref,
     })
     for (const checkRun of statuses.check_runs) {

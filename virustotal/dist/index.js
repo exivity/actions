@@ -18682,9 +18682,10 @@ async function writeStatus(octokit, result) {
 async function getPendingVirusTotalStatuses(octokit) {
   const refs = [...ReleaseBranches, ...DevelopBranches];
   for (const ref of refs) {
+    (0, import_core3.info)(`Checking statuses for ${ref}`);
     const { data: statuses } = await octokit.rest.checks.listForRef({
       owner: "exivity",
-      repo: getRepository().component,
+      repo: "merlin",
       ref
     });
     for (const checkRun of statuses.check_runs) {
