@@ -47,18 +47,20 @@ async function getPendingVirusTotalStatuses(
   for (const ref of refs) {
     info(`Checking statuses for ${ref}`)
     try {
-      const { data: statuses } = await octokit.rest.checks.listForRef({
-        owner: 'exivity',
-        repo: 'merlin', // @TODO: getRepository().component, // also revert GH_BOT_TOKEN -> GITHUB_TOKEN
-        ref,
-      })
-      for (const checkRun of statuses.check_runs) {
-        info(`Got check run "${JSON.stringify(checkRun, null, 2)}"`)
+      const { data: statuses } =
+        await octokit.rest.repos.listCommitStatusesForRef({
+          owner: 'exivity',
+          repo: 'merlin', // @TODO: getRepository().component, // also revert GH_BOT_TOKEN -> GITHUB_TOKEN
+          ref,
+        })
+      for (const status of statuses) {
+        info(`Got status "${JSON.stringify(status, null, 2)}"`)
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        info(`Got error ${error.message} - ${error.name}`)
-        if (!error.message.includes('No commit found for SHA:')) {
+        if (error.message.includes('No commit found for SHA:')) {
+          debug(`No commits found for branch ${ref}`)
+        } else {
           throw error
         }
       }
