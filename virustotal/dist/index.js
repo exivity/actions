@@ -16788,32 +16788,12 @@ function getSha() {
   }
   return sha;
 }
-function getRef() {
-  var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
-  if (!ref) {
-    throw new Error("The GitHub ref is missing");
-  }
-  return ref;
-}
 function getToken(inputName = "gh-token") {
   const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
-}
-function isReleaseBranch(ref) {
-  if (!ref) {
-    ref = getRef();
-  }
-  return ReleaseBranches.includes(ref);
-}
-function isDevelopBranch(ref) {
-  if (!ref) {
-    ref = getRef();
-  }
-  return DevelopBranches.includes(ref);
 }
 
 // virustotal/src/virustotal.ts
@@ -18781,10 +18761,6 @@ async function run() {
   switch (mode) {
     case ModeAnalyse:
       const path = (0, import_core3.getInput)("path", { required: true });
-      if (!isReleaseBranch() && !isDevelopBranch()) {
-        (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
-        return;
-      }
       const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
       (0, import_core3.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
       for (const absPath of absPaths) {

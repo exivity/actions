@@ -3,13 +3,10 @@ import { getOctokit } from '@actions/github'
 import glob from 'glob-promise'
 import {
   DevelopBranches,
-  getRef,
   getRepository,
   getSha,
   getShaFromRef,
   getToken,
-  isDevelopBranch,
-  isReleaseBranch,
   ReleaseBranches,
 } from '../../lib/github'
 import {
@@ -130,10 +127,11 @@ async function run() {
       const path = getInput('path', { required: true })
 
       // Do not run on non-release and non-develop branches
-      if (!isReleaseBranch() && !isDevelopBranch()) {
-        info(`Skipping: feature branch "${getRef()}" is ignored`)
-        return
-      }
+      // TODO: uncomment
+      // if (!isReleaseBranch() && !isDevelopBranch()) {
+      //   info(`Skipping: feature branch "${getRef()}" is ignored`)
+      //   return
+      // }
 
       // Obtain absolute paths
       const absPaths = await glob(path, { absolute: true })
