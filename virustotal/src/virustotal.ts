@@ -36,6 +36,13 @@ const UploadData = z.object({
   data: z.object({
     id: z.string(),
     type: z.string(),
+  }),
+})
+
+const FileData = z.object({
+  data: z.object({
+    id: z.string(),
+    type: z.string(),
     attributes: z.object({
       md5: z.string(),
     }),
@@ -44,12 +51,16 @@ const UploadData = z.object({
 
 const VIRUSTOTAL_BASE_URL = 'https://www.virustotal.com/api/v3'
 
-export function md5ToGuiUrl(md5: string) {
-  return `https://www.virustotal.com/gui/file/${md5}`
+export function filehashToGuiUrl(filehash: string) {
+  return `https://www.virustotal.com/gui/file/${filehash}`
 }
 
-export function guiUrlToMd5(url: string) {
+export function guiUrlToFilehash(url: string) {
   return url.split('/').pop() as string
+}
+
+export function analysisIdToFilehash(id: string) {
+  return Buffer.from(id, 'base64').toString().split(':')[0]
 }
 
 export class VirusTotal {
@@ -84,15 +95,15 @@ export class VirusTotal {
     const responseData = UploadData.parse(responseJson).data
 
     return {
-      md5: responseData.attributes.md5,
+      filehash: analysisIdToFilehash(responseData.id),
       filename,
       status: 'pending' as 'pending' | 'completed',
       flagged: null as number | null,
     }
   }
 
-  async getFileReport(md5: string) {
-    const url = `${VIRUSTOTAL_BASE_URL}/files/${md5}`
+  async getFileReport(filehash: string) {
+    const url = `${VIRUSTOTAL_BASE_URL}/files/${filehash}`
     const response = await this.httpClient.getJson<{
       data: { attributes: FileResult }
     }>(url, {
@@ -106,7 +117,7 @@ export class VirusTotal {
       )}`
     )
     if (!response.result) {
-      throw new Error(`No result found for ${md5}`)
+      throw new Error(`No result found for ${filehash}`)
     }
 
     const flagged =
@@ -114,7 +125,7 @@ export class VirusTotal {
       response.result.data.attributes.last_analysis_stats.suspicious
 
     return {
-      md5,
+      filehash: filehash,
       filename: response.result.data.attributes.names[0],
       status: 'completed',
       flagged,
