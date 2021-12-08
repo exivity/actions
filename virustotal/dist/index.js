@@ -18658,11 +18658,15 @@ function mimeOrDefault(path) {
 }
 
 // virustotal/src/index.ts
+var MethodAnalyse = "analyse";
+var MethodCheck = "check";
 async function analyse(vt, filePath) {
   const result = await vt.scanFile(filePath);
   (0, import_core3.info)(`File "${filePath}" has been submitted for a scan`);
   (0, import_core3.info)(`Analysis URL: ${result.url}`);
   return result;
+}
+async function check(vt, commitStatus) {
 }
 async function writeStatus(octokit, result) {
   await octokit.rest.repos.createCommitStatus({
@@ -18675,23 +18679,49 @@ async function writeStatus(octokit, result) {
   });
   (0, import_core3.info)("Written commit status");
 }
+async function getPendingVirusTotalStatuses(octokit) {
+  const refs = [...ReleaseBranches, ...DevelopBranches];
+  for (const ref of refs) {
+    const { data: statuses } = await octokit.rest.checks.listForRef({
+      owner: "exivity",
+      repo: getRepository().component,
+      ref
+    });
+    for (const checkRun of statuses.check_runs) {
+      (0, import_core3.info)(`Got check run "${JSON.stringify(checkRun, null, 2)}"`);
+    }
+  }
+  return [];
+}
 async function run() {
-  const path = (0, import_core3.getInput)("path", { required: true });
+  const method = (0, import_core3.getInput)("method");
   const virustotalApiKey = (0, import_core3.getInput)("virustotal-api-key", {
     required: true
   });
   const ghToken = getToken();
-  if (!isReleaseBranch() && !isDevelopBranch()) {
-    (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
-    return;
-  }
   const vt = new VirusTotal(virustotalApiKey);
   const octokit = (0, import_github.getOctokit)(ghToken);
-  const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
-  (0, import_core3.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
-  for (const absPath of absPaths) {
-    const result = await analyse(vt, absPath);
-    await writeStatus(octokit, result);
+  switch (method) {
+    case MethodAnalyse:
+      const path = (0, import_core3.getInput)("path", { required: true });
+      if (!isReleaseBranch() && !isDevelopBranch()) {
+        (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
+        return;
+      }
+      const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
+      (0, import_core3.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
+      for (const absPath of absPaths) {
+        const result = await analyse(vt, absPath);
+        await writeStatus(octokit, result);
+      }
+      break;
+    case MethodCheck:
+      for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
+        const result = await check(vt, pendingStatus);
+      }
+      break;
+    default:
+      throw new Error(`Unknown method "${method}"`);
   }
 }
 run().catch(import_core3.setFailed);
