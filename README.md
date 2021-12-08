@@ -631,6 +631,8 @@ Build workflow:
 Separate check workflow:
 
 ```
+name: virustotal-check
+
 on:
   workflow_dispatch:
   schedule:
