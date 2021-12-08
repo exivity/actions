@@ -18624,7 +18624,7 @@ function md5ToGuiUrl(md5) {
   return `https://www.virustotal.com/gui/file/${md5}`;
 }
 function guiUrlToMd5(url) {
-  return Buffer.from(url.split("/").splice(-2, 1)[0], "base64").toString();
+  return Buffer.from(url.split("/").splice(-2, 1)[0], "base64").toString().split(":")[0];
 }
 var VirusTotal = class {
   constructor(apiKey) {

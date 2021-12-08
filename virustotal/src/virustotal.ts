@@ -50,7 +50,9 @@ export function md5ToGuiUrl(md5: string) {
 
 export function guiUrlToMd5(url: string) {
   // TODO: this is a hack
-  return Buffer.from(url.split('/').splice(-2, 1)[0], 'base64').toString()
+  return Buffer.from(url.split('/').splice(-2, 1)[0], 'base64')
+    .toString()
+    .split(':')[0]
   // return url.split('/').pop() as string
 }
 
