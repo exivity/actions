@@ -18751,7 +18751,7 @@ async function getPendingVirusTotalStatuses(octokit) {
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes("Not Found") || error.message.includes("Branch not found")) {
-          (0, import_core3.debug)(`No commits found for branch ${ref}`);
+          (0, import_core3.info)(`No commits found for branch ${ref}`);
         } else {
           throw error;
         }
