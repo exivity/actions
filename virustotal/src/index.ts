@@ -11,7 +11,18 @@ import {
   isReleaseBranch,
   ReleaseBranches,
 } from '../../lib/github'
-import { AnalysisResult, VirusTotal } from './virustotal'
+import {
+  AnalysisResult,
+  guiUrlToId,
+  idToGuiUrl,
+  VirusTotal,
+} from './virustotal'
+
+type CommitStatus = Awaited<
+  ReturnType<
+    ReturnType<typeof getOctokit>['rest']['repos']['listCommitStatusesForRef']
+  >
+>['data'][number]
 
 const ModeAnalyse = 'analyse'
 const ModeCheck = 'check'
@@ -19,11 +30,13 @@ const ModeCheck = 'check'
 async function analyse(vt: VirusTotal, filePath: string) {
   const result = await vt.scanFile(filePath)
   info(`File "${filePath}" has been submitted for a scan`)
-  info(`Analysis URL: ${result.url}`)
+  info(`Analysis URL: ${idToGuiUrl(result.id)}`)
   return result
 }
 
-async function check(vt: VirusTotal, commitStatus: AnalysisResult) {}
+async function check(vt: VirusTotal, commitStatus: CommitStatus) {
+  return vt.getFileReport(guiUrlToId(commitStatus.target_url))
+}
 
 async function writeStatus(
   octokit: ReturnType<typeof getOctokit>,
@@ -33,9 +46,18 @@ async function writeStatus(
     owner: 'exivity',
     repo: getRepository().component,
     sha: getSha(),
-    state: 'pending',
+    state:
+      result.status === 'pending'
+        ? 'pending'
+        : result.flagged === 0
+        ? 'success'
+        : 'failure',
     context: `virustotal (${result.filename})`,
-    target_url: result.url,
+    description:
+      result.status === 'completed'
+        ? `Detected as malicious or suspicious (${result.flagged} times)`
+        : undefined,
+    target_url: idToGuiUrl(result.id),
   })
   info('Written commit status')
 }
@@ -44,8 +66,9 @@ async function getPendingVirusTotalStatuses(
   octokit: ReturnType<typeof getOctokit>
 ) {
   const refs = [...ReleaseBranches, ...DevelopBranches]
+  const statuses: CommitStatus[] = []
   for (const ref of refs) {
-    info(`Checking statuses for ${ref}`)
+    info(`Checking all statuses for ${ref}`)
     try {
       const { data: statuses } =
         await octokit.rest.repos.listCommitStatusesForRef({
@@ -54,7 +77,13 @@ async function getPendingVirusTotalStatuses(
           ref,
         })
       for (const status of statuses) {
-        info(`Got status "${JSON.stringify(status, null, 2)}"`)
+        if (
+          status.context.startsWith('virustotal') &&
+          status.state === 'pending'
+        ) {
+          debug(`Found virustotal status "${status.context}"`)
+          statuses.push(status)
+        }
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -67,7 +96,7 @@ async function getPendingVirusTotalStatuses(
     }
   }
 
-  return []
+  return statuses
 }
 
 async function run() {
@@ -108,7 +137,7 @@ async function run() {
       // Run
       for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
         const result = await check(vt, pendingStatus)
-        // await writeStatus(octokit, result)
+        await writeStatus(octokit, result)
       }
       break
     default:

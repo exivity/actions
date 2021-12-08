@@ -8,14 +8,45 @@ import { z } from 'zod'
 
 export type AnalysisResult = Awaited<ReturnType<VirusTotal['scanFile']>>
 
+export type FileResult = {
+  names: string[]
+  last_analysis_results: {
+    [vendor: string]: {
+      category: string
+      engine_name: string
+      engine_update: string
+      engine_version: string
+      method: string
+      result: string | null
+    }
+  }
+  last_analysis_stats: {
+    'confirmed-timeout': number
+    failure: number
+    harmless: number
+    malicious: number
+    suspicious: number
+    timeout: number
+    'type-unsupported': number
+    undetected: number
+  }
+}
+
 const UploadData = z.object({
   data: z.object({
     id: z.string(),
-    type: z.string(),
   }),
 })
 
 const VIRUSTOTAL_BASE_URL = 'https://www.virustotal.com/api/v3'
+
+export function idToGuiUrl(id: string) {
+  return `https://www.virustotal.com/gui/file-analysis/${id}/detection`
+}
+
+export function guiUrlToId(url: string) {
+  return url.split('/').splice(-2, 1)[0]
+}
 
 export class VirusTotal {
   private httpClient = new HttpClient()
@@ -51,8 +82,40 @@ export class VirusTotal {
     return {
       ...responseData,
       filename,
-      url: `https://www.virustotal.com/gui/file-analysis/${responseData.id}/detection`,
+      status: 'pending' as 'pending' | 'completed',
+      flagged: null as number | null,
     }
+  }
+
+  async getFileReport(id: string) {
+    const url = `${VIRUSTOTAL_BASE_URL}/files/${id}`
+    const response = await this.httpClient.getJson<{
+      data: { attributes: FileResult }
+    }>(url, {
+      'x-apikey': this.apiKey,
+    })
+    if (!response.result) {
+      throw new Error(`No result found for ${id}`)
+    }
+    const responseJson = response.result.data.attributes
+    debug(
+      `Received response from VirusTotal:\n${JSON.stringify(
+        responseJson,
+        undefined,
+        2
+      )}`
+    )
+
+    const flagged =
+      responseJson.last_analysis_stats.malicious +
+      responseJson.last_analysis_stats.suspicious
+
+    return {
+      id,
+      filename: responseJson[0],
+      status: 'completed',
+      flagged,
+    } as AnalysisResult
   }
 }
 

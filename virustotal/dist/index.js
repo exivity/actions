@@ -18612,11 +18612,16 @@ var external = Object.freeze({ __proto__: null, ZodParsedType, getParsedType, ma
 // virustotal/src/virustotal.ts
 var UploadData = external.object({
   data: external.object({
-    id: external.string(),
-    type: external.string()
+    id: external.string()
   })
 });
 var VIRUSTOTAL_BASE_URL = "https://www.virustotal.com/api/v3";
+function idToGuiUrl(id) {
+  return `https://www.virustotal.com/gui/file-analysis/${id}/detection`;
+}
+function guiUrlToId(url) {
+  return url.split("/").splice(-2, 1)[0];
+}
 var VirusTotal = class {
   constructor(apiKey) {
     this.apiKey = apiKey;
@@ -18641,8 +18646,28 @@ ${JSON.stringify(responseJson, void 0, 2)}`);
     const responseData = UploadData.parse(responseJson).data;
     return __spreadProps(__spreadValues({}, responseData), {
       filename,
-      url: `https://www.virustotal.com/gui/file-analysis/${responseData.id}/detection`
+      status: "pending",
+      flagged: null
     });
+  }
+  async getFileReport(id) {
+    const url = `${VIRUSTOTAL_BASE_URL}/files/${id}`;
+    const response = await this.httpClient.getJson(url, {
+      "x-apikey": this.apiKey
+    });
+    if (!response.result) {
+      throw new Error(`No result found for ${id}`);
+    }
+    const responseJson = response.result.data.attributes;
+    (0, import_core2.debug)(`Received response from VirusTotal:
+${JSON.stringify(responseJson, void 0, 2)}`);
+    const flagged = responseJson.last_analysis_stats.malicious + responseJson.last_analysis_stats.suspicious;
+    return {
+      id,
+      filename: responseJson[0],
+      status: "completed",
+      flagged
+    };
   }
 };
 function asset(path) {
@@ -18663,34 +18688,40 @@ var ModeCheck = "check";
 async function analyse(vt, filePath) {
   const result = await vt.scanFile(filePath);
   (0, import_core3.info)(`File "${filePath}" has been submitted for a scan`);
-  (0, import_core3.info)(`Analysis URL: ${result.url}`);
+  (0, import_core3.info)(`Analysis URL: ${idToGuiUrl(result.id)}`);
   return result;
 }
 async function check(vt, commitStatus) {
+  return vt.getFileReport(guiUrlToId(commitStatus.target_url));
 }
 async function writeStatus(octokit, result) {
   await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
     repo: getRepository().component,
     sha: getSha(),
-    state: "pending",
+    state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
     context: `virustotal (${result.filename})`,
-    target_url: result.url
+    description: result.status === "completed" ? `Detected as malicious or suspicious (${result.flagged} times)` : void 0,
+    target_url: idToGuiUrl(result.id)
   });
   (0, import_core3.info)("Written commit status");
 }
 async function getPendingVirusTotalStatuses(octokit) {
   const refs = [...ReleaseBranches, ...DevelopBranches];
+  const statuses = [];
   for (const ref of refs) {
-    (0, import_core3.info)(`Checking statuses for ${ref}`);
+    (0, import_core3.info)(`Checking all statuses for ${ref}`);
     try {
-      const { data: statuses } = await octokit.rest.repos.listCommitStatusesForRef({
+      const { data: statuses2 } = await octokit.rest.repos.listCommitStatusesForRef({
         owner: "exivity",
         repo: "merlin",
         ref
       });
-      for (const status of statuses) {
-        (0, import_core3.info)(`Got status "${JSON.stringify(status, null, 2)}"`);
+      for (const status of statuses2) {
+        if (status.context.startsWith("virustotal") && status.state === "pending") {
+          (0, import_core3.debug)(`Found virustotal status "${status.context}"`);
+          statuses2.push(status);
+        }
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -18702,7 +18733,7 @@ async function getPendingVirusTotalStatuses(octokit) {
       }
     }
   }
-  return [];
+  return statuses;
 }
 async function run() {
   const mode = (0, import_core3.getInput)("mode");
@@ -18729,6 +18760,7 @@ async function run() {
     case ModeCheck:
       for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
         const result = await check(vt, pendingStatus);
+        await writeStatus(octokit, result);
       }
       break;
     default:
