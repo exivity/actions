@@ -91,7 +91,10 @@ async function getPendingVirusTotalStatuses(
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        if (error.message.includes('Not Found')) {
+        if (
+          error.message.includes('Not Found') ||
+          error.message.includes('Branch not found')
+        ) {
           debug(`No commits found for branch ${ref}`)
         } else {
           throw error
