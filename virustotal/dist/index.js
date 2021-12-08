@@ -18739,7 +18739,8 @@ async function getPendingVirusTotalStatuses(octokit) {
         repo: component,
         ref: sha
       });
-      for (const status of data) {
+      const uniqueStatuses = data.filter((status, i, arr) => arr.findIndex((s) => s.context === status.context) === i);
+      for (const status of uniqueStatuses) {
         if (status.context.startsWith("virustotal") && status.state === "pending") {
           (0, import_core3.debug)(JSON.stringify(status, null, 2));
           (0, import_core3.debug)(`Found virustotal status "${status.context}"`);

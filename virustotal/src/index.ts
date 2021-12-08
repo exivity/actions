@@ -83,7 +83,13 @@ async function getPendingVirusTotalStatuses(
         repo: component,
         ref: sha,
       })
-      for (const status of data) {
+      // Results are in reverse chronological order, ignore any non-unique
+      // subsequent statuses
+      const uniqueStatuses = data.filter(
+        (status, i, arr) =>
+          arr.findIndex((s) => s.context === status.context) === i
+      )
+      for (const status of uniqueStatuses) {
         if (
           status.context.startsWith('virustotal') &&
           status.state === 'pending'
