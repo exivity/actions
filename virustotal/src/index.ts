@@ -75,10 +75,15 @@ async function getPendingVirusTotalStatuses(
     info(`Checking all statuses for ${ref}`)
     try {
       const component = getRepository().component
-      const sha = await getShaFromRef({ octokit, component, ref })
+      const sha = await getShaFromRef({
+        octokit,
+        component,
+        ref,
+        useFallback: false,
+      })
       const { data } = await octokit.rest.repos.listCommitStatusesForRef({
         owner: 'exivity',
-        repo: 'merlin',
+        repo: component,
         ref: sha,
       })
       for (const status of data) {

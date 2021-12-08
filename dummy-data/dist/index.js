@@ -6066,8 +6066,13 @@ var import_exec3 = __toModule(require_exec());
 // lib/github.ts
 var import_core = __toModule(require_core());
 var import_fs = __toModule(require("fs"));
-async function getShaFromRef({ octokit, component, ref }) {
-  if (ref === "develop") {
+async function getShaFromRef({
+  octokit,
+  component,
+  ref,
+  useFallback = true
+}) {
+  if (useFallback && ref === "develop") {
     const hasDevelop = (await octokit.rest.repos.listBranches({
       owner: "exivity",
       repo: component

@@ -16750,8 +16750,13 @@ var import_core = __toModule(require_core());
 var import_fs = __toModule(require("fs"));
 var ReleaseBranches = ["master", "main"];
 var DevelopBranches = ["develop"];
-async function getShaFromRef({ octokit, component, ref }) {
-  if (ref === "develop") {
+async function getShaFromRef({
+  octokit,
+  component,
+  ref,
+  useFallback = true
+}) {
+  if (useFallback && ref === "develop") {
     const hasDevelop = (await octokit.rest.repos.listBranches({
       owner: "exivity",
       repo: component
@@ -18736,10 +18741,15 @@ async function getPendingVirusTotalStatuses(octokit) {
     (0, import_core3.info)(`Checking all statuses for ${ref}`);
     try {
       const component = getRepository().component;
-      const sha = await getShaFromRef({ octokit, component, ref });
+      const sha = await getShaFromRef({
+        octokit,
+        component,
+        ref,
+        useFallback: false
+      });
       const { data } = await octokit.rest.repos.listCommitStatusesForRef({
         owner: "exivity",
-        repo: "merlin",
+        repo: component,
         ref: sha
       });
       for (const status of data) {
