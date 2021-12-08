@@ -18655,16 +18655,15 @@ ${JSON.stringify(responseJson, void 0, 2)}`);
     const response = await this.httpClient.getJson(url, {
       "x-apikey": this.apiKey
     });
+    (0, import_core2.debug)(`Received response from VirusTotal:
+${JSON.stringify(response, void 0, 2)}`);
     if (!response.result) {
       throw new Error(`No result found for ${id}`);
     }
-    const responseJson = response.result.data.attributes;
-    (0, import_core2.debug)(`Received response from VirusTotal:
-${JSON.stringify(responseJson, void 0, 2)}`);
-    const flagged = responseJson.last_analysis_stats.malicious + responseJson.last_analysis_stats.suspicious;
+    const flagged = response.result.data.attributes.last_analysis_stats.malicious + response.result.data.attributes.last_analysis_stats.suspicious;
     return {
       id,
-      filename: responseJson[0],
+      filename: response.result.data.attributes.names[0],
       status: "completed",
       flagged
     };
