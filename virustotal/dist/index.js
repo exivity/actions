@@ -18712,15 +18712,15 @@ async function getPendingVirusTotalStatuses(octokit) {
   for (const ref of refs) {
     (0, import_core3.info)(`Checking all statuses for ${ref}`);
     try {
-      const { data: statuses2 } = await octokit.rest.repos.listCommitStatusesForRef({
+      const { data } = await octokit.rest.repos.listCommitStatusesForRef({
         owner: "exivity",
         repo: "merlin",
         ref
       });
-      for (const status of statuses2) {
+      for (const status of data) {
         if (status.context.startsWith("virustotal") && status.state === "pending") {
           (0, import_core3.debug)(`Found virustotal status "${status.context}"`);
-          statuses2.push(status);
+          statuses.push(status);
         }
       }
     } catch (error) {

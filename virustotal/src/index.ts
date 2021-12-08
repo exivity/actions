@@ -70,13 +70,12 @@ async function getPendingVirusTotalStatuses(
   for (const ref of refs) {
     info(`Checking all statuses for ${ref}`)
     try {
-      const { data: statuses } =
-        await octokit.rest.repos.listCommitStatusesForRef({
-          owner: 'exivity',
-          repo: 'merlin', // @TODO: getRepository().component, // also revert GH_BOT_TOKEN -> GITHUB_TOKEN
-          ref,
-        })
-      for (const status of statuses) {
+      const { data } = await octokit.rest.repos.listCommitStatusesForRef({
+        owner: 'exivity',
+        repo: 'merlin', // @TODO: getRepository().component, // also revert GH_BOT_TOKEN -> GITHUB_TOKEN
+        ref,
+      })
+      for (const status of data) {
         if (
           status.context.startsWith('virustotal') &&
           status.state === 'pending'
