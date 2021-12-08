@@ -3,19 +3,16 @@ import { getOctokit } from '@actions/github'
 import glob from 'glob-promise'
 import {
   DevelopBranches,
-  getRef,
   getRepository,
   getSha,
   getShaFromRef,
   getToken,
-  isDevelopBranch,
-  isReleaseBranch,
   ReleaseBranches,
 } from '../../lib/github'
 import {
   AnalysisResult,
-  guiUrlToMd5,
-  md5ToGuiUrl,
+  filehashToGuiUrl,
+  guiUrlToFilehash,
   VirusTotal,
 } from './virustotal'
 
@@ -31,12 +28,12 @@ const ModeCheck = 'check'
 async function analyse(vt: VirusTotal, filePath: string) {
   const result = await vt.scanFile(filePath)
   info(`File "${filePath}" has been submitted for a scan`)
-  info(`Analysis URL: ${md5ToGuiUrl(result.md5)}`)
+  info(`Analysis URL: ${filehashToGuiUrl(result.filehash)}`)
   return result
 }
 
 async function check(vt: VirusTotal, commitStatus: CommitStatus) {
-  return vt.getFileReport(guiUrlToMd5(commitStatus.target_url))
+  return vt.getFileReport(guiUrlToFilehash(commitStatus.target_url))
 }
 
 async function writeStatus(
@@ -61,7 +58,7 @@ async function writeStatus(
           ? `Detected as malicious or suspicious by ${result.flagged} security vendors`
           : 'No security vendors flagged this file as malicious'
         : undefined,
-    target_url: md5ToGuiUrl(result.md5),
+    target_url: filehashToGuiUrl(result.filehash),
   })
   info('Written commit status')
 }
@@ -130,10 +127,11 @@ async function run() {
       const path = getInput('path', { required: true })
 
       // Do not run on non-release and non-develop branches
-      if (!isReleaseBranch() && !isDevelopBranch()) {
-        info(`Skipping: feature branch "${getRef()}" is ignored`)
-        return
-      }
+      // TODO: uncomment
+      // if (!isReleaseBranch() && !isDevelopBranch()) {
+      //   info(`Skipping: feature branch "${getRef()}" is ignored`)
+      //   return
+      // }
 
       // Obtain absolute paths
       const absPaths = await glob(path, { absolute: true })

@@ -16788,32 +16788,12 @@ function getSha() {
   }
   return sha;
 }
-function getRef() {
-  var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
-  if (!ref) {
-    throw new Error("The GitHub ref is missing");
-  }
-  return ref;
-}
 function getToken(inputName = "gh-token") {
   const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
-}
-function isReleaseBranch(ref) {
-  if (!ref) {
-    ref = getRef();
-  }
-  return ReleaseBranches.includes(ref);
-}
-function isDevelopBranch(ref) {
-  if (!ref) {
-    ref = getRef();
-  }
-  return DevelopBranches.includes(ref);
 }
 
 // virustotal/src/virustotal.ts
@@ -18637,6 +18617,12 @@ var external = Object.freeze({ __proto__: null, ZodParsedType, getParsedType, ma
 var UploadData = external.object({
   data: external.object({
     id: external.string(),
+    type: external.string()
+  })
+});
+var FileData = external.object({
+  data: external.object({
+    id: external.string(),
     type: external.string(),
     attributes: external.object({
       md5: external.string()
@@ -18644,11 +18630,14 @@ var UploadData = external.object({
   })
 });
 var VIRUSTOTAL_BASE_URL = "https://www.virustotal.com/api/v3";
-function md5ToGuiUrl(md5) {
-  return `https://www.virustotal.com/gui/file/${md5}`;
+function filehashToGuiUrl(filehash) {
+  return `https://www.virustotal.com/gui/file/${filehash}`;
 }
-function guiUrlToMd5(url) {
+function guiUrlToFilehash(url) {
   return url.split("/").pop();
+}
+function analysisIdToFilehash(id) {
+  return Buffer.from(id, "base64").toString().split(":")[0];
 }
 var VirusTotal = class {
   constructor(apiKey) {
@@ -18673,25 +18662,25 @@ var VirusTotal = class {
 ${JSON.stringify(responseJson, void 0, 2)}`);
     const responseData = UploadData.parse(responseJson).data;
     return {
-      md5: responseData.attributes.md5,
+      filehash: analysisIdToFilehash(responseData.id),
       filename,
       status: "pending",
       flagged: null
     };
   }
-  async getFileReport(md5) {
-    const url = `${VIRUSTOTAL_BASE_URL}/files/${md5}`;
+  async getFileReport(filehash) {
+    const url = `${VIRUSTOTAL_BASE_URL}/files/${filehash}`;
     const response = await this.httpClient.getJson(url, {
       "x-apikey": this.apiKey
     });
     (0, import_core2.debug)(`Received response from VirusTotal:
 ${JSON.stringify(response, void 0, 2)}`);
     if (!response.result) {
-      throw new Error(`No result found for ${md5}`);
+      throw new Error(`No result found for ${filehash}`);
     }
     const flagged = response.result.data.attributes.last_analysis_stats.malicious + response.result.data.attributes.last_analysis_stats.suspicious;
     return {
-      md5,
+      filehash,
       filename: response.result.data.attributes.names[0],
       status: "completed",
       flagged
@@ -18716,11 +18705,11 @@ var ModeCheck = "check";
 async function analyse(vt, filePath) {
   const result = await vt.scanFile(filePath);
   (0, import_core3.info)(`File "${filePath}" has been submitted for a scan`);
-  (0, import_core3.info)(`Analysis URL: ${md5ToGuiUrl(result.md5)}`);
+  (0, import_core3.info)(`Analysis URL: ${filehashToGuiUrl(result.filehash)}`);
   return result;
 }
 async function check(vt, commitStatus) {
-  return vt.getFileReport(guiUrlToMd5(commitStatus.target_url));
+  return vt.getFileReport(guiUrlToFilehash(commitStatus.target_url));
 }
 async function writeStatus(octokit, result, sha) {
   await octokit.rest.repos.createCommitStatus({
@@ -18730,7 +18719,7 @@ async function writeStatus(octokit, result, sha) {
     state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
     context: `virustotal (${result.filename})`,
     description: result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0,
-    target_url: md5ToGuiUrl(result.md5)
+    target_url: filehashToGuiUrl(result.filehash)
   });
   (0, import_core3.info)("Written commit status");
 }
@@ -18781,10 +18770,6 @@ async function run() {
   switch (mode) {
     case ModeAnalyse:
       const path = (0, import_core3.getInput)("path", { required: true });
-      if (!isReleaseBranch() && !isDevelopBranch()) {
-        (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
-        return;
-      }
       const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
       (0, import_core3.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
       for (const absPath of absPaths) {
