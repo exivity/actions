@@ -4,6 +4,7 @@ import glob from 'glob-promise'
 import {
   DevelopBranches,
   getRef,
+  getRepository,
   getSha,
   getShaFromRef,
   getToken,
@@ -45,7 +46,7 @@ async function writeStatus(
 ) {
   await octokit.rest.repos.createCommitStatus({
     owner: 'exivity',
-    repo: 'merlin', // TODO: getRepository().component,
+    repo: getRepository().component,
     sha: sha ?? getSha(),
     state:
       result.status === 'pending'
@@ -73,7 +74,7 @@ async function getPendingVirusTotalStatuses(
   for (const ref of refs) {
     info(`Checking all statuses for ${ref}`)
     try {
-      const component = 'merlin' // @TODO: getRepository().component, // also revert GH_BOT_TOKEN -> GITHUB_TOKEN
+      const component = getRepository().component
       const sha = await getShaFromRef({ octokit, component, ref })
       const { data } = await octokit.rest.repos.listCommitStatusesForRef({
         owner: 'exivity',

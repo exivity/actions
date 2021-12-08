@@ -16769,6 +16769,13 @@ async function getShaFromRef({ octokit, component, ref }) {
   (0, import_core.info)(`Resolved ${ref} to ${sha}`);
   return sha;
 }
+function getRepository() {
+  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
+  if (!owner || !component) {
+    throw new Error("The GitHub repository is missing");
+  }
+  return { owner, component };
+}
 function getSha() {
   const sha = process.env["GITHUB_SHA"];
   if (!sha) {
@@ -18636,7 +18643,7 @@ function md5ToGuiUrl(md5) {
   return `https://www.virustotal.com/gui/file/${md5}`;
 }
 function guiUrlToMd5(url) {
-  return Buffer.from(url.split("/").splice(-2, 1)[0], "base64").toString().split(":")[0];
+  return url.split("/").pop();
 }
 var VirusTotal = class {
   constructor(apiKey) {
@@ -18713,7 +18720,7 @@ async function check(vt, commitStatus) {
 async function writeStatus(octokit, result, sha) {
   await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
-    repo: "merlin",
+    repo: getRepository().component,
     sha: sha != null ? sha : getSha(),
     state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
     context: `virustotal (${result.filename})`,
@@ -18728,7 +18735,7 @@ async function getPendingVirusTotalStatuses(octokit) {
   for (const ref of refs) {
     (0, import_core3.info)(`Checking all statuses for ${ref}`);
     try {
-      const component = "merlin";
+      const component = getRepository().component;
       const sha = await getShaFromRef({ octokit, component, ref });
       const { data } = await octokit.rest.repos.listCommitStatusesForRef({
         owner: "exivity",
