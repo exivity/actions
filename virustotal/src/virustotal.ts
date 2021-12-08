@@ -35,17 +35,23 @@ export type FileResult = {
 const UploadData = z.object({
   data: z.object({
     id: z.string(),
+    type: z.string(),
+    attributes: z.object({
+      md5: z.string(),
+    }),
   }),
 })
 
 const VIRUSTOTAL_BASE_URL = 'https://www.virustotal.com/api/v3'
 
-export function idToGuiUrl(id: string) {
-  return `https://www.virustotal.com/gui/file-analysis/${id}/detection`
+export function md5ToGuiUrl(md5: string) {
+  return `https://www.virustotal.com/gui/file/${md5}`
 }
 
-export function guiUrlToId(url: string) {
-  return url.split('/').splice(-2, 1)[0]
+export function guiUrlToMd5(url: string) {
+  // TODO: this is a hack
+  return Buffer.from(url.split('/').splice(-2, 1)[0], 'base64').toString()
+  // return url.split('/').pop() as string
 }
 
 export class VirusTotal {
@@ -80,15 +86,15 @@ export class VirusTotal {
     const responseData = UploadData.parse(responseJson).data
 
     return {
-      ...responseData,
+      md5: responseData.attributes.md5,
       filename,
       status: 'pending' as 'pending' | 'completed',
       flagged: null as number | null,
     }
   }
 
-  async getFileReport(id: string) {
-    const url = `${VIRUSTOTAL_BASE_URL}/files/${id}`
+  async getFileReport(md5: string) {
+    const url = `${VIRUSTOTAL_BASE_URL}/files/${md5}`
     const response = await this.httpClient.getJson<{
       data: { attributes: FileResult }
     }>(url, {
@@ -102,7 +108,7 @@ export class VirusTotal {
       )}`
     )
     if (!response.result) {
-      throw new Error(`No result found for ${id}`)
+      throw new Error(`No result found for ${md5}`)
     }
 
     const flagged =
@@ -110,7 +116,7 @@ export class VirusTotal {
       response.result.data.attributes.last_analysis_stats.suspicious
 
     return {
-      id,
+      md5,
       filename: response.result.data.attributes.names[0],
       status: 'completed',
       flagged,

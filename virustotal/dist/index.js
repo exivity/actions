@@ -18612,15 +18612,19 @@ var external = Object.freeze({ __proto__: null, ZodParsedType, getParsedType, ma
 // virustotal/src/virustotal.ts
 var UploadData = external.object({
   data: external.object({
-    id: external.string()
+    id: external.string(),
+    type: external.string(),
+    attributes: external.object({
+      md5: external.string()
+    })
   })
 });
 var VIRUSTOTAL_BASE_URL = "https://www.virustotal.com/api/v3";
-function idToGuiUrl(id) {
-  return `https://www.virustotal.com/gui/file-analysis/${id}/detection`;
+function md5ToGuiUrl(md5) {
+  return `https://www.virustotal.com/gui/file/${md5}`;
 }
-function guiUrlToId(url) {
-  return url.split("/").splice(-2, 1)[0];
+function guiUrlToMd5(url) {
+  return Buffer.from(url.split("/").splice(-2, 1)[0], "base64").toString();
 }
 var VirusTotal = class {
   constructor(apiKey) {
@@ -18644,25 +18648,26 @@ var VirusTotal = class {
     (0, import_core2.debug)(`Received response from VirusTotal:
 ${JSON.stringify(responseJson, void 0, 2)}`);
     const responseData = UploadData.parse(responseJson).data;
-    return __spreadProps(__spreadValues({}, responseData), {
+    return {
+      md5: responseData.attributes.md5,
       filename,
       status: "pending",
       flagged: null
-    });
+    };
   }
-  async getFileReport(id) {
-    const url = `${VIRUSTOTAL_BASE_URL}/files/${id}`;
+  async getFileReport(md5) {
+    const url = `${VIRUSTOTAL_BASE_URL}/files/${md5}`;
     const response = await this.httpClient.getJson(url, {
       "x-apikey": this.apiKey
     });
     (0, import_core2.debug)(`Received response from VirusTotal:
 ${JSON.stringify(response, void 0, 2)}`);
     if (!response.result) {
-      throw new Error(`No result found for ${id}`);
+      throw new Error(`No result found for ${md5}`);
     }
     const flagged = response.result.data.attributes.last_analysis_stats.malicious + response.result.data.attributes.last_analysis_stats.suspicious;
     return {
-      id,
+      md5,
       filename: response.result.data.attributes.names[0],
       status: "completed",
       flagged
@@ -18687,11 +18692,11 @@ var ModeCheck = "check";
 async function analyse(vt, filePath) {
   const result = await vt.scanFile(filePath);
   (0, import_core3.info)(`File "${filePath}" has been submitted for a scan`);
-  (0, import_core3.info)(`Analysis URL: ${idToGuiUrl(result.id)}`);
+  (0, import_core3.info)(`Analysis URL: ${md5ToGuiUrl(result.md5)}`);
   return result;
 }
 async function check(vt, commitStatus) {
-  return vt.getFileReport(guiUrlToId(commitStatus.target_url));
+  return vt.getFileReport(guiUrlToMd5(commitStatus.target_url));
 }
 async function writeStatus(octokit, result) {
   await octokit.rest.repos.createCommitStatus({
@@ -18701,7 +18706,7 @@ async function writeStatus(octokit, result) {
     state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
     context: `virustotal (${result.filename})`,
     description: result.status === "completed" ? `Detected as malicious or suspicious (${result.flagged} times)` : void 0,
-    target_url: idToGuiUrl(result.id)
+    target_url: md5ToGuiUrl(result.md5)
   });
   (0, import_core3.info)("Written commit status");
 }

@@ -13,8 +13,8 @@ import {
 } from '../../lib/github'
 import {
   AnalysisResult,
-  guiUrlToId,
-  idToGuiUrl,
+  guiUrlToMd5,
+  md5ToGuiUrl,
   VirusTotal,
 } from './virustotal'
 
@@ -30,12 +30,12 @@ const ModeCheck = 'check'
 async function analyse(vt: VirusTotal, filePath: string) {
   const result = await vt.scanFile(filePath)
   info(`File "${filePath}" has been submitted for a scan`)
-  info(`Analysis URL: ${idToGuiUrl(result.id)}`)
+  info(`Analysis URL: ${md5ToGuiUrl(result.md5)}`)
   return result
 }
 
 async function check(vt: VirusTotal, commitStatus: CommitStatus) {
-  return vt.getFileReport(guiUrlToId(commitStatus.target_url))
+  return vt.getFileReport(guiUrlToMd5(commitStatus.target_url))
 }
 
 async function writeStatus(
@@ -57,7 +57,7 @@ async function writeStatus(
       result.status === 'completed'
         ? `Detected as malicious or suspicious (${result.flagged} times)`
         : undefined,
-    target_url: idToGuiUrl(result.id),
+    target_url: md5ToGuiUrl(result.md5),
   })
   info('Written commit status')
 }
