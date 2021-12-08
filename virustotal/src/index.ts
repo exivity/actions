@@ -57,7 +57,7 @@ async function getPendingVirusTotalStatuses(
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        info(`Got error "${JSON.stringify(error, null, 2)}"`)
+        info(`Got error ${error.message} - ${error.name}`)
         if (!error.message.includes('No commit found for SHA:')) {
           throw error
         }

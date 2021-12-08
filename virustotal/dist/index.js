@@ -18694,7 +18694,7 @@ async function getPendingVirusTotalStatuses(octokit) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        (0, import_core3.info)(`Got error "${JSON.stringify(error, null, 2)}"`);
+        (0, import_core3.info)(`Got error ${error.message} - ${error.name}`);
         if (!error.message.includes("No commit found for SHA:")) {
           throw error;
         }

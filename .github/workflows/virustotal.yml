@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - '.github/workflows/virustotal.yml'
-      - 'virustotal/**'
+      # TODO: uncomment
+      # - 'virustotal/**'
 
 jobs:
   test:
