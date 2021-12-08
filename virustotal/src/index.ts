@@ -2,10 +2,15 @@ import { debug, getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import glob from 'glob-promise'
 import {
+  DevelopBranches,
+  getRef,
   getRepository,
   getSha,
   getShaFromRef,
   getToken,
+  isDevelopBranch,
+  isReleaseBranch,
+  ReleaseBranches,
 } from '../../lib/github'
 import {
   AnalysisResult,
@@ -64,9 +69,7 @@ async function writeStatus(
 async function getPendingVirusTotalStatuses(
   octokit: ReturnType<typeof getOctokit>
 ) {
-  // todo uncomment
-  // const refs = [...ReleaseBranches, ...DevelopBranches]
-  const refs = ['fix/vt']
+  const refs = [...ReleaseBranches, ...DevelopBranches]
   const statuses: CommitStatus[] = []
   for (const ref of refs) {
     info(`Checking all statuses for ${ref}`)
@@ -96,8 +99,6 @@ async function getPendingVirusTotalStatuses(
           status.context.startsWith('virustotal') &&
           status.state === 'pending'
         ) {
-          // TODO: remove debug stmt below
-          debug(JSON.stringify(status, null, 2))
           debug(`Found virustotal status "${status.context}"`)
           statuses.push({ ...status, sha })
         }
@@ -137,11 +138,10 @@ async function run() {
       const path = getInput('path', { required: true })
 
       // Do not run on non-release and non-develop branches
-      // TODO: uncomment
-      // if (!isReleaseBranch() && !isDevelopBranch()) {
-      //   info(`Skipping: feature branch "${getRef()}" is ignored`)
-      //   return
-      // }
+      if (!isReleaseBranch() && !isDevelopBranch()) {
+        info(`Skipping: feature branch "${getRef()}" is ignored`)
+        return
+      }
 
       // Obtain absolute paths
       const absPaths = await glob(path, { absolute: true })

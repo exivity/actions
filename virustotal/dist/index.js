@@ -16748,6 +16748,8 @@ var import_glob_promise = __toModule(require_lib2());
 // lib/github.ts
 var import_core = __toModule(require_core());
 var import_fs = __toModule(require("fs"));
+var ReleaseBranches = ["master", "main"];
+var DevelopBranches = ["develop"];
 async function getShaFromRef({
   octokit,
   component,
@@ -16786,12 +16788,32 @@ function getSha() {
   }
   return sha;
 }
+function getRef() {
+  var _a, _b, _c;
+  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
+  if (!ref) {
+    throw new Error("The GitHub ref is missing");
+  }
+  return ref;
+}
 function getToken(inputName = "gh-token") {
   const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
+}
+function isReleaseBranch(ref) {
+  if (!ref) {
+    ref = getRef();
+  }
+  return ReleaseBranches.includes(ref);
+}
+function isDevelopBranch(ref) {
+  if (!ref) {
+    ref = getRef();
+  }
+  return DevelopBranches.includes(ref);
 }
 
 // virustotal/src/virustotal.ts
@@ -18722,7 +18744,7 @@ async function writeStatus(octokit, result, sha) {
   (0, import_core3.info)("Written commit status");
 }
 async function getPendingVirusTotalStatuses(octokit) {
-  const refs = ["fix/vt"];
+  const refs = [...ReleaseBranches, ...DevelopBranches];
   const statuses = [];
   for (const ref of refs) {
     (0, import_core3.info)(`Checking all statuses for ${ref}`);
@@ -18744,7 +18766,6 @@ async function getPendingVirusTotalStatuses(octokit) {
       (0, import_core3.debug)(`Total unique statuses: ${uniqueStatuses.length}`);
       for (const status of uniqueStatuses) {
         if (status.context.startsWith("virustotal") && status.state === "pending") {
-          (0, import_core3.debug)(JSON.stringify(status, null, 2));
           (0, import_core3.debug)(`Found virustotal status "${status.context}"`);
           statuses.push(__spreadProps(__spreadValues({}, status), { sha }));
         }
@@ -18772,6 +18793,10 @@ async function run() {
   switch (mode) {
     case ModeAnalyse:
       const path = (0, import_core3.getInput)("path", { required: true });
+      if (!isReleaseBranch() && !isDevelopBranch()) {
+        (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
+        return;
+      }
       const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
       (0, import_core3.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
       for (const absPath of absPaths) {
