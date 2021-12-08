@@ -13,8 +13,8 @@ import {
 } from '../../lib/github'
 import { AnalysisResult, VirusTotal } from './virustotal'
 
-const MethodAnalyse = 'analyse'
-const MethodCheck = 'check'
+const ModeAnalyse = 'analyse'
+const ModeCheck = 'check'
 
 async function analyse(vt: VirusTotal, filePath: string) {
   const result = await vt.scanFile(filePath)
@@ -60,7 +60,7 @@ async function getPendingVirusTotalStatuses(
 
 async function run() {
   // Inputs
-  const method = getInput('method')
+  const mode = getInput('mode')
   const virustotalApiKey = getInput('virustotal-api-key', {
     required: true,
   })
@@ -70,8 +70,8 @@ async function run() {
   const vt = new VirusTotal(virustotalApiKey)
   const octokit = getOctokit(ghToken)
 
-  switch (method) {
-    case MethodAnalyse:
+  switch (mode) {
+    case ModeAnalyse:
       // Inputs
       const path = getInput('path', { required: true })
 
@@ -92,7 +92,7 @@ async function run() {
       }
 
       break
-    case MethodCheck:
+    case ModeCheck:
       // Run
       for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
         const result = await check(vt, pendingStatus)
@@ -100,7 +100,7 @@ async function run() {
       }
       break
     default:
-      throw new Error(`Unknown method "${method}"`)
+      throw new Error(`Unknown mode "${mode}"`)
   }
 }
 

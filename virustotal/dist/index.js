@@ -18658,8 +18658,8 @@ function mimeOrDefault(path) {
 }
 
 // virustotal/src/index.ts
-var MethodAnalyse = "analyse";
-var MethodCheck = "check";
+var ModeAnalyse = "analyse";
+var ModeCheck = "check";
 async function analyse(vt, filePath) {
   const result = await vt.scanFile(filePath);
   (0, import_core3.info)(`File "${filePath}" has been submitted for a scan`);
@@ -18694,15 +18694,15 @@ async function getPendingVirusTotalStatuses(octokit) {
   return [];
 }
 async function run() {
-  const method = (0, import_core3.getInput)("method");
+  const mode = (0, import_core3.getInput)("mode");
   const virustotalApiKey = (0, import_core3.getInput)("virustotal-api-key", {
     required: true
   });
   const ghToken = getToken();
   const vt = new VirusTotal(virustotalApiKey);
   const octokit = (0, import_github.getOctokit)(ghToken);
-  switch (method) {
-    case MethodAnalyse:
+  switch (mode) {
+    case ModeAnalyse:
       const path = (0, import_core3.getInput)("path", { required: true });
       if (!isReleaseBranch() && !isDevelopBranch()) {
         (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
@@ -18715,13 +18715,13 @@ async function run() {
         await writeStatus(octokit, result);
       }
       break;
-    case MethodCheck:
+    case ModeCheck:
       for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
         const result = await check(vt, pendingStatus);
       }
       break;
     default:
-      throw new Error(`Unknown method "${method}"`);
+      throw new Error(`Unknown mode "${mode}"`);
   }
 }
 run().catch(import_core3.setFailed);
