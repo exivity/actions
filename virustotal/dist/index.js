@@ -18683,13 +18683,22 @@ async function getPendingVirusTotalStatuses(octokit) {
   const refs = [...ReleaseBranches, ...DevelopBranches];
   for (const ref of refs) {
     (0, import_core3.info)(`Checking statuses for ${ref}`);
-    const { data: statuses } = await octokit.rest.checks.listForRef({
-      owner: "exivity",
-      repo: "merlin",
-      ref
-    });
-    for (const checkRun of statuses.check_runs) {
-      (0, import_core3.info)(`Got check run "${JSON.stringify(checkRun, null, 2)}"`);
+    try {
+      const { data: statuses } = await octokit.rest.checks.listForRef({
+        owner: "exivity",
+        repo: "merlin",
+        ref
+      });
+      for (const checkRun of statuses.check_runs) {
+        (0, import_core3.info)(`Got check run "${JSON.stringify(checkRun, null, 2)}"`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        (0, import_core3.info)(`Got error "${JSON.stringify(error, null, 2)}"`);
+        if (!error.message.includes("No commit found for SHA:")) {
+          throw error;
+        }
+      }
     }
   }
   return [];
