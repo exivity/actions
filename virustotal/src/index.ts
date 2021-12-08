@@ -2,12 +2,10 @@ import { debug, getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import glob from 'glob-promise'
 import {
-  DevelopBranches,
   getRepository,
   getSha,
   getShaFromRef,
   getToken,
-  ReleaseBranches,
 } from '../../lib/github'
 import {
   AnalysisResult,
@@ -66,7 +64,9 @@ async function writeStatus(
 async function getPendingVirusTotalStatuses(
   octokit: ReturnType<typeof getOctokit>
 ) {
-  const refs = [...ReleaseBranches, ...DevelopBranches]
+  // todo uncomment
+  // const refs = [...ReleaseBranches, ...DevelopBranches]
+  const refs = ['main', 'fix/vt']
   const statuses: CommitStatus[] = []
   for (const ref of refs) {
     info(`Checking all statuses for ${ref}`)
@@ -88,6 +88,8 @@ async function getPendingVirusTotalStatuses(
           status.context.startsWith('virustotal') &&
           status.state === 'pending'
         ) {
+          // TODO: remove debug stmt below
+          debug(JSON.stringify(status, null, 2))
           debug(`Found virustotal status "${status.context}"`)
           statuses.push({ ...status, sha })
         }

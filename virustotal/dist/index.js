@@ -16748,8 +16748,6 @@ var import_glob_promise = __toModule(require_lib2());
 // lib/github.ts
 var import_core = __toModule(require_core());
 var import_fs = __toModule(require("fs"));
-var ReleaseBranches = ["master", "main"];
-var DevelopBranches = ["develop"];
 async function getShaFromRef({
   octokit,
   component,
@@ -18724,7 +18722,7 @@ async function writeStatus(octokit, result, sha) {
   (0, import_core3.info)("Written commit status");
 }
 async function getPendingVirusTotalStatuses(octokit) {
-  const refs = [...ReleaseBranches, ...DevelopBranches];
+  const refs = ["main", "fix/vt"];
   const statuses = [];
   for (const ref of refs) {
     (0, import_core3.info)(`Checking all statuses for ${ref}`);
@@ -18743,6 +18741,7 @@ async function getPendingVirusTotalStatuses(octokit) {
       });
       for (const status of data) {
         if (status.context.startsWith("virustotal") && status.state === "pending") {
+          (0, import_core3.debug)(JSON.stringify(status, null, 2));
           (0, import_core3.debug)(`Found virustotal status "${status.context}"`);
           statuses.push(__spreadProps(__spreadValues({}, status), { sha }));
         }
