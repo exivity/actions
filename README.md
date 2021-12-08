@@ -593,10 +593,17 @@ _Forked from: [crazy-max/ghaction-virustotal](https://github.com/crazy-max/ghact
 
 ## Inputs
 
+### `mode`
+
+**Optional**  
+_Options: `analyse` or `check`, defaults to `analyse`_  
+Whether to analyse artefacts or check the analysis status
+
 ### `path`
 
-**Required**  
-The path to the file to analyse, glob patterns allowed
+**Optional**  
+The path to the file to analyse, glob patterns allowed. Required when `mode` is
+set to `analyse`.
 
 ### `virustotal-api-key`
 
@@ -611,12 +618,33 @@ GitHub token used for writing commit status
 
 ## Example usage
 
+Build workflow:
+
 ```
 - uses: exivity/actions/virustotal@main
   with:
     path: build/foo.exe
     virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
     gh-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Separate check workflow:
+
+```
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: exivity/actions/virustotal@main
+        with:
+          mode: check
+          virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 # Development guide

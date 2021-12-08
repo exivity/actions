@@ -1,0 +1,21 @@
+name: virustotal-check
+
+on:
+  push:
+    paths:
+      - '.github/workflows/virustotal-check.yml'
+      - 'virustotal/**'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./virustotal
+        with:
+          mode: check
+          virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}

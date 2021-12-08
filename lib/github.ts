@@ -10,13 +10,19 @@ type Options = {
   octokit: ReturnType<typeof getOctokit>
   component: string
   ref: string
+  useFallback?: boolean
 }
 
 export const ReleaseBranches = ['master', 'main']
 export const DevelopBranches = ['develop']
 
-export async function getShaFromRef({ octokit, component, ref }: Options) {
-  if (ref === 'develop') {
+export async function getShaFromRef({
+  octokit,
+  component,
+  ref,
+  useFallback = true,
+}: Options) {
+  if (useFallback && ref === 'develop') {
     const hasDevelop = (
       await octokit.rest.repos.listBranches({
         owner: 'exivity',

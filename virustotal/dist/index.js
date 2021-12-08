@@ -16750,6 +16750,30 @@ var import_core = __toModule(require_core());
 var import_fs = __toModule(require("fs"));
 var ReleaseBranches = ["master", "main"];
 var DevelopBranches = ["develop"];
+async function getShaFromRef({
+  octokit,
+  component,
+  ref,
+  useFallback = true
+}) {
+  if (useFallback && ref === "develop") {
+    const hasDevelop = (await octokit.rest.repos.listBranches({
+      owner: "exivity",
+      repo: component
+    })).data.some((repoBranch) => repoBranch.name === "develop");
+    if (!hasDevelop) {
+      (0, import_core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+      ref = "master";
+    }
+  }
+  const sha = (await octokit.rest.repos.getBranch({
+    owner: "exivity",
+    repo: component,
+    branch: ref
+  })).data.commit.sha;
+  (0, import_core.info)(`Resolved ${ref} to ${sha}`);
+  return sha;
+}
 function getRepository() {
   const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
   if (!owner || !component) {
@@ -18613,10 +18637,19 @@ var external = Object.freeze({ __proto__: null, ZodParsedType, getParsedType, ma
 var UploadData = external.object({
   data: external.object({
     id: external.string(),
-    type: external.string()
+    type: external.string(),
+    attributes: external.object({
+      md5: external.string()
+    })
   })
 });
 var VIRUSTOTAL_BASE_URL = "https://www.virustotal.com/api/v3";
+function md5ToGuiUrl(md5) {
+  return `https://www.virustotal.com/gui/file/${md5}`;
+}
+function guiUrlToMd5(url) {
+  return url.split("/").pop();
+}
 var VirusTotal = class {
   constructor(apiKey) {
     this.apiKey = apiKey;
@@ -18639,10 +18672,30 @@ var VirusTotal = class {
     (0, import_core2.debug)(`Received response from VirusTotal:
 ${JSON.stringify(responseJson, void 0, 2)}`);
     const responseData = UploadData.parse(responseJson).data;
-    return __spreadProps(__spreadValues({}, responseData), {
+    return {
+      md5: responseData.attributes.md5,
       filename,
-      url: `https://www.virustotal.com/gui/file-analysis/${responseData.id}/detection`
+      status: "pending",
+      flagged: null
+    };
+  }
+  async getFileReport(md5) {
+    const url = `${VIRUSTOTAL_BASE_URL}/files/${md5}`;
+    const response = await this.httpClient.getJson(url, {
+      "x-apikey": this.apiKey
     });
+    (0, import_core2.debug)(`Received response from VirusTotal:
+${JSON.stringify(response, void 0, 2)}`);
+    if (!response.result) {
+      throw new Error(`No result found for ${md5}`);
+    }
+    const flagged = response.result.data.attributes.last_analysis_stats.malicious + response.result.data.attributes.last_analysis_stats.suspicious;
+    return {
+      md5,
+      filename: response.result.data.attributes.names[0],
+      status: "completed",
+      flagged
+    };
   }
 };
 function asset(path) {
@@ -18658,40 +18711,95 @@ function mimeOrDefault(path) {
 }
 
 // virustotal/src/index.ts
+var ModeAnalyse = "analyse";
+var ModeCheck = "check";
 async function analyse(vt, filePath) {
   const result = await vt.scanFile(filePath);
   (0, import_core3.info)(`File "${filePath}" has been submitted for a scan`);
-  (0, import_core3.info)(`Analysis URL: ${result.url}`);
+  (0, import_core3.info)(`Analysis URL: ${md5ToGuiUrl(result.md5)}`);
   return result;
 }
-async function writeStatus(octokit, result) {
+async function check(vt, commitStatus) {
+  return vt.getFileReport(guiUrlToMd5(commitStatus.target_url));
+}
+async function writeStatus(octokit, result, sha) {
   await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
     repo: getRepository().component,
-    sha: getSha(),
-    state: "pending",
+    sha: sha != null ? sha : getSha(),
+    state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
     context: `virustotal (${result.filename})`,
-    target_url: result.url
+    description: result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0,
+    target_url: md5ToGuiUrl(result.md5)
   });
   (0, import_core3.info)("Written commit status");
 }
+async function getPendingVirusTotalStatuses(octokit) {
+  const refs = [...ReleaseBranches, ...DevelopBranches];
+  const statuses = [];
+  for (const ref of refs) {
+    (0, import_core3.info)(`Checking all statuses for ${ref}`);
+    try {
+      const component = getRepository().component;
+      const sha = await getShaFromRef({
+        octokit,
+        component,
+        ref,
+        useFallback: false
+      });
+      const { data } = await octokit.rest.repos.listCommitStatusesForRef({
+        owner: "exivity",
+        repo: component,
+        ref: sha
+      });
+      for (const status of data) {
+        if (status.context.startsWith("virustotal") && status.state === "pending") {
+          (0, import_core3.debug)(`Found virustotal status "${status.context}"`);
+          statuses.push(__spreadProps(__spreadValues({}, status), { sha }));
+        }
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes("Not Found") || error.message.includes("Branch not found")) {
+          (0, import_core3.info)(`No commits found for branch ${ref}`);
+        } else {
+          throw error;
+        }
+      }
+    }
+  }
+  return statuses;
+}
 async function run() {
-  const path = (0, import_core3.getInput)("path", { required: true });
+  const mode = (0, import_core3.getInput)("mode");
   const virustotalApiKey = (0, import_core3.getInput)("virustotal-api-key", {
     required: true
   });
   const ghToken = getToken();
-  if (!isReleaseBranch() && !isDevelopBranch()) {
-    (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
-    return;
-  }
   const vt = new VirusTotal(virustotalApiKey);
   const octokit = (0, import_github.getOctokit)(ghToken);
-  const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
-  (0, import_core3.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
-  for (const absPath of absPaths) {
-    const result = await analyse(vt, absPath);
-    await writeStatus(octokit, result);
+  switch (mode) {
+    case ModeAnalyse:
+      const path = (0, import_core3.getInput)("path", { required: true });
+      if (!isReleaseBranch() && !isDevelopBranch()) {
+        (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
+        return;
+      }
+      const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
+      (0, import_core3.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
+      for (const absPath of absPaths) {
+        const result = await analyse(vt, absPath);
+        await writeStatus(octokit, result);
+      }
+      break;
+    case ModeCheck:
+      for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
+        const result = await check(vt, pendingStatus);
+        await writeStatus(octokit, result, pendingStatus.sha);
+      }
+      break;
+    default:
+      throw new Error(`Unknown mode "${mode}"`);
   }
 }
 run().catch(import_core3.setFailed);

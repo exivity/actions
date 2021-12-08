@@ -6091,8 +6091,13 @@ async function startDocker({ defaultVersion: defaultVersion2, image: image2, por
 // lib/github.ts
 var import_core2 = __toModule(require_core());
 var import_fs = __toModule(require("fs"));
-async function getShaFromRef({ octokit, component, ref }) {
-  if (ref === "develop") {
+async function getShaFromRef({
+  octokit,
+  component,
+  ref,
+  useFallback = true
+}) {
+  if (useFallback && ref === "develop") {
     const hasDevelop = (await octokit.rest.repos.listBranches({
       owner: "exivity",
       repo: component

@@ -6089,8 +6089,13 @@ async function unzipAll(path) {
 // lib/github.ts
 var import_core2 = __toModule(require_core());
 var import_fs2 = __toModule(require("fs"));
-async function getShaFromRef({ octokit, component, ref }) {
-  if (ref === "develop") {
+async function getShaFromRef({
+  octokit,
+  component,
+  ref,
+  useFallback = true
+}) {
+  if (useFallback && ref === "develop") {
     const hasDevelop = (await octokit.rest.repos.listBranches({
       owner: "exivity",
       repo: component
