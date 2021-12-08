@@ -3,10 +3,13 @@ import { getOctokit } from '@actions/github'
 import glob from 'glob-promise'
 import {
   DevelopBranches,
+  getRef,
   getRepository,
   getSha,
   getShaFromRef,
   getToken,
+  isDevelopBranch,
+  isReleaseBranch,
   ReleaseBranches,
 } from '../../lib/github'
 import {
@@ -83,7 +86,15 @@ async function getPendingVirusTotalStatuses(
         repo: component,
         ref: sha,
       })
-      for (const status of data) {
+      debug(`Total statuses: ${data.length}`)
+      // Results are in reverse chronological order, ignore any non-unique
+      // subsequent statuses
+      const uniqueStatuses = data.filter(
+        (status, i, arr) =>
+          arr.findIndex((s) => s.context === status.context) === i
+      )
+      debug(`Total unique statuses: ${uniqueStatuses.length}`)
+      for (const status of uniqueStatuses) {
         if (
           status.context.startsWith('virustotal') &&
           status.state === 'pending'
@@ -127,11 +138,10 @@ async function run() {
       const path = getInput('path', { required: true })
 
       // Do not run on non-release and non-develop branches
-      // TODO: uncomment
-      // if (!isReleaseBranch() && !isDevelopBranch()) {
-      //   info(`Skipping: feature branch "${getRef()}" is ignored`)
-      //   return
-      // }
+      if (!isReleaseBranch() && !isDevelopBranch()) {
+        info(`Skipping: feature branch "${getRef()}" is ignored`)
+        return
+      }
 
       // Obtain absolute paths
       const absPaths = await glob(path, { absolute: true })
