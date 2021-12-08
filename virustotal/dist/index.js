@@ -18722,7 +18722,7 @@ async function writeStatus(octokit, result, sha) {
   (0, import_core3.info)("Written commit status");
 }
 async function getPendingVirusTotalStatuses(octokit) {
-  const refs = ["main", "fix/vt"];
+  const refs = ["fix/vt"];
   const statuses = [];
   for (const ref of refs) {
     (0, import_core3.info)(`Checking all statuses for ${ref}`);
@@ -18739,7 +18739,9 @@ async function getPendingVirusTotalStatuses(octokit) {
         repo: component,
         ref: sha
       });
+      (0, import_core3.debug)(`Total statuses: ${data.length}`);
       const uniqueStatuses = data.filter((status, i, arr) => arr.findIndex((s) => s.context === status.context) === i);
+      (0, import_core3.debug)(`Total unique statuses: ${uniqueStatuses.length}`);
       for (const status of uniqueStatuses) {
         if (status.context.startsWith("virustotal") && status.state === "pending") {
           (0, import_core3.debug)(JSON.stringify(status, null, 2));

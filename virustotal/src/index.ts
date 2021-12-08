@@ -66,7 +66,7 @@ async function getPendingVirusTotalStatuses(
 ) {
   // todo uncomment
   // const refs = [...ReleaseBranches, ...DevelopBranches]
-  const refs = ['main', 'fix/vt']
+  const refs = ['fix/vt']
   const statuses: CommitStatus[] = []
   for (const ref of refs) {
     info(`Checking all statuses for ${ref}`)
@@ -83,12 +83,14 @@ async function getPendingVirusTotalStatuses(
         repo: component,
         ref: sha,
       })
+      debug(`Total statuses: ${data.length}`)
       // Results are in reverse chronological order, ignore any non-unique
       // subsequent statuses
       const uniqueStatuses = data.filter(
         (status, i, arr) =>
           arr.findIndex((s) => s.context === status.context) === i
       )
+      debug(`Total unique statuses: ${uniqueStatuses.length}`)
       for (const status of uniqueStatuses) {
         if (
           status.context.startsWith('virustotal') &&
