@@ -16750,12 +16750,24 @@ var import_core = __toModule(require_core());
 var import_fs = __toModule(require("fs"));
 var ReleaseBranches = ["master", "main"];
 var DevelopBranches = ["develop"];
-function getRepository() {
-  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
-  if (!owner || !component) {
-    throw new Error("The GitHub repository is missing");
+async function getShaFromRef({ octokit, component, ref }) {
+  if (ref === "develop") {
+    const hasDevelop = (await octokit.rest.repos.listBranches({
+      owner: "exivity",
+      repo: component
+    })).data.some((repoBranch) => repoBranch.name === "develop");
+    if (!hasDevelop) {
+      (0, import_core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
+      ref = "master";
+    }
   }
-  return { owner, component };
+  const sha = (await octokit.rest.repos.getBranch({
+    owner: "exivity",
+    repo: component,
+    branch: ref
+  })).data.commit.sha;
+  (0, import_core.info)(`Resolved ${ref} to ${sha}`);
+  return sha;
 }
 function getSha() {
   const sha = process.env["GITHUB_SHA"];
@@ -18698,14 +18710,14 @@ async function analyse(vt, filePath) {
 async function check(vt, commitStatus) {
   return vt.getFileReport(guiUrlToMd5(commitStatus.target_url));
 }
-async function writeStatus(octokit, result) {
+async function writeStatus(octokit, result, sha) {
   await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
-    repo: getRepository().component,
-    sha: getSha(),
+    repo: "merlin",
+    sha: sha != null ? sha : getSha(),
     state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
     context: `virustotal (${result.filename})`,
-    description: result.status === "completed" ? `Detected as malicious or suspicious (${result.flagged} times)` : void 0,
+    description: result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0,
     target_url: md5ToGuiUrl(result.md5)
   });
   (0, import_core3.info)("Written commit status");
@@ -18716,15 +18728,17 @@ async function getPendingVirusTotalStatuses(octokit) {
   for (const ref of refs) {
     (0, import_core3.info)(`Checking all statuses for ${ref}`);
     try {
+      const component = "merlin";
+      const sha = await getShaFromRef({ octokit, component, ref });
       const { data } = await octokit.rest.repos.listCommitStatusesForRef({
         owner: "exivity",
         repo: "merlin",
-        ref
+        ref: sha
       });
       for (const status of data) {
         if (status.context.startsWith("virustotal") && status.state === "pending") {
           (0, import_core3.debug)(`Found virustotal status "${status.context}"`);
-          statuses.push(status);
+          statuses.push(__spreadProps(__spreadValues({}, status), { sha }));
         }
       }
     } catch (error) {
@@ -18764,7 +18778,7 @@ async function run() {
     case ModeCheck:
       for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
         const result = await check(vt, pendingStatus);
-        await writeStatus(octokit, result);
+        await writeStatus(octokit, result, pendingStatus.sha);
       }
       break;
     default:

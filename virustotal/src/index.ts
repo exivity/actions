@@ -4,8 +4,8 @@ import glob from 'glob-promise'
 import {
   DevelopBranches,
   getRef,
-  getRepository,
   getSha,
+  getShaFromRef,
   getToken,
   isDevelopBranch,
   isReleaseBranch,
@@ -22,7 +22,7 @@ type CommitStatus = Awaited<
   ReturnType<
     ReturnType<typeof getOctokit>['rest']['repos']['listCommitStatusesForRef']
   >
->['data'][number]
+>['data'][number] & { sha: string }
 
 const ModeAnalyse = 'analyse'
 const ModeCheck = 'check'
@@ -40,12 +40,13 @@ async function check(vt: VirusTotal, commitStatus: CommitStatus) {
 
 async function writeStatus(
   octokit: ReturnType<typeof getOctokit>,
-  result: AnalysisResult
+  result: AnalysisResult,
+  sha?: string
 ) {
   await octokit.rest.repos.createCommitStatus({
     owner: 'exivity',
-    repo: getRepository().component,
-    sha: getSha(),
+    repo: 'merlin', // TODO: getRepository().component,
+    sha: sha ?? getSha(),
     state:
       result.status === 'pending'
         ? 'pending'
@@ -55,7 +56,9 @@ async function writeStatus(
     context: `virustotal (${result.filename})`,
     description:
       result.status === 'completed'
-        ? `Detected as malicious or suspicious (${result.flagged} times)`
+        ? result.flagged
+          ? `Detected as malicious or suspicious by ${result.flagged} security vendors`
+          : 'No security vendors flagged this file as malicious'
         : undefined,
     target_url: md5ToGuiUrl(result.md5),
   })
@@ -70,10 +73,12 @@ async function getPendingVirusTotalStatuses(
   for (const ref of refs) {
     info(`Checking all statuses for ${ref}`)
     try {
+      const component = 'merlin' // @TODO: getRepository().component, // also revert GH_BOT_TOKEN -> GITHUB_TOKEN
+      const sha = await getShaFromRef({ octokit, component, ref })
       const { data } = await octokit.rest.repos.listCommitStatusesForRef({
         owner: 'exivity',
-        repo: 'merlin', // @TODO: getRepository().component, // also revert GH_BOT_TOKEN -> GITHUB_TOKEN
-        ref,
+        repo: 'merlin',
+        ref: sha,
       })
       for (const status of data) {
         if (
@@ -81,7 +86,7 @@ async function getPendingVirusTotalStatuses(
           status.state === 'pending'
         ) {
           debug(`Found virustotal status "${status.context}"`)
-          statuses.push(status)
+          statuses.push({ ...status, sha })
         }
       }
     } catch (error: unknown) {
@@ -136,7 +141,7 @@ async function run() {
       // Run
       for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
         const result = await check(vt, pendingStatus)
-        await writeStatus(octokit, result)
+        await writeStatus(octokit, result, pendingStatus.sha)
       }
       break
     default:

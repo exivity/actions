@@ -12,8 +12,8 @@ type Options = {
   ref: string
 }
 
-export const ReleaseBranches = ['master', 'main'] as const
-export const DevelopBranches = ['develop'] as const
+export const ReleaseBranches = ['master', 'main']
+export const DevelopBranches = ['develop']
 
 export async function getShaFromRef({ octokit, component, ref }: Options) {
   if (ref === 'develop') {
