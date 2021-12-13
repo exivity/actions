@@ -18729,7 +18729,9 @@ async function analyse(vt, filePath) {
   return result;
 }
 async function check(vt, commitStatus) {
-  return vt.getFileReport(guiUrlToFilehash(commitStatus.target_url));
+  const result = await vt.getFileReport(guiUrlToFilehash(commitStatus.target_url));
+  (0, import_core3.info)(`Current status is "${result.status}" with "${result.flagged}" flags from security vendors`);
+  return result;
 }
 async function writeStatus(octokit, result, sha) {
   await octokit.rest.repos.createCommitStatus({
@@ -18764,10 +18766,14 @@ async function getPendingVirusTotalStatuses(octokit) {
       (0, import_core3.debug)(`Total statuses: ${data.length}`);
       const uniqueStatuses = data.filter((status, i, arr) => arr.findIndex((s) => s.context === status.context) === i);
       (0, import_core3.debug)(`Total unique statuses: ${uniqueStatuses.length}`);
-      for (const status of uniqueStatuses) {
-        if (status.context.startsWith("virustotal") && status.state === "pending") {
-          (0, import_core3.debug)(`Found virustotal status "${status.context}"`);
-          statuses.push(__spreadProps(__spreadValues({}, status), { sha }));
+      if (!uniqueStatuses.length) {
+        (0, import_core3.info)(`No pending virustotal statuses found`);
+      } else {
+        for (const status of uniqueStatuses) {
+          if (status.context.startsWith("virustotal") && status.state === "pending") {
+            (0, import_core3.info)(`Found pending virustotal status "${status.context}"`);
+            statuses.push(__spreadProps(__spreadValues({}, status), { sha }));
+          }
         }
       }
     } catch (error) {

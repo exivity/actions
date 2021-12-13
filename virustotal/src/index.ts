@@ -36,7 +36,13 @@ async function analyse(vt: VirusTotal, filePath: string) {
 }
 
 async function check(vt: VirusTotal, commitStatus: CommitStatus) {
-  return vt.getFileReport(guiUrlToFilehash(commitStatus.target_url))
+  const result = await vt.getFileReport(
+    guiUrlToFilehash(commitStatus.target_url)
+  )
+  info(
+    `Current status is "${result.status}" with "${result.flagged}" flags from security vendors`
+  )
+  return result
 }
 
 async function writeStatus(
@@ -94,13 +100,17 @@ async function getPendingVirusTotalStatuses(
           arr.findIndex((s) => s.context === status.context) === i
       )
       debug(`Total unique statuses: ${uniqueStatuses.length}`)
-      for (const status of uniqueStatuses) {
-        if (
-          status.context.startsWith('virustotal') &&
-          status.state === 'pending'
-        ) {
-          debug(`Found virustotal status "${status.context}"`)
-          statuses.push({ ...status, sha })
+      if (!uniqueStatuses.length) {
+        info(`No pending virustotal statuses found`)
+      } else {
+        for (const status of uniqueStatuses) {
+          if (
+            status.context.startsWith('virustotal') &&
+            status.state === 'pending'
+          ) {
+            info(`Found pending virustotal status "${status.context}"`)
+            statuses.push({ ...status, sha })
+          }
         }
       }
     } catch (error: unknown) {
