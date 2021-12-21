@@ -5057,7 +5057,7 @@ async function run() {
   const default_branch = getRef();
   const ghToken = getToken();
   const pull_request = parseInt((0, import_core2.getInput)("pull"), 10);
-  const repo = (0, import_core2.getInput)("component") || component;
+  const targetRepo = (0, import_core2.getInput)("component") || component;
   const event = (0, import_core2.getInput)("event");
   const branch = (0, import_core2.getInput)("branch") || default_branch;
   const customBody = (0, import_core2.getInput)("body");
@@ -5065,16 +5065,16 @@ async function run() {
     throw new Error("The event input is missing or invalid");
   }
   const octokit = (0, import_github.getOctokit)(ghToken);
-  const pull_number = isNaN(pull_request) ? (_a = await getPR(octokit, repo, branch)) == null ? void 0 : _a.number : pull_request;
+  const pull_number = isNaN(pull_request) ? (_a = await getPR(octokit, targetRepo, branch)) == null ? void 0 : _a.number : pull_request;
   if (!pull_number) {
     (0, import_core2.info)("No pull request to review, skipping action");
     return;
   }
-  (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
-  const body = `${customBody}${customBody ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${owner}/${repo}**](https://github.com/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
+  (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${targetRepo}`);
+  const body = `${customBody}${customBody ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
   await octokit.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews", {
     owner,
-    repo,
+    repo: targetRepo,
     pull_number,
     event,
     body
