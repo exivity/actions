@@ -16,7 +16,7 @@ async function run() {
   // inputs
   const ghToken = getToken()
   const pull_request = parseInt(getInput('pull'), 10)
-  const repo = getInput('component') || component
+  const targetRepo = getInput('component') || component
   const event = getInput('event')
   const branch = getInput('branch') || default_branch
   const customBody = getInput('body')
@@ -31,7 +31,7 @@ async function run() {
 
   // Get PR number to use
   const pull_number = isNaN(pull_request)
-    ? (await getPR(octokit, repo, branch))?.number
+    ? (await getPR(octokit, targetRepo, branch))?.number
     : pull_request
 
   if (!pull_number) {
@@ -39,12 +39,12 @@ async function run() {
     return
   }
 
-  info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
+  info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${targetRepo}`)
 
   const body = `${customBody}${customBody ? '\n\n---\n\n' : ''}\
 _Automated review from [**${process.env.GITHUB_WORKFLOW}** \
-workflow in **${owner}/${repo}**]\
-(https://github.com/${owner}/${repo}/actions/runs/${
+workflow in **${process.env.GITHUB_REPOSITORY}**]\
+(https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${
     process.env.GITHUB_RUN_ID
   })_`
 
@@ -53,7 +53,7 @@ workflow in **${owner}/${repo}**]\
     'POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
     {
       owner,
-      repo,
+      repo: targetRepo,
       pull_number,
       event,
       body,
