@@ -44,7 +44,7 @@
     "@types/glob": "7.2.0",
     "@types/js-yaml": "4.0.5",
     "@types/mime": "2.0.3",
-    "@types/node": "16.11.12",
+    "@types/node": "16.11.17",
     "@types/uuid": "8.3.3",
     "esbuild": "0.14.3",
     "husky": "7.0.4",
