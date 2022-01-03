@@ -18677,9 +18677,16 @@ var VirusTotal = class {
       "x-apikey": this.apiKey
     }, formData.getHeaders()));
     const responseRaw = await response.readBody();
-    const responseJson = JSON.parse(responseRaw);
     (0, import_core2.debug)(`Received response from VirusTotal:
+${responseRaw}`);
+    let responseJson;
+    try {
+      responseJson = JSON.parse(responseRaw);
+      (0, import_core2.debug)(`Parsed response from VirusTotal:
 ${JSON.stringify(responseJson, void 0, 2)}`);
+    } catch (error) {
+      throw new Error("Could parse read VirusTotal response");
+    }
     const responseData = UploadData.parse(responseJson).data;
     return {
       filehash: analysisIdToFilehash(responseData.id),

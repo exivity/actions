@@ -84,14 +84,20 @@ export class VirusTotal {
       ...formData.getHeaders(),
     })
     const responseRaw = await response.readBody()
-    const responseJson = JSON.parse(responseRaw)
-    debug(
-      `Received response from VirusTotal:\n${JSON.stringify(
-        responseJson,
-        undefined,
-        2
-      )}`
-    )
+    debug(`Received response from VirusTotal:\n${responseRaw}`)
+    let responseJson: any
+    try {
+      responseJson = JSON.parse(responseRaw)
+      debug(
+        `Parsed response from VirusTotal:\n${JSON.stringify(
+          responseJson,
+          undefined,
+          2
+        )}`
+      )
+    } catch (error) {
+      throw new Error('Could parse read VirusTotal response')
+    }
     const responseData = UploadData.parse(responseJson).data
 
     return {
