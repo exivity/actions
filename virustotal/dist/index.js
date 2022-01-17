@@ -16781,8 +16781,13 @@ function getRepository() {
   }
   return { owner, component };
 }
-function getSha() {
-  const sha = process.env["GITHUB_SHA"];
+async function getSha() {
+  let sha = process.env["GITHUB_SHA"];
+  const eventName = getEventName();
+  if (eventName === "pull_request") {
+    const eventData = await getEventData(eventName);
+    sha = eventData.pull_request.head.sha;
+  }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
   }
@@ -16802,6 +16807,26 @@ function getToken(inputName = "gh-token") {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
+}
+function getEventName(supportedEvents) {
+  const eventName = process.env["GITHUB_EVENT_NAME"];
+  if (!eventName) {
+    throw new Error("The GitHub event name is missing");
+  }
+  if (supportedEvents && !supportedEvents.includes(eventName)) {
+    throw new Error(`The event ${eventName} is not supported by this action`);
+  }
+  return eventName;
+}
+async function getEventData(eventName) {
+  const eventPath = process.env["GITHUB_EVENT_PATH"];
+  if (!eventPath) {
+    throw new Error("The GitHub event path is missing");
+  }
+  const fileData = await import_fs.promises.readFile(eventPath, {
+    encoding: "utf8"
+  });
+  return JSON.parse(fileData);
 }
 function isReleaseBranch(ref) {
   if (!ref) {
@@ -18744,7 +18769,7 @@ async function writeStatus(octokit, result, sha) {
   await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
     repo: getRepository().component,
-    sha: sha != null ? sha : getSha(),
+    sha: sha != null ? sha : await getSha(),
     state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
     context: `virustotal (${result.filename})`,
     description: result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0,

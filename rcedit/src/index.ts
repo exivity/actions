@@ -16,8 +16,9 @@ async function run() {
   const comments = getInput('comments')
   const companyName = getInput('company-name') || 'Exivity'
   const productName = getInput('product-name') || 'Exivity'
+  const sha = await getSha()
   const fileDescription =
-    getInput('file-description') || `${getRepository().component}:${getSha()}`
+    getInput('file-description') || `${getRepository().component}:${sha}`
   const internalFilename = getInput('internal-filename')
   const legalCopyright = getInput('legal-copyright')
   const legalTrademarks1 = getInput('legal-trademarks1')

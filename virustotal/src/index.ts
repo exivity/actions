@@ -53,7 +53,7 @@ async function writeStatus(
   await octokit.rest.repos.createCommitStatus({
     owner: 'exivity',
     repo: getRepository().component,
-    sha: sha ?? getSha(),
+    sha: sha ?? (await getSha()),
     state:
       result.status === 'pending'
         ? 'pending'
