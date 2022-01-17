@@ -79,8 +79,19 @@ export function getRepository() {
   return { owner, component }
 }
 
-export function getSha() {
-  const sha = process.env['GITHUB_SHA']
+export async function getSha() {
+  let sha = process.env['GITHUB_SHA']
+  const eventName = getEventName()
+
+  // See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request:
+  // Note that GITHUB_SHA for this event is the last merge commit of the pull
+  // request merge branch.If you want to get the commit ID for the last commit
+  // to the head branch of the pull request, use
+  // github.event.pull_request.head.sha instead.
+  if (eventName === 'pull_request') {
+    const eventData = await getEventData(eventName)
+    sha = eventData.pull_request.head.sha
+  }
 
   if (!sha) {
     throw new Error('The GitHub sha is missing')

@@ -49,7 +49,7 @@ async function run() {
   const ghToken = getToken()
   const octokit = getOctokit(ghToken)
   let ref = getRef()
-  let sha = getSha()
+  let sha = await getSha()
   const { component } = getRepository()
   const eventName = getEventName(supportedEvents)
   const eventData = await getEventData(eventName)

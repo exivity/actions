@@ -26889,8 +26889,13 @@ function getRepository() {
   }
   return { owner, component };
 }
-function getSha() {
-  const sha = process.env["GITHUB_SHA"];
+async function getSha() {
+  let sha = process.env["GITHUB_SHA"];
+  const eventName = getEventName();
+  if (eventName === "pull_request") {
+    const eventData = await getEventData(eventName);
+    sha = eventData.pull_request.head.sha;
+  }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
   }
@@ -30968,7 +30973,7 @@ async function run() {
   const ghToken = getToken();
   const octokit = (0, import_github2.getOctokit)(ghToken);
   let ref = getRef();
-  let sha = getSha();
+  let sha = await getSha();
   const { component } = getRepository();
   const eventName = getEventName(supportedEvents);
   const eventData = await getEventData(eventName);

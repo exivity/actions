@@ -4667,12 +4667,37 @@ function getRepository() {
   }
   return { owner, component };
 }
-function getSha() {
-  const sha = process.env["GITHUB_SHA"];
+async function getSha() {
+  let sha = process.env["GITHUB_SHA"];
+  const eventName = getEventName();
+  if (eventName === "pull_request") {
+    const eventData = await getEventData(eventName);
+    sha = eventData.pull_request.head.sha;
+  }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
   }
   return sha;
+}
+function getEventName(supportedEvents) {
+  const eventName = process.env["GITHUB_EVENT_NAME"];
+  if (!eventName) {
+    throw new Error("The GitHub event name is missing");
+  }
+  if (supportedEvents && !supportedEvents.includes(eventName)) {
+    throw new Error(`The event ${eventName} is not supported by this action`);
+  }
+  return eventName;
+}
+async function getEventData(eventName) {
+  const eventPath = process.env["GITHUB_EVENT_PATH"];
+  if (!eventPath) {
+    throw new Error("The GitHub event path is missing");
+  }
+  const fileData = await import_fs.promises.readFile(eventPath, {
+    encoding: "utf8"
+  });
+  return JSON.parse(fileData);
 }
 
 // rcedit/src/index.ts
@@ -4686,7 +4711,8 @@ async function run() {
   const comments = (0, import_core2.getInput)("comments");
   const companyName = (0, import_core2.getInput)("company-name") || "Exivity";
   const productName = (0, import_core2.getInput)("product-name") || "Exivity";
-  const fileDescription = (0, import_core2.getInput)("file-description") || `${getRepository().component}:${getSha()}`;
+  const sha = await getSha();
+  const fileDescription = (0, import_core2.getInput)("file-description") || `${getRepository().component}:${sha}`;
   const internalFilename = (0, import_core2.getInput)("internal-filename");
   const legalCopyright = (0, import_core2.getInput)("legal-copyright");
   const legalTrademarks1 = (0, import_core2.getInput)("legal-trademarks1");

@@ -2394,8 +2394,13 @@ function getRepository() {
   }
   return { owner, component };
 }
-function getSha() {
-  const sha = process.env["GITHUB_SHA"];
+async function getSha() {
+  let sha = process.env["GITHUB_SHA"];
+  const eventName = getEventName();
+  if (eventName === "pull_request") {
+    const eventData = await getEventData(eventName);
+    sha = eventData.pull_request.head.sha;
+  }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
   }
@@ -2407,6 +2412,26 @@ function getWorkspacePath() {
     throw new Error("The GitHub workspace path is missing");
   }
   return workspacePath;
+}
+function getEventName(supportedEvents) {
+  const eventName = process.env["GITHUB_EVENT_NAME"];
+  if (!eventName) {
+    throw new Error("The GitHub event name is missing");
+  }
+  if (supportedEvents && !supportedEvents.includes(eventName)) {
+    throw new Error(`The event ${eventName} is not supported by this action`);
+  }
+  return eventName;
+}
+async function getEventData(eventName) {
+  const eventPath = process.env["GITHUB_EVENT_PATH"];
+  if (!eventPath) {
+    throw new Error("The GitHub event path is missing");
+  }
+  const fileData = await import_fs2.promises.readFile(eventPath, {
+    encoding: "utf8"
+  });
+  return JSON.parse(fileData);
 }
 
 // lib/s3.ts
