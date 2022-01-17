@@ -2503,7 +2503,7 @@ async function run() {
   const prefix = (0, import_core4.getInput)("prefix") || void 0;
   let path = (0, import_core4.getInput)("path") || "build";
   const zip = getBooleanInput("zip", false);
-  const sha = getSha();
+  const sha = await getSha();
   const { component } = getRepository();
   const [awsKeyId, awsSecretKey] = getAWSCredentials();
   if (zip) {
