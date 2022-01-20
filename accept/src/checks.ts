@@ -91,6 +91,7 @@ export async function isWorkflowDependencyDone(
     return false
   }
 
+  info(`Workflow constraints satisfied`)
   return true
 }
 

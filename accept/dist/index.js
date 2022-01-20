@@ -30923,6 +30923,7 @@ async function isWorkflowDependencyDone(octokit, token, sha, repo) {
     (0, import_core3.info)(`Unable to find some workflow constraints in available checks`);
     return false;
   }
+  (0, import_core3.info)(`Workflow constraints satisfied`);
   return true;
 }
 function workflowNameMatchesCheckName(workflowName, checkName) {
