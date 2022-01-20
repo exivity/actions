@@ -35,26 +35,26 @@ var __objRest = (source, exclude) => {
   return target;
 };
 var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
-var __reExport = (target, module2, desc) => {
+var __reExport = (target, module2, copyDefault, desc) => {
   if (module2 && typeof module2 === "object" || typeof module2 === "function") {
     for (let key of __getOwnPropNames(module2))
-      if (!__hasOwnProp.call(target, key) && key !== "default")
+      if (!__hasOwnProp.call(target, key) && (copyDefault || key !== "default"))
         __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
   }
   return target;
 };
-var __toModule = (module2) => {
-  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
+var __toESM = (module2, isNodeMode) => {
+  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
 };
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
-  "node_modules/@actions/core/lib/utils.js"(exports2) {
+  "node_modules/@actions/core/lib/utils.js"(exports) {
     "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.toCommandProperties = exports2.toCommandValue = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.toCommandProperties = exports.toCommandValue = void 0;
     function toCommandValue(input) {
       if (input === null || input === void 0) {
         return "";
@@ -63,7 +63,7 @@ var require_utils = __commonJS({
       }
       return JSON.stringify(input);
     }
-    exports2.toCommandValue = toCommandValue;
+    exports.toCommandValue = toCommandValue;
     function toCommandProperties(annotationProperties) {
       if (!Object.keys(annotationProperties).length) {
         return {};
@@ -77,15 +77,15 @@ var require_utils = __commonJS({
         endColumn: annotationProperties.endColumn
       };
     }
-    exports2.toCommandProperties = toCommandProperties;
+    exports.toCommandProperties = toCommandProperties;
   }
 });
 
 // node_modules/@actions/core/lib/command.js
 var require_command = __commonJS({
-  "node_modules/@actions/core/lib/command.js"(exports2) {
+  "node_modules/@actions/core/lib/command.js"(exports) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -96,12 +96,12 @@ var require_command = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
@@ -113,19 +113,19 @@ var require_command = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.issue = exports2.issueCommand = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.issue = exports.issueCommand = void 0;
     var os = __importStar(require("os"));
     var utils_1 = require_utils();
     function issueCommand(command, properties, message) {
       const cmd = new Command(command, properties, message);
       process.stdout.write(cmd.toString() + os.EOL);
     }
-    exports2.issueCommand = issueCommand;
+    exports.issueCommand = issueCommand;
     function issue(name, message = "") {
       issueCommand(name, {}, message);
     }
-    exports2.issue = issue;
+    exports.issue = issue;
     var CMD_STRING = "::";
     var Command = class {
       constructor(command, properties, message) {
@@ -170,9 +170,9 @@ var require_command = __commonJS({
 
 // node_modules/@actions/core/lib/file-command.js
 var require_file_command = __commonJS({
-  "node_modules/@actions/core/lib/file-command.js"(exports2) {
+  "node_modules/@actions/core/lib/file-command.js"(exports) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -183,12 +183,12 @@ var require_file_command = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
@@ -200,8 +200,8 @@ var require_file_command = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.issueCommand = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.issueCommand = void 0;
     var fs = __importStar(require("fs"));
     var os = __importStar(require("os"));
     var utils_1 = require_utils();
@@ -217,15 +217,15 @@ var require_file_command = __commonJS({
         encoding: "utf8"
       });
     }
-    exports2.issueCommand = issueCommand;
+    exports.issueCommand = issueCommand;
   }
 });
 
 // node_modules/@actions/http-client/proxy.js
 var require_proxy = __commonJS({
-  "node_modules/@actions/http-client/proxy.js"(exports2) {
+  "node_modules/@actions/http-client/proxy.js"(exports) {
     "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
+    Object.defineProperty(exports, "__esModule", { value: true });
     function getProxyUrl(reqUrl) {
       let usingSsl = reqUrl.protocol === "https:";
       let proxyUrl;
@@ -243,7 +243,7 @@ var require_proxy = __commonJS({
       }
       return proxyUrl;
     }
-    exports2.getProxyUrl = getProxyUrl;
+    exports.getProxyUrl = getProxyUrl;
     function checkBypass(reqUrl) {
       if (!reqUrl.hostname) {
         return false;
@@ -271,13 +271,13 @@ var require_proxy = __commonJS({
       }
       return false;
     }
-    exports2.checkBypass = checkBypass;
+    exports.checkBypass = checkBypass;
   }
 });
 
 // node_modules/tunnel/lib/tunnel.js
 var require_tunnel = __commonJS({
-  "node_modules/tunnel/lib/tunnel.js"(exports2) {
+  "node_modules/tunnel/lib/tunnel.js"(exports) {
     "use strict";
     var net = require("net");
     var tls = require("tls");
@@ -286,10 +286,10 @@ var require_tunnel = __commonJS({
     var events = require("events");
     var assert = require("assert");
     var util = require("util");
-    exports2.httpOverHttp = httpOverHttp;
-    exports2.httpsOverHttp = httpsOverHttp;
-    exports2.httpOverHttps = httpOverHttps;
-    exports2.httpsOverHttps = httpsOverHttps;
+    exports.httpOverHttp = httpOverHttp;
+    exports.httpsOverHttp = httpsOverHttp;
+    exports.httpOverHttps = httpOverHttps;
+    exports.httpsOverHttps = httpsOverHttps;
     function httpOverHttp(options) {
       var agent = new TunnelingAgent(options);
       agent.request = http.request;
@@ -494,22 +494,22 @@ var require_tunnel = __commonJS({
       debug2 = function() {
       };
     }
-    exports2.debug = debug2;
+    exports.debug = debug2;
   }
 });
 
 // node_modules/tunnel/index.js
 var require_tunnel2 = __commonJS({
-  "node_modules/tunnel/index.js"(exports2, module2) {
+  "node_modules/tunnel/index.js"(exports, module2) {
     module2.exports = require_tunnel();
   }
 });
 
 // node_modules/@actions/http-client/index.js
 var require_http_client = __commonJS({
-  "node_modules/@actions/http-client/index.js"(exports2) {
+  "node_modules/@actions/http-client/index.js"(exports) {
     "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
+    Object.defineProperty(exports, "__esModule", { value: true });
     var http = require("http");
     var https = require("https");
     var pm = require_proxy();
@@ -543,21 +543,21 @@ var require_http_client = __commonJS({
       HttpCodes2[HttpCodes2["BadGateway"] = 502] = "BadGateway";
       HttpCodes2[HttpCodes2["ServiceUnavailable"] = 503] = "ServiceUnavailable";
       HttpCodes2[HttpCodes2["GatewayTimeout"] = 504] = "GatewayTimeout";
-    })(HttpCodes = exports2.HttpCodes || (exports2.HttpCodes = {}));
+    })(HttpCodes = exports.HttpCodes || (exports.HttpCodes = {}));
     var Headers;
     (function(Headers2) {
       Headers2["Accept"] = "accept";
       Headers2["ContentType"] = "content-type";
-    })(Headers = exports2.Headers || (exports2.Headers = {}));
+    })(Headers = exports.Headers || (exports.Headers = {}));
     var MediaTypes;
     (function(MediaTypes2) {
       MediaTypes2["ApplicationJson"] = "application/json";
-    })(MediaTypes = exports2.MediaTypes || (exports2.MediaTypes = {}));
+    })(MediaTypes = exports.MediaTypes || (exports.MediaTypes = {}));
     function getProxyUrl(serverUrl) {
       let proxyUrl = pm.getProxyUrl(new URL(serverUrl));
       return proxyUrl ? proxyUrl.href : "";
     }
-    exports2.getProxyUrl = getProxyUrl;
+    exports.getProxyUrl = getProxyUrl;
     var HttpRedirectCodes = [
       HttpCodes.MovedPermanently,
       HttpCodes.ResourceMoved,
@@ -581,7 +581,7 @@ var require_http_client = __commonJS({
         Object.setPrototypeOf(this, HttpClientError.prototype);
       }
     };
-    exports2.HttpClientError = HttpClientError;
+    exports.HttpClientError = HttpClientError;
     var HttpClientResponse = class {
       constructor(message) {
         this.message = message;
@@ -598,12 +598,12 @@ var require_http_client = __commonJS({
         });
       }
     };
-    exports2.HttpClientResponse = HttpClientResponse;
+    exports.HttpClientResponse = HttpClientResponse;
     function isHttps(requestUrl) {
       let parsedUrl = new URL(requestUrl);
       return parsedUrl.protocol === "https:";
     }
-    exports2.isHttps = isHttps;
+    exports.isHttps = isHttps;
     var HttpClient = class {
       constructor(userAgent, handlers, requestOptions) {
         this._ignoreSslError = false;
@@ -964,15 +964,15 @@ var require_http_client = __commonJS({
         });
       }
     };
-    exports2.HttpClient = HttpClient;
+    exports.HttpClient = HttpClient;
   }
 });
 
 // node_modules/@actions/http-client/auth.js
 var require_auth = __commonJS({
-  "node_modules/@actions/http-client/auth.js"(exports2) {
+  "node_modules/@actions/http-client/auth.js"(exports) {
     "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
+    Object.defineProperty(exports, "__esModule", { value: true });
     var BasicCredentialHandler = class {
       constructor(username, password) {
         this.username = username;
@@ -988,7 +988,7 @@ var require_auth = __commonJS({
         return null;
       }
     };
-    exports2.BasicCredentialHandler = BasicCredentialHandler;
+    exports.BasicCredentialHandler = BasicCredentialHandler;
     var BearerCredentialHandler = class {
       constructor(token) {
         this.token = token;
@@ -1003,7 +1003,7 @@ var require_auth = __commonJS({
         return null;
       }
     };
-    exports2.BearerCredentialHandler = BearerCredentialHandler;
+    exports.BearerCredentialHandler = BearerCredentialHandler;
     var PersonalAccessTokenCredentialHandler = class {
       constructor(token) {
         this.token = token;
@@ -1018,15 +1018,15 @@ var require_auth = __commonJS({
         return null;
       }
     };
-    exports2.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHandler;
+    exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHandler;
   }
 });
 
 // node_modules/@actions/core/lib/oidc-utils.js
 var require_oidc_utils = __commonJS({
-  "node_modules/@actions/core/lib/oidc-utils.js"(exports2) {
+  "node_modules/@actions/core/lib/oidc-utils.js"(exports) {
     "use strict";
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -1053,8 +1053,8 @@ var require_oidc_utils = __commonJS({
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
     };
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.OidcClient = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.OidcClient = void 0;
     var http_client_1 = require_http_client();
     var auth_1 = require_auth();
     var core_1 = require_core();
@@ -1116,15 +1116,15 @@ var require_oidc_utils = __commonJS({
         });
       }
     };
-    exports2.OidcClient = OidcClient;
+    exports.OidcClient = OidcClient;
   }
 });
 
 // node_modules/@actions/core/lib/core.js
 var require_core = __commonJS({
-  "node_modules/@actions/core/lib/core.js"(exports2) {
+  "node_modules/@actions/core/lib/core.js"(exports) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -1135,12 +1135,12 @@ var require_core = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
@@ -1152,7 +1152,7 @@ var require_core = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -1179,8 +1179,8 @@ var require_core = __commonJS({
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
     };
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getIDToken = exports2.getState = exports2.saveState = exports2.group = exports2.endGroup = exports2.startGroup = exports2.info = exports2.notice = exports2.warning = exports2.error = exports2.debug = exports2.isDebug = exports2.setFailed = exports2.setCommandEcho = exports2.setOutput = exports2.getBooleanInput = exports2.getMultilineInput = exports2.getInput = exports2.addPath = exports2.setSecret = exports2.exportVariable = exports2.ExitCode = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
     var command_1 = require_command();
     var file_command_1 = require_file_command();
     var utils_1 = require_utils();
@@ -1191,7 +1191,7 @@ var require_core = __commonJS({
     (function(ExitCode2) {
       ExitCode2[ExitCode2["Success"] = 0] = "Success";
       ExitCode2[ExitCode2["Failure"] = 1] = "Failure";
-    })(ExitCode = exports2.ExitCode || (exports2.ExitCode = {}));
+    })(ExitCode = exports.ExitCode || (exports.ExitCode = {}));
     function exportVariable(name, val) {
       const convertedVal = utils_1.toCommandValue(val);
       process.env[name] = convertedVal;
@@ -1204,11 +1204,11 @@ var require_core = __commonJS({
         command_1.issueCommand("set-env", { name }, convertedVal);
       }
     }
-    exports2.exportVariable = exportVariable;
+    exports.exportVariable = exportVariable;
     function setSecret(secret) {
       command_1.issueCommand("add-mask", {}, secret);
     }
-    exports2.setSecret = setSecret;
+    exports.setSecret = setSecret;
     function addPath(inputPath) {
       const filePath = process.env["GITHUB_PATH"] || "";
       if (filePath) {
@@ -1218,7 +1218,7 @@ var require_core = __commonJS({
       }
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
-    exports2.addPath = addPath;
+    exports.addPath = addPath;
     function getInput3(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
@@ -1229,12 +1229,12 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports2.getInput = getInput3;
+    exports.getInput = getInput3;
     function getMultilineInput(name, options) {
       const inputs = getInput3(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
-    exports2.getMultilineInput = getMultilineInput;
+    exports.getMultilineInput = getMultilineInput;
     function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
@@ -1246,53 +1246,53 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports2.getBooleanInput = getBooleanInput;
+    exports.getBooleanInput = getBooleanInput;
     function setOutput(name, value) {
       process.stdout.write(os.EOL);
       command_1.issueCommand("set-output", { name }, value);
     }
-    exports2.setOutput = setOutput;
+    exports.setOutput = setOutput;
     function setCommandEcho(enabled) {
       command_1.issue("echo", enabled ? "on" : "off");
     }
-    exports2.setCommandEcho = setCommandEcho;
+    exports.setCommandEcho = setCommandEcho;
     function setFailed2(message) {
       process.exitCode = ExitCode.Failure;
       error(message);
     }
-    exports2.setFailed = setFailed2;
+    exports.setFailed = setFailed2;
     function isDebug() {
       return process.env["RUNNER_DEBUG"] === "1";
     }
-    exports2.isDebug = isDebug;
+    exports.isDebug = isDebug;
     function debug2(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports2.debug = debug2;
+    exports.debug = debug2;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports2.error = error;
+    exports.error = error;
     function warning2(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports2.warning = warning2;
+    exports.warning = warning2;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports2.notice = notice;
+    exports.notice = notice;
     function info2(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports2.info = info2;
+    exports.info = info2;
     function startGroup(name) {
       command_1.issue("group", name);
     }
-    exports2.startGroup = startGroup;
+    exports.startGroup = startGroup;
     function endGroup() {
       command_1.issue("endgroup");
     }
-    exports2.endGroup = endGroup;
+    exports.endGroup = endGroup;
     function group(name, fn) {
       return __awaiter(this, void 0, void 0, function* () {
         startGroup(name);
@@ -1305,27 +1305,27 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
         return result;
       });
     }
-    exports2.group = group;
+    exports.group = group;
     function saveState(name, value) {
       command_1.issueCommand("save-state", { name }, value);
     }
-    exports2.saveState = saveState;
+    exports.saveState = saveState;
     function getState(name) {
       return process.env[`STATE_${name}`] || "";
     }
-    exports2.getState = getState;
+    exports.getState = getState;
     function getIDToken(aud) {
       return __awaiter(this, void 0, void 0, function* () {
         return yield oidc_utils_1.OidcClient.getIDToken(aud);
       });
     }
-    exports2.getIDToken = getIDToken;
+    exports.getIDToken = getIDToken;
   }
 });
 
 // node_modules/fs.realpath/old.js
 var require_old = __commonJS({
-  "node_modules/fs.realpath/old.js"(exports2) {
+  "node_modules/fs.realpath/old.js"(exports) {
     var pathModule = require("path");
     var isWindows = process.platform === "win32";
     var fs = require("fs");
@@ -1375,7 +1375,7 @@ var require_old = __commonJS({
       splitRootRe = /^[\/]*/;
     }
     var splitRootRe;
-    exports2.realpathSync = function realpathSync(p, cache) {
+    exports.realpathSync = function realpathSync(p, cache) {
       p = pathModule.resolve(p);
       if (cache && Object.prototype.hasOwnProperty.call(cache, p)) {
         return cache[p];
@@ -1442,7 +1442,7 @@ var require_old = __commonJS({
         cache[original] = p;
       return p;
     };
-    exports2.realpath = function realpath(p, cache, cb) {
+    exports.realpath = function realpath(p, cache, cb) {
       if (typeof cb !== "function") {
         cb = maybeCallback(cache);
         cache = null;
@@ -1537,7 +1537,7 @@ var require_old = __commonJS({
 
 // node_modules/fs.realpath/index.js
 var require_fs = __commonJS({
-  "node_modules/fs.realpath/index.js"(exports2, module2) {
+  "node_modules/fs.realpath/index.js"(exports, module2) {
     module2.exports = realpath;
     realpath.realpath = realpath;
     realpath.sync = realpathSync;
@@ -1596,7 +1596,7 @@ var require_fs = __commonJS({
 
 // node_modules/concat-map/index.js
 var require_concat_map = __commonJS({
-  "node_modules/concat-map/index.js"(exports2, module2) {
+  "node_modules/concat-map/index.js"(exports, module2) {
     module2.exports = function(xs, fn) {
       var res = [];
       for (var i = 0; i < xs.length; i++) {
@@ -1616,7 +1616,7 @@ var require_concat_map = __commonJS({
 
 // node_modules/balanced-match/index.js
 var require_balanced_match = __commonJS({
-  "node_modules/balanced-match/index.js"(exports2, module2) {
+  "node_modules/balanced-match/index.js"(exports, module2) {
     "use strict";
     module2.exports = balanced;
     function balanced(a, b, str) {
@@ -1673,7 +1673,7 @@ var require_balanced_match = __commonJS({
 
 // node_modules/brace-expansion/index.js
 var require_brace_expansion = __commonJS({
-  "node_modules/brace-expansion/index.js"(exports2, module2) {
+  "node_modules/brace-expansion/index.js"(exports, module2) {
     var concatMap = require_concat_map();
     var balanced = require_balanced_match();
     module2.exports = expandTop;
@@ -1818,7 +1818,7 @@ var require_brace_expansion = __commonJS({
 
 // node_modules/minimatch/minimatch.js
 var require_minimatch = __commonJS({
-  "node_modules/minimatch/minimatch.js"(exports2, module2) {
+  "node_modules/minimatch/minimatch.js"(exports, module2) {
     module2.exports = minimatch;
     minimatch.Minimatch = Minimatch;
     var path = { sep: "/" };
@@ -2386,7 +2386,7 @@ var require_minimatch = __commonJS({
 
 // node_modules/inherits/inherits_browser.js
 var require_inherits_browser = __commonJS({
-  "node_modules/inherits/inherits_browser.js"(exports2, module2) {
+  "node_modules/inherits/inherits_browser.js"(exports, module2) {
     if (typeof Object.create === "function") {
       module2.exports = function inherits(ctor, superCtor) {
         if (superCtor) {
@@ -2418,7 +2418,7 @@ var require_inherits_browser = __commonJS({
 
 // node_modules/inherits/inherits.js
 var require_inherits = __commonJS({
-  "node_modules/inherits/inherits.js"(exports2, module2) {
+  "node_modules/inherits/inherits.js"(exports, module2) {
     try {
       util = require("util");
       if (typeof util.inherits !== "function")
@@ -2433,7 +2433,7 @@ var require_inherits = __commonJS({
 
 // node_modules/path-is-absolute/index.js
 var require_path_is_absolute = __commonJS({
-  "node_modules/path-is-absolute/index.js"(exports2, module2) {
+  "node_modules/path-is-absolute/index.js"(exports, module2) {
     "use strict";
     function posix(path) {
       return path.charAt(0) === "/";
@@ -2453,14 +2453,14 @@ var require_path_is_absolute = __commonJS({
 
 // node_modules/glob/common.js
 var require_common = __commonJS({
-  "node_modules/glob/common.js"(exports2) {
-    exports2.setopts = setopts;
-    exports2.ownProp = ownProp;
-    exports2.makeAbs = makeAbs;
-    exports2.finish = finish;
-    exports2.mark = mark;
-    exports2.isIgnored = isIgnored;
-    exports2.childrenIgnored = childrenIgnored;
+  "node_modules/glob/common.js"(exports) {
+    exports.setopts = setopts;
+    exports.ownProp = ownProp;
+    exports.makeAbs = makeAbs;
+    exports.finish = finish;
+    exports.mark = mark;
+    exports.isIgnored = isIgnored;
+    exports.childrenIgnored = childrenIgnored;
     function ownProp(obj, field) {
       return Object.prototype.hasOwnProperty.call(obj, field);
     }
@@ -2646,7 +2646,7 @@ var require_common = __commonJS({
 
 // node_modules/glob/sync.js
 var require_sync = __commonJS({
-  "node_modules/glob/sync.js"(exports2, module2) {
+  "node_modules/glob/sync.js"(exports, module2) {
     module2.exports = globSync;
     globSync.GlobSync = GlobSync;
     var rp = require_fs();
@@ -2996,7 +2996,7 @@ var require_sync = __commonJS({
 
 // node_modules/wrappy/wrappy.js
 var require_wrappy = __commonJS({
-  "node_modules/wrappy/wrappy.js"(exports2, module2) {
+  "node_modules/wrappy/wrappy.js"(exports, module2) {
     module2.exports = wrappy;
     function wrappy(fn, cb) {
       if (fn && cb)
@@ -3027,7 +3027,7 @@ var require_wrappy = __commonJS({
 
 // node_modules/once/once.js
 var require_once = __commonJS({
-  "node_modules/once/once.js"(exports2, module2) {
+  "node_modules/once/once.js"(exports, module2) {
     var wrappy = require_wrappy();
     module2.exports = wrappy(once);
     module2.exports.strict = wrappy(onceStrict);
@@ -3072,7 +3072,7 @@ var require_once = __commonJS({
 
 // node_modules/inflight/inflight.js
 var require_inflight = __commonJS({
-  "node_modules/inflight/inflight.js"(exports2, module2) {
+  "node_modules/inflight/inflight.js"(exports, module2) {
     var wrappy = require_wrappy();
     var reqs = Object.create(null);
     var once = require_once();
@@ -3119,7 +3119,7 @@ var require_inflight = __commonJS({
 
 // node_modules/glob/glob.js
 var require_glob = __commonJS({
-  "node_modules/glob/glob.js"(exports2, module2) {
+  "node_modules/glob/glob.js"(exports, module2) {
     module2.exports = glob2;
     var rp = require_fs();
     var minimatch = require_minimatch();
@@ -3672,7 +3672,7 @@ var require_glob = __commonJS({
 
 // node_modules/glob-promise/lib/index.js
 var require_lib = __commonJS({
-  "node_modules/glob-promise/lib/index.js"(exports2, module2) {
+  "node_modules/glob-promise/lib/index.js"(exports, module2) {
     var glob2 = require_glob();
     var promise = function(pattern, options) {
       return new Promise((resolve, reject) => {
@@ -3690,7 +3690,7 @@ var require_lib = __commonJS({
 
 // node_modules/isexe/windows.js
 var require_windows = __commonJS({
-  "node_modules/isexe/windows.js"(exports2, module2) {
+  "node_modules/isexe/windows.js"(exports, module2) {
     module2.exports = isexe;
     isexe.sync = sync;
     var fs = require("fs");
@@ -3730,7 +3730,7 @@ var require_windows = __commonJS({
 
 // node_modules/isexe/mode.js
 var require_mode = __commonJS({
-  "node_modules/isexe/mode.js"(exports2, module2) {
+  "node_modules/isexe/mode.js"(exports, module2) {
     module2.exports = isexe;
     isexe.sync = sync;
     var fs = require("fs");
@@ -3763,7 +3763,7 @@ var require_mode = __commonJS({
 
 // node_modules/isexe/index.js
 var require_isexe = __commonJS({
-  "node_modules/isexe/index.js"(exports2, module2) {
+  "node_modules/isexe/index.js"(exports, module2) {
     var fs = require("fs");
     var core;
     if (process.platform === "win32" || global.TESTING_WINDOWS) {
@@ -3818,7 +3818,7 @@ var require_isexe = __commonJS({
 
 // node_modules/which/which.js
 var require_which = __commonJS({
-  "node_modules/which/which.js"(exports2, module2) {
+  "node_modules/which/which.js"(exports, module2) {
     var isWindows = process.platform === "win32" || process.env.OSTYPE === "cygwin" || process.env.OSTYPE === "msys";
     var path = require("path");
     var COLON = isWindows ? ";" : ":";
@@ -3912,7 +3912,7 @@ var require_which = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/node_modules/path-key/index.js
 var require_path_key = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/node_modules/path-key/index.js"(exports2, module2) {
+  "node_modules/@malept/cross-spawn-promise/node_modules/path-key/index.js"(exports, module2) {
     "use strict";
     var pathKey = (options = {}) => {
       const environment = options.env || process.env;
@@ -3929,7 +3929,7 @@ var require_path_key = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/util/resolveCommand.js
 var require_resolveCommand = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/util/resolveCommand.js"(exports2, module2) {
+  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/util/resolveCommand.js"(exports, module2) {
     "use strict";
     var path = require("path");
     var which = require_which();
@@ -3971,7 +3971,7 @@ var require_resolveCommand = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/util/escape.js
 var require_escape = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/util/escape.js"(exports2, module2) {
+  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/util/escape.js"(exports, module2) {
     "use strict";
     var metaCharsRegExp = /([()\][%!^"`<>&|;, *?])/g;
     function escapeCommand(arg) {
@@ -3996,7 +3996,7 @@ var require_escape = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/node_modules/shebang-regex/index.js
 var require_shebang_regex = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/node_modules/shebang-regex/index.js"(exports2, module2) {
+  "node_modules/@malept/cross-spawn-promise/node_modules/shebang-regex/index.js"(exports, module2) {
     "use strict";
     module2.exports = /^#!(.*)/;
   }
@@ -4004,7 +4004,7 @@ var require_shebang_regex = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/node_modules/shebang-command/index.js
 var require_shebang_command = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/node_modules/shebang-command/index.js"(exports2, module2) {
+  "node_modules/@malept/cross-spawn-promise/node_modules/shebang-command/index.js"(exports, module2) {
     "use strict";
     var shebangRegex = require_shebang_regex();
     module2.exports = (string = "") => {
@@ -4024,7 +4024,7 @@ var require_shebang_command = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/util/readShebang.js
 var require_readShebang = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/util/readShebang.js"(exports2, module2) {
+  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/util/readShebang.js"(exports, module2) {
     "use strict";
     var fs = require("fs");
     var shebangCommand = require_shebang_command();
@@ -4046,7 +4046,7 @@ var require_readShebang = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/parse.js
 var require_parse = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/parse.js"(exports2, module2) {
+  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/parse.js"(exports, module2) {
     "use strict";
     var path = require("path");
     var resolveCommand = require_resolveCommand();
@@ -4108,7 +4108,7 @@ var require_parse = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/enoent.js
 var require_enoent = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/enoent.js"(exports2, module2) {
+  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/lib/enoent.js"(exports, module2) {
     "use strict";
     var isWin = process.platform === "win32";
     function notFoundError(original, syscall) {
@@ -4158,7 +4158,7 @@ var require_enoent = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/index.js
 var require_cross_spawn = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/index.js"(exports2, module2) {
+  "node_modules/@malept/cross-spawn-promise/node_modules/cross-spawn/index.js"(exports, module2) {
     "use strict";
     var cp = require("child_process");
     var parse = require_parse();
@@ -4185,13 +4185,13 @@ var require_cross_spawn = __commonJS({
 
 // node_modules/@malept/cross-spawn-promise/dist/src/index.js
 var require_src = __commonJS({
-  "node_modules/@malept/cross-spawn-promise/dist/src/index.js"(exports2) {
+  "node_modules/@malept/cross-spawn-promise/dist/src/index.js"(exports) {
     "use strict";
-    var __importDefault = exports2 && exports2.__importDefault || function(mod) {
+    var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
     };
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.spawn = exports2.ExitSignalError = exports2.ExitCodeError = exports2.ExitError = exports2.CrossSpawnError = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.spawn = exports.ExitSignalError = exports.ExitCodeError = exports.ExitError = exports.CrossSpawnError = void 0;
     var cross_spawn_1 = __importDefault(require_cross_spawn());
     function stringifyCommand(cmd, args) {
       if (args && Array.isArray(args) && args.length > 0) {
@@ -4210,7 +4210,7 @@ ${stderr}`.trim());
         this.originalError = originalError;
       }
     };
-    exports2.CrossSpawnError = CrossSpawnError;
+    exports.CrossSpawnError = CrossSpawnError;
     var ExitError = class extends Error {
       constructor(cmd, args, message, stdout, stderr) {
         super(message);
@@ -4220,7 +4220,7 @@ ${stderr}`.trim());
         this.stderr = stderr;
       }
     };
-    exports2.ExitError = ExitError;
+    exports.ExitError = ExitError;
     var ExitCodeError = class extends ExitError {
       constructor(cmd, args, code, stdout, stderr) {
         const fullCommand = stringifyCommand(cmd, args);
@@ -4231,7 +4231,7 @@ ${stderr}`.trim(), stdout, stderr);
         this.code = code;
       }
     };
-    exports2.ExitCodeError = ExitCodeError;
+    exports.ExitCodeError = ExitCodeError;
     var ExitSignalError = class extends ExitError {
       constructor(cmd, args, signal, stdout, stderr) {
         const fullCommand = stringifyCommand(cmd, args);
@@ -4242,7 +4242,7 @@ ${stderr}`.trim(), stdout, stderr);
         this.signal = signal;
       }
     };
-    exports2.ExitSignalError = ExitSignalError;
+    exports.ExitSignalError = ExitSignalError;
     async function spawn(cmd, args, options) {
       if (!options) {
         options = {};
@@ -4281,13 +4281,13 @@ ${stderr}`.trim(), stdout, stderr);
         });
       });
     }
-    exports2.spawn = spawn;
+    exports.spawn = spawn;
   }
 });
 
 // node_modules/is-docker/index.js
 var require_is_docker = __commonJS({
-  "node_modules/is-docker/index.js"(exports2, module2) {
+  "node_modules/is-docker/index.js"(exports, module2) {
     "use strict";
     var fs = require("fs");
     var isDocker;
@@ -4317,7 +4317,7 @@ var require_is_docker = __commonJS({
 
 // node_modules/is-wsl/index.js
 var require_is_wsl = __commonJS({
-  "node_modules/is-wsl/index.js"(exports2, module2) {
+  "node_modules/is-wsl/index.js"(exports, module2) {
     "use strict";
     var os = require("os");
     var fs = require("fs");
@@ -4348,9 +4348,9 @@ var require_is_wsl = __commonJS({
 
 // node_modules/cross-spawn-windows-exe/dist/src/wrapper.js
 var require_wrapper = __commonJS({
-  "node_modules/cross-spawn-windows-exe/dist/src/wrapper.js"(exports2) {
+  "node_modules/cross-spawn-windows-exe/dist/src/wrapper.js"(exports) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -4361,12 +4361,12 @@ var require_wrapper = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
@@ -4378,11 +4378,11 @@ var require_wrapper = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __importDefault = exports2 && exports2.__importDefault || function(mod) {
+    var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
     };
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.spawnWrapperFromFunction = exports2.spawnWrapper = exports2.wrapperCommandExists = exports2.WrapperError = exports2.canRunWindowsExeNatively = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.spawnWrapperFromFunction = exports.spawnWrapper = exports.wrapperCommandExists = exports.WrapperError = exports.canRunWindowsExeNatively = void 0;
     var cross_spawn_promise_1 = require_src();
     var fs = __importStar(require("fs"));
     var is_wsl_1 = __importDefault(require_is_wsl());
@@ -4391,14 +4391,14 @@ var require_wrapper = __commonJS({
     function canRunWindowsExeNatively() {
       return process.platform === "win32" || is_wsl_1.default;
     }
-    exports2.canRunWindowsExeNatively = canRunWindowsExeNatively;
+    exports.canRunWindowsExeNatively = canRunWindowsExeNatively;
     var WrapperError = class extends Error {
       constructor(wrapperCommand, installInstructions) {
         const message = `Wrapper command '${wrapperCommand}' not found on the system.${installInstructions ? " " + installInstructions : ""}`;
         super(message);
       }
     };
-    exports2.WrapperError = WrapperError;
+    exports.WrapperError = WrapperError;
     async function wrapperCommandExists(wrapperCommand) {
       if (path.isAbsolute(wrapperCommand)) {
         return fs.existsSync(wrapperCommand);
@@ -4411,7 +4411,7 @@ var require_wrapper = __commonJS({
         }
       }
     }
-    exports2.wrapperCommandExists = wrapperCommandExists;
+    exports.wrapperCommandExists = wrapperCommandExists;
     async function spawnWrapper(cmd, args, options) {
       options !== null && options !== void 0 ? options : options = {};
       const _a = options, { wrapperCommand, wrapperInstructions } = _a, crossSpawnOptions = __objRest(_a, ["wrapperCommand", "wrapperInstructions"]);
@@ -4424,7 +4424,7 @@ var require_wrapper = __commonJS({
       }
       return cross_spawn_promise_1.spawn(cmd, args, crossSpawnOptions);
     }
-    exports2.spawnWrapper = spawnWrapper;
+    exports.spawnWrapper = spawnWrapper;
     async function spawnWrapperFromFunction(wrapperFunction, cmd, args, options) {
       let exeOptions = options;
       if (!canRunWindowsExeNatively()) {
@@ -4433,33 +4433,33 @@ var require_wrapper = __commonJS({
       }
       return spawnWrapper(cmd, args, exeOptions);
     }
-    exports2.spawnWrapperFromFunction = spawnWrapperFromFunction;
+    exports.spawnWrapperFromFunction = spawnWrapperFromFunction;
   }
 });
 
 // node_modules/cross-spawn-windows-exe/dist/src/arch.js
 var require_arch = __commonJS({
-  "node_modules/cross-spawn-windows-exe/dist/src/arch.js"(exports2) {
+  "node_modules/cross-spawn-windows-exe/dist/src/arch.js"(exports) {
     "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.is64BitArch = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.is64BitArch = void 0;
     var SIXTY_FOUR_BIT_ARCHES = ["arm64", "x64"];
     function is64BitArch(arch) {
       return SIXTY_FOUR_BIT_ARCHES.includes(arch);
     }
-    exports2.is64BitArch = is64BitArch;
+    exports.is64BitArch = is64BitArch;
   }
 });
 
 // node_modules/cross-spawn-windows-exe/dist/src/normalize-path.js
 var require_normalize_path = __commonJS({
-  "node_modules/cross-spawn-windows-exe/dist/src/normalize-path.js"(exports2) {
+  "node_modules/cross-spawn-windows-exe/dist/src/normalize-path.js"(exports) {
     "use strict";
-    var __importDefault = exports2 && exports2.__importDefault || function(mod) {
+    var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
     };
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.normalizePath = exports2.convertUNIXPathToWindows = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.normalizePath = exports.convertUNIXPathToWindows = void 0;
     var is_wsl_1 = __importDefault(require_is_wsl());
     var cross_spawn_promise_1 = require_src();
     function updateWSLPathError(error) {
@@ -4473,23 +4473,23 @@ var require_normalize_path = __commonJS({
       });
       return output.trim();
     }
-    exports2.convertUNIXPathToWindows = convertUNIXPathToWindows;
+    exports.convertUNIXPathToWindows = convertUNIXPathToWindows;
     async function normalizePath(pathToNormalize) {
       if (is_wsl_1.default) {
         return convertUNIXPathToWindows(pathToNormalize);
       }
       return pathToNormalize;
     }
-    exports2.normalizePath = normalizePath;
+    exports.normalizePath = normalizePath;
   }
 });
 
 // node_modules/cross-spawn-windows-exe/dist/src/dotnet.js
 var require_dotnet = __commonJS({
-  "node_modules/cross-spawn-windows-exe/dist/src/dotnet.js"(exports2) {
+  "node_modules/cross-spawn-windows-exe/dist/src/dotnet.js"(exports) {
     "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.spawnDotNet = exports2.determineDotNetWrapper = exports2.dotNetDependencyInstallInstructions = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.spawnDotNet = exports.determineDotNetWrapper = exports.dotNetDependencyInstallInstructions = void 0;
     var wrapper_1 = require_wrapper();
     function dotNetDependencyInstallInstructions() {
       switch (process.platform) {
@@ -4503,7 +4503,7 @@ var require_dotnet = __commonJS({
           return "Consult your operating system's package manager to determine how to install Mono.";
       }
     }
-    exports2.dotNetDependencyInstallInstructions = dotNetDependencyInstallInstructions;
+    exports.dotNetDependencyInstallInstructions = dotNetDependencyInstallInstructions;
     function determineDotNetWrapper(customDotNetPath) {
       if (customDotNetPath) {
         return customDotNetPath;
@@ -4513,23 +4513,23 @@ var require_dotnet = __commonJS({
       }
       return "mono";
     }
-    exports2.determineDotNetWrapper = determineDotNetWrapper;
+    exports.determineDotNetWrapper = determineDotNetWrapper;
     async function spawnDotNet(cmd, args, options) {
       var _a;
       options !== null && options !== void 0 ? options : options = {};
       (_a = options.wrapperInstructions) !== null && _a !== void 0 ? _a : options.wrapperInstructions = dotNetDependencyInstallInstructions();
       return wrapper_1.spawnWrapperFromFunction(determineDotNetWrapper, cmd, args, options);
     }
-    exports2.spawnDotNet = spawnDotNet;
+    exports.spawnDotNet = spawnDotNet;
   }
 });
 
 // node_modules/cross-spawn-windows-exe/dist/src/exe.js
 var require_exe = __commonJS({
-  "node_modules/cross-spawn-windows-exe/dist/src/exe.js"(exports2) {
+  "node_modules/cross-spawn-windows-exe/dist/src/exe.js"(exports) {
     "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.spawnExe = exports2.determineWineWrapper = exports2.exeDependencyInstallInstructions = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.spawnExe = exports.determineWineWrapper = exports.exeDependencyInstallInstructions = void 0;
     var wrapper_1 = require_wrapper();
     var arch_1 = require_arch();
     function exeDependencyInstallInstructions() {
@@ -4544,7 +4544,7 @@ var require_exe = __commonJS({
           return "Consult your operating system's package manager to determine how to install Wine.";
       }
     }
-    exports2.exeDependencyInstallInstructions = exeDependencyInstallInstructions;
+    exports.exeDependencyInstallInstructions = exeDependencyInstallInstructions;
     function determineWineWrapper(customWinePath) {
       if (customWinePath) {
         return customWinePath;
@@ -4557,56 +4557,56 @@ var require_exe = __commonJS({
       }
       return "wine";
     }
-    exports2.determineWineWrapper = determineWineWrapper;
+    exports.determineWineWrapper = determineWineWrapper;
     async function spawnExe(cmd, args, options) {
       var _a;
       options !== null && options !== void 0 ? options : options = {};
       (_a = options.wrapperInstructions) !== null && _a !== void 0 ? _a : options.wrapperInstructions = exeDependencyInstallInstructions();
       return wrapper_1.spawnWrapperFromFunction(determineWineWrapper, cmd, args, options);
     }
-    exports2.spawnExe = spawnExe;
+    exports.spawnExe = spawnExe;
   }
 });
 
 // node_modules/cross-spawn-windows-exe/dist/src/index.js
 var require_src2 = __commonJS({
-  "node_modules/cross-spawn-windows-exe/dist/src/index.js"(exports2) {
+  "node_modules/cross-spawn-windows-exe/dist/src/index.js"(exports) {
     "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.spawnExe = exports2.exeDependencyInstallInstructions = exports2.spawnDotNet = exports2.dotNetDependencyInstallInstructions = exports2.normalizePath = exports2.is64BitArch = exports2.WrapperError = exports2.spawnWrapperFromFunction = exports2.spawn = exports2.canRunWindowsExeNatively = void 0;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.spawnExe = exports.exeDependencyInstallInstructions = exports.spawnDotNet = exports.dotNetDependencyInstallInstructions = exports.normalizePath = exports.is64BitArch = exports.WrapperError = exports.spawnWrapperFromFunction = exports.spawn = exports.canRunWindowsExeNatively = void 0;
     var wrapper_1 = require_wrapper();
-    Object.defineProperty(exports2, "canRunWindowsExeNatively", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "canRunWindowsExeNatively", { enumerable: true, get: function() {
       return wrapper_1.canRunWindowsExeNatively;
     } });
-    Object.defineProperty(exports2, "spawn", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "spawn", { enumerable: true, get: function() {
       return wrapper_1.spawnWrapper;
     } });
-    Object.defineProperty(exports2, "spawnWrapperFromFunction", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "spawnWrapperFromFunction", { enumerable: true, get: function() {
       return wrapper_1.spawnWrapperFromFunction;
     } });
-    Object.defineProperty(exports2, "WrapperError", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "WrapperError", { enumerable: true, get: function() {
       return wrapper_1.WrapperError;
     } });
     var arch_1 = require_arch();
-    Object.defineProperty(exports2, "is64BitArch", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "is64BitArch", { enumerable: true, get: function() {
       return arch_1.is64BitArch;
     } });
     var normalize_path_1 = require_normalize_path();
-    Object.defineProperty(exports2, "normalizePath", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "normalizePath", { enumerable: true, get: function() {
       return normalize_path_1.normalizePath;
     } });
     var dotnet_1 = require_dotnet();
-    Object.defineProperty(exports2, "dotNetDependencyInstallInstructions", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "dotNetDependencyInstallInstructions", { enumerable: true, get: function() {
       return dotnet_1.dotNetDependencyInstallInstructions;
     } });
-    Object.defineProperty(exports2, "spawnDotNet", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "spawnDotNet", { enumerable: true, get: function() {
       return dotnet_1.spawnDotNet;
     } });
     var exe_1 = require_exe();
-    Object.defineProperty(exports2, "exeDependencyInstallInstructions", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "exeDependencyInstallInstructions", { enumerable: true, get: function() {
       return exe_1.exeDependencyInstallInstructions;
     } });
-    Object.defineProperty(exports2, "spawnExe", { enumerable: true, get: function() {
+    Object.defineProperty(exports, "spawnExe", { enumerable: true, get: function() {
       return exe_1.spawnExe;
     } });
   }
@@ -4614,7 +4614,7 @@ var require_src2 = __commonJS({
 
 // node_modules/rcedit/lib/rcedit.js
 var require_rcedit = __commonJS({
-  "node_modules/rcedit/lib/rcedit.js"(exports2, module2) {
+  "node_modules/rcedit/lib/rcedit.js"(exports, module2) {
     var { canRunWindowsExeNatively, is64BitArch, spawnExe } = require_src2();
     var path = require("path");
     var pairSettings = ["version-string"];
@@ -4653,13 +4653,13 @@ var require_rcedit = __commonJS({
 });
 
 // rcedit/src/index.ts
-var import_core2 = __toModule(require_core());
-var import_glob_promise = __toModule(require_lib());
-var import_rcedit = __toModule(require_rcedit());
+var import_core2 = __toESM(require_core());
+var import_glob_promise = __toESM(require_lib());
+var import_rcedit = __toESM(require_rcedit());
 
 // lib/github.ts
-var import_core = __toModule(require_core());
-var import_fs = __toModule(require("fs"));
+var import_core = __toESM(require_core());
+var import_fs = require("fs");
 function getRepository() {
   const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
   if (!owner || !component) {

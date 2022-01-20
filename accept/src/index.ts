@@ -103,12 +103,24 @@ async function run() {
   const pr = await getPR(octokit, component, ref)
   const pull_request = pr ? `${pr.number}` : undefined
   const issue = detectIssueKey(ref)
+  const shortSha = sha.substring(0, 7)
 
   // Print parameters
-  table('Ref', ref)
-  table('Sha', sha)
-  table('Pull request', pull_request || 'None')
-  table('Jira issue', issue || 'None')
+  table('Ref', `${ref} https://github.com/exivity/${component}/tree/${ref}`)
+  table(
+    'Sha',
+    `${shortSha} https://github.com/exivity/${component}/commit/${sha}`
+  )
+  table(
+    'Pull request',
+    pull_request
+      ? `${pull_request} https://github.com/exivity/${component}/pull/${pull_request}`
+      : 'None'
+  )
+  table(
+    'Jira issue',
+    issue ? `${issue} https://exivity.atlassian.net/browse/${issue}` : 'None'
+  )
 
   // Debug
   startGroup('Debug')
