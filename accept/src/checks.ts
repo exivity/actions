@@ -8,11 +8,7 @@ import * as inputHelper from 'checkout/src/input-helper'
 import { readFileSync } from 'fs'
 import yaml from 'js-yaml'
 import { join } from 'path'
-import {
-  getEventData,
-  getWorkflowName,
-  getWorkspacePath,
-} from '../../lib/github'
+import { getWorkflowName, getWorkspacePath } from '../../lib/github'
 
 // The credentials of user exivity-bot
 export const EXIVITY_BOT_LOGIN = 'exivity-bot'
@@ -45,8 +41,6 @@ export async function isWorkflowDependencyDone(
     throw new Error(`Workflow file not found at "${workflowPath}"`)
   }
 
-  info(`Workflow file found at "${workflowPath}"`)
-
   const workflow = yaml.load(readFileSync(workflowPath, 'utf8')) as {
     on?: {
       workflow_run?: {
@@ -60,51 +54,53 @@ export async function isWorkflowDependencyDone(
     `on.workflow_run.workflows resolves to "${JSON.stringify(needsWorkflows)}"`
   )
 
-  if (needsWorkflows.length !== 1) {
-    throw new Error('Workflow dependencies must have length 1')
-  }
+  const checks = await getChecks(octokit, sha, repo)
+  const satisfied = checks.every((check) => {
+    const { name, status, conclusion } = check
+    if (needsWorkflows.includes(name)) {
+      if (check.status === 'completed' && check.conclusion === 'success') {
+        info(`Check "${name}" is required and completed successfully`)
+        return true
+      } else {
+        info(`Check "${name}" is required but not completed successfully`)
+        return false
+      }
+    } else {
+      info(`Check "${name}" is not required`)
+      return true
+    }
+  })
 
-  const needsWorkflow = needsWorkflows[0]
-
-  if (!(await isCheckDone(octokit, sha, repo, needsWorkflow))) {
-    info(`Workflow "${needsWorkflow}" has not completed`)
+  if (!satisfied) {
+    info(`Some workflow constraints are not satisfied`)
     return false
   }
 
-  info(`Workflow "${needsWorkflow}" has completed`)
+  const allPresent = needsWorkflows.every((workflow) => {
+    return checks.some(({ name }) => name === workflow)
+  })
+
+  if (!allPresent) {
+    info(`Unable to find some workflow constraints in available checks`)
+    return false
+  }
+
   return true
 }
 
-// Checks if all check runs connected to this ref have completed successfully
-export async function isCheckDone(
+// Fetch all checks for ref
+export async function getChecks(
   octokit: ReturnType<typeof getOctokit>,
   ref: string,
-  repo: string,
-  checkName: string
-): Promise<boolean> {
-  const checkResult = await octokit.rest.checks.listForRef({
-    owner: 'exivity',
-    repo,
-    ref,
-    check_name: checkName,
-  })
-
-  if (checkResult.data.check_runs.length === 0) {
-    info('No check runs found')
-    return false
-  }
-
-  return checkResult.data.check_runs.every(
-    (check) => check.status === 'completed' && check.conclusion === 'success'
-  )
-}
-
-export async function getCheckName() {
-  const eventData = (await getEventData()) as {
-    check_run?: { name: string }
-  }
-
-  return eventData.check_run?.name
+  repo: string
+) {
+  return (
+    await octokit.rest.checks.listForRef({
+      owner: 'exivity',
+      repo,
+      ref,
+    })
+  ).data.check_runs
 }
 
 // Checks if the branch that had the event triggering this action is ready for

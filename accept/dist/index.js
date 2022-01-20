@@ -31230,33 +31230,44 @@ async function isWorkflowDependencyDone(octokit, token, sha, repo) {
   if (!existsSync(workflowPath)) {
     throw new Error(`Workflow file not found at "${workflowPath}"`);
   }
-  (0, import_core3.info)(`Workflow file found at "${workflowPath}"`);
   const workflow = js_yaml_default.load((0, import_fs2.readFileSync)(workflowPath, "utf8"));
   const needsWorkflows = ((_b = (_a = workflow.on) == null ? void 0 : _a.workflow_run) == null ? void 0 : _b.workflows) || [];
   (0, import_core3.info)(`on.workflow_run.workflows resolves to "${JSON.stringify(needsWorkflows)}"`);
-  if (needsWorkflows.length !== 1) {
-    throw new Error("Workflow dependencies must have length 1");
-  }
-  const needsWorkflow = needsWorkflows[0];
-  if (!await isCheckDone(octokit, sha, repo, needsWorkflow)) {
-    (0, import_core3.info)(`Workflow "${needsWorkflow}" has not completed`);
+  const checks = await getChecks(octokit, sha, repo);
+  const satisfied = checks.every((check) => {
+    const { name, status, conclusion } = check;
+    if (needsWorkflows.includes(name)) {
+      if (check.status === "completed" && check.conclusion === "success") {
+        (0, import_core3.info)(`Check "${name}" is required and completed successfully`);
+        return true;
+      } else {
+        (0, import_core3.info)(`Check "${name}" is required but not completed successfully`);
+        return false;
+      }
+    } else {
+      (0, import_core3.info)(`Check "${name}" is not required`);
+      return true;
+    }
+  });
+  if (!satisfied) {
+    (0, import_core3.info)(`Some workflow constraints are not satisfied`);
     return false;
   }
-  (0, import_core3.info)(`Workflow "${needsWorkflow}" has completed`);
+  const allPresent = needsWorkflows.every((workflow2) => {
+    return checks.some(({ name }) => name === workflow2);
+  });
+  if (!allPresent) {
+    (0, import_core3.info)(`Unable to find some workflow constraints in available checks`);
+    return false;
+  }
   return true;
 }
-async function isCheckDone(octokit, ref, repo, checkName) {
-  const checkResult = await octokit.rest.checks.listForRef({
+async function getChecks(octokit, ref, repo) {
+  return (await octokit.rest.checks.listForRef({
     owner: "exivity",
     repo,
-    ref,
-    check_name: checkName
-  });
-  if (checkResult.data.check_runs.length === 0) {
-    (0, import_core3.info)("No check runs found");
-    return false;
-  }
-  return checkResult.data.check_runs.every((check) => check.status === "completed" && check.conclusion === "success");
+    ref
+  })).data.check_runs;
 }
 function isBotReviewRequested(pr) {
   var _a, _b;
@@ -31342,10 +31353,10 @@ async function run() {
   const pr = await getPR(octokit, component, ref);
   const pull_request = pr ? `${pr.number}` : void 0;
   const issue = detectIssueKey(ref);
-  table("Ref", ref);
-  table("Sha", sha);
-  table("Pull request", pull_request || "None");
-  table("Jira issue", issue ? terminalLink(issue, "https://example.com") : "None");
+  table("Ref", terminalLink(ref, `https://github.com/exivity/${component}/tree/${ref}`));
+  table("Sha", terminalLink(sha.substring(0, 7), `https://github.com/exivity/${component}/commit/${sha}`));
+  table("Pull request", pull_request ? terminalLink(pull_request, `https://github.com/exivity/${component}/pull/${pull_request}`) : "None");
+  table("Jira issue", issue ? terminalLink(issue, `https://exivity.atlassian.net/browse/${issue}/`) : "None");
   (0, import_core5.startGroup)("Debug");
   (0, import_core5.info)(JSON.stringify({ eventData, pr }, void 0, 2));
   (0, import_core5.endGroup)();

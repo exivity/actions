@@ -7,7 +7,7 @@ import {
   warning,
 } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import terminalLink from 'terminal-link'
+import link from 'terminal-link'
 import { getBooleanInput } from '../../lib/core'
 import {
   getEventData,
@@ -106,12 +106,28 @@ async function run() {
   const issue = detectIssueKey(ref)
 
   // Print parameters
-  table('Ref', ref)
-  table('Sha', sha)
-  table('Pull request', pull_request || 'None')
+  table('Ref', link(ref, `https://github.com/exivity/${component}/tree/${ref}`))
+  table(
+    'Sha',
+    link(
+      sha.substring(0, 7),
+      `https://github.com/exivity/${component}/commit/${sha}`
+    )
+  )
+  table(
+    'Pull request',
+    pull_request
+      ? link(
+          pull_request,
+          `https://github.com/exivity/${component}/pull/${pull_request}`
+        )
+      : 'None'
+  )
   table(
     'Jira issue',
-    issue ? terminalLink(issue, 'https://example.com') : 'None'
+    issue
+      ? link(issue, `https://exivity.atlassian.net/browse/${issue}/`)
+      : 'None'
   )
 
   // Debug
