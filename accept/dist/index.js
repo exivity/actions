@@ -30899,8 +30899,8 @@ async function isWorkflowDependencyDone(octokit, token, sha, repo) {
   const checks = await getChecks(octokit, sha, repo);
   const satisfied = checks.every((check) => {
     const { name, status, conclusion } = check;
-    if (needsWorkflows.includes(name)) {
-      if (check.status === "completed" && check.conclusion === "success") {
+    if (needsWorkflows.some((workflowName2) => workflowNameMatchesCheckName(workflowName2, name))) {
+      if (status === "completed" && conclusion === "success") {
         (0, import_core3.info)(`Check "${name}" is required and completed successfully`);
         return true;
       } else {
@@ -30917,13 +30917,22 @@ async function isWorkflowDependencyDone(octokit, token, sha, repo) {
     return false;
   }
   const allPresent = needsWorkflows.every((workflow2) => {
-    return checks.some(({ name }) => name === workflow2);
+    return checks.some(({ name }) => workflowNameMatchesCheckName(workflow2, name));
   });
   if (!allPresent) {
     (0, import_core3.info)(`Unable to find some workflow constraints in available checks`);
     return false;
   }
   return true;
+}
+function workflowNameMatchesCheckName(workflowName, checkName) {
+  if (workflowName === checkName) {
+    return true;
+  }
+  if (new RegExp(`^${workflowName} (.+)$`).test(checkName)) {
+    return true;
+  }
+  return false;
 }
 async function getChecks(octokit, ref, repo) {
   return (await octokit.rest.checks.listForRef({

@@ -57,8 +57,12 @@ export async function isWorkflowDependencyDone(
   const checks = await getChecks(octokit, sha, repo)
   const satisfied = checks.every((check) => {
     const { name, status, conclusion } = check
-    if (needsWorkflows.includes(name)) {
-      if (check.status === 'completed' && check.conclusion === 'success') {
+    if (
+      needsWorkflows.some((workflowName) =>
+        workflowNameMatchesCheckName(workflowName, name)
+      )
+    ) {
+      if (status === 'completed' && conclusion === 'success') {
         info(`Check "${name}" is required and completed successfully`)
         return true
       } else {
@@ -77,7 +81,9 @@ export async function isWorkflowDependencyDone(
   }
 
   const allPresent = needsWorkflows.every((workflow) => {
-    return checks.some(({ name }) => name === workflow)
+    return checks.some(({ name }) =>
+      workflowNameMatchesCheckName(workflow, name)
+    )
   })
 
   if (!allPresent) {
@@ -86,6 +92,20 @@ export async function isWorkflowDependencyDone(
   }
 
   return true
+}
+
+function workflowNameMatchesCheckName(workflowName: string, checkName: string) {
+  // Direct hit
+  if (workflowName === checkName) {
+    return true
+  }
+
+  // checkName matches regex `${workflowName} (.+)`
+  if (new RegExp(`^${workflowName} (.+)$`).test(checkName)) {
+    return true
+  }
+
+  return false
 }
 
 // Fetch all checks for ref
