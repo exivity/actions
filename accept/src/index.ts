@@ -7,6 +7,7 @@ import {
   warning,
 } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import terminalLink from 'terminal-link'
 import { getBooleanInput } from '../../lib/core'
 import {
   getEventData,
@@ -108,7 +109,10 @@ async function run() {
   table('Ref', ref)
   table('Sha', sha)
   table('Pull request', pull_request || 'None')
-  table('Jira issue', issue || 'None')
+  table(
+    'Jira issue',
+    issue ? terminalLink(issue, 'https://example.com') : 'None'
+  )
 
   // Debug
   startGroup('Debug')
