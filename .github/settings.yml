@@ -1,1 +1,1 @@
-# inherit from exivity/.github
+_extends: exivity/.github
