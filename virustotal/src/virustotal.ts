@@ -6,7 +6,7 @@ import { getType } from 'mime'
 import { basename } from 'path'
 import { z } from 'zod'
 
-export type AnalysisResult = Awaited<ReturnType<VirusTotal['scanFile']>>
+export type AnalysisResult = Awaited<ReturnType<VirusTotal['uploadFile']>>
 
 export type FileResult = {
   names: string[]
@@ -68,8 +68,11 @@ export class VirusTotal {
 
   constructor(private apiKey: string | undefined) {}
 
-  async scanFile(path: string) {
-    const url = `${VIRUSTOTAL_BASE_URL}/files`
+  /**
+   * Upload and analyse a file
+   * https://developers.virustotal.com/reference/files-scan
+   */
+  async uploadFile(path: string, url = `${VIRUSTOTAL_BASE_URL}/files`) {
     const formData = new FormData()
 
     const { filename, mimeType, size, readStream } = asset(path)
@@ -108,6 +111,35 @@ export class VirusTotal {
     }
   }
 
+  /**
+   * Get a URL for uploading files larger than 32MB
+   * https://developers.virustotal.com/reference/files-upload-url
+   */
+  async getFileUploadURL() {
+    const url = `${VIRUSTOTAL_BASE_URL}/files/upload_url`
+    const response = await this.httpClient.getJson<{
+      data: string
+    }>(url, {
+      'x-apikey': this.apiKey,
+    })
+    debug(
+      `Received response from VirusTotal:\n${JSON.stringify(
+        response,
+        undefined,
+        2
+      )}`
+    )
+    if (!response.result) {
+      throw new Error(`Could not obtain a file upload URL`)
+    }
+
+    return response.result.data
+  }
+
+  /**
+   * Retrieve information about a file
+   * https://developers.virustotal.com/reference/file-info
+   */
   async getFileReport(filehash: string) {
     const url = `${VIRUSTOTAL_BASE_URL}/files/${filehash}`
     const response = await this.httpClient.getJson<{
