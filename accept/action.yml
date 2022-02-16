@@ -11,5 +11,5 @@ inputs:
     description: 'Run scaffold in dry-run mode'
     required: false
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
