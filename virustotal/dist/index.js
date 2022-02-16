@@ -20623,6 +20623,7 @@ async function writeStatus(octokit, result, sha) {
 }
 
 // virustotal/src/index.ts
+var Debug = true;
 var ModeAnalyse = "analyse";
 var ModeCheck = "check";
 async function analyse(vt, filePath) {
@@ -20648,7 +20649,7 @@ async function run() {
   switch (mode) {
     case ModeAnalyse:
       const path = (0, import_core4.getInput)("path", { required: true });
-      if (!isReleaseBranch() && !isDevelopBranch()) {
+      if (!Debug && !isReleaseBranch() && !isDevelopBranch()) {
         (0, import_core4.info)(`Skipping: feature branch "${getRef()}" is ignored`);
         return;
       }

@@ -14,6 +14,8 @@ import {
 } from './status'
 import { filehashToGuiUrl, guiUrlToFilehash, VirusTotal } from './virustotal'
 
+const Debug = true
+
 const ModeAnalyse = 'analyse'
 const ModeCheck = 'check'
 
@@ -53,7 +55,8 @@ async function run() {
       const path = getInput('path', { required: true })
 
       // Do not run on non-release and non-develop branches
-      if (!isReleaseBranch() && !isDevelopBranch()) {
+      // Also check for a debug flag, so we can test this in a PR
+      if (!Debug && !isReleaseBranch() && !isDevelopBranch()) {
         info(`Skipping: feature branch "${getRef()}" is ignored`)
         return
       }
