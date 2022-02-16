@@ -366,7 +366,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug3("making CONNECT request");
+      debug4("making CONNECT request");
       var connectReq = self.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -386,7 +386,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug3("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug4("tunneling socket could not be established, statusCode=%d", res.statusCode);
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -395,7 +395,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug3("got illegal response body from proxy");
+          debug4("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -403,13 +403,13 @@ var require_tunnel = __commonJS({
           self.removeSocket(placeholder);
           return;
         }
-        debug3("tunneling connection has established");
+        debug4("tunneling connection has established");
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug3("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug4("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
@@ -467,9 +467,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug3;
+    var debug4;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug3 = function() {
+      debug4 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -479,10 +479,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug3 = function() {
+      debug4 = function() {
       };
     }
-    exports.debug = debug3;
+    exports.debug = debug4;
   }
 });
 
@@ -685,12 +685,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info3 = this._prepareRequest(verb, parsedUrl, headers);
+        let info4 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info3, data);
+          response = await this.requestRaw(info4, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -700,7 +700,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info3, data);
+              return authenticationHandler.handleAuthentication(this, info4, data);
             } else {
               return response;
             }
@@ -723,8 +723,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info3 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info3, data);
+            info4 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info4, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -744,7 +744,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info3, data) {
+      requestRaw(info4, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -752,13 +752,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info3, data, callbackForResult);
+          this.requestRawWithCallback(info4, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info3, data, onResult) {
+      requestRawWithCallback(info4, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info3.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info4.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult2 = (err, res) => {
@@ -767,7 +767,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info3.httpModule.request(info3.options, (msg) => {
+        let req = info4.httpModule.request(info4.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult2(null, res);
         });
@@ -778,7 +778,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult2(new Error("Request timeout: " + info3.options.path), null);
+          handleResult2(new Error("Request timeout: " + info4.options.path), null);
         });
         req.on("error", function(err) {
           handleResult2(err, null);
@@ -800,27 +800,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info3 = {};
-        info3.parsedUrl = requestUrl;
-        const usingSsl = info3.parsedUrl.protocol === "https:";
-        info3.httpModule = usingSsl ? https : http;
+        const info4 = {};
+        info4.parsedUrl = requestUrl;
+        const usingSsl = info4.parsedUrl.protocol === "https:";
+        info4.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info3.options = {};
-        info3.options.host = info3.parsedUrl.hostname;
-        info3.options.port = info3.parsedUrl.port ? parseInt(info3.parsedUrl.port) : defaultPort;
-        info3.options.path = (info3.parsedUrl.pathname || "") + (info3.parsedUrl.search || "");
-        info3.options.method = method;
-        info3.options.headers = this._mergeHeaders(headers);
+        info4.options = {};
+        info4.options.host = info4.parsedUrl.hostname;
+        info4.options.port = info4.parsedUrl.port ? parseInt(info4.parsedUrl.port) : defaultPort;
+        info4.options.path = (info4.parsedUrl.pathname || "") + (info4.parsedUrl.search || "");
+        info4.options.method = method;
+        info4.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info3.options.headers["user-agent"] = this.userAgent;
+          info4.options.headers["user-agent"] = this.userAgent;
         }
-        info3.options.agent = this._getAgent(info3.parsedUrl);
+        info4.options.agent = this._getAgent(info4.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info3.options);
+            handler.prepareRequest(info4.options);
           });
         }
-        return info3;
+        return info4;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1253,10 +1253,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug3(message) {
+    function debug4(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug3;
+    exports.debug = debug4;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -1269,10 +1269,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info3(message) {
+    function info4(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info3;
+    exports.info = info4;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -18541,8 +18541,8 @@ var require_mime = __commonJS({
 });
 
 // virustotal/src/index.ts
-var import_core3 = __toESM(require_core());
-var import_github = __toESM(require_github());
+var import_core4 = __toESM(require_core());
+var import_github2 = __toESM(require_github());
 var import_glob_promise = __toESM(require_lib3());
 
 // lib/github.ts
@@ -18640,6 +18640,9 @@ function isDevelopBranch(ref) {
   }
   return DevelopBranches.includes(ref);
 }
+
+// virustotal/src/status.ts
+var import_core3 = __toESM(require_core());
 
 // virustotal/src/virustotal.ts
 var import_core2 = __toESM(require_core());
@@ -20489,8 +20492,7 @@ var VirusTotal = class {
     this.apiKey = apiKey;
     this.httpClient = new import_http_client.HttpClient();
   }
-  async scanFile(path) {
-    const url = `${VIRUSTOTAL_BASE_URL}/files`;
+  async uploadFile(path, url = `${VIRUSTOTAL_BASE_URL}/files`) {
     const formData = new import_form_data.default();
     const { filename, mimeType, size, readStream } = asset(path);
     formData.append("file", readStream, {
@@ -20519,6 +20521,18 @@ ${JSON.stringify(responseJson, void 0, 2)}`);
       status: "pending",
       flagged: null
     };
+  }
+  async getFileUploadURL() {
+    const url = `${VIRUSTOTAL_BASE_URL}/files/upload_url`;
+    const response = await this.httpClient.getJson(url, {
+      "x-apikey": this.apiKey
+    });
+    (0, import_core2.debug)(`Received response from VirusTotal:
+${JSON.stringify(response, void 0, 2)}`);
+    if (!response.result) {
+      throw new Error(`Could not obtain a file upload URL`);
+    }
+    return response.result.data;
   }
   async getFileReport(filehash) {
     const url = `${VIRUSTOTAL_BASE_URL}/files/${filehash}`;
@@ -20551,32 +20565,7 @@ function mimeOrDefault(path) {
   return (0, import_mime.getType)(path) || "application/octet-stream";
 }
 
-// virustotal/src/index.ts
-var ModeAnalyse = "analyse";
-var ModeCheck = "check";
-async function analyse(vt, filePath) {
-  const result = await vt.scanFile(filePath);
-  (0, import_core3.info)(`File "${filePath}" has been submitted for a scan`);
-  (0, import_core3.info)(`Analysis URL: ${filehashToGuiUrl(result.filehash)}`);
-  return result;
-}
-async function check(vt, commitStatus) {
-  const result = await vt.getFileReport(guiUrlToFilehash(commitStatus.target_url));
-  (0, import_core3.info)(`Current status is "${result.status}" with "${result.flagged}" flags from security vendors`);
-  return result;
-}
-async function writeStatus(octokit, result, sha) {
-  await octokit.rest.repos.createCommitStatus({
-    owner: "exivity",
-    repo: getRepository().component,
-    sha: sha != null ? sha : await getSha(),
-    state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
-    context: `virustotal (${result.filename})`,
-    description: result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0,
-    target_url: filehashToGuiUrl(result.filehash)
-  });
-  (0, import_core3.info)("Written commit status");
-}
+// virustotal/src/status.ts
 async function getPendingVirusTotalStatuses(octokit) {
   const refs = [...ReleaseBranches, ...DevelopBranches];
   const statuses = [];
@@ -20620,23 +20609,52 @@ async function getPendingVirusTotalStatuses(octokit) {
   }
   return statuses;
 }
+async function writeStatus(octokit, result, sha) {
+  await octokit.rest.repos.createCommitStatus({
+    owner: "exivity",
+    repo: getRepository().component,
+    sha: sha != null ? sha : await getSha(),
+    state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
+    context: `virustotal (${result.filename})`,
+    description: result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0,
+    target_url: filehashToGuiUrl(result.filehash)
+  });
+  (0, import_core3.info)("Written commit status");
+}
+
+// virustotal/src/index.ts
+var Debug = false;
+var ModeAnalyse = "analyse";
+var ModeCheck = "check";
+async function analyse(vt, filePath) {
+  const uploadUrl = await vt.getFileUploadURL();
+  const result = await vt.uploadFile(filePath, uploadUrl);
+  (0, import_core4.info)(`File "${filePath}" has been submitted for a scan`);
+  (0, import_core4.info)(`Analysis URL: ${filehashToGuiUrl(result.filehash)}`);
+  return result;
+}
+async function check(vt, commitStatus) {
+  const result = await vt.getFileReport(guiUrlToFilehash(commitStatus.target_url));
+  (0, import_core4.info)(`Current status is "${result.status}" with "${result.flagged}" flags from security vendors`);
+  return result;
+}
 async function run() {
-  const mode = (0, import_core3.getInput)("mode");
-  const virustotalApiKey = (0, import_core3.getInput)("virustotal-api-key", {
+  const mode = (0, import_core4.getInput)("mode");
+  const virustotalApiKey = (0, import_core4.getInput)("virustotal-api-key", {
     required: true
   });
   const ghToken = getToken();
   const vt = new VirusTotal(virustotalApiKey);
-  const octokit = (0, import_github.getOctokit)(ghToken);
+  const octokit = (0, import_github2.getOctokit)(ghToken);
   switch (mode) {
     case ModeAnalyse:
-      const path = (0, import_core3.getInput)("path", { required: true });
-      if (!isReleaseBranch() && !isDevelopBranch()) {
-        (0, import_core3.info)(`Skipping: feature branch "${getRef()}" is ignored`);
+      const path = (0, import_core4.getInput)("path", { required: true });
+      if (!Debug && !isReleaseBranch() && !isDevelopBranch()) {
+        (0, import_core4.info)(`Skipping: feature branch "${getRef()}" is ignored`);
         return;
       }
       const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
-      (0, import_core3.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
+      (0, import_core4.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
       for (const absPath of absPaths) {
         const result = await analyse(vt, absPath);
         await writeStatus(octokit, result);
@@ -20652,7 +20670,7 @@ async function run() {
       throw new Error(`Unknown mode "${mode}"`);
   }
 }
-run().catch(import_core3.setFailed);
+run().catch(import_core4.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
