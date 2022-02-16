@@ -2504,7 +2504,7 @@ var require_common = __commonJS({
       self.pattern = pattern;
       self.strict = options.strict !== false;
       self.realpath = !!options.realpath;
-      self.realpathCache = options.realpathCache || Object.create(null);
+      self.realpathCache = options.realpathCache || /* @__PURE__ */ Object.create(null);
       self.follow = !!options.follow;
       self.dot = !!options.dot;
       self.mark = !!options.mark;
@@ -2521,9 +2521,9 @@ var require_common = __commonJS({
       self.absolute = !!options.absolute;
       self.fs = options.fs || fs;
       self.maxLength = options.maxLength || Infinity;
-      self.cache = options.cache || Object.create(null);
-      self.statCache = options.statCache || Object.create(null);
-      self.symlinks = options.symlinks || Object.create(null);
+      self.cache = options.cache || /* @__PURE__ */ Object.create(null);
+      self.statCache = options.statCache || /* @__PURE__ */ Object.create(null);
+      self.symlinks = options.symlinks || /* @__PURE__ */ Object.create(null);
       setupIgnores(self, options);
       self.changedCwd = false;
       var cwd = process.cwd();
@@ -2548,7 +2548,7 @@ var require_common = __commonJS({
     }
     function finish(self) {
       var nou = self.nounique;
-      var all = nou ? [] : Object.create(null);
+      var all = nou ? [] : /* @__PURE__ */ Object.create(null);
       for (var i = 0, l = self.matches.length; i < l; i++) {
         var matches = self.matches[i];
         if (!matches || Object.keys(matches).length === 0) {
@@ -2689,7 +2689,7 @@ var require_sync = __commonJS({
       if (this.realpath) {
         var self = this;
         this.matches.forEach(function(matchset, index) {
-          var set = self.matches[index] = Object.create(null);
+          var set = self.matches[index] = /* @__PURE__ */ Object.create(null);
           for (var p in matchset) {
             try {
               p = self._makeAbs(p);
@@ -2770,7 +2770,7 @@ var require_sync = __commonJS({
         return;
       if (remain.length === 1 && !this.mark && !this.stat) {
         if (!this.matches[index])
-          this.matches[index] = Object.create(null);
+          this.matches[index] = /* @__PURE__ */ Object.create(null);
         for (var i = 0; i < len; i++) {
           var e = matchedEntries[i];
           if (prefix) {
@@ -2923,7 +2923,7 @@ var require_sync = __commonJS({
     GlobSync.prototype._processSimple = function(prefix, index) {
       var exists = this._stat(prefix);
       if (!this.matches[index])
-        this.matches[index] = Object.create(null);
+        this.matches[index] = /* @__PURE__ */ Object.create(null);
       if (!exists)
         return;
       if (prefix && isAbsolute(prefix) && !this.nomount) {
@@ -3074,7 +3074,7 @@ var require_once = __commonJS({
 var require_inflight = __commonJS({
   "node_modules/inflight/inflight.js"(exports, module2) {
     var wrappy = require_wrappy();
-    var reqs = Object.create(null);
+    var reqs = /* @__PURE__ */ Object.create(null);
     var once = require_once();
     module2.exports = wrappy(inflight);
     function inflight(key, cb) {
@@ -3264,7 +3264,7 @@ var require_glob = __commonJS({
       var n = found.length;
       if (n === 0)
         return cb();
-      var set = this.matches[index] = Object.create(null);
+      var set = this.matches[index] = /* @__PURE__ */ Object.create(null);
       found.forEach(function(p, i) {
         p = self._makeAbs(p);
         rp.realpath(p, self.realpathCache, function(er, real) {
@@ -3397,7 +3397,7 @@ var require_glob = __commonJS({
         return cb();
       if (remain.length === 1 && !this.mark && !this.stat) {
         if (!this.matches[index])
-          this.matches[index] = Object.create(null);
+          this.matches[index] = /* @__PURE__ */ Object.create(null);
         for (var i = 0; i < len; i++) {
           var e = matchedEntries[i];
           if (prefix) {
@@ -3588,7 +3588,7 @@ var require_glob = __commonJS({
     };
     Glob.prototype._processSimple2 = function(prefix, index, er, exists, cb) {
       if (!this.matches[index])
-        this.matches[index] = Object.create(null);
+        this.matches[index] = /* @__PURE__ */ Object.create(null);
       if (!exists)
         return cb();
       if (prefix && isAbsolute(prefix) && !this.nomount) {
