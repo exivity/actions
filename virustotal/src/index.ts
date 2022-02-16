@@ -14,7 +14,7 @@ import {
 } from './status'
 import { filehashToGuiUrl, guiUrlToFilehash, VirusTotal } from './virustotal'
 
-const Debug = true
+const Debug = false
 
 const ModeAnalyse = 'analyse'
 const ModeCheck = 'check'

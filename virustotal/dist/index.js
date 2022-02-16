@@ -20623,7 +20623,7 @@ async function writeStatus(octokit, result, sha) {
 }
 
 // virustotal/src/index.ts
-var Debug = true;
+var Debug = false;
 var ModeAnalyse = "analyse";
 var ModeCheck = "check";
 async function analyse(vt, filePath) {
