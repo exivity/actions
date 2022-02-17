@@ -12,7 +12,11 @@ async function run() {
   // Input
   const branch =
     getInput('branch') ||
-    (process.env.GITHUB_REF === 'refs/heads/master' ? 'master' : 'develop')
+    (process.env.GITHUB_REF === 'refs/heads/master'
+      ? 'master'
+      : process.env.GITHUB_REF === 'refs/heads/main'
+      ? 'main'
+      : 'develop')
   const dbName = getInput('db-name') || 'exdb-test'
   const mode = getInput('mode') || 'host'
   const password = getInput('password') || 'postgres'

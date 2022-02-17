@@ -32,35 +32,7 @@ will try to resolve matching epic branches for other components.
 See [.github repository](https://github.com/exivity/.github#accept) for example
 usage.
 
-## Inputs
-
-### `scaffold-branch`
-
-**Optional**  
-_Defaults to `develop`_  
-The scaffold branch to build.
-
-### `gh-token`
-
-**Optional**  
-_Defaults to the GITHUB_TOKEN environment variable_  
-A GitHub token with access to the exivity/scaffold repository.
-
-### `dry-run`
-
-**Optional**  
-_Defaults to `false`_  
-If `true`, scaffold will not build or run any tests.
-
-### `filter`
-
-**Optional**  
-If provided, only trigger acceptance tests if files which match this input are
-modified. Glob patterns allowed. Multiple entries separated by newline. If
-provided, and changed files do not match, writes a successful status to the
-commit.
-
-## Example usage
+## Example
 
 ```
 - uses: exivity/actions/accept@main
@@ -68,60 +40,40 @@ commit.
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
 
+## Inputs
+
+| name              | required | default            | description                                                                                                                                                                                                                                  |
+| ----------------- | -------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scaffold-branch` |          | `"develop"`        | The scaffold branch to build.                                                                                                                                                                                                                |
+| `gh-token`        |          | `env.GITHUB_TOKEN` | A GitHub token with access to the exivity/scaffold repository.                                                                                                                                                                               |
+| `dry-run`         |          | `false`            | If `true`, scaffold will not build or run any tests.                                                                                                                                                                                         |
+| `filter`          |          |                    | If provided, only trigger acceptance tests if files which match this input are modified. Glob patterns allowed. Multiple entries eparated by newline. If provided, and changed files do not match, writes a successful status to the commit. |
+
 # `commit-status`
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/commit-status)
 
 Writes a [commit status](https://docs.github.com/en/rest/reference/commits#commit-statuses).
 
-## Inputs
-
-### `component`
-
-**Optional**  
-_Defaults to current component_  
-Component to write the commit status for.
-
-### `sha`
-
-**Optional**  
-_Defaults to current sha`_  
-Sha of commit to write the status for.
-
-### `gh-token`
-
-**Optional**  
-_Defaults to the GITHUB_TOKEN environment variable_  
-A GitHub token with write access to the component.
-
-### `state`
-
-**Optional**  
-_Defaults to `success`_  
-The commit status state, can be "error", "failure", "pending" or "success".
-
-### `context`
-
-**Required**  
-A string label to differentiate this status from the status of other systems.
-
-### `description`
-
-**Optional**  
-A short description of the status.
-
-### `target_url`
-
-**Optional**  
-The target URL to associate with this status.
-
-## Example usage
+## Example
 
 ```
 - uses: exivity/actions/commit-status@main
   with:
     context: auto-success
 ```
+
+## Inputs
+
+| name          | required | default            | description                                                                         |
+| ------------- | -------- | ------------------ | ----------------------------------------------------------------------------------- |
+| `component`   |          | Current component  | Component to write the commit status for.                                           |
+| `sha`         |          | Current sha        | Sha of commit to write the status for.                                              |
+| `gh-token`    |          | `env.GITHUB_TOKEN` | A GitHub token with write access to the component.                                  |
+| `state`       |          | `"success"`        | The commit status state, can be `"error"`, `"failure"`, `"pending"` or `"success"`. |
+| `context`     | ✅       |                    | A string label to differentiate this status from the status of other systems.       |
+| `description` |          |                    | A short description of the status.                                                  |
+| `target_url`  |          |                    | The target URL to associate with this status.                                       |
 
 # `db`
 
@@ -130,66 +82,7 @@ The target URL to associate with this status.
 Runs a PostgreSQL docker container, create a new database, pulls in the `db`
 repository migrations and runs them.
 
-## Inputs
-
-### `branch`
-
-**Optional**  
-_Defaults to `master` when used on a master branch or if artifact repo has no
-develop branch, else defaults to `develop`_  
-The db repository branch to use.
-
-### `db-name`
-
-**Optional**  
-_Default: `exdb-test`_  
-The db name to create.
-
-### `mode`
-
-**Optional**  
-_Options: `docker` or `host`, defaults to `host`_  
-Whether to run PostgreSQL as a Docker container or start the server installed on
-the host
-
-### `version`
-
-**Optional**  
-_Default: 14.0_  
-The PostgreSQL version to use. Only affects Docker mode (host mode always uses
-default version). Make sure to use a string type to avoid truncation. Available
-versions:
-
-- 14.0
-- 13.0
-- 12.3
-
-### `aws-access-key-id`
-
-**Optional**  
-_Defaults to the AWS_ACCESS_KEY_ID environment variable_  
-The AWS access key ID
-
-### `aws-secret-access-key`
-
-**Optional**  
-_Defaults to the AWS_SECRET_ACCESS_KEY environment variable_  
-The AWS secret access key
-
-### `gh-token`
-
-**Optional**  
-_Defaults to the GITHUB_TOKEN environment variable_  
-A GitHub token with access to the exivity/db repository.
-
-### `password`
-
-**Optional**  
-_Defaults to "postgres"_  
-The password for the postgres user in de database, currently only works with
-host mode.
-
-## Example usage
+## Example
 
 ```
 - uses: exivity/actions/db@main
@@ -198,6 +91,19 @@ host mode.
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
+
+## Inputs
+
+| name                    | required | default                                                                          | description                                                                                                                                                                                           |
+| ----------------------- | -------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `branch`                |          | `"master"` or `"main"` when it matches the current branch, `"develop"` otherwise | The db repository branch to use.                                                                                                                                                                      |
+| `db-name`               |          | `"exdb-test"`                                                                    | The db name to create.                                                                                                                                                                                |
+| `mode`                  |          | `"host"`                                                                         | Whether to run PostgreSQL as a Docker container or start the server installed on the host. Either `"host"` or `"docker"`.                                                                             |
+| `version`               |          | `"14.0"`                                                                         | The PostgreSQL version to use. Only affects Docker mode (host mode always uses default version). Make sure to use a string type to avoid truncation. Available versions: `"14.0"`, `"13.0"`, `"12.3"` |
+| `aws-access-key-id`     |          | `env.AWS_ACCESS_KEY_ID`                                                          | The AWS access key ID                                                                                                                                                                                 |
+| `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY`                                                      | The AWS secret access key                                                                                                                                                                             |
+| `gh-token`              |          | `env.GITHUB_TOKEN`                                                               | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
+| `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
 
 # `get-artefacts`
 
