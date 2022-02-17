@@ -1218,11 +1218,11 @@ var require_core = __commonJS({
       return val.trim();
     }
     exports.getInput = getInput5;
-    function getMultilineInput(name, options) {
+    function getMultilineInput2(name, options) {
       const inputs = getInput5(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
-    exports.getMultilineInput = getMultilineInput;
+    exports.getMultilineInput = getMultilineInput2;
     function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
@@ -8870,11 +8870,11 @@ var require_core2 = __commonJS({
       return val.trim();
     }
     exports.getInput = getInput5;
-    function getMultilineInput(name, options) {
+    function getMultilineInput2(name, options) {
       const inputs = getInput5(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
-    exports.getMultilineInput = getMultilineInput;
+    exports.getMultilineInput = getMultilineInput2;
     function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
@@ -27386,11 +27386,11 @@ var require_core4 = __commonJS({
       return val.trim();
     }
     exports.getInput = getInput5;
-    function getMultilineInput(name, options) {
+    function getMultilineInput2(name, options) {
       const inputs = getInput5(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
-    exports.getMultilineInput = getMultilineInput;
+    exports.getMultilineInput = getMultilineInput2;
     function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
@@ -33576,7 +33576,7 @@ async function run() {
   const eventName = getEventName(supportedEvents);
   const eventData = await getEventData(eventName);
   const scaffoldBranch = (0, import_core5.getInput)("scaffold-branch") || defaultScaffoldBranch;
-  const filter = (0, import_core5.getInput)("filter");
+  const filter = (0, import_core5.getMultilineInput)("filter");
   const dryRun = getBooleanInput("dry-run", false);
   table("Event", eventName);
   if (isEvent(eventName, "workflow_run", eventData)) {
@@ -33614,9 +33614,9 @@ async function run() {
   (0, import_core5.startGroup)("Debug");
   (0, import_core5.info)(JSON.stringify({ eventData, pr }, void 0, 2));
   (0, import_core5.endGroup)();
-  if (pull_request && filter) {
+  if (pull_request && filter.length > 0) {
     const commit = await getCommit(octokit, component, ref);
-    const someFilesMatch = (commit.files || []).some((file) => (0, import_minimatch.default)(file.filename || file.previous_filename || "unknown", filter));
+    const someFilesMatch = (commit.files || []).some((file) => filter.some((item) => (0, import_minimatch.default)(file.filename || file.previous_filename || "unknown", item)));
     if (!someFilesMatch) {
       (0, import_core5.warning)(`[accept] Skipping: no modified files match the filter option`);
       await review(octokit, component, pull_request, "APPROVE", "Automatically approved because no modified files in this commit match the `filter` parameter of this action.");

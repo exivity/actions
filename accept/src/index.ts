@@ -1,6 +1,7 @@
 import {
   endGroup,
   getInput,
+  getMultilineInput,
   info,
   setFailed,
   startGroup,
@@ -58,7 +59,7 @@ async function run() {
   const eventName = getEventName(supportedEvents)
   const eventData = await getEventData(eventName)
   const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
-  const filter = getInput('filter')
+  const filter = getMultilineInput('filter')
   const dryRun = getBooleanInput('dry-run', false)
 
   table('Event', eventName)
@@ -134,10 +135,12 @@ async function run() {
 
   // If this is a PR and the filter input is set, obtain commit details and bail
   // if no files match
-  if (pull_request && filter) {
+  if (pull_request && filter.length > 0) {
     const commit = await getCommit(octokit, component, ref)
     const someFilesMatch = (commit.files || []).some((file) =>
-      minimatch(file.filename || file.previous_filename || 'unknown', filter)
+      filter.some((item) =>
+        minimatch(file.filename || file.previous_filename || 'unknown', item)
+      )
     )
 
     if (!someFilesMatch) {
