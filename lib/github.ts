@@ -23,17 +23,18 @@ export async function getShaFromRef({
   useFallback = true,
 }: Options) {
   if (useFallback && ref === 'develop') {
-    const hasDevelop = (
+    const availableBranches = (
       await octokit.rest.repos.listBranches({
         owner: 'exivity',
         repo: component,
       })
-    ).data.some((repoBranch) => repoBranch.name === 'develop')
-    if (!hasDevelop) {
+    ).data.map((branch) => branch.name)
+    if (!availableBranches.includes('develop')) {
+      const fallback = availableBranches.includes('main') ? 'main' : 'master'
       warning(
-        `Branch "develop" not available in repository "exivity/${component}", falling back to "master".`
+        `Branch "develop" not available in repository "exivity/${component}", falling back to "${fallback}".`
       )
-      ref = 'master'
+      ref = fallback
     }
   }
 

@@ -7896,13 +7896,14 @@ async function getShaFromRef({
   useFallback = true
 }) {
   if (useFallback && ref === "develop") {
-    const hasDevelop = (await octokit.rest.repos.listBranches({
+    const availableBranches = (await octokit.rest.repos.listBranches({
       owner: "exivity",
       repo: component
-    })).data.some((repoBranch) => repoBranch.name === "develop");
-    if (!hasDevelop) {
-      (0, import_core2.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
-      ref = "master";
+    })).data.map((branch) => branch.name);
+    if (!availableBranches.includes("develop")) {
+      const fallback = availableBranches.includes("main") ? "main" : "master";
+      (0, import_core2.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "${fallback}".`);
+      ref = fallback;
     }
   }
   const sha = (await octokit.rest.repos.getBranch({
@@ -7989,7 +7990,7 @@ function getAWSCredentials() {
 
 // db/src/index.ts
 async function run() {
-  const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
+  const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/main" ? "main" : process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
   const dbName = (0, import_core4.getInput)("db-name") || "exdb-test";
   const mode = (0, import_core4.getInput)("mode") || "host";
   const password = (0, import_core4.getInput)("password") || "postgres";

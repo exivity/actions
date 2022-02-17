@@ -18557,13 +18557,14 @@ async function getShaFromRef({
   useFallback = true
 }) {
   if (useFallback && ref === "develop") {
-    const hasDevelop = (await octokit.rest.repos.listBranches({
+    const availableBranches = (await octokit.rest.repos.listBranches({
       owner: "exivity",
       repo: component
-    })).data.some((repoBranch) => repoBranch.name === "develop");
-    if (!hasDevelop) {
-      (0, import_core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "master".`);
-      ref = "master";
+    })).data.map((branch) => branch.name);
+    if (!availableBranches.includes("develop")) {
+      const fallback = availableBranches.includes("main") ? "main" : "master";
+      (0, import_core.warning)(`Branch "develop" not available in repository "exivity/${component}", falling back to "${fallback}".`);
+      ref = fallback;
     }
   }
   const sha = (await octokit.rest.repos.getBranch({
