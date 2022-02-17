@@ -685,12 +685,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info3 = this._prepareRequest(verb, parsedUrl, headers);
+        let info2 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info3, data);
+          response = await this.requestRaw(info2, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -700,7 +700,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info3, data);
+              return authenticationHandler.handleAuthentication(this, info2, data);
             } else {
               return response;
             }
@@ -723,8 +723,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info3 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info3, data);
+            info2 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info2, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -744,7 +744,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info3, data) {
+      requestRaw(info2, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -752,13 +752,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info3, data, callbackForResult);
+          this.requestRawWithCallback(info2, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info3, data, onResult) {
+      requestRawWithCallback(info2, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info3.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info2.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -767,7 +767,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info3.httpModule.request(info3.options, (msg) => {
+        let req = info2.httpModule.request(info2.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -778,7 +778,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info3.options.path), null);
+          handleResult(new Error("Request timeout: " + info2.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -800,27 +800,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info3 = {};
-        info3.parsedUrl = requestUrl;
-        const usingSsl = info3.parsedUrl.protocol === "https:";
-        info3.httpModule = usingSsl ? https : http;
+        const info2 = {};
+        info2.parsedUrl = requestUrl;
+        const usingSsl = info2.parsedUrl.protocol === "https:";
+        info2.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info3.options = {};
-        info3.options.host = info3.parsedUrl.hostname;
-        info3.options.port = info3.parsedUrl.port ? parseInt(info3.parsedUrl.port) : defaultPort;
-        info3.options.path = (info3.parsedUrl.pathname || "") + (info3.parsedUrl.search || "");
-        info3.options.method = method;
-        info3.options.headers = this._mergeHeaders(headers);
+        info2.options = {};
+        info2.options.host = info2.parsedUrl.hostname;
+        info2.options.port = info2.parsedUrl.port ? parseInt(info2.parsedUrl.port) : defaultPort;
+        info2.options.path = (info2.parsedUrl.pathname || "") + (info2.parsedUrl.search || "");
+        info2.options.method = method;
+        info2.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info3.options.headers["user-agent"] = this.userAgent;
+          info2.options.headers["user-agent"] = this.userAgent;
         }
-        info3.options.agent = this._getAgent(info3.parsedUrl);
+        info2.options.agent = this._getAgent(info2.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info3.options);
+            handler.prepareRequest(info2.options);
           });
         }
-        return info3;
+        return info2;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1269,10 +1269,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info3(message) {
+    function info2(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info3;
+    exports.info = info2;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -6805,23 +6805,13 @@ var require_github = __commonJS({
   }
 });
 
-// review/src/index.ts
+// commit-status/src/index.ts
 var import_core2 = __toESM(require_core());
 var import_github = __toESM(require_github());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
-async function getPR(octokit, repo, ref) {
-  const { data } = await octokit.rest.pulls.list({
-    owner: "exivity",
-    repo,
-    head: `exivity:${ref}`,
-    sort: "updated"
-  });
-  if (data.length > 0) {
-    return data[0];
-  }
-}
+var import_fs = require("fs");
 function getRepository() {
   const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
   if (!owner || !component) {
@@ -6829,13 +6819,17 @@ function getRepository() {
   }
   return { owner, component };
 }
-function getRef() {
-  var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
-  if (!ref) {
-    throw new Error("The GitHub ref is missing");
+async function getSha() {
+  let sha = process.env["GITHUB_SHA"];
+  const eventName = getEventName();
+  if (eventName === "pull_request") {
+    const eventData = await getEventData(eventName);
+    sha = eventData.pull_request.head.sha;
   }
-  return ref;
+  if (!sha) {
+    throw new Error("The GitHub sha is missing");
+  }
+  return sha;
 }
 function getToken(inputName = "gh-token") {
   const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
@@ -6844,40 +6838,56 @@ function getToken(inputName = "gh-token") {
   }
   return ghToken;
 }
+function getEventName(supportedEvents) {
+  const eventName = process.env["GITHUB_EVENT_NAME"];
+  if (!eventName) {
+    throw new Error("The GitHub event name is missing");
+  }
+  if (supportedEvents && !supportedEvents.includes(eventName)) {
+    throw new Error(`The event ${eventName} is not supported by this action`);
+  }
+  return eventName;
+}
+async function getEventData(eventName) {
+  const eventPath = process.env["GITHUB_EVENT_PATH"];
+  if (!eventPath) {
+    throw new Error("The GitHub event path is missing");
+  }
+  const fileData = await import_fs.promises.readFile(eventPath, {
+    encoding: "utf8"
+  });
+  return JSON.parse(fileData);
+}
+async function writeStatus(octokit, repo, sha, state, context, target_url, description) {
+  return (await octokit.rest.repos.createCommitStatus({
+    owner: "exivity",
+    repo,
+    sha,
+    state,
+    context,
+    description,
+    target_url
+  })).data;
+}
 
-// review/src/index.ts
-var validEvents = ["APPROVE", "COMMENT", "REQUEST_CHANGES"];
-function isValidEvent(event) {
-  return validEvents.includes(event);
+// commit-status/src/index.ts
+var validStates = ["error", "failure", "pending", "success"];
+function isValidState(state) {
+  return validStates.includes(state);
 }
 async function run() {
-  var _a;
-  const { owner, component } = getRepository();
-  const default_branch = getRef();
   const ghToken = getToken();
-  const pull_request = parseInt((0, import_core2.getInput)("pull"), 10);
-  const targetRepo = (0, import_core2.getInput)("component") || component;
-  const event = (0, import_core2.getInput)("event");
-  const branch = (0, import_core2.getInput)("branch") || default_branch;
-  const customBody = (0, import_core2.getInput)("body");
-  if (!isValidEvent(event)) {
-    throw new Error("The event input is missing or invalid");
+  const repo = (0, import_core2.getInput)("component") || getRepository().component;
+  const sha = (0, import_core2.getInput)("sha") || await getSha();
+  const state = (0, import_core2.getInput)("state") || "success";
+  const context = (0, import_core2.getInput)("context", { required: true });
+  const target_url = (0, import_core2.getInput)("target_url");
+  const description = (0, import_core2.getInput)("description");
+  if (!isValidState(state)) {
+    throw new Error("The state input is missing or invalid");
   }
   const octokit = (0, import_github.getOctokit)(ghToken);
-  const pull_number = isNaN(pull_request) ? (_a = await getPR(octokit, targetRepo, branch)) == null ? void 0 : _a.number : pull_request;
-  if (!pull_number) {
-    (0, import_core2.info)("No pull request to review, skipping action");
-    return;
-  }
-  (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${targetRepo}`);
-  const body = `${customBody}${customBody ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
-  await octokit.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews", {
-    owner,
-    repo: targetRepo,
-    pull_number,
-    event,
-    body
-  });
+  await writeStatus(octokit, repo, sha, state, context, target_url, description);
 }
 run().catch(import_core2.setFailed);
 /*!
