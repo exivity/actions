@@ -205,3 +205,70 @@ export function isDevelopBranch(ref?: string) {
 
   return DevelopBranches.includes(ref)
 }
+
+export async function getCommit(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  ref: string
+) {
+  return (
+    await octokit.rest.repos.getCommit({
+      owner: 'exivity',
+      repo,
+      ref,
+    })
+  ).data
+}
+
+export async function review(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  pull_number: number,
+  event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT',
+  body?: string
+) {
+  info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
+
+  body = `${body}${body ? '\n\n---\n\n' : ''}\
+_Automated review from [**${process.env.GITHUB_WORKFLOW}** \
+workflow in **${process.env.GITHUB_REPOSITORY}**]\
+(https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${
+    process.env.GITHUB_RUN_ID
+  })_`
+
+  return (
+    await octokit.rest.pulls.createReview({
+      owner: 'exivity',
+      repo,
+      pull_number,
+      event,
+      body,
+    })
+  ).data
+}
+
+export async function writeStatus(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  sha: string,
+  state: 'error' | 'failure' | 'pending' | 'success',
+  context: string,
+  description?: string,
+  target_url?: string
+) {
+  info(
+    `Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`
+  )
+
+  return (
+    await octokit.rest.repos.createCommitStatus({
+      owner: 'exivity',
+      repo,
+      sha: sha,
+      state,
+      context,
+      description,
+      target_url,
+    })
+  ).data
+}

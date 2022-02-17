@@ -6,6 +6,7 @@ import {
   getSha,
   getShaFromRef,
   ReleaseBranches,
+  writeStatus as writeStatusGitHub,
 } from '../../lib/github'
 import { AnalysisResult, filehashToGuiUrl } from './virustotal'
 
@@ -78,24 +79,21 @@ export async function writeStatus(
   result: AnalysisResult,
   sha?: string
 ) {
-  await octokit.rest.repos.createCommitStatus({
-    owner: 'exivity',
-    repo: getRepository().component,
-    sha: sha ?? (await getSha()),
-    state:
-      result.status === 'pending'
-        ? 'pending'
-        : result.flagged === 0
-        ? 'success'
-        : 'failure',
-    context: `virustotal (${result.filename})`,
-    description:
-      result.status === 'completed'
-        ? result.flagged
-          ? `Detected as malicious or suspicious by ${result.flagged} security vendors`
-          : 'No security vendors flagged this file as malicious'
-        : undefined,
-    target_url: filehashToGuiUrl(result.filehash),
-  })
-  info('Written commit status')
+  return writeStatusGitHub(
+    octokit,
+    getRepository().component,
+    sha ?? (await getSha()),
+    result.status === 'pending'
+      ? 'pending'
+      : result.flagged === 0
+      ? 'success'
+      : 'failure',
+    `virustotal (${result.filename})`,
+    result.status === 'completed'
+      ? result.flagged
+        ? `Detected as malicious or suspicious by ${result.flagged} security vendors`
+        : 'No security vendors flagged this file as malicious'
+      : undefined,
+    filehashToGuiUrl(result.filehash)
+  )
 }

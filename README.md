@@ -6,6 +6,7 @@ sense outside the context of the Exivity development environment.
 _Available actions:_
 
 - [`accept`](#accept)
+- [`commit-status`](#commit-status)
 - [`db`](#db)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
@@ -51,12 +52,73 @@ A GitHub token with access to the exivity/scaffold repository.
 _Defaults to `false`_  
 If `true`, scaffold will not build or run any tests.
 
+### `filter`
+
+**Optional**  
+If provided, only trigger acceptance tests if files which match this input (glob patterns allowed) are modified. If provided, and changed files do not match,
+writes a successful status to the commit.
+
 ## Example usage
 
 ```
 - uses: exivity/actions/accept@main
   with:
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+# `commit-status`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/commit-status)
+
+Writes a [commit status](https://docs.github.com/en/rest/reference/commits#commit-statuses).
+
+## Inputs
+
+### `component`
+
+**Optional**  
+_Defaults to current component_  
+Component to write the commit status for.
+
+### `sha`
+
+**Optional**  
+_Defaults to current sha`_  
+Sha of commit to write the status for.
+
+### `gh-token`
+
+**Optional**  
+_Defaults to the GITHUB_TOKEN environment variable_  
+A GitHub token with write access to the component.
+
+### `state`
+
+**Optional**  
+_Defaults to `success`_  
+The commit status state, can be "error", "failure", "pending" or "success".
+
+### `context`
+
+**Required**  
+A string label to differentiate this status from the status of other systems.
+
+### `description`
+
+**Optional**  
+A short description of the status.
+
+### `target_url`
+
+**Optional**  
+The target URL to associate with this status.
+
+## Example usage
+
+```
+- uses: exivity/actions/commit-status@main
+  with:
+    context: auto-success
 ```
 
 # `db`

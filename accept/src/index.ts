@@ -7,8 +7,10 @@ import {
   warning,
 } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import minimatch from 'minimatch'
 import { getBooleanInput } from '../../lib/core'
 import {
+  getCommit,
   getEventData,
   getEventName,
   getPR,
@@ -19,6 +21,8 @@ import {
   isDevelopBranch,
   isEvent,
   isReleaseBranch,
+  review,
+  writeStatus,
 } from '../../lib/github'
 import {
   includesBotRequest,
@@ -54,6 +58,7 @@ async function run() {
   const eventName = getEventName(supportedEvents)
   const eventData = await getEventData(eventName)
   const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
+  const filter = getInput('filter')
   const dryRun = getBooleanInput('dry-run', false)
 
   table('Event', eventName)
@@ -101,7 +106,7 @@ async function run() {
   }
 
   const pr = await getPR(octokit, component, ref)
-  const pull_request = pr ? `${pr.number}` : undefined
+  const pull_request = pr ? pr.number : undefined
   const issue = detectIssueKey(ref)
   const shortSha = sha.substring(0, 7)
 
@@ -126,6 +131,37 @@ async function run() {
   startGroup('Debug')
   info(JSON.stringify({ eventData, pr }, undefined, 2))
   endGroup()
+
+  // If this is a PR and the filter input is set, obtain commit details and bail
+  // if no files match
+  if (pull_request && filter) {
+    const commit = await getCommit(octokit, component, ref)
+    const someFilesMatch = (commit.files || []).some((file) =>
+      minimatch(file.filename || file.previous_filename || 'unknown', filter)
+    )
+
+    if (!someFilesMatch) {
+      warning(`[accept] Skipping: no modified files match the filter option`)
+
+      // Auto approve by submitting PR and writing commit status
+      await review(
+        octokit,
+        component,
+        pull_request,
+        'APPROVE',
+        'Automatically approved because no modified files in this commit match the `filter` parameter of this action.'
+      )
+      await writeStatus(
+        octokit,
+        component,
+        sha,
+        'success',
+        'scaffold',
+        'Acceptance tests skipped'
+      )
+      return
+    }
+  }
 
   // Skip accepting commits on non-develop branches without PR
   if (!isDevelopBranch(ref) && !pull_request) {

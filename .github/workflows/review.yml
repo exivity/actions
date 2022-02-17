@@ -19,7 +19,3 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./review
-        with:
-          event: REQUEST_CHANGES
-          body: testing ${{ matrix.os }}...
-      - uses: ./review

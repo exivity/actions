@@ -7,7 +7,7 @@ type DispatchParams = {
   scaffoldBranch: string
   component?: string
   sha?: string
-  pull_request?: string
+  pull_request?: number
   issue?: string
   dryRun?: boolean
 }
@@ -26,7 +26,7 @@ export async function dispatch({
     ...(component ? { custom_component_name: component } : {}),
     ...(sha ? { custom_component_sha: sha } : {}),
     ...(issue ? { issue } : {}),
-    ...(pull_request ? { pull_request } : {}),
+    ...(pull_request ? { pull_request: pull_request.toString(10) } : {}),
     dry_run: dryRun ? '1' : '0',
   }
 

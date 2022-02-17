@@ -7153,9 +7153,9 @@ var require_balanced_match = __commonJS({
   }
 });
 
-// node_modules/brace-expansion/index.js
+// node_modules/glob/node_modules/brace-expansion/index.js
 var require_brace_expansion = __commonJS({
-  "node_modules/brace-expansion/index.js"(exports, module2) {
+  "node_modules/glob/node_modules/brace-expansion/index.js"(exports, module2) {
     var concatMap = require_concat_map();
     var balanced = require_balanced_match();
     module2.exports = expandTop;
@@ -7298,9 +7298,9 @@ var require_brace_expansion = __commonJS({
   }
 });
 
-// node_modules/minimatch/minimatch.js
+// node_modules/glob/node_modules/minimatch/minimatch.js
 var require_minimatch = __commonJS({
-  "node_modules/minimatch/minimatch.js"(exports, module2) {
+  "node_modules/glob/node_modules/minimatch/minimatch.js"(exports, module2) {
     module2.exports = minimatch;
     minimatch.Minimatch = Minimatch;
     var path = { sep: "/" };
@@ -18640,6 +18640,18 @@ function isDevelopBranch(ref) {
   }
   return DevelopBranches.includes(ref);
 }
+async function writeStatus(octokit, repo, sha, state, context, description, target_url) {
+  (0, import_core.info)(`Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`);
+  return (await octokit.rest.repos.createCommitStatus({
+    owner: "exivity",
+    repo,
+    sha,
+    state,
+    context,
+    description,
+    target_url
+  })).data;
+}
 
 // virustotal/src/status.ts
 var import_core3 = __toESM(require_core());
@@ -20609,17 +20621,8 @@ async function getPendingVirusTotalStatuses(octokit) {
   }
   return statuses;
 }
-async function writeStatus(octokit, result, sha) {
-  await octokit.rest.repos.createCommitStatus({
-    owner: "exivity",
-    repo: getRepository().component,
-    sha: sha != null ? sha : await getSha(),
-    state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
-    context: `virustotal (${result.filename})`,
-    description: result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0,
-    target_url: filehashToGuiUrl(result.filehash)
-  });
-  (0, import_core3.info)("Written commit status");
+async function writeStatus2(octokit, result, sha) {
+  return writeStatus(octokit, getRepository().component, sha != null ? sha : await getSha(), result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure", `virustotal (${result.filename})`, result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0, filehashToGuiUrl(result.filehash));
 }
 
 // virustotal/src/index.ts
@@ -20657,13 +20660,13 @@ async function run() {
       (0, import_core4.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
       for (const absPath of absPaths) {
         const result = await analyse(vt, absPath);
-        await writeStatus(octokit, result);
+        await writeStatus2(octokit, result);
       }
       break;
     case ModeCheck:
       for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
         const result = await check(vt, pendingStatus);
-        await writeStatus(octokit, result, pendingStatus.sha);
+        await writeStatus2(octokit, result, pendingStatus.sha);
       }
       break;
     default:
