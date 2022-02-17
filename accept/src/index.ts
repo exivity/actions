@@ -103,19 +103,6 @@ async function run() {
     return
   }
 
-  // If filter is set, obtain commit details and bail if no files match
-  if (filter) {
-    const commit = await getCommit(octokit, component, ref)
-    const someFilesMatch = (commit.files || []).some((file) =>
-      minimatch(file.filename || file.previous_filename || 'unknown', filter)
-    )
-
-    if (!someFilesMatch) {
-      warning(`[accept] Skipping: no modified files match the filter option`)
-      return
-    }
-  }
-
   const pr = await getPR(octokit, component, ref)
   const pull_request = pr ? `${pr.number}` : undefined
   const issue = detectIssueKey(ref)
@@ -142,6 +129,20 @@ async function run() {
   startGroup('Debug')
   info(JSON.stringify({ eventData, pr }, undefined, 2))
   endGroup()
+
+  // If this is a PR and the filter input is set, obtain commit details and bail
+  // if no files match
+  if (pull_request && filter) {
+    const commit = await getCommit(octokit, component, ref)
+    const someFilesMatch = (commit.files || []).some((file) =>
+      minimatch(file.filename || file.previous_filename || 'unknown', filter)
+    )
+
+    if (!someFilesMatch) {
+      warning(`[accept] Skipping: no modified files match the filter option`)
+      return
+    }
+  }
 
   // Skip accepting commits on non-develop branches without PR
   if (!isDevelopBranch(ref) && !pull_request) {

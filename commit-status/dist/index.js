@@ -6844,15 +6844,6 @@ function getToken(inputName = "gh-token") {
   }
   return ghToken;
 }
-async function review(octokit, repo, pull_number, event, body) {
-  return (await octokit.rest.pulls.createReview({
-    owner: "exivity",
-    repo,
-    pull_number,
-    event,
-    body
-  })).data;
-}
 
 // review/src/index.ts
 var validEvents = ["APPROVE", "COMMENT", "REQUEST_CHANGES"];
@@ -6880,7 +6871,13 @@ async function run() {
   }
   (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${targetRepo}`);
   const body = `${customBody}${customBody ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
-  await review(octokit, targetRepo, pull_number, event, body);
+  await octokit.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews", {
+    owner,
+    repo: targetRepo,
+    pull_number,
+    event,
+    body
+  });
 }
 run().catch(import_core2.setFailed);
 /*!

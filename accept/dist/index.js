@@ -33580,14 +33580,6 @@ async function run() {
     (0, import_core5.warning)(`[accept] Skipping: release branch "${ref}" is ignored`);
     return;
   }
-  if (filter) {
-    const commit = await getCommit(octokit, component, ref);
-    const someFilesMatch = (commit.files || []).some((file) => (0, import_minimatch.default)(file.filename || file.previous_filename || "unknown", filter));
-    if (!someFilesMatch) {
-      (0, import_core5.warning)(`[accept] Skipping: no modified files match the filter option`);
-      return;
-    }
-  }
   const pr = await getPR(octokit, component, ref);
   const pull_request = pr ? `${pr.number}` : void 0;
   const issue = detectIssueKey(ref);
@@ -33599,6 +33591,14 @@ async function run() {
   (0, import_core5.startGroup)("Debug");
   (0, import_core5.info)(JSON.stringify({ eventData, pr }, void 0, 2));
   (0, import_core5.endGroup)();
+  if (pull_request && filter) {
+    const commit = await getCommit(octokit, component, ref);
+    const someFilesMatch = (commit.files || []).some((file) => (0, import_minimatch.default)(file.filename || file.previous_filename || "unknown", filter));
+    if (!someFilesMatch) {
+      (0, import_core5.warning)(`[accept] Skipping: no modified files match the filter option`);
+      return;
+    }
+  }
   if (!isDevelopBranch(ref) && !pull_request) {
     (0, import_core5.warning)("[accept] Skipping: non-develop branch without pull request");
     return;

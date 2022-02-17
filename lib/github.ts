@@ -219,3 +219,43 @@ export async function getCommit(
     })
   ).data
 }
+
+export async function review(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  pull_number: number,
+  event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT',
+  body?: string
+) {
+  return (
+    await octokit.rest.pulls.createReview({
+      owner: 'exivity',
+      repo,
+      pull_number,
+      event,
+      body,
+    })
+  ).data
+}
+
+export async function writeStatus(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  sha: string,
+  state: 'error' | 'failure' | 'pending' | 'success',
+  context: string,
+  target_url?: string,
+  description?: string
+) {
+  return (
+    await octokit.rest.repos.createCommitStatus({
+      owner: 'exivity',
+      repo,
+      sha: sha,
+      state,
+      context,
+      description,
+      target_url,
+    })
+  ).data
+}

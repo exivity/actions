@@ -1,6 +1,12 @@
 import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { getPR, getRef, getRepository, getToken } from '../../lib/github'
+import {
+  getPR,
+  getRef,
+  getRepository,
+  getToken,
+  review,
+} from '../../lib/github'
 
 const validEvents = ['APPROVE', 'COMMENT', 'REQUEST_CHANGES'] as const
 
@@ -49,16 +55,7 @@ workflow in **${process.env.GITHUB_REPOSITORY}**]\
   })_`
 
   // Post a review to the GitHub API
-  await octokit.request(
-    'POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
-    {
-      owner,
-      repo: targetRepo,
-      pull_number,
-      event,
-      body,
-    }
-  )
+  await review(octokit, targetRepo, pull_number, event, body)
 }
 
 run().catch(setFailed)
