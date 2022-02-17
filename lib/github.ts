@@ -205,3 +205,17 @@ export function isDevelopBranch(ref?: string) {
 
   return DevelopBranches.includes(ref)
 }
+
+export async function getCommit(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  ref: string
+) {
+  return (
+    await octokit.rest.repos.getCommit({
+      owner: 'exivity',
+      repo,
+      ref,
+    })
+  ).data
+}

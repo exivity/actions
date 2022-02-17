@@ -51,6 +51,12 @@ A GitHub token with access to the exivity/scaffold repository.
 _Defaults to `false`_  
 If `true`, scaffold will not build or run any tests.
 
+### `filter`
+
+**Optional**  
+If provided, only trigger acceptance tests if files which match this input (glob patterns allowed) are modified. If provided, and changed files do not match,
+writes a successful status to the commit.
+
 ## Example usage
 
 ```

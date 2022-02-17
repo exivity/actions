@@ -7,8 +7,10 @@ import {
   warning,
 } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import minimatch from 'minimatch'
 import { getBooleanInput } from '../../lib/core'
 import {
+  getCommit,
   getEventData,
   getEventName,
   getPR,
@@ -54,6 +56,7 @@ async function run() {
   const eventName = getEventName(supportedEvents)
   const eventData = await getEventData(eventName)
   const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
+  const filter = getInput('filter')
   const dryRun = getBooleanInput('dry-run', false)
 
   table('Event', eventName)
@@ -98,6 +101,19 @@ async function run() {
   if (isReleaseBranch(ref)) {
     warning(`[accept] Skipping: release branch "${ref}" is ignored`)
     return
+  }
+
+  // If filter is set, obtain commit details and bail if no files match
+  if (filter) {
+    const commit = await getCommit(octokit, component, ref)
+    const someFilesMatch = (commit.files || []).some((file) =>
+      minimatch(file.filename || file.previous_filename || 'unknown', filter)
+    )
+
+    if (!someFilesMatch) {
+      warning(`[accept] Skipping: no modified files match the filter option`)
+      return
+    }
   }
 
   const pr = await getPR(octokit, component, ref)
