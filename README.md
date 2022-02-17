@@ -34,7 +34,7 @@ usage.
 
 ## Example
 
-```
+```yaml
 - uses: exivity/actions/accept@main
   with:
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
@@ -57,7 +57,7 @@ Writes a [commit status](https://docs.github.com/en/rest/reference/commits#commi
 
 ## Example
 
-```
+```yaml
 - uses: exivity/actions/commit-status@main
   with:
     context: auto-success
@@ -84,7 +84,7 @@ repository migrations and runs them.
 
 ## Example
 
-```
+```yaml
 - uses: exivity/actions/db@main
   with:
     branch: some-feature-branch
@@ -96,7 +96,7 @@ repository migrations and runs them.
 
 | name                    | required | default                                                                          | description                                                                                                                                                                                           |
 | ----------------------- | -------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `branch`                |          | `"master"` or `"main"` when it matches the current branch, `"develop"` otherwise | The db repository branch to use.                                                                                                                                                                      |
+| `branch`                |          | `"main"` or `"master"` when it matches the current branch, `"develop"` otherwise | The db repository branch to use.                                                                                                                                                                      |
 | `db-name`               |          | `"exdb-test"`                                                                    | The db name to create.                                                                                                                                                                                |
 | `mode`                  |          | `"host"`                                                                         | Whether to run PostgreSQL as a Docker container or start the server installed on the host. Either `"host"` or `"docker"`.                                                                             |
 | `version`               |          | `"14.0"`                                                                         | The PostgreSQL version to use. Only affects Docker mode (host mode always uses default version). Make sure to use a string type to avoid truncation. Available versions: `"14.0"`, `"13.0"`, `"12.3"` |
@@ -113,70 +113,9 @@ Download artefacts for the provided component. It will use the S3 _exivity_
 bucket in the _eu-central-1_ region. Artefacts are downloaded with the
 _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
-## Inputs
+## Example
 
-### `component`
-
-**Required**  
-Component to download artefacts for
-
-### `sha`
-
-**Optional**  
-Use specific artefacts sha
-
-### `branch`
-
-**Optional**  
-_Defaults to `master` when used on a master branch or if artifact repo has no
-develop branch, else defaults to `develop`_  
-If no sha is provided, resolve sha from branch name
-
-### `use-platform-prefix`
-
-**Optional**  
-_Defaults to `false`_  
-If `true`, uses `windows` or `linux` prefix depending on current os.
-
-### `prefix`
-
-**Optional**  
-If specified, download artefacts from this prefix (appended after platform
-prefix if specified).
-
-### `path`
-
-**Optional**  
-_Defaults to `../{component}/build`_  
-Put artefacts in this path
-
-### `auto-unzip`
-
-**Optional**  
-_Default: `true`_  
-Automatically unzip artefact files
-
-### `aws-access-key-id`
-
-**Optional**  
-_Defaults to the AWS_ACCESS_KEY_ID environment variable_  
-The AWS access key ID
-
-### `aws-secret-access-key`
-
-**Optional**  
-_Defaults to the AWS_SECRET_ACCESS_KEY environment variable_  
-The AWS secret access key
-
-### `gh-token`
-
-**Optional**  
-_Defaults to the GITHUB_TOKEN environment variable_  
-A GitHub token with access to the exivity/{component} repository.
-
-## Example usage
-
-```
+```yaml
 - uses: exivity/actions/get-artefacts@main
   with:
     component: db
@@ -187,6 +126,21 @@ A GitHub token with access to the exivity/{component} repository.
     gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+## Inputs
+
+| name                    | required | default                                                                                         | description                                                                                      |
+| ----------------------- | -------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `component`             | ✅       |                                                                                                 | Component to download artefacts for                                                              |
+| `sha`                   |          |                                                                                                 | Use specific artefacts sha                                                                       |
+| `branch`                |          | `"main"` or `"master"` when it matches the current branch, `"develop"` otherwise (if available) | If no sha is provided, resolve sha from branch name                                              |
+| `use-platform-prefix`   |          | `false`                                                                                         | If `true`, uses `windows` or `linux` prefix depending on current os.                             |
+| `prefix`                |          |                                                                                                 | If specified, download artefacts from this prefix (appended after platform prefix if specified). |
+| `path`                  |          | `"../{component}/build"`                                                                        | Put artefacts in this path                                                                       |
+| `auto-unzip`            |          | `true`                                                                                          | Automatically unzip artefact files                                                               |
+| `aws-access-key-id`     |          | `env.AWS_ACCESS_KEY_ID`                                                                         | The AWS access key ID                                                                            |
+| `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY`                                                                     | The AWS secret access key                                                                        |
+| `gh-token`              |          | `env.GITHUB_TOKEN`                                                                              | A GitHub token with access to the exivity/{component} repository.                                |
+
 # `init-ssh`
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/init-ssh)
@@ -194,16 +148,9 @@ A GitHub token with access to the exivity/{component} repository.
 Use a private key and prime the known_hosts file with pre-loaded keys for
 github.com, gitlab.com and bitbucket.org.
 
-## Inputs
+## Example
 
-### `private-key`
-
-**Required**  
-The full SSH private key.
-
-## Example usage
-
-```
+```yaml
 - uses: exivity/actions/init-ssh@main
   with:
     private-key: ${{ secrets.PRIVATE_KEY }}
@@ -217,48 +164,34 @@ key contents
 -----END RSA PRIVATE KEY-----
 ```
 
+## Inputs
+
+| name          | required | default | description               |
+| ------------- | -------- | ------- | ------------------------- |
+| `private-key` | ✅       |         | The full SSH private key. |
+
 # `postgres`
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/postgres)
 
 Starts a PostgreSQL server
 
-## Inputs
+## Example
 
-### `mode`
-
-**Optional**  
-_Options: `docker` or `host`, defaults to `host`_  
-Whether to run PostgreSQL as a Docker container or start the server installed on
-the host.
-
-### `version`
-
-**Optional**  
-_Default: 14.0_  
-The PostgreSQL version to use. Only affects Docker mode (host mode always uses
-default version). Make sure to use a string type to avoid truncation. Available
-versions:
-
-- 14.0
-- 13.0
-- 12.3
-
-### `password`
-
-**Optional**  
-_Defaults to "postgres"_  
-The password for the postgres user in de database, currently only works with
-host mode.
-
-## Example usage
-
-```
+```yaml
 - uses: exivity/actions/postgres@main
   with:
     mode: docker
     version: 12.3
 ```
+
+## Inputs
+
+| name       | required | default      | description                                                                                                                                                                                           |
+| ---------- | -------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mode`     |          | `"host"`     | Whether to run PostgreSQL as a Docker container or start the server installed on the host. Either `"docker"` or `"host"`.                                                                             |
+| `version`  |          | `"14.0"`     | The PostgreSQL version to use. Only affects Docker mode (host mode always uses default version). Make sure to use a string type to avoid truncation. Available versions: `"14.0"`, `"13.0"`, `"12.3"` |
+| `password` |          | `"postgres"` | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
 
 # `process-binary`
 
@@ -267,13 +200,9 @@ host mode.
 A composite action running [`rcedit`](#rcedit), [`sign-file`](#sign-file) and
 [`virustotal`](#virustotal) (in that order).
 
-## Inputs
+## Example
 
-See individual actions for inputs.
-
-## Example usage
-
-```
+```yaml
 - uses: exivity/actions/process-binary@main
   with:
     path: build/foo.exe
@@ -283,6 +212,10 @@ See individual actions for inputs.
     gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+## Inputs
+
+See individual actions for inputs.
+
 # `put-artefacts`
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/put-artefacts)
@@ -291,47 +224,9 @@ Uploads artefacts in the provided directory. It will use the S3 _exivity_ bucket
 in the _eu-central-1_ region. Artefacts are uploaded to the
 _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
-## Inputs
+## Example
 
-### `use-platform-prefix`
-
-**Optional**  
-_Defaults to `false`_  
-If `true`, uses `windows` or `linux` prefix depending on current os.
-
-### `prefix`
-
-**Optional**  
-If specified, upload artefacts with this prefix (appended after
-platform prefix if specified).
-
-### `path`
-
-**Optional**  
-_Default: build_  
-Upload artefacts from this path.
-
-### `zip`
-
-**Optional**  
-_Default: `false`_  
-Zip artefact files before uploading as `{component_name}.tar.gz`
-
-### `aws-access-key-id`
-
-**Optional**  
-_Defaults to the AWS_ACCESS_KEY_ID environment variable_  
-The AWS access key ID
-
-### `aws-secret-access-key`
-
-**Optional**  
-_Defaults to the AWS_SECRET_ACCESS_KEY environment variable_  
-The AWS secret access key
-
-## Example usage
-
-```
+```yaml
 - uses: exivity/actions/put-artefacts@main
   with:
     path: artefacts
@@ -339,27 +234,36 @@ The AWS secret access key
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
 
+## Inputs
+
+| name                    | required | default                     | description                                                                                    |
+| ----------------------- | -------- | --------------------------- | ---------------------------------------------------------------------------------------------- |
+| `use-platform-prefix`   |          | `false`                     | If `true`, uses `windows` or `linux` prefix depending on current os.                           |
+| `prefix`                |          |                             | If specified, upload artefacts with this prefix (appended after platform prefix if specified). |
+| `path`                  |          | `"build"`                   | Upload artefacts from this path.                                                               |
+| `zip`                   |          | `false`                     | Zip artefact files before uploading as `{component_name}.tar.gz`                               |
+| `aws-access-key-id`     |          | `env.AWS_ACCESS_KEY_ID`     | The AWS access key ID                                                                          |
+| `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY` | The AWS secret access key                                                                      |
+
 # `rabbitmq`
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/rabbitmq)
 
 Starts a RabbitMQ server in a Docker container.
 
-## Inputs
+## Example
 
-### `version`
-
-**Optional**  
-_Default: 3.8.6_  
-The RabbitMQ version to use. Currently, only 3.8.6 is supported.
-
-## Example usage
-
-```
+```yaml
 - uses: exivity/actions/rabbitmq@main
   with:
     version: 3.8.6
 ```
+
+## Inputs
+
+| name      | required | default   | description                                                          |
+| --------- | -------- | --------- | -------------------------------------------------------------------- |
+| `version` |          | `"3.8.6"` | The RabbitMQ version to use. Currently, only `"3.8.6"` is supported. |
 
 # `rcedit`
 
@@ -367,95 +271,35 @@ The RabbitMQ version to use. Currently, only 3.8.6 is supported.
 
 Edit resources of a Windows executable
 
-⚠️ Currently only works on 64 bit Windows hosts
+⚠️ Currently only works on 64-bit Windows hosts
 
-## Inputs
+## Example
 
-### `path`
-
-**Required**  
-The path to the file to sign, glob patterns allowed
-
-### `company-name`
-
-**Optional**  
-_Defaults to 'Exivity'_  
-Company that produced the executable.
-
-### `product-name`
-
-**Optional**  
-_Defaults to 'Exivity'_  
-Name of the product with which the file is distributed.
-
-### `file-description`
-
-**Optional**  
-_Defaults to '$repo:$sha'_  
-File description to be presented to users.
-
-### `comments`
-
-**Optional**  
-Additional information that should be displayed for diagnostic purposes.
-
-### `internal-filename`
-
-**Optional**  
-Internal name of the file. Usually, this string should be the original filename, without the extension.
-
-### `legal-copyright`
-
-**Optional**  
-Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.
-
-### `legal-trademarks1`
-
-**Optional**  
-Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc.
-
-### `legal-trademarks2`
-
-**Optional**  
-Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc.
-
-### `original-filename`
-
-**Optional**  
-Original name of the file, not including a path.
-
-### `file-version`
-
-**Optional**  
-File's version to change to.
-
-### `product-version`
-
-**Optional**  
-Product's version to change to.
-
-### `icon`
-
-**Optional**  
-Path to the icon file (.ico) to set as the exePath's default icon.
-
-### `requested-execution-level`
-
-**Optional**  
-Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator.
-
-### `application-manifest`
-
-**Optional**  
-String path to a local manifest file to use.
-
-## Example usage
-
-```
+```yaml
 - uses: exivity/actions/rcedit@main
   with:
     path: build/foo.exe
 ```
+
+## Inputs
+
+| name                        | required | default        | description                                                                                                          |
+| --------------------------- | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `path`                      | ✅       |                | The path to the file to sign, glob patterns allowed                                                                  |
+| `company-name`              |          | `"Exivity"`    | Company that produced the executable.                                                                                |
+| `product-name`              |          | `"Exivity"`    | Name of the product with which the file is distributed.                                                              |
+| `file-description`          |          | `"$repo:$sha"` | File description to be presented to users.                                                                           |
+| `comments`                  |          |                | Additional information that should be displayed for diagnostic purposes.                                             |
+| `internal-filename`         |          |                | Internal name of the file. Usually, this string should be the original filename, without the extension.              |
+| `legal-copyright`           |          |                | Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.           |
+| `legal-trademarks1`         |          |                | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
+| `legal-trademarks2`         |          |                | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
+| `original-filename`         |          |                | Original name of the file, not including a path.                                                                     |
+| `file-version`              |          |                | File's version to change to.                                                                                         |
+| `product-version`           |          |                | Product's version to change to.                                                                                      |
+| `icon`                      |          |                | Path to the icon file (.ico) to set as the exePath's default icon.                                                   |
+| `requested-execution-level` |          |                | Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator.         |
+| `application-manifest`      |          |                | String path to a local manifest file to use.                                                                         |
 
 # `review`
 
@@ -463,52 +307,25 @@ String path to a local manifest file to use.
 
 Reviews a PR.
 
-## Inputs
+## Example
 
-### `component`
-
-**Optional**  
-_Defaults to current component_  
-The component to review a PR for.
-
-### `pull`
-
-**Optional**  
-_Defaults to latest of current branch_  
-PR number to review.
-
-### `gh-token`
-
-**Optional**  
-_Defaults to the GITHUB_TOKEN environment variable_  
-A GitHub token from the PR reviewer.
-
-### `event`
-
-**Optional**  
-_Defaults to `APPROVE`_  
-Choose from APPROVE, REQUEST_CHANGES, COMMENT or PENDING.
-
-### `body`
-
-**Optional**  
-The body of the review text, required when using REQUEST_CHANGES or COMMENT.
-
-### `branch`
-
-**Optional**  
-_Defaults to current branch_  
-The head branch the pull request belongs to in order to get latest pull request,
-not needed if `pull` has been specified.
-
-## Example usage
-
-```
+```yaml
 - uses: exivity/actions/review@main
   with:
     gh-token: ${{ secrets.GH_BOT_TOKEN }}
     body: Exivity bot approves everything!
 ```
+
+## Inputs
+
+| name        | required | default                               | description                                                                                                               |
+| ----------- | -------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `component` |          | Current component                     | The component to review a PR for.                                                                                         |
+| `pull`      |          | Latest pull request of current branch | PR number to review.                                                                                                      |
+| `gh-token`  |          | `env.GITHUB_TOKEN`                    | A GitHub token from the PR reviewer.                                                                                      |
+| `event`     |          | `"APPROVE"`                           | Choose from `"APPROVE"`, `"REQUEST_CHANGES"`, `"COMMENT"` or `"PENDING"`.                                                 |
+| `body`      | Maybe    |                                       | The body of the review text, required when using REQUEST_CHANGES or COMMENT.                                              |
+| `branch`    |          | Current branch                        | The head branch the pull request belongs to in order to get latest pull request, not needed if `pull` has been specified. |
 
 # `sign-file`
 
@@ -518,40 +335,24 @@ Digitally sign a file
 
 ⚠️ Currently only works on Windows hosts
 
-## Inputs
+## Example
 
-### `path`
-
-**Required**  
-The path to the file to sign, glob patterns allowed
-
-### `certificate-base64`
-
-**Required**  
-The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string
-
-### `certificate-password`
-
-**Required**  
-The password for the `.pfx` file
-
-### `method`
-
-**Optional**  
-_Defaults to `signtool`_  
-The signature tool to use. Available options:
-
-- `signtool`
-
-## Example usage
-
-```
+```yaml
 - uses: exivity/actions/sign-file@main
   with:
     path: build/foo.exe
     certificate-base64: ${{ secrets.CODESIGN_CERTIFICATE_BASE64 }}
     certificate-password: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
 ```
+
+## Inputs
+
+| name                   | required | default      | description                                                                |
+| ---------------------- | -------- | ------------ | -------------------------------------------------------------------------- |
+| `path`                 | ✅       |              | The path to the file to sign, glob patterns allowed                        |
+| `certificate-base64`   | ✅       |              | The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string |
+| `certificate-password` | ✅       |              | The password for the `.pfx` file                                           |
+| `method`               |          | `"signtool"` | The signature tool to use. Available options: `"signtool"`                 |
 
 # `virustotal`
 
@@ -561,36 +362,11 @@ Analyse artefacts with VirusTotal
 
 _Forked from: [crazy-max/ghaction-virustotal](https://github.com/crazy-max/ghaction-virustotal)_
 
-## Inputs
-
-### `mode`
-
-**Optional**  
-_Options: `analyse` or `check`, defaults to `analyse`_  
-Whether to analyse artefacts or check the analysis status
-
-### `path`
-
-**Optional**  
-The path to the file to analyse, glob patterns allowed. Required when `mode` is
-set to `analyse`.
-
-### `virustotal-api-key`
-
-**Required**  
-The VirusTotal API key
-
-### `gh-token`
-
-**Optional**  
-_Defaults to the GITHUB_TOKEN environment variable_  
-GitHub token used for writing commit status
-
-## Example usage
+## Example
 
 Build workflow:
 
-```
+```yaml
 - uses: exivity/actions/virustotal@main
   with:
     path: build/foo.exe
@@ -600,7 +376,7 @@ Build workflow:
 
 Separate check workflow:
 
-```
+```yaml
 name: virustotal-check
 
 on:
@@ -618,6 +394,15 @@ jobs:
           virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
           gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+## Inputs
+
+| name                 | required | default            | description                                                                                       |
+| -------------------- | -------- | ------------------ | ------------------------------------------------------------------------------------------------- |
+| `mode`               |          | `"analyse"`        | Whether to analyse artefacts or check the analysis status. Either `"analyse"` or `"check"`.       |
+| `path`               | Maybe    |                    | The path to the file to analyse, glob patterns allowed. Required when `mode` is set to `analyse`. |
+| `virustotal-api-key` | ✅       |                    | The VirusTotal API key                                                                            |
+| `gh-token`           |          | `env.GITHUB_TOKEN` | GitHub token used for writing commit status                                                       |
 
 # Development guide
 
