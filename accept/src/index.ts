@@ -154,7 +154,7 @@ async function run() {
       await writeStatus(
         octokit,
         component,
-        ref,
+        sha,
         'success',
         'scaffold',
         'Acceptance tests skipped'

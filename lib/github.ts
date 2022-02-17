@@ -251,8 +251,8 @@ export async function writeStatus(
   sha: string,
   state: 'error' | 'failure' | 'pending' | 'success',
   context: string,
-  target_url?: string,
-  description?: string
+  description?: string,
+  target_url?: string
 ) {
   return (
     await octokit.rest.repos.createCommitStatus({

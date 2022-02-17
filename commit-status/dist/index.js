@@ -6858,7 +6858,7 @@ async function getEventData(eventName) {
   });
   return JSON.parse(fileData);
 }
-async function writeStatus(octokit, repo, sha, state, context, target_url, description) {
+async function writeStatus(octokit, repo, sha, state, context, description, target_url) {
   return (await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
     repo,
@@ -6888,7 +6888,7 @@ async function run() {
   }
   const octokit = (0, import_github.getOctokit)(ghToken);
   (0, import_core2.info)(`Calling GitHub API to write ${state} commit status for "${sha}" of repo ${repo}`);
-  await writeStatus(octokit, repo, sha, state, context, target_url, description);
+  await writeStatus(octokit, repo, sha, state, context, description, target_url);
 }
 run().catch(import_core2.setFailed);
 /*!

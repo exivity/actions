@@ -29529,7 +29529,7 @@ async function review(octokit, repo, pull_number, event, body) {
     body
   })).data;
 }
-async function writeStatus(octokit, repo, sha, state, context3, target_url, description) {
+async function writeStatus(octokit, repo, sha, state, context3, description, target_url) {
   return (await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
     repo,
@@ -33618,7 +33618,7 @@ async function run() {
     if (!someFilesMatch) {
       (0, import_core5.warning)(`[accept] Skipping: no modified files match the filter option`);
       await review(octokit, component, pull_request, "APPROVE", "Automatically approved because no modified files in this commit match the `filter` parameter of this action.");
-      await writeStatus(octokit, component, ref, "success", "scaffold", "Acceptance tests skipped");
+      await writeStatus(octokit, component, sha, "success", "scaffold", "Acceptance tests skipped");
       return;
     }
   }

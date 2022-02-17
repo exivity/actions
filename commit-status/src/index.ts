@@ -31,7 +31,7 @@ async function run() {
   )
 
   // Post a review to the GitHub API
-  await writeStatus(octokit, repo, sha, state, context, target_url, description)
+  await writeStatus(octokit, repo, sha, state, context, description, target_url)
 }
 
 run().catch(setFailed)
