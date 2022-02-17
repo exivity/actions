@@ -1,4 +1,4 @@
-import { getInput, info, setFailed } from '@actions/core'
+import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getRepository, getSha, getToken, writeStatus } from '../../lib/github'
 
@@ -25,10 +25,6 @@ async function run() {
 
   // Initialize GH client
   const octokit = getOctokit(ghToken)
-
-  info(
-    `Calling GitHub API to write ${state} commit status for "${sha}" of repo ${repo}`
-  )
 
   // Post a review to the GitHub API
   await writeStatus(octokit, repo, sha, state, context, description, target_url)

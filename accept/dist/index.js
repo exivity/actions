@@ -29520,6 +29520,7 @@ async function getCommit(octokit, repo, ref) {
   })).data;
 }
 async function review(octokit, repo, pull_number, event, body) {
+  (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
   body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
   return (await octokit.rest.pulls.createReview({
     owner: "exivity",
@@ -29530,6 +29531,7 @@ async function review(octokit, repo, pull_number, event, body) {
   })).data;
 }
 async function writeStatus(octokit, repo, sha, state, context3, description, target_url) {
+  (0, import_core2.info)(`Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`);
   return (await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
     repo,

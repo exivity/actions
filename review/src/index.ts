@@ -41,11 +41,9 @@ async function run() {
     : pull_request
 
   if (!pull_number) {
-    info('No pull request to review, skipping action')
+    info('[review] Skipping, no pull request to review')
     return
   }
-
-  info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${targetRepo}`)
 
   // Post a review to the GitHub API
   await review(octokit, targetRepo, pull_number, event, body)

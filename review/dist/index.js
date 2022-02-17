@@ -6845,6 +6845,7 @@ function getToken(inputName = "gh-token") {
   return ghToken;
 }
 async function review(octokit, repo, pull_number, event, body) {
+  (0, import_core.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
   body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
   return (await octokit.rest.pulls.createReview({
     owner: "exivity",
@@ -6876,10 +6877,9 @@ async function run() {
   const octokit = (0, import_github.getOctokit)(ghToken);
   const pull_number = isNaN(pull_request) ? (_a = await getPR(octokit, targetRepo, branch)) == null ? void 0 : _a.number : pull_request;
   if (!pull_number) {
-    (0, import_core2.info)("No pull request to review, skipping action");
+    (0, import_core2.info)("[review] Skipping, no pull request to review");
     return;
   }
-  (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${targetRepo}`);
   await review(octokit, targetRepo, pull_number, event, body);
 }
 run().catch(import_core2.setFailed);
