@@ -324,7 +324,7 @@ Reviews a PR.
 | `pull`      |          | Latest pull request of current branch | PR number to review.                                                                                                      |
 | `gh-token`  |          | `env.GITHUB_TOKEN`                    | A GitHub token from the PR reviewer.                                                                                      |
 | `event`     |          | `"APPROVE"`                           | Choose from `"APPROVE"`, `"REQUEST_CHANGES"`, `"COMMENT"` or `"PENDING"`.                                                 |
-| `body`      | Maybe    |                                       | The body of the review text, required when using REQUEST_CHANGES or COMMENT.                                              |
+| `body`      | Maybe    |                                       | The body of the review text, required when using `"REQUEST_CHANGES"` or `"COMMENT"`.                                      |
 | `branch`    |          | Current branch                        | The head branch the pull request belongs to in order to get latest pull request, not needed if `pull` has been specified. |
 
 # `sign-file`
@@ -397,12 +397,12 @@ jobs:
 
 ## Inputs
 
-| name                 | required | default            | description                                                                                       |
-| -------------------- | -------- | ------------------ | ------------------------------------------------------------------------------------------------- |
-| `mode`               |          | `"analyse"`        | Whether to analyse artefacts or check the analysis status. Either `"analyse"` or `"check"`.       |
-| `path`               | Maybe    |                    | The path to the file to analyse, glob patterns allowed. Required when `mode` is set to `analyse`. |
-| `virustotal-api-key` | ✅       |                    | The VirusTotal API key                                                                            |
-| `gh-token`           |          | `env.GITHUB_TOKEN` | GitHub token used for writing commit status                                                       |
+| name                 | required | default            | description                                                                                         |
+| -------------------- | -------- | ------------------ | --------------------------------------------------------------------------------------------------- |
+| `mode`               |          | `"analyse"`        | Whether to analyse artefacts or check the analysis status. Either `"analyse"` or `"check"`.         |
+| `path`               | Maybe    |                    | The path to the file to analyse, glob patterns allowed. Required when `mode` is set to `"analyse"`. |
+| `virustotal-api-key` | ✅       |                    | The VirusTotal API key                                                                              |
+| `gh-token`           |          | `env.GITHUB_TOKEN` | GitHub token used for writing commit status                                                         |
 
 # Development guide
 
