@@ -21,6 +21,8 @@ import {
   isDevelopBranch,
   isEvent,
   isReleaseBranch,
+  review,
+  writeStatus,
 } from '../../lib/github'
 import {
   includesBotRequest,
@@ -104,7 +106,7 @@ async function run() {
   }
 
   const pr = await getPR(octokit, component, ref)
-  const pull_request = pr ? `${pr.number}` : undefined
+  const pull_request = pr ? pr.number : undefined
   const issue = detectIssueKey(ref)
   const shortSha = sha.substring(0, 7)
 
@@ -140,6 +142,23 @@ async function run() {
 
     if (!someFilesMatch) {
       warning(`[accept] Skipping: no modified files match the filter option`)
+
+      // Auto approve by submitting PR and writing commit status
+      await review(
+        octokit,
+        component,
+        pull_request,
+        'APPROVE',
+        'Automatically approved because no modified files in this commit match the `filter` parameter of this action.'
+      )
+      await writeStatus(
+        octokit,
+        component,
+        ref,
+        'success',
+        'scaffold',
+        'Acceptance tests skipped'
+      )
       return
     }
   }

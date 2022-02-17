@@ -25,7 +25,7 @@ async function run() {
   const targetRepo = getInput('component') || component
   const event = getInput('event')
   const branch = getInput('branch') || default_branch
-  const customBody = getInput('body')
+  const body = getInput('body')
 
   // Assertions
   if (!isValidEvent(event)) {
@@ -46,13 +46,6 @@ async function run() {
   }
 
   info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${targetRepo}`)
-
-  const body = `${customBody}${customBody ? '\n\n---\n\n' : ''}\
-_Automated review from [**${process.env.GITHUB_WORKFLOW}** \
-workflow in **${process.env.GITHUB_REPOSITORY}**]\
-(https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${
-    process.env.GITHUB_RUN_ID
-  })_`
 
   // Post a review to the GitHub API
   await review(octokit, targetRepo, pull_number, event, body)

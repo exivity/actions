@@ -6845,6 +6845,7 @@ function getToken(inputName = "gh-token") {
   return ghToken;
 }
 async function review(octokit, repo, pull_number, event, body) {
+  body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
   return (await octokit.rest.pulls.createReview({
     owner: "exivity",
     repo,
@@ -6868,7 +6869,7 @@ async function run() {
   const targetRepo = (0, import_core2.getInput)("component") || component;
   const event = (0, import_core2.getInput)("event");
   const branch = (0, import_core2.getInput)("branch") || default_branch;
-  const customBody = (0, import_core2.getInput)("body");
+  const body = (0, import_core2.getInput)("body");
   if (!isValidEvent(event)) {
     throw new Error("The event input is missing or invalid");
   }
@@ -6879,7 +6880,6 @@ async function run() {
     return;
   }
   (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${targetRepo}`);
-  const body = `${customBody}${customBody ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
   await review(octokit, targetRepo, pull_number, event, body);
 }
 run().catch(import_core2.setFailed);

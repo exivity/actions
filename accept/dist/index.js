@@ -29519,6 +29519,27 @@ async function getCommit(octokit, repo, ref) {
     ref
   })).data;
 }
+async function review(octokit, repo, pull_number, event, body) {
+  body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
+  return (await octokit.rest.pulls.createReview({
+    owner: "exivity",
+    repo,
+    pull_number,
+    event,
+    body
+  })).data;
+}
+async function writeStatus(octokit, repo, sha, state, context3, target_url, description) {
+  return (await octokit.rest.repos.createCommitStatus({
+    owner: "exivity",
+    repo,
+    sha,
+    state,
+    context: context3,
+    description,
+    target_url
+  })).data;
+}
 
 // accept/src/checks.ts
 var import_core3 = __toESM(require_core());
@@ -33519,7 +33540,7 @@ async function dispatch({
   issue,
   dryRun = false
 }) {
-  const inputs = __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues({}, component ? { custom_component_name: component } : {}), sha ? { custom_component_sha: sha } : {}), issue ? { issue } : {}), pull_request ? { pull_request } : {}), {
+  const inputs = __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues({}, component ? { custom_component_name: component } : {}), sha ? { custom_component_sha: sha } : {}), issue ? { issue } : {}), pull_request ? { pull_request: pull_request.toString(10) } : {}), {
     dry_run: dryRun ? "1" : "0"
   });
   (0, import_core4.info)(`Trigger scaffold build on "${scaffoldBranch}" branch`);
@@ -33581,7 +33602,7 @@ async function run() {
     return;
   }
   const pr = await getPR(octokit, component, ref);
-  const pull_request = pr ? `${pr.number}` : void 0;
+  const pull_request = pr ? pr.number : void 0;
   const issue = detectIssueKey(ref);
   const shortSha = sha.substring(0, 7);
   table("Ref", `${ref} https://github.com/exivity/${component}/tree/${ref}`);
@@ -33596,6 +33617,8 @@ async function run() {
     const someFilesMatch = (commit.files || []).some((file) => (0, import_minimatch.default)(file.filename || file.previous_filename || "unknown", filter));
     if (!someFilesMatch) {
       (0, import_core5.warning)(`[accept] Skipping: no modified files match the filter option`);
+      await review(octokit, component, pull_request, "APPROVE", "Automatically approved because no modified files in this commit match the `filter` parameter of this action.");
+      await writeStatus(octokit, component, ref, "success", "scaffold", "Acceptance tests skipped");
       return;
     }
   }

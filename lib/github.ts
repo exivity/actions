@@ -227,6 +227,13 @@ export async function review(
   event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT',
   body?: string
 ) {
+  body = `${body}${body ? '\n\n---\n\n' : ''}\
+_Automated review from [**${process.env.GITHUB_WORKFLOW}** \
+workflow in **${process.env.GITHUB_REPOSITORY}**]\
+(https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${
+    process.env.GITHUB_RUN_ID
+  })_`
+
   return (
     await octokit.rest.pulls.createReview({
       owner: 'exivity',
