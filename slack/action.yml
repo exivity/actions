@@ -4,6 +4,9 @@ inputs:
   message:
     description: The message body to send
     required: true
+  channel:
+    description: Send message to this channel
+    required: false
   mention:
     description: Mention this user
     required: false
