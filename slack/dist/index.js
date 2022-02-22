@@ -1370,18 +1370,37 @@ var Slack = class {
     this.apiKey = apiKey;
     this.httpClient = new import_http_client.HttpClient();
   }
-  async chatPostMessage(payload) {
-    const url = `${SLACK_BASE_URL}/chat.postMessage`;
-    try {
-      const response = (await this.httpClient.postJson(url, payload, {
-        Authorization: `Bearer ${this.apiKey}`
-      })).result;
-      if (!response) {
-        throw new Error("Empty response");
-      }
-      (0, import_core2.debug)(`Received response from Slack:
+  async get(method, payload) {
+    const url = `${SLACK_BASE_URL}/${method}?${toQueryString(payload)}`;
+    const response = await this.httpClient.getJson(url, {
+      Authorization: `Bearer ${this.apiKey}`
+    });
+    return this.parseResponse(response);
+  }
+  async post(method, payload) {
+    const url = `${SLACK_BASE_URL}/${method}`;
+    const response = await this.httpClient.postJson(url, payload, {
+      Authorization: `Bearer ${this.apiKey}`
+    });
+    return this.parseResponse(response);
+  }
+  parseResponse(response) {
+    (0, import_core2.debug)(`Received response from Slack:
 ${JSON.stringify(response), void 0, 2}`);
-      return response.message;
+    if (response.statusCode >= 300) {
+      throw new Error("Response status code is not 2xx");
+    }
+    if (response.result === null) {
+      throw new Error("Response is empty");
+    }
+    if (response.result.ok === false) {
+      throw new Error(`Slack returned an error: ${response.result.error}`);
+    }
+    return response.result;
+  }
+  async chatPostMessage(payload) {
+    try {
+      return (await this.post("chat.postMessage", payload)).message;
     } catch (error) {
       (0, import_core2.debug)(`Received error from Slack:
 ${JSON.stringify(error), void 0, 2}`);
@@ -1389,19 +1408,8 @@ ${JSON.stringify(error), void 0, 2}`);
     }
   }
   async conversationsList(payload) {
-    const url = `${SLACK_BASE_URL}/conversation.list?${toQueryString(payload)}`;
     try {
-      const response = await this.httpClient.getJson(url, {
-        Authorization: `Bearer ${this.apiKey}`
-      });
-      (0, import_core2.debug)(`Received response from Slack:
-${JSON.stringify(response, void 0, 2)}`);
-      if (!response.result) {
-        throw new Error("Empty response");
-      }
-      (0, import_core2.debug)(`Received response from Slack:
-${JSON.stringify(response, void 0, 2)}`);
-      return response.result.channels;
+      return (await this.get("conversations.list", payload)).channels;
     } catch (error) {
       (0, import_core2.debug)(`Received error from Slack:
 ${JSON.stringify(error, void 0, 2)}`);
@@ -1409,17 +1417,8 @@ ${JSON.stringify(error, void 0, 2)}`);
     }
   }
   async usersList(payload) {
-    const url = `${SLACK_BASE_URL}/users.list?${toQueryString(payload)}`;
     try {
-      const response = (await this.httpClient.getJson(url, {
-        Authorization: `Bearer ${this.apiKey}`
-      })).result;
-      if (!response) {
-        throw new Error("Empty response");
-      }
-      (0, import_core2.debug)(`Received response from Slack:
-${JSON.stringify(response, void 0, 2)}`);
-      return response.members;
+      return (await this.get("users.list", payload)).members;
     } catch (error) {
       (0, import_core2.debug)(`Received error from Slack:
 ${JSON.stringify(error, void 0, 2)}`);

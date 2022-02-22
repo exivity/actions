@@ -1,5 +1,6 @@
 import { debug } from '@actions/core'
 import { HttpClient } from '@actions/http-client'
+import { ITypedResponse } from '@actions/http-client/interfaces'
 import { Blocks } from './types'
 
 type Response<T> = {
@@ -13,7 +14,7 @@ type PostMessagePayload = {
   text?: string
 }
 
-type PostMessageResponse = Response<{
+type PostMessageResponse = {
   channel: string
   ts: string
   message: {
@@ -25,7 +26,7 @@ type PostMessageResponse = Response<{
     subtype: string
     ts: string
   }
-}>
+}
 
 type ConversationsListPayload = {
   exclude_archived?: boolean
@@ -37,7 +38,7 @@ type ConversationsListPayload = {
   types?: string
 }
 
-type ConversationsListResponse = Response<{
+type ConversationsListResponse = {
   channels: {
     id: string
     name: string
@@ -74,13 +75,13 @@ type ConversationsListResponse = Response<{
   response_metadata: {
     next_cursor: string
   }
-}>
+}
 
 type UsersListPayload = {
   limit?: number
 }
 
-type UsersListResponse = Response<{
+type UsersListResponse = {
   members: {
     id: string
     team_id: string
@@ -122,7 +123,7 @@ type UsersListResponse = Response<{
   response_metadata: {
     next_cursor: string
   }
-}>
+}
 
 const SLACK_BASE_URL = 'https://slack.com/api'
 
@@ -142,27 +143,52 @@ export class Slack {
 
   constructor(private apiKey: string | undefined) {}
 
+  async get<T>(
+    method: string,
+    payload: { [key: string]: string | number | boolean }
+  ) {
+    const url = `${SLACK_BASE_URL}/${method}?${toQueryString(payload)}`
+    const response = await this.httpClient.getJson<Response<T>>(url, {
+      Authorization: `Bearer ${this.apiKey}`,
+    })
+    return this.parseResponse(response)
+  }
+
+  async post<T>(method: string, payload: {}) {
+    const url = `${SLACK_BASE_URL}/${method}`
+    const response = await this.httpClient.postJson<Response<T>>(url, payload, {
+      Authorization: `Bearer ${this.apiKey}`,
+    })
+    return this.parseResponse(response)
+  }
+
+  parseResponse<T>(response: ITypedResponse<Response<T>>) {
+    debug(
+      `Received response from Slack:\n${
+        (JSON.stringify(response), undefined, 2)
+      }`
+    )
+    if (response.statusCode >= 300) {
+      throw new Error('Response status code is not 2xx')
+    }
+    if (response.result === null) {
+      throw new Error('Response is empty')
+    }
+    if (response.result.ok === false) {
+      throw new Error(`Slack returned an error: ${response.result.error}`)
+    }
+
+    return response.result
+  }
+
   /**
    * Sends a message to a channel
    * https://api.slack.com/methods/chat.postMessage
    */
   async chatPostMessage(payload: PostMessagePayload) {
-    const url = `${SLACK_BASE_URL}/chat.postMessage`
     try {
-      const response = (
-        await this.httpClient.postJson<PostMessageResponse>(url, payload, {
-          Authorization: `Bearer ${this.apiKey}`,
-        })
-      ).result
-      if (!response) {
-        throw new Error('Empty response')
-      }
-      debug(
-        `Received response from Slack:\n${
-          (JSON.stringify(response), undefined, 2)
-        }`
-      )
-      return response.message
+      return (await this.post<PostMessageResponse>('chat.postMessage', payload))
+        .message
     } catch (error) {
       debug(
         `Received error from Slack:\n${(JSON.stringify(error), undefined, 2)}`
@@ -176,33 +202,10 @@ export class Slack {
    * https://api.slack.com/methods/conversations.list
    */
   async conversationsList(payload: ConversationsListPayload) {
-    const url = `${SLACK_BASE_URL}/conversation.list?${toQueryString(payload)}`
     try {
-      const response = await this.httpClient.getJson<ConversationsListResponse>(
-        url,
-        {
-          Authorization: `Bearer ${this.apiKey}`,
-        }
-      )
-      // debug
-      debug(
-        `Received response from Slack:\n${JSON.stringify(
-          response,
-          undefined,
-          2
-        )}`
-      )
-      if (!response.result) {
-        throw new Error('Empty response')
-      }
-      debug(
-        `Received response from Slack:\n${JSON.stringify(
-          response,
-          undefined,
-          2
-        )}`
-      )
-      return response.result.channels
+      return (
+        await this.get<ConversationsListResponse>('conversations.list', payload)
+      ).channels
     } catch (error) {
       debug(
         `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`
@@ -215,24 +218,8 @@ export class Slack {
    * https://api.slack.com/methods/conversations.list
    */
   async usersList(payload: UsersListPayload) {
-    const url = `${SLACK_BASE_URL}/users.list?${toQueryString(payload)}`
     try {
-      const response = (
-        await this.httpClient.getJson<UsersListResponse>(url, {
-          Authorization: `Bearer ${this.apiKey}`,
-        })
-      ).result
-      if (!response) {
-        throw new Error('Empty response')
-      }
-      debug(
-        `Received response from Slack:\n${JSON.stringify(
-          response,
-          undefined,
-          2
-        )}`
-      )
-      return response.members
+      return (await this.get<UsersListResponse>('users.list', payload)).members
     } catch (error) {
       debug(
         `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`
