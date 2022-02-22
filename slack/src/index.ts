@@ -17,7 +17,7 @@ async function run() {
   const mention = getInput('mention')
   const component = getInput('component') || getRepository().component
   const sha = getInput('sha') || (await getSha())
-  const slackApiKey = getInput('slack-api-key', {
+  const slackApiToken = getInput('slack-api-token', {
     required: true,
   })
 
@@ -27,7 +27,7 @@ async function run() {
   }
 
   // Libs
-  const slack = new Slack(slackApiKey)
+  const slack = new Slack(slackApiToken)
 
   // Send message
   const resolvedChannel = slack.resolveChannel(channel)

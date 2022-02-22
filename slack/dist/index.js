@@ -1459,13 +1459,13 @@ async function run() {
   const mention = (0, import_core3.getInput)("mention");
   const component = (0, import_core3.getInput)("component") || getRepository().component;
   const sha = (0, import_core3.getInput)("sha") || await getSha();
-  const slackApiKey = (0, import_core3.getInput)("slack-api-key", {
+  const slackApiToken = (0, import_core3.getInput)("slack-api-token", {
     required: true
   });
   if (!isValidStatus(status)) {
     throw new Error("The status input is invalid");
   }
-  const slack = new Slack(slackApiKey);
+  const slack = new Slack(slackApiToken);
   const resolvedChannel = slack.resolveChannel(channel);
   (0, import_console.info)(`Sending message to ${resolvedChannel}`);
 }
