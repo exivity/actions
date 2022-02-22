@@ -143,7 +143,7 @@ export class Slack {
 
   constructor(private apiKey: string | undefined) {}
 
-  async get<T>(
+  private async get<T>(
     method: string,
     payload: { [key: string]: string | number | boolean }
   ) {
@@ -154,7 +154,7 @@ export class Slack {
     return this.parseResponse(response)
   }
 
-  async post<T>(method: string, payload: {}) {
+  private async post<T>(method: string, payload: {}) {
     const url = `${SLACK_BASE_URL}/${method}`
     const response = await this.httpClient.postJson<Response<T>>(url, payload, {
       Authorization: `Bearer ${this.apiKey}`,
@@ -162,11 +162,9 @@ export class Slack {
     return this.parseResponse(response)
   }
 
-  parseResponse<T>(response: ITypedResponse<Response<T>>) {
+  private parseResponse<T>(response: ITypedResponse<Response<T>>) {
     debug(
-      `Received response from Slack:\n${
-        (JSON.stringify(response), undefined, 2)
-      }`
+      `Received response from Slack:\n${JSON.stringify(response, undefined, 2)}`
     )
     if (response.statusCode >= 300) {
       throw new Error('Response status code is not 2xx')

@@ -375,7 +375,7 @@ Send a Slack message
 
 | name            | required | default               | description                                                                                                                                |
 | --------------- | -------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `message`       | ✅       |                       | The message body to send                                                                                                                   |
+| `message`       | ✅       |                       | The message body to send (markdown is supported)                                                                                           |
 | `channel`       |          | `"#builds"`           | Send message to this channel, can be a channel ID, user ID, channel name as `"#channel-name"` or a users display name as `"@display-name"` |
 | `status`        |          |                       | Include a status message if set to `"success"`, `"failure"` or `"cancelled"`                                                               |
 | `mention`       |          | Current commit author | Mention this user, can be a user ID or a display name (e.g. `"W123"` or `"@display-name"`)                                                 |

@@ -1386,7 +1386,7 @@ var Slack = class {
   }
   parseResponse(response) {
     (0, import_core2.debug)(`Received response from Slack:
-${JSON.stringify(response), void 0, 2}`);
+${JSON.stringify(response, void 0, 2)}`);
     if (response.statusCode >= 300) {
       throw new Error("Response status code is not 2xx");
     }
@@ -1468,6 +1468,28 @@ async function run() {
   }
   const slack = new Slack(slackApiToken);
   const resolvedChannel = await slack.resolveChannel(channel);
+  if (!resolvedChannel) {
+    throw new Error(`Could not resolve channel ${channel} to send message to`);
+  }
   (0, import_console.info)(`Sending message to ${resolvedChannel}`);
+  const statusText = status === "success" ? "\u2705 *Build successful*\n\n" : status === "failure" ? "\u{1F6A8} *Build failed*\n\n" : status === "cancelled" ? "\u{1F6AB} *Build cancelled*\n\n" : "";
+  const blocks = [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `${statusText}${message}`
+      },
+      accessory: {
+        type: "image",
+        image_url: "https://avatars.githubusercontent.com/u/44036562?s=280&v=4",
+        alt_text: "GitHub Actions"
+      }
+    }
+  ];
+  await slack.chatPostMessage({
+    channel: resolvedChannel,
+    blocks
+  });
 }
 run().catch(import_core3.setFailed);
