@@ -381,7 +381,6 @@ Send a Slack message
 | `mention`       |          | Current commit author | Mention this user, can be a user ID or a display name (e.g. `"W123"` or `"@display-name"`)                                                 |
 | `component`     |          | Current component     | The component for message context                                                                                                          |
 | `sha`           |          | Current commit sha    | Sha of commit for message context                                                                                                          |
-| `gh-token`      |          | `env.GITHUB_TOKEN`    | A GitHub token with read access to the component                                                                                           |
 | `slack-api-key` | ✅       |                       | Slack API key                                                                                                                              |
 
 # `virustotal`

@@ -1,7 +1,6 @@
 import { getInput, setFailed } from '@actions/core'
-import { getOctokit } from '@actions/github'
 import { info } from 'console'
-import { getRepository, getSha, getToken } from '../../lib/github'
+import { getRepository, getSha } from '../../lib/github'
 import { Slack } from './slack'
 
 const validStatuses = ['', 'success', 'failure', 'cancelled'] as const
@@ -18,7 +17,6 @@ async function run() {
   const mention = getInput('mention')
   const component = getInput('component') || getRepository().component
   const sha = getInput('sha') || (await getSha())
-  const ghToken = getToken()
   const slackApiKey = getInput('slack-api-key', {
     required: true,
   })
@@ -30,7 +28,6 @@ async function run() {
 
   // Libs
   const slack = new Slack(slackApiKey)
-  const octokit = getOctokit(ghToken)
 
   // Send message
   const resolvedChannel = slack.resolveChannel(channel)
