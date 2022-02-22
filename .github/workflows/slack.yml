@@ -1,0 +1,29 @@
+name: slack
+
+on:
+  push:
+    paths:
+      - '.github/workflows/slack.yml'
+      - 'slack/**'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./slack
+        with:
+          message: 👋 Greetings from GitHub Actions!
+          channel: '#mic-check'
+          status: ${{ job.status }}
+          slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
+      - run: exit 1
+      - uses: ./slack
+        if: failure()
+        with:
+          message: 😱 Workflow failed!
+          channel: '@joram'
+          slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
