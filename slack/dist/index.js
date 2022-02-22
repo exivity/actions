@@ -1391,15 +1391,17 @@ ${JSON.stringify(error), void 0, 2}`);
   async conversationsList(payload) {
     const url = `${SLACK_BASE_URL}/conversation.list?${toQueryString(payload)}`;
     try {
-      const response = (await this.httpClient.getJson(url, {
+      const response = await this.httpClient.getJson(url, {
         Authorization: `Bearer ${this.apiKey}`
-      })).result;
-      if (!response) {
+      });
+      (0, import_core2.debug)(`Received response from Slack:
+${JSON.stringify(response), void 0, 2}`);
+      if (!response.result) {
         throw new Error("Empty response");
       }
       (0, import_core2.debug)(`Received response from Slack:
 ${JSON.stringify(response), void 0, 2}`);
-      return response.channels;
+      return response.result.channels;
     } catch (error) {
       (0, import_core2.debug)(`Received error from Slack:
 ${JSON.stringify(error), void 0, 2}`);
@@ -1466,7 +1468,7 @@ async function run() {
     throw new Error("The status input is invalid");
   }
   const slack = new Slack(slackApiToken);
-  const resolvedChannel = slack.resolveChannel(channel);
+  const resolvedChannel = await slack.resolveChannel(channel);
   (0, import_console.info)(`Sending message to ${resolvedChannel}`);
 }
 run().catch(import_core3.setFailed);

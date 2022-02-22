@@ -30,7 +30,7 @@ async function run() {
   const slack = new Slack(slackApiToken)
 
   // Send message
-  const resolvedChannel = slack.resolveChannel(channel)
+  const resolvedChannel = await slack.resolveChannel(channel)
 
   info(`Sending message to ${resolvedChannel}`)
 }

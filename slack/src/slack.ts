@@ -178,12 +178,19 @@ export class Slack {
   async conversationsList(payload: ConversationsListPayload) {
     const url = `${SLACK_BASE_URL}/conversation.list?${toQueryString(payload)}`
     try {
-      const response = (
-        await this.httpClient.getJson<ConversationsListResponse>(url, {
+      const response = await this.httpClient.getJson<ConversationsListResponse>(
+        url,
+        {
           Authorization: `Bearer ${this.apiKey}`,
-        })
-      ).result
-      if (!response) {
+        }
+      )
+      // debug
+      debug(
+        `Received response from Slack:\n${
+          (JSON.stringify(response), undefined, 2)
+        }`
+      )
+      if (!response.result) {
         throw new Error('Empty response')
       }
       debug(
@@ -191,7 +198,7 @@ export class Slack {
           (JSON.stringify(response), undefined, 2)
         }`
       )
-      return response.channels
+      return response.result.channels
     } catch (error) {
       debug(
         `Received error from Slack:\n${(JSON.stringify(error), undefined, 2)}`
