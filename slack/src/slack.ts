@@ -186,22 +186,26 @@ export class Slack {
       )
       // debug
       debug(
-        `Received response from Slack:\n${
-          (JSON.stringify(response), undefined, 2)
-        }`
+        `Received response from Slack:\n${JSON.stringify(
+          response,
+          undefined,
+          2
+        )}`
       )
       if (!response.result) {
         throw new Error('Empty response')
       }
       debug(
-        `Received response from Slack:\n${
-          (JSON.stringify(response), undefined, 2)
-        }`
+        `Received response from Slack:\n${JSON.stringify(
+          response,
+          undefined,
+          2
+        )}`
       )
       return response.result.channels
     } catch (error) {
       debug(
-        `Received error from Slack:\n${(JSON.stringify(error), undefined, 2)}`
+        `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`
       )
       throw new Error('Could not retrieve Slack channels')
     }
@@ -222,14 +226,16 @@ export class Slack {
         throw new Error('Empty response')
       }
       debug(
-        `Received response from Slack:\n${
-          (JSON.stringify(response), undefined, 2)
-        }`
+        `Received response from Slack:\n${JSON.stringify(
+          response,
+          undefined,
+          2
+        )}`
       )
       return response.members
     } catch (error) {
       debug(
-        `Received error from Slack:\n${(JSON.stringify(error), undefined, 2)}`
+        `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`
       )
       throw new Error('Could not retrieve Slack users')
     }

@@ -1395,16 +1395,16 @@ ${JSON.stringify(error), void 0, 2}`);
         Authorization: `Bearer ${this.apiKey}`
       });
       (0, import_core2.debug)(`Received response from Slack:
-${JSON.stringify(response), void 0, 2}`);
+${JSON.stringify(response, void 0, 2)}`);
       if (!response.result) {
         throw new Error("Empty response");
       }
       (0, import_core2.debug)(`Received response from Slack:
-${JSON.stringify(response), void 0, 2}`);
+${JSON.stringify(response, void 0, 2)}`);
       return response.result.channels;
     } catch (error) {
       (0, import_core2.debug)(`Received error from Slack:
-${JSON.stringify(error), void 0, 2}`);
+${JSON.stringify(error, void 0, 2)}`);
       throw new Error("Could not retrieve Slack channels");
     }
   }
@@ -1418,11 +1418,11 @@ ${JSON.stringify(error), void 0, 2}`);
         throw new Error("Empty response");
       }
       (0, import_core2.debug)(`Received response from Slack:
-${JSON.stringify(response), void 0, 2}`);
+${JSON.stringify(response, void 0, 2)}`);
       return response.members;
     } catch (error) {
       (0, import_core2.debug)(`Received error from Slack:
-${JSON.stringify(error), void 0, 2}`);
+${JSON.stringify(error, void 0, 2)}`);
       throw new Error("Could not retrieve Slack users");
     }
   }
