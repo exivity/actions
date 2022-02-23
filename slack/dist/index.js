@@ -7957,8 +7957,7 @@ var Slack = class {
     return this.parseResponse(response);
   }
   parseResponse(response) {
-    (0, import_core2.debug)(`Received response from Slack:
-${JSON.stringify(response, void 0, 2)}`);
+    (0, import_core2.debug)(`Received ${response.statusCode} response from Slack`);
     if (response.statusCode >= 300) {
       throw new Error("Response status code is not 2xx");
     }

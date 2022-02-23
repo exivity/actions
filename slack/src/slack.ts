@@ -165,9 +165,7 @@ export class Slack {
   }
 
   private parseResponse<T>(response: ITypedResponse<Response<T>>) {
-    debug(
-      `Received response from Slack:\n${JSON.stringify(response, undefined, 2)}`
-    )
+    debug(`Received ${response.statusCode} response from Slack`)
     if (response.statusCode >= 300) {
       throw new Error('Response status code is not 2xx')
     }
