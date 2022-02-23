@@ -16,6 +16,7 @@ _Available actions:_
 - [`rabbitmq`](#rabbitmq)
 - [`rcedit`](#rcedit)
 - [`review`](#review)
+- [`semantic-pull-request`](#semantic-pull-request)
 - [`sign-file`](#sign-file)
 - [`slack`](#slack)
 - [`virustotal`](#virustotal)
