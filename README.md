@@ -370,17 +370,18 @@ available).
     message: Greetings from the Exivity actions repo!
     status: ${{ job.status }}
     slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
+    gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Inputs
 
-| name            | required | default            | description                                                                                                                                                                      |
-| --------------- | -------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `message`       | Maybe    |                    | The message body to send, markdown is supported. Requid when `status` is not set.                                                                                                |
-| `status`        |          |                    | Include a status message if set to `"success"`, `"failure"` or `"cancelled"`                                                                                                     |
-| `channel`       |          |                    | If provided, send message to this channel instead of commit author. Can be a channel ID, user ID, channel name as `"#channel-name"` or a users display name as `"@display-name"` |
-| `slack-api-key` | ✅       |                    | Slack API key                                                                                                                                                                    |
-| `gh-token`      |          | `env.GITHUB_TOKEN` | GitHub token with read access to the repository                                                                                                                                  |
+| name              | required | default            | description                                                                                                                                                                      |
+| ----------------- | -------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `message`         | Maybe    |                    | The message body to send, markdown is supported. Requid when `status` is not set.                                                                                                |
+| `status`          |          |                    | Include a status message if set to `"success"`, `"failure"` or `"cancelled"`                                                                                                     |
+| `channel`         |          |                    | If provided, send message to this channel instead of commit author. Can be a channel ID, user ID, channel name as `"#channel-name"` or a users display name as `"@display-name"` |
+| `slack-api-token` | ✅       |                    | Slack API token                                                                                                                                                                  |
+| `gh-token`        |          | `env.GITHUB_TOKEN` | GitHub token with read access to the repository                                                                                                                                  |
 
 # `virustotal`
 
