@@ -39,7 +39,7 @@
     "mime": "3.0.0",
     "minimatch": "5.0.0",
     "rcedit": "3.0.1",
-    "zod": "3.11.6"
+    "zod": "3.12.0"
   },
   "devDependencies": {
     "@octokit/webhooks": "9.22.0",
