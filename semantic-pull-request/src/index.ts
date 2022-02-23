@@ -1,4 +1,4 @@
-import { setFailed, warning } from '@actions/core'
+import { info, setFailed, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import {
   getEventData,
@@ -114,6 +114,8 @@ async function run() {
       )
     }
   }
+
+  info('🎉 Congratulation! Your pull request is semantic.')
 }
 
 run().catch(setFailed)
