@@ -238,7 +238,7 @@ export class Slack {
     }
   }
 
-  async resolveChannel(value: string) {
+  async resolveChannelToUserId(value: string) {
     if (value.startsWith('@')) {
       // Search for a user
       debug(`Trying to resolve user ${value}`)
@@ -281,6 +281,6 @@ export class Slack {
         values.includes(item.profile.real_name) ||
         values.includes(item.profile.real_name_normalized)
     )
-    return userMatch?.id || null
+    return userMatch
   }
 }

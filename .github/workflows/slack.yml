@@ -16,7 +16,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./slack
         with:
-          message: Ahoy from GitHub Actions!
           status: ${{ job.status }}
           slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
           gh-token: ${{ secrets.GITHUB_TOKEN }}

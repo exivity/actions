@@ -1,4 +1,4 @@
-import { getInput, setFailed, warning } from '@actions/core'
+import { getInput, setFailed } from '@actions/core'
 import { getExecOutput } from '@actions/exec'
 import { context, getOctokit } from '@actions/github'
 import { info } from 'console'
@@ -20,8 +20,7 @@ function isValidStatus(status: string): status is typeof validStatuses[number] {
 
 async function run() {
   // Inputs
-  const message = getInput('message', { required: true })
-  let userProvidedChannel = getInput('channel') || null
+  const message = getInput('message')
   const status = getInput('status')
   const component = getRepository().component
   const sha = await getSha()
@@ -29,10 +28,17 @@ async function run() {
     required: true,
   })
   const token = getToken()
+  const ref = getRef()
+  let userProvidedChannel = getInput('channel') || null
+  let channel: string | null = null
 
   // Assertions
   if (!isValidStatus(status)) {
     throw new Error('The status input is invalid')
+  }
+
+  if (!message && !status) {
+    throw new Error('The message input is required when status is not set')
   }
 
   // Libs
@@ -42,32 +48,24 @@ async function run() {
   // Additional context
   const commitMessage = (await getExecOutput('git log -1 --pretty=format:"%s"'))
     .stdout
-  const ref = getRef()
+  const author = (await getExecOutput('git log -1 --pretty=format:"%an"'))
+    .stdout
+  const email = (await getExecOutput('git log -1 --pretty=format:"%ae"')).stdout
   const pr = await getPR(octokit, component, ref)
 
-  let channel: string | null = null
-  if (!userProvidedChannel) {
-    // Try to find Slack user based on commit author
-    const author = (await getExecOutput('git log -1 --pretty=format:"%an"'))
-      .stdout
-    const email = (await getExecOutput('git log -1 --pretty=format:"%ae"'))
-      .stdout
-    const user = await slack.findUserFuzzy([author, email, context.actor])
+  // Try to find Slack user based on commit author
+  const user = await slack.findUserFuzzy([author, email, context.actor])
 
-    if (!user) {
-      warning(
-        'Could not find Slack user based on commit author, falling back to #builds'
-      )
-      channel = await slack.resolveChannel('#builds')
-    } else {
-      channel = user
-    }
-  } else {
-    channel = await slack.resolveChannel(userProvidedChannel)
+  if (userProvidedChannel) {
+    channel = await slack.resolveChannelToUserId(userProvidedChannel)
+  } else if (user) {
+    channel = user.id
   }
+
   if (!channel) {
-    throw new Error(`Could not resolve channel ${channel} to send message to`)
+    throw new Error(`Could not find a channel to send the message to`)
   }
+
   info(`Sending message to ${channel}`)
 
   // Create blocks
@@ -100,7 +98,7 @@ async function run() {
   }
   const actorBlock = {
     type: 'mrkdwn',
-    text: `🧑‍💻 ${context.actor}`,
+    text: `🧑‍💻 ${context.actor}` + (user ? ` <@${user.id}>` : ''),
   }
   const componentBlock = {
     type: 'mrkdwn',

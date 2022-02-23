@@ -1261,10 +1261,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning3(message, properties = {}) {
+    function warning2(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning3;
+    exports.warning = warning2;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -8005,7 +8005,7 @@ ${JSON.stringify(error, void 0, 2)}`);
       throw new Error("Could not retrieve Slack users");
     }
   }
-  async resolveChannel(value) {
+  async resolveChannelToUserId(value) {
     if (value.startsWith("@")) {
       (0, import_core2.debug)(`Trying to resolve user ${value}`);
       const users = await this.usersList({
@@ -8031,7 +8031,7 @@ ${JSON.stringify(error, void 0, 2)}`);
       limit: 1e3
     });
     const userMatch = users.find((item) => values.includes(item.name) || values.includes(item.real_name) || values.includes(item.profile.display_name) || values.includes(item.profile.display_name_normalized) || values.includes(item.profile.email) || values.includes(item.profile.real_name) || values.includes(item.profile.real_name_normalized));
-    return (userMatch == null ? void 0 : userMatch.id) || null;
+    return userMatch;
   }
 };
 
@@ -8041,8 +8041,7 @@ function isValidStatus(status) {
   return validStatuses.includes(status);
 }
 async function run() {
-  const message = (0, import_core3.getInput)("message", { required: true });
-  let userProvidedChannel = (0, import_core3.getInput)("channel") || null;
+  const message = (0, import_core3.getInput)("message");
   const status = (0, import_core3.getInput)("status");
   const component = getRepository().component;
   const sha = await getSha();
@@ -8050,30 +8049,29 @@ async function run() {
     required: true
   });
   const token = getToken();
+  const ref = getRef();
+  let userProvidedChannel = (0, import_core3.getInput)("channel") || null;
+  let channel = null;
   if (!isValidStatus(status)) {
     throw new Error("The status input is invalid");
+  }
+  if (!message && !status) {
+    throw new Error("The message input is required when status is not set");
   }
   const slack = new Slack(slackApiToken);
   const octokit = (0, import_github.getOctokit)(token);
   const commitMessage = (await (0, import_exec.getExecOutput)('git log -1 --pretty=format:"%s"')).stdout;
-  const ref = getRef();
+  const author = (await (0, import_exec.getExecOutput)('git log -1 --pretty=format:"%an"')).stdout;
+  const email = (await (0, import_exec.getExecOutput)('git log -1 --pretty=format:"%ae"')).stdout;
   const pr = await getPR(octokit, component, ref);
-  let channel = null;
-  if (!userProvidedChannel) {
-    const author = (await (0, import_exec.getExecOutput)('git log -1 --pretty=format:"%an"')).stdout;
-    const email = (await (0, import_exec.getExecOutput)('git log -1 --pretty=format:"%ae"')).stdout;
-    const user = await slack.findUserFuzzy([author, email, import_github.context.actor]);
-    if (!user) {
-      (0, import_core3.warning)("Could not find Slack user based on commit author, falling back to #builds");
-      channel = await slack.resolveChannel("#builds");
-    } else {
-      channel = user;
-    }
-  } else {
-    channel = await slack.resolveChannel(userProvidedChannel);
+  const user = await slack.findUserFuzzy([author, email, import_github.context.actor]);
+  if (userProvidedChannel) {
+    channel = await slack.resolveChannelToUserId(userProvidedChannel);
+  } else if (user) {
+    channel = user.id;
   }
   if (!channel) {
-    throw new Error(`Could not resolve channel ${channel} to send message to`);
+    throw new Error(`Could not find a channel to send the message to`);
   }
   (0, import_console.info)(`Sending message to ${channel}`);
   const statusText = status === "success" ? "\u2705 *Build successful*\n\n" : status === "failure" ? "\u{1F6A8} *Build failed*\n\n" : status === "cancelled" ? "\u{1F6AB} *Build cancelled*\n\n" : "";
@@ -8093,7 +8091,7 @@ async function run() {
   };
   const actorBlock = {
     type: "mrkdwn",
-    text: `\u{1F9D1}\u200D\u{1F4BB} ${import_github.context.actor}`
+    text: `\u{1F9D1}\u200D\u{1F4BB} ${import_github.context.actor}` + (user ? ` <@${user.id}>` : "")
   };
   const componentBlock = {
     type: "mrkdwn",
