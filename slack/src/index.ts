@@ -100,14 +100,14 @@ async function run() {
       elements: [
         {
           type: 'mrkdwn',
-          text: `🔡 <https://github.com/exivity/${component}/commits/${sha}|${sha.substring(
+          text: `🔑 <https://github.com/exivity/${component}/commits/${sha}|${sha.substring(
             0,
             7
           )}>`,
         },
         {
           type: 'mrkdwn',
-          text: `➡️ ${commitMessage}`,
+          text: `🔤 ${commitMessage}`,
         },
         {
           type: 'mrkdwn',
@@ -132,7 +132,7 @@ async function run() {
         },
         {
           type: 'mrkdwn',
-          text: `⚡ ${context.workflow}`,
+          text: `⚡ <(https://github.com/exivity/${component}/actions/runs/${process.env.GITHUB_RUN_ID}|${context.workflow}>`,
         },
       ],
     },
