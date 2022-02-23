@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - '.github/workflows/slack.yml'
-      - 'lib/git*'
+      - 'lib/git.ts'
+      - 'lib/github.ts'
       - 'slack/**'
 
 jobs:

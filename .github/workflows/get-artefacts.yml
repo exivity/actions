@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/get-artefacts.yml'
       - 'lib/core*'
-      - 'lib/github*'
+      - 'lib/github.ts'
       - 'lib/s3*'
       - 'get-artefacts/**'
 
