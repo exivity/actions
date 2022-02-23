@@ -10,9 +10,6 @@ inputs:
   status:
     description: Include a status message
     required: false
-  mention:
-    description: Mention this user
-    required: false
   slack-api-token:
     description: Slack API key
     required: true

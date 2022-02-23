@@ -1261,10 +1261,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning2(message, properties = {}) {
+    function warning3(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning2;
+    exports.warning = warning3;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -7980,8 +7980,12 @@ ${JSON.stringify(error), void 0, 2}`);
     }
   }
   async conversationsList(payload) {
+    if (this.cachedConversations) {
+      return this.cachedConversations;
+    }
     try {
-      return (await this.get("conversations.list", payload)).channels;
+      this.cachedConversations = (await this.get("conversations.list", payload)).channels;
+      return this.cachedConversations;
     } catch (error) {
       (0, import_core2.debug)(`Received error from Slack:
 ${JSON.stringify(error, void 0, 2)}`);
@@ -7989,8 +7993,12 @@ ${JSON.stringify(error, void 0, 2)}`);
     }
   }
   async usersList(payload) {
+    if (this.cachedUsers) {
+      return this.cachedUsers;
+    }
     try {
-      return (await this.get("users.list", payload)).members;
+      this.cachedUsers = (await this.get("users.list", payload)).members;
+      return this.cachedUsers;
     } catch (error) {
       (0, import_core2.debug)(`Received error from Slack:
 ${JSON.stringify(error, void 0, 2)}`);
@@ -8018,6 +8026,13 @@ ${JSON.stringify(error, void 0, 2)}`);
     }
     return value;
   }
+  async findUserFuzzy(values) {
+    const users = await this.usersList({
+      limit: 1e3
+    });
+    const userMatch = users.find((item) => values.includes(item.name) || values.includes(item.real_name) || values.includes(item.profile.display_name) || values.includes(item.profile.display_name_normalized) || values.includes(item.profile.email) || values.includes(item.profile.real_name) || values.includes(item.profile.real_name_normalized));
+    return (userMatch == null ? void 0 : userMatch.id) || null;
+  }
 };
 
 // slack/src/index.ts
@@ -8027,9 +8042,8 @@ function isValidStatus(status) {
 }
 async function run() {
   const message = (0, import_core3.getInput)("message", { required: true });
-  const channel = (0, import_core3.getInput)("channel") || "#builds";
+  let userProvidedChannel = (0, import_core3.getInput)("channel") || null;
   const status = (0, import_core3.getInput)("status");
-  const mention = (0, import_core3.getInput)("mention");
   const component = getRepository().component;
   const sha = await getSha();
   const slackApiToken = (0, import_core3.getInput)("slack-api-token", {
@@ -8044,11 +8058,24 @@ async function run() {
   const commitMessage = (await (0, import_exec.getExecOutput)('git log -1 --pretty=format:"%s"')).stdout;
   const ref = getRef();
   const pr = await getPR(octokit, component, ref);
-  const resolvedChannel = await slack.resolveChannel(channel);
-  if (!resolvedChannel) {
+  let channel = null;
+  if (!userProvidedChannel) {
+    const author = (await (0, import_exec.getExecOutput)('git log -1 --pretty=format:"%an"')).stdout;
+    const email = (await (0, import_exec.getExecOutput)('git log -1 --pretty=format:"%ae"')).stdout;
+    const user = await slack.findUserFuzzy([author, email, import_github.context.actor]);
+    if (!user) {
+      (0, import_core3.warning)("Could not find Slack user based on commit author, falling back to #builds");
+      channel = await slack.resolveChannel("#builds");
+    } else {
+      channel = user;
+    }
+  } else {
+    channel = await slack.resolveChannel(userProvidedChannel);
+  }
+  if (!channel) {
     throw new Error(`Could not resolve channel ${channel} to send message to`);
   }
-  (0, import_console.info)(`Sending message to ${resolvedChannel}`);
+  (0, import_console.info)(`Sending message to ${channel}`);
   const statusText = status === "success" ? "\u2705 *Build successful*\n\n" : status === "failure" ? "\u{1F6A8} *Build failed*\n\n" : status === "cancelled" ? "\u{1F6AB} *Build cancelled*\n\n" : "";
   const prBlock = pr ? [
     {
@@ -8065,6 +8092,23 @@ async function run() {
       }
     },
     {
+      type: "context",
+      elements: [
+        {
+          type: "mrkdwn",
+          text: `\u{1F521} ${sha}`
+        },
+        {
+          type: "mrkdwn",
+          text: `\u27A1\uFE0F ${commitMessage}`
+        },
+        {
+          type: "mrkdwn",
+          text: `\u{1F9D1}\u200D\u{1F4BB} ${import_github.context.actor}`
+        }
+      ]
+    },
+    {
       type: "divider"
     },
     {
@@ -8074,6 +8118,7 @@ async function run() {
           type: "mrkdwn",
           text: `\u{1F5C3}\uFE0F ${component}`
         },
+        ...prBlock,
         {
           type: "mrkdwn",
           text: `\u{1F33F} ${ref}`
@@ -8083,20 +8128,10 @@ async function run() {
           text: `\u26A1 ${import_github.context.workflow}`
         }
       ]
-    },
-    {
-      type: "context",
-      elements: [
-        ...prBlock,
-        {
-          type: "mrkdwn",
-          text: `\u27A1\uFE0F ${commitMessage} by ${import_github.context.actor}`
-        }
-      ]
     }
   ];
   await slack.chatPostMessage({
-    channel: resolvedChannel,
+    channel,
     blocks
   });
 }

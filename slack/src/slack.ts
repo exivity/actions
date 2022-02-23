@@ -140,6 +140,8 @@ function toQueryString(params: {
 
 export class Slack {
   private httpClient = new HttpClient()
+  private cachedConversations?: ConversationsListResponse['channels']
+  private cachedUsers?: UsersListResponse['members']
 
   constructor(private apiKey: string | undefined) {}
 
@@ -200,10 +202,14 @@ export class Slack {
    * https://api.slack.com/methods/conversations.list
    */
   async conversationsList(payload: ConversationsListPayload) {
+    if (this.cachedConversations) {
+      return this.cachedConversations
+    }
     try {
-      return (
+      this.cachedConversations = (
         await this.get<ConversationsListResponse>('conversations.list', payload)
       ).channels
+      return this.cachedConversations
     } catch (error) {
       debug(
         `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`
@@ -216,8 +222,14 @@ export class Slack {
    * https://api.slack.com/methods/conversations.list
    */
   async usersList(payload: UsersListPayload) {
+    if (this.cachedUsers) {
+      return this.cachedUsers
+    }
     try {
-      return (await this.get<UsersListResponse>('users.list', payload)).members
+      this.cachedUsers = (
+        await this.get<UsersListResponse>('users.list', payload)
+      ).members
+      return this.cachedUsers
     } catch (error) {
       debug(
         `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`
@@ -253,5 +265,22 @@ export class Slack {
 
     // Should be already a channel or user ID
     return value
+  }
+
+  async findUserFuzzy(values: string[]) {
+    const users = await this.usersList({
+      limit: 1000,
+    })
+    const userMatch = users.find(
+      (item) =>
+        values.includes(item.name) ||
+        values.includes(item.real_name) ||
+        values.includes(item.profile.display_name) ||
+        values.includes(item.profile.display_name_normalized) ||
+        values.includes(item.profile.email) ||
+        values.includes(item.profile.real_name) ||
+        values.includes(item.profile.real_name_normalized)
+    )
+    return userMatch?.id || null
   }
 }
