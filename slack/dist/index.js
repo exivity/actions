@@ -8092,6 +8092,9 @@ async function run() {
       }
     },
     {
+      type: "divider"
+    },
+    {
       type: "context",
       elements: [
         {
@@ -8107,9 +8110,6 @@ async function run() {
           text: `\u{1F9D1}\u200D\u{1F4BB} ${import_github.context.actor}`
         }
       ]
-    },
-    {
-      type: "divider"
     },
     {
       type: "context",

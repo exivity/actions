@@ -96,6 +96,9 @@ async function run() {
       },
     },
     {
+      type: 'divider',
+    },
+    {
       type: 'context',
       elements: [
         {
@@ -114,9 +117,6 @@ async function run() {
           text: `🧑‍💻 ${context.actor}`,
         },
       ],
-    },
-    {
-      type: 'divider',
     },
     {
       type: 'context',
