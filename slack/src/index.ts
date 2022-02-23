@@ -96,9 +96,6 @@ async function run() {
       },
     },
     {
-      type: 'divider',
-    },
-    {
       type: 'context',
       elements: [
         {
@@ -116,11 +113,6 @@ async function run() {
           type: 'mrkdwn',
           text: `🧑‍💻 ${context.actor}`,
         },
-      ],
-    },
-    {
-      type: 'context',
-      elements: [
         {
           type: 'mrkdwn',
           text: `🗃️ ${component}`,

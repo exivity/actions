@@ -8092,9 +8092,6 @@ async function run() {
       }
     },
     {
-      type: "divider"
-    },
-    {
       type: "context",
       elements: [
         {
@@ -8108,12 +8105,7 @@ async function run() {
         {
           type: "mrkdwn",
           text: `\u{1F9D1}\u200D\u{1F4BB} ${import_github.context.actor}`
-        }
-      ]
-    },
-    {
-      type: "context",
-      elements: [
+        },
         {
           type: "mrkdwn",
           text: `\u{1F5C3}\uFE0F ${component}`
