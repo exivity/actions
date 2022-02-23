@@ -7878,7 +7878,7 @@ async function getCommitEmail() {
 // lib/github.ts
 var import_core = __toESM(require_core());
 var import_fs = require("fs");
-async function getPR(octokit, repo, ref) {
+async function getPrFromRef(octokit, repo, ref) {
   const { data } = await octokit.rest.pulls.list({
     owner: "exivity",
     repo,
@@ -8076,7 +8076,7 @@ async function run() {
   const commitMessage = await getCommitMessage();
   const author = await getCommitAuthor();
   const email = await getCommitEmail();
-  const pr = await getPR(octokit, component, ref);
+  const pr = await getPrFromRef(octokit, component, ref);
   const user = await slack.findUserFuzzy([author, email, import_github.context.actor]);
   if (userProvidedChannel) {
     channel = await slack.resolveChannelToUserId(userProvidedChannel);

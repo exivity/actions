@@ -18,10 +18,11 @@
     "build:rabbitmq": "yarn esbuild:generic rabbitmq/src/index.ts --outfile=rabbitmq/dist/index.js",
     "build:rcedit": "yarn esbuild:generic rcedit/src/index.ts --outfile=rcedit/dist/index.js && cp node_modules/rcedit/bin/rcedit-x64.exe rcedit/bin",
     "build:review": "yarn esbuild:generic review/src/index.ts --outfile=review/dist/index.js",
+    "build:semantic-pull-request": "yarn esbuild:generic semantic-pull-request/src/index.ts --outfile=semantic-pull-request/dist/index.js",
     "build:sign-file": "yarn esbuild:generic sign-file/src/index.ts --outfile=sign-file/dist/index.js",
     "build:slack": "yarn esbuild:generic slack/src/index.ts --outfile=slack/dist/index.js",
     "build:virustotal": "yarn esbuild:generic virustotal/src/index.ts --outfile=virustotal/dist/index.js",
-    "esbuild:generic": "esbuild --bundle --platform=node --target=node12",
+    "esbuild:generic": "esbuild --bundle --platform=node --target=node16",
     "format": "prettier --write .",
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable"

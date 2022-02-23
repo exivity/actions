@@ -6811,7 +6811,7 @@ var import_github = __toESM(require_github());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
-async function getPR(octokit, repo, ref) {
+async function getPrFromRef(octokit, repo, ref) {
   const { data } = await octokit.rest.pulls.list({
     owner: "exivity",
     repo,
@@ -6875,7 +6875,7 @@ async function run() {
     throw new Error("The event input is missing or invalid");
   }
   const octokit = (0, import_github.getOctokit)(ghToken);
-  const pull_number = isNaN(pull_request) ? (_a = await getPR(octokit, targetRepo, branch)) == null ? void 0 : _a.number : pull_request;
+  const pull_number = isNaN(pull_request) ? (_a = await getPrFromRef(octokit, targetRepo, branch)) == null ? void 0 : _a.number : pull_request;
   if (!pull_number) {
     (0, import_core2.info)("[review] Skipping, no pull request to review");
     return;

@@ -22,8 +22,6 @@ _Available actions:_
 
 # `accept`
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/accept)
-
 Triggers a scaffold repository build using the `workflow_dispatch` event. Does
 not trigger for the `master` or `main` branch.
 
@@ -52,8 +50,6 @@ usage.
 
 # `commit-status`
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/commit-status)
-
 Writes a [commit status](https://docs.github.com/en/rest/reference/commits#commit-statuses).
 
 ## Example
@@ -77,8 +73,6 @@ Writes a [commit status](https://docs.github.com/en/rest/reference/commits#commi
 | `target_url`  |          |                    | The target URL to associate with this status.                                       |
 
 # `db`
-
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/db)
 
 Runs a PostgreSQL docker container, create a new database, pulls in the `db`
 repository migrations and runs them.
@@ -107,8 +101,6 @@ repository migrations and runs them.
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
 
 # `get-artefacts`
-
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/get-artefacts)
 
 Download artefacts for the provided component. It will use the S3 _exivity_
 bucket in the _eu-central-1_ region. Artefacts are downloaded with the
@@ -144,8 +136,6 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 # `init-ssh`
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/init-ssh)
-
 Use a private key and prime the known_hosts file with pre-loaded keys for
 github.com, gitlab.com and bitbucket.org.
 
@@ -173,8 +163,6 @@ key contents
 
 # `postgres`
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/postgres)
-
 Starts a PostgreSQL server
 
 ## Example
@@ -196,8 +184,6 @@ Starts a PostgreSQL server
 
 # `process-binary`
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/process-binary)
-
 A composite action running [`rcedit`](#rcedit), [`sign-file`](#sign-file) and
 [`virustotal`](#virustotal) (in that order).
 
@@ -218,8 +204,6 @@ A composite action running [`rcedit`](#rcedit), [`sign-file`](#sign-file) and
 See individual actions for inputs.
 
 # `put-artefacts`
-
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/put-artefacts)
 
 Uploads artefacts in the provided directory. It will use the S3 _exivity_ bucket
 in the _eu-central-1_ region. Artefacts are uploaded to the
@@ -248,8 +232,6 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 # `rabbitmq`
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/rabbitmq)
-
 Starts a RabbitMQ server in a Docker container.
 
 ## Example
@@ -267,8 +249,6 @@ Starts a RabbitMQ server in a Docker container.
 | `version` |          | `"3.8.6"` | The RabbitMQ version to use. Currently, only `"3.8.6"` is supported. |
 
 # `rcedit`
-
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/rcedit)
 
 Edit resources of a Windows executable
 
@@ -304,8 +284,6 @@ Edit resources of a Windows executable
 
 # `review`
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/review)
-
 Reviews a PR.
 
 ## Example
@@ -328,9 +306,31 @@ Reviews a PR.
 | `body`      | Maybe    |                                       | The body of the review text, required when using `"REQUEST_CHANGES"` or `"COMMENT"`.                                      |
 | `branch`    |          | Current branch                        | The head branch the pull request belongs to in order to get latest pull request, not needed if `pull` has been specified. |
 
-# `sign-file`
+# `semantic-pull-request`
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/sign-file)
+Ensures your pull requests title follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+spec.
+
+See [.github repository](https://github.com/exivity/.github#semantic-pull-request)
+for example usage.
+
+_Based on original work from [amannn/action-semantic-pull-request](https://github.com/amannn/action-semantic-pull-request)_
+
+## Example
+
+```yaml
+- uses: exivity/actions/semantic-pull-request@main
+  with:
+    gh-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+## Inputs
+
+| name       | required | default            | description                                     |
+| ---------- | -------- | ------------------ | ----------------------------------------------- |
+| `gh-token` |          | `env.GITHUB_TOKEN` | GitHub token with read access to the repository |
+
+# `sign-file`
 
 Digitally sign a file
 
@@ -357,8 +357,6 @@ Digitally sign a file
 
 # `slack`
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/slack)
-
 Send a Slack message to the author of the commit triggering the workflow (if
 available).
 
@@ -366,8 +364,8 @@ available).
 
 ```yaml
 - uses: exivity/actions/slack@main
+  if: failure()
   with:
-    message: Greetings from the Exivity actions repo!
     status: ${{ job.status }}
     slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
     gh-token: ${{ secrets.GITHUB_TOKEN }}
@@ -384,8 +382,6 @@ available).
 | `gh-token`        |          | `env.GITHUB_TOKEN` | GitHub token with read access to the repository                                                                                                                                  |
 
 # `virustotal`
-
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/virustotal)
 
 Analyse artefacts with VirusTotal
 
