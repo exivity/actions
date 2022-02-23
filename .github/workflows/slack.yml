@@ -20,6 +20,7 @@ jobs:
           channel: '#mic-check'
           status: ${{ job.status }}
           slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
       - run: exit 1
       - uses: ./slack
         if: failure()
@@ -27,3 +28,4 @@ jobs:
           message: 😱 Workflow failed!
           channel: '@joram'
           slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}

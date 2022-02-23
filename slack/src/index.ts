@@ -1,6 +1,14 @@
 import { getInput, setFailed } from '@actions/core'
+import { getExecOutput } from '@actions/exec'
+import { context, getOctokit } from '@actions/github'
 import { info } from 'console'
-import { getRepository, getSha } from '../../lib/github'
+import {
+  getPR,
+  getRef,
+  getRepository,
+  getSha,
+  getToken,
+} from '../../lib/github'
 import { Slack } from './slack'
 import { Blocks } from './types'
 
@@ -16,11 +24,12 @@ async function run() {
   const channel = getInput('channel') || '#builds'
   const status = getInput('status')
   const mention = getInput('mention')
-  const component = getInput('component') || getRepository().component
-  const sha = getInput('sha') || (await getSha())
+  const component = getRepository().component
+  const sha = await getSha()
   const slackApiToken = getInput('slack-api-token', {
     required: true,
   })
+  const token = getToken()
 
   // Assertions
   if (!isValidStatus(status)) {
@@ -29,6 +38,13 @@ async function run() {
 
   // Libs
   const slack = new Slack(slackApiToken)
+  const octokit = getOctokit(token)
+
+  // Additional context
+  const commitMessage = (await getExecOutput('git log -1 --pretty=format:"%s"'))
+    .stdout
+  const ref = getRef()
+  const pr = await getPR(octokit, component, ref)
 
   // Resolve channel
   const resolvedChannel = await slack.resolveChannel(channel)
@@ -46,6 +62,14 @@ async function run() {
       : status === 'cancelled'
       ? '🚫 *Build cancelled*\n\n'
       : ''
+  const prBlock = pr
+    ? [
+        {
+          type: 'mrkdwn',
+          text: `🙏 <https://github.com/exivity/${component}/pull/${pr.number}|#${pr.number}>`,
+        },
+      ]
+    : []
   const blocks: Blocks = [
     {
       type: 'section',
@@ -53,11 +77,36 @@ async function run() {
         type: 'mrkdwn',
         text: `${statusText}${message}`,
       },
-      accessory: {
-        type: 'image',
-        image_url: 'https://avatars.githubusercontent.com/u/44036562?s=280&v=4',
-        alt_text: 'GitHub Actions',
-      },
+    },
+    {
+      type: 'divider',
+    },
+    {
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: `🗃️ ${component}`,
+        },
+        {
+          type: 'mrkdwn',
+          text: `🌿 ${ref}`,
+        },
+        {
+          type: 'mrkdwn',
+          text: `⚡ ${context.workflow}`,
+        },
+      ],
+    },
+    {
+      type: 'context',
+      elements: [
+        ...prBlock,
+        {
+          type: 'mrkdwn',
+          text: `➡️ ${commitMessage} by ${context.actor}`,
+        },
+      ],
     },
   ]
 

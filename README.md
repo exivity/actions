@@ -379,8 +379,6 @@ Send a Slack message
 | `channel`       |          | `"#builds"`           | Send message to this channel, can be a channel ID, user ID, channel name as `"#channel-name"` or a users display name as `"@display-name"` |
 | `status`        |          |                       | Include a status message if set to `"success"`, `"failure"` or `"cancelled"`                                                               |
 | `mention`       |          | Current commit author | Mention this user, can be a user ID or a display name (e.g. `"W123"` or `"@display-name"`)                                                 |
-| `component`     |          | Current component     | The component for message context                                                                                                          |
-| `sha`           |          | Current commit sha    | Sha of commit for message context                                                                                                          |
 | `slack-api-key` | ✅       |                       | Slack API key                                                                                                                              |
 
 # `virustotal`
