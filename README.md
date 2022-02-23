@@ -369,6 +369,7 @@ Send a Slack message
     message: Greetings from the Exivity actions repo!
     status: ${{ job.status }}
     slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
+    gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Inputs
