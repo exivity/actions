@@ -14,7 +14,7 @@ import {
   getCommit,
   getEventData,
   getEventName,
-  getPR,
+  getPrFromRef,
   getRef,
   getRepository,
   getSha,
@@ -106,7 +106,7 @@ async function run() {
     return
   }
 
-  const pr = await getPR(octokit, component, ref)
+  const pr = await getPrFromRef(octokit, component, ref)
   const pull_request = pr ? pr.number : undefined
   const issue = detectIssueKey(ref)
   const shortSha = sha.substring(0, 7)

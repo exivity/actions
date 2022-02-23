@@ -7,7 +7,7 @@ import {
   getCommitMessage,
 } from '../../lib/git'
 import {
-  getPR,
+  getPrFromRef,
   getRef,
   getRepository,
   getSha,
@@ -53,7 +53,7 @@ async function run() {
   const commitMessage = await getCommitMessage()
   const author = await getCommitAuthor()
   const email = await getCommitEmail()
-  const pr = await getPR(octokit, component, ref)
+  const pr = await getPrFromRef(octokit, component, ref)
 
   // Try to find Slack user based on commit author
   const user = await slack.findUserFuzzy([author, email, context.actor])

@@ -1,7 +1,7 @@
 import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import {
-  getPR,
+  getPrFromRef,
   getRef,
   getRepository,
   getToken,
@@ -37,7 +37,7 @@ async function run() {
 
   // Get PR number to use
   const pull_number = isNaN(pull_request)
-    ? (await getPR(octokit, targetRepo, branch))?.number
+    ? (await getPrFromRef(octokit, targetRepo, branch))?.number
     : pull_request
 
   if (!pull_number) {

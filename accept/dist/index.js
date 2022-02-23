@@ -29418,7 +29418,7 @@ var import_core2 = __toESM(require_core());
 var import_fs = require("fs");
 var ReleaseBranches = ["master", "main"];
 var DevelopBranches = ["develop"];
-async function getPR(octokit, repo, ref) {
+async function getPrFromRef(octokit, repo, ref) {
   const { data } = await octokit.rest.pulls.list({
     owner: "exivity",
     repo,
@@ -33522,8 +33522,8 @@ async function getChecks(octokit, ref, repo) {
   })).data.check_runs;
 }
 function isBotReviewRequested(pr) {
-  var _a, _b;
-  return (_b = (_a = pr.requested_reviewers) == null ? void 0 : _a.some((reviewer) => (reviewer == null ? void 0 : reviewer.login) === EXIVITY_BOT_LOGIN)) != null ? _b : false;
+  var _a;
+  return ((_a = pr.requested_reviewers) == null ? void 0 : _a.some((reviewer) => (reviewer == null ? void 0 : reviewer.login) === EXIVITY_BOT_LOGIN)) ?? false;
 }
 function includesBotRequest(eventData) {
   var _a;
@@ -33603,7 +33603,7 @@ async function run() {
     (0, import_core5.warning)(`[accept] Skipping: release branch "${ref}" is ignored`);
     return;
   }
-  const pr = await getPR(octokit, component, ref);
+  const pr = await getPrFromRef(octokit, component, ref);
   const pull_request = pr ? pr.number : void 0;
   const issue = detectIssueKey(ref);
   const shortSha = sha.substring(0, 7);

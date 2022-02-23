@@ -51,7 +51,7 @@ export async function getShaFromRef({
   return sha
 }
 
-export async function getPR(
+export async function getPrFromRef(
   octokit: ReturnType<typeof getOctokit>,
   repo: string,
   ref: string
@@ -68,6 +68,20 @@ export async function getPR(
   if (data.length > 0) {
     return data[0]
   }
+}
+
+export async function getPr(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  number: string | number
+) {
+  return (
+    await octokit.rest.pulls.get({
+      owner: 'exivity',
+      repo,
+      pull_number: parseInt(String(number), 10),
+    })
+  ).data
 }
 
 export function getRepository() {
