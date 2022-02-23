@@ -87,6 +87,33 @@ async function run() {
         },
       ]
     : []
+  const shaBlock = {
+    type: 'mrkdwn',
+    text: `🔑 <https://github.com/exivity/${component}/commit/${sha}|${sha.substring(
+      0,
+      7
+    )}>`,
+  }
+  const commitMessageBlock = {
+    type: 'mrkdwn',
+    text: `🔤 ${commitMessage}`,
+  }
+  const actorBlock = {
+    type: 'mrkdwn',
+    text: `🧑‍💻 ${context.actor}`,
+  }
+  const componentBlock = {
+    type: 'mrkdwn',
+    text: `🗃️ ${component}`,
+  }
+  const refBlock = {
+    type: 'mrkdwn',
+    text: `🌿 ${ref}`,
+  }
+  const runBlock = {
+    type: 'mrkdwn',
+    text: `⚡ <https://github.com/exivity/${component}/actions/runs/${process.env.GITHUB_RUN_ID}|${context.workflow}>`,
+  }
   const blocks: Blocks = [
     {
       type: 'section',
@@ -98,34 +125,13 @@ async function run() {
     {
       type: 'context',
       elements: [
-        {
-          type: 'mrkdwn',
-          text: `🔑 <https://github.com/exivity/${component}/commit/${sha}|${sha.substring(
-            0,
-            7
-          )}>`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `🔤 ${commitMessage}`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `🧑‍💻 ${context.actor}`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `🗃️ ${component}`,
-        },
+        componentBlock,
+        refBlock,
         ...prBlock,
-        {
-          type: 'mrkdwn',
-          text: `🌿 ${ref}`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `⚡ <https://github.com/exivity/${component}/actions/runs/${process.env.GITHUB_RUN_ID}|${context.workflow}>`,
-        },
+        shaBlock,
+        commitMessageBlock,
+        actorBlock,
+        runBlock,
       ],
     },
   ]
