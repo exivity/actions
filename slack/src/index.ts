@@ -1,7 +1,11 @@
 import { getInput, setFailed } from '@actions/core'
-import { getExecOutput } from '@actions/exec'
 import { context, getOctokit } from '@actions/github'
 import { info } from 'console'
+import {
+  getCommitAuthor,
+  getCommitEmail,
+  getCommitMessage,
+} from '../../lib/git'
 import {
   getPR,
   getRef,
@@ -46,11 +50,9 @@ async function run() {
   const octokit = getOctokit(token)
 
   // Additional context
-  const commitMessage = (await getExecOutput('git log -1 --pretty=format:"%s"'))
-    .stdout
-  const author = (await getExecOutput('git log -1 --pretty=format:"%an"'))
-    .stdout
-  const email = (await getExecOutput('git log -1 --pretty=format:"%ae"')).stdout
+  const commitMessage = await getCommitMessage()
+  const author = await getCommitAuthor()
+  const email = await getCommitEmail()
   const pr = await getPR(octokit, component, ref)
 
   // Try to find Slack user based on commit author
