@@ -17,6 +17,7 @@ _Available actions:_
 - [`rcedit`](#rcedit)
 - [`review`](#review)
 - [`sign-file`](#sign-file)
+- [`slack`](#slack)
 - [`virustotal`](#virustotal)
 
 # `accept`
@@ -353,6 +354,32 @@ Digitally sign a file
 | `certificate-base64`   | ✅       |              | The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string |
 | `certificate-password` | ✅       |              | The password for the `.pfx` file                                           |
 | `method`               |          | `"signtool"` | The signature tool to use. Available options: `"signtool"`                 |
+
+# `slack`
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/exivity/actions/slack)
+
+Send a Slack message
+
+## Example
+
+```yaml
+- uses: exivity/actions/slack@main
+  with:
+    message: Greetings from the Exivity actions repo!
+    status: ${{ job.status }}
+    slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name            | required | default               | description                                                                                                                                |
+| --------------- | -------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `message`       | ✅       |                       | The message body to send (markdown is supported)                                                                                           |
+| `channel`       |          | Current commit author | Send message to this channel, can be a channel ID, user ID, channel name as `"#channel-name"` or a users display name as `"@display-name"` |
+| `status`        |          |                       | Include a status message if set to `"success"`, `"failure"` or `"cancelled"`                                                               |
+| `slack-api-key` | ✅       |                       | Slack API key                                                                                                                              |
+| `gh-token`      |          | `env.GITHUB_TOKEN`    | GitHub token with read access to the repository                                                                                            |
 
 # `virustotal`
 
