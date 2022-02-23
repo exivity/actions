@@ -8096,7 +8096,7 @@ async function run() {
       elements: [
         {
           type: "mrkdwn",
-          text: `\u{1F521} ${sha}`
+          text: `\u{1F521} <https://github.com/exivity/${component}/commits/${sha}|${sha.substring(0, 7)}>`
         },
         {
           type: "mrkdwn",

@@ -100,7 +100,10 @@ async function run() {
       elements: [
         {
           type: 'mrkdwn',
-          text: `🔡 ${sha}`,
+          text: `🔡 <https://github.com/exivity/${component}/commits/${sha}|${sha.substring(
+            0,
+            7
+          )}>`,
         },
         {
           type: 'mrkdwn',
