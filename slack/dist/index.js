@@ -8096,7 +8096,7 @@ async function run() {
       elements: [
         {
           type: "mrkdwn",
-          text: `\u{1F511} <https://github.com/exivity/${component}/commits/${sha}|${sha.substring(0, 7)}>`
+          text: `\u{1F511} <https://github.com/exivity/${component}/commit/${sha}|${sha.substring(0, 7)}>`
         },
         {
           type: "mrkdwn",
@@ -8125,7 +8125,7 @@ async function run() {
         },
         {
           type: "mrkdwn",
-          text: `\u26A1 <(https://github.com/exivity/${component}/actions/runs/${process.env.GITHUB_RUN_ID}|${import_github.context.workflow}>`
+          text: `\u26A1 <https://github.com/exivity/${component}/actions/runs/${process.env.GITHUB_RUN_ID}|${import_github.context.workflow}>`
         }
       ]
     }
