@@ -4,11 +4,11 @@ inputs:
   message:
     description: The message body to send
     required: true
-  channel:
-    description: Send message to this channel
-    required: false
   status:
     description: Include a status message
+    required: false
+  channel:
+    description: Send message to this channel instead of commit author
     required: false
   slack-api-token:
     description: Slack API key

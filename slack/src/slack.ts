@@ -165,9 +165,7 @@ export class Slack {
   }
 
   private parseResponse<T>(response: ITypedResponse<Response<T>>) {
-    debug(
-      `Received response from Slack:\n${JSON.stringify(response, undefined, 2)}`
-    )
+    debug(`Received ${response.statusCode} response from Slack`)
     if (response.statusCode >= 300) {
       throw new Error('Response status code is not 2xx')
     }
@@ -238,7 +236,7 @@ export class Slack {
     }
   }
 
-  async resolveChannel(value: string) {
+  async resolveChannelToUserId(value: string) {
     if (value.startsWith('@')) {
       // Search for a user
       debug(`Trying to resolve user ${value}`)
@@ -281,6 +279,6 @@ export class Slack {
         values.includes(item.profile.real_name) ||
         values.includes(item.profile.real_name_normalized)
     )
-    return userMatch?.id || null
+    return userMatch
   }
 }
