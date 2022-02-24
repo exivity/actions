@@ -18,7 +18,7 @@ async function signTool(
    * See https://docs.microsoft.com/en-us/dotnet/framework/tools/signtool-exe
    */
   const signToolPath =
-    '"C:/Program Files (x86)/Windows Kits/10/bin/x64/SignTool.exe"'
+    '"C:/Program Files (x86)/Windows Kits/10/bin/10.0.22000.0/x64/SignTool.exe"'
 
   const { exitCode, stderr, stdout } = await getExecOutput(signToolPath, [
     /**
