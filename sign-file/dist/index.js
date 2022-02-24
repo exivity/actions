@@ -4735,7 +4735,7 @@ var import_os = require("os");
 var import_path = require("path");
 var METHOD_SIGN_TOOL = "signtool";
 async function signTool(filePath, certificatePath, certificatePassword) {
-  const signToolPath = '"C:/Program Files (x86)/Windows Kits/10/bin/x64/SignTool.exe"';
+  const signToolPath = '"C:/Program Files (x86)/Windows Kits/10/bin/10.0.22000.0/x64/SignTool.exe"';
   const { exitCode, stderr, stdout } = await (0, import_exec.getExecOutput)(signToolPath, [
     "sign",
     "/f",
