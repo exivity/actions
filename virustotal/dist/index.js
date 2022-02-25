@@ -18895,18 +18895,18 @@ function __spreadArray(e, t, r) {
     return typeof e == "number" && isFinite(e) && Math.floor(e) === e;
   };
 }(util = util || {});
-var ZodIssueCode = util.arrayToEnum(["invalid_type", "custom", "invalid_union", "invalid_enum_value", "unrecognized_keys", "invalid_arguments", "invalid_return_type", "invalid_date", "invalid_string", "too_small", "too_big", "invalid_intersection_types", "not_multiple_of"]);
+var ZodIssueCode = util.arrayToEnum(["invalid_type", "custom", "invalid_union", "invalid_union_discriminator", "invalid_enum_value", "unrecognized_keys", "invalid_arguments", "invalid_return_type", "invalid_date", "invalid_string", "too_small", "too_big", "invalid_intersection_types", "not_multiple_of"]);
 var quotelessJson = function(e) {
   return JSON.stringify(e, null, 2).replace(/"([^"]+)":/g, "$1:");
 };
-var ZodError = function(r) {
+var ZodError = function(n) {
   function t(e) {
-    var t2 = this.constructor, u = r.call(this) || this;
-    u.issues = [], u.format = function() {
+    var t2 = this.constructor, r = n.call(this) || this;
+    r.issues = [], r.format = function() {
       var p = { _errors: [] }, c = function(e2) {
         var t3, r2;
         try {
-          for (var n = __values(e2.issues), a = n.next(); !a.done; a = n.next()) {
+          for (var n2 = __values(e2.issues), a = n2.next(); !a.done; a = n2.next()) {
             var o = a.value;
             if (o.code === "invalid_union")
               o.unionErrors.map(c);
@@ -18918,53 +18918,31 @@ var ZodError = function(r) {
               p._errors.push(o.message);
             else
               for (var s = p, i = 0; i < o.path.length; ) {
-                var u2, d = o.path[i];
-                i === o.path.length - 1 ? (s[d] = s[d] || { _errors: [] }, s[d]._errors.push(o.message)) : typeof d == "string" ? s[d] = s[d] || { _errors: [] } : typeof d == "number" && ((u2 = [])._errors = [], s[d] = s[d] || u2), s = s[d], i++;
+                var u, d = o.path[i];
+                i === o.path.length - 1 ? (s[d] = s[d] || { _errors: [] }, s[d]._errors.push(o.message)) : typeof d == "string" ? s[d] = s[d] || { _errors: [] } : typeof d == "number" && ((u = [])._errors = [], s[d] = s[d] || u), s = s[d], i++;
               }
           }
         } catch (e3) {
           t3 = { error: e3 };
         } finally {
           try {
-            a && !a.done && (r2 = n.return) && r2.call(n);
+            a && !a.done && (r2 = n2.return) && r2.call(n2);
           } finally {
             if (t3)
               throw t3.error;
           }
         }
       };
-      return c(u), p;
-    }, u.addIssue = function(e2) {
-      u.issues = __spreadArray(__spreadArray([], __read(u.issues), false), [e2], false);
-    }, u.addIssues = function(e2) {
-      e2 === void 0 && (e2 = []), u.issues = __spreadArray(__spreadArray([], __read(u.issues), false), __read(e2), false);
-    }, u.flatten = function(e2) {
-      var t3, r2;
-      e2 === void 0 && (e2 = function(e3) {
-        return e3.message;
-      });
-      var n = {}, a = [];
-      try {
-        for (var o = __values(u.issues), s = o.next(); !s.done; s = o.next()) {
-          var i = s.value;
-          0 < i.path.length ? (n[i.path[0]] = n[i.path[0]] || [], n[i.path[0]].push(e2(i))) : a.push(e2(i));
-        }
-      } catch (e3) {
-        t3 = { error: e3 };
-      } finally {
-        try {
-          s && !s.done && (r2 = o.return) && r2.call(o);
-        } finally {
-          if (t3)
-            throw t3.error;
-        }
-      }
-      return { formErrors: a, fieldErrors: n };
+      return c(r), p;
+    }, r.addIssue = function(e2) {
+      r.issues = __spreadArray(__spreadArray([], __read(r.issues), false), [e2], false);
+    }, r.addIssues = function(e2) {
+      e2 === void 0 && (e2 = []), r.issues = __spreadArray(__spreadArray([], __read(r.issues), false), __read(e2), false);
     };
     t2 = t2.prototype;
-    return Object.setPrototypeOf ? Object.setPrototypeOf(u, t2) : u.__proto__ = t2, u.name = "ZodError", u.issues = e, u;
+    return Object.setPrototypeOf ? Object.setPrototypeOf(r, t2) : r.__proto__ = t2, r.name = "ZodError", r.issues = e, r;
   }
-  return __extends(t, r), Object.defineProperty(t.prototype, "errors", { get: function() {
+  return __extends(t, n), Object.defineProperty(t.prototype, "errors", { get: function() {
     return this.issues;
   }, enumerable: false, configurable: true }), t.prototype.toString = function() {
     return this.message;
@@ -18972,7 +18950,29 @@ var ZodError = function(r) {
     return JSON.stringify(this.issues, null, 2);
   }, enumerable: false, configurable: true }), Object.defineProperty(t.prototype, "isEmpty", { get: function() {
     return this.issues.length === 0;
-  }, enumerable: false, configurable: true }), Object.defineProperty(t.prototype, "formErrors", { get: function() {
+  }, enumerable: false, configurable: true }), t.prototype.flatten = function(e) {
+    var t2, r;
+    e === void 0 && (e = function(e2) {
+      return e2.message;
+    });
+    var n2 = {}, a = [];
+    try {
+      for (var o = __values(this.issues), s = o.next(); !s.done; s = o.next()) {
+        var i = s.value;
+        0 < i.path.length ? (n2[i.path[0]] = n2[i.path[0]] || [], n2[i.path[0]].push(e(i))) : a.push(e(i));
+      }
+    } catch (e2) {
+      t2 = { error: e2 };
+    } finally {
+      try {
+        s && !s.done && (r = o.return) && r.call(o);
+      } finally {
+        if (t2)
+          throw t2.error;
+      }
+    }
+    return { formErrors: a, fieldErrors: n2 };
+  }, Object.defineProperty(t.prototype, "formErrors", { get: function() {
     return this.flatten();
   }, enumerable: false, configurable: true }), t.create = function(e) {
     return new t(e);
@@ -18982,20 +18982,25 @@ var defaultErrorMap = function(e, t) {
   var r;
   switch (e.code) {
     case ZodIssueCode.invalid_type:
-      r = e.received === "undefined" ? "Required" : "Expected " + e.expected + ", received " + e.received;
+      r = e.received === "undefined" ? "Required" : "Expected ".concat(e.expected, ", received ").concat(e.received);
       break;
     case ZodIssueCode.unrecognized_keys:
-      r = "Unrecognized key(s) in object: " + e.keys.map(function(e2) {
-        return "'" + e2 + "'";
-      }).join(", ");
+      r = "Unrecognized key(s) in object: ".concat(e.keys.map(function(e2) {
+        return "'".concat(e2, "'");
+      }).join(", "));
       break;
     case ZodIssueCode.invalid_union:
       r = "Invalid input";
       break;
+    case ZodIssueCode.invalid_union_discriminator:
+      r = "Invalid discriminator value. Expected ".concat(e.options.map(function(e2) {
+        return typeof e2 == "string" ? "'".concat(e2, "'") : e2;
+      }).join(" | "));
+      break;
     case ZodIssueCode.invalid_enum_value:
-      r = "Invalid enum value. Expected " + e.options.map(function(e2) {
-        return typeof e2 == "string" ? "'" + e2 + "'" : e2;
-      }).join(" | ") + ", received " + (typeof t.data == "string" ? "'" + t.data + "'" : t.data);
+      r = "Invalid enum value. Expected ".concat(e.options.map(function(e2) {
+        return typeof e2 == "string" ? "'".concat(e2, "'") : e2;
+      }).join(" | "));
       break;
     case ZodIssueCode.invalid_arguments:
       r = "Invalid function arguments";
@@ -19007,13 +19012,13 @@ var defaultErrorMap = function(e, t) {
       r = "Invalid date";
       break;
     case ZodIssueCode.invalid_string:
-      r = e.validation !== "regex" ? "Invalid " + e.validation : "Invalid";
+      r = e.validation !== "regex" ? "Invalid ".concat(e.validation) : "Invalid";
       break;
     case ZodIssueCode.too_small:
-      r = e.type === "array" ? "Should have " + (e.inclusive ? "at least" : "more than") + " " + e.minimum + " items" : e.type === "string" ? "Should be " + (e.inclusive ? "at least" : "over") + " " + e.minimum + " characters" : e.type === "number" ? "Value should be greater than " + (e.inclusive ? "or equal to " : "") + e.minimum : "Invalid input";
+      r = e.type === "array" ? "Array must contain ".concat(e.inclusive ? "at least" : "more than", " ").concat(e.minimum, " element(s)") : e.type === "string" ? "String must contain ".concat(e.inclusive ? "at least" : "over", " ").concat(e.minimum, " character(s)") : e.type === "number" ? "Number must be greater than ".concat(e.inclusive ? "or equal to " : "").concat(e.minimum) : "Invalid input";
       break;
     case ZodIssueCode.too_big:
-      r = e.type === "array" ? "Should have " + (e.inclusive ? "at most" : "less than") + " " + e.maximum + " items" : e.type === "string" ? "Should be " + (e.inclusive ? "at most" : "under") + " " + e.maximum + " characters long" : e.type === "number" ? "Value should be less than " + (e.inclusive ? "or equal to " : "") + e.maximum : "Invalid input";
+      r = e.type === "array" ? "Array must contain ".concat(e.inclusive ? "at most" : "less than", " ").concat(e.maximum, " element(s)") : e.type === "string" ? "String must contain ".concat(e.inclusive ? "at most" : "under", " ").concat(e.maximum, " character(s)") : e.type === "number" ? "Number must be less than ".concat(e.inclusive ? "or equal to " : "").concat(e.maximum) : "Invalid input";
       break;
     case ZodIssueCode.custom:
       r = "Invalid input";
@@ -19022,7 +19027,7 @@ var defaultErrorMap = function(e, t) {
       r = "Intersection results could not be merged";
       break;
     case ZodIssueCode.not_multiple_of:
-      r = "Should be multiple of " + e.multipleOf;
+      r = "Number must be a multiple of ".concat(e.multipleOf);
       break;
     default:
       r = t.defaultError, util.assertNever(e);
@@ -19054,7 +19059,7 @@ var getParsedType = function(e, t) {
     case "bigint":
       return cacheAndReturn(e, ZodParsedType.bigint, t);
     case "object":
-      return Array.isArray(e) ? cacheAndReturn(e, ZodParsedType.array, t) : e === null ? cacheAndReturn(e, ZodParsedType.null, t) : e.then && typeof e.then == "function" && e.catch && typeof e.catch == "function" ? cacheAndReturn(e, ZodParsedType.promise, t) : e instanceof Map ? cacheAndReturn(e, ZodParsedType.map, t) : e instanceof Set ? cacheAndReturn(e, ZodParsedType.set, t) : e instanceof Date ? cacheAndReturn(e, ZodParsedType.date, t) : cacheAndReturn(e, ZodParsedType.object, t);
+      return Array.isArray(e) ? cacheAndReturn(e, ZodParsedType.array, t) : e === null ? cacheAndReturn(e, ZodParsedType.null, t) : e.then && typeof e.then == "function" && e.catch && typeof e.catch == "function" ? cacheAndReturn(e, ZodParsedType.promise, t) : typeof Map != "undefined" && e instanceof Map ? cacheAndReturn(e, ZodParsedType.map, t) : typeof Set != "undefined" && e instanceof Set ? cacheAndReturn(e, ZodParsedType.set, t) : typeof Date != "undefined" && e instanceof Date ? cacheAndReturn(e, ZodParsedType.date, t) : cacheAndReturn(e, ZodParsedType.object, t);
     default:
       return cacheAndReturn(e, ZodParsedType.unknown, t);
   }
@@ -19208,15 +19213,15 @@ var handleResult = function(e, t) {
 function processCreateParams(r) {
   if (!r)
     return {};
-  if (r.errorMap && (r.invalid_type_error || r.required_error))
+  var e = r.errorMap, t = r.invalid_type_error, n = r.required_error, a = r.description;
+  if (e && (t || n))
     throw new Error(`Can't use "invalid" or "required" in conjunction with custom error map.`);
-  if (r.errorMap)
-    return { errorMap: r.errorMap };
-  return { errorMap: function(e, t) {
-    return e.code !== "invalid_type" ? { message: t.defaultError } : t.data === void 0 && r.required_error ? { message: r.required_error } : r.invalid_type_error ? { message: r.invalid_type_error } : { message: t.defaultError };
-  } };
+  if (e)
+    return { errorMap: e, description: a };
+  return { errorMap: function(e2, t2) {
+    return e2.code !== "invalid_type" ? { message: t2.defaultError } : t2.data === void 0 && n ? { message: n } : r.invalid_type_error ? { message: r.invalid_type_error } : { message: t2.defaultError };
+  }, description: a };
 }
-var objectUtil;
 var ZodType = function() {
   function e(e2) {
     this.spa = this.safeParseAsync, this.superRefine = this._refinement, this._def = e2, this.transform = this.transform.bind(this), this.default = this.default.bind(this);
@@ -19239,7 +19244,7 @@ var ZodType = function() {
       return t.data;
     throw t.error;
   }, e.prototype.safeParse = function(e2, t) {
-    t = { path: (t == null ? void 0 : t.path) || [], issues: [], contextualErrorMap: t == null ? void 0 : t.errorMap, schemaErrorMap: this._def.errorMap, async: (t = t == null ? void 0 : t.async) !== null && t !== void 0 && t, typeCache: /* @__PURE__ */ new Map(), parent: null, data: e2, parsedType: getParsedType(e2) }, e2 = this._parseSync({ data: e2, path: t.path, parent: t });
+    t = { path: (t == null ? void 0 : t.path) || [], issues: [], contextualErrorMap: t == null ? void 0 : t.errorMap, schemaErrorMap: this._def.errorMap, async: (t = t == null ? void 0 : t.async) !== null && t !== void 0 && t, typeCache: typeof Map != "undefined" ? /* @__PURE__ */ new Map() : void 0, parent: null, data: e2, parsedType: getParsedType(e2) }, e2 = this._parseSync({ data: e2, path: t.path, parent: t });
     return handleResult(t, e2);
   }, e.prototype.parseAsync = function(r, n) {
     return __awaiter(this, void 0, void 0, function() {
@@ -19261,7 +19266,7 @@ var ZodType = function() {
       return __generator(this, function(e2) {
         switch (e2.label) {
           case 0:
-            return t = { path: (a == null ? void 0 : a.path) || [], issues: [], contextualErrorMap: a == null ? void 0 : a.errorMap, schemaErrorMap: this._def.errorMap, async: true, typeCache: /* @__PURE__ */ new Map(), parent: null, data: n, parsedType: getParsedType(n) }, r = this._parse({ data: n, path: [], parent: t }), [4, isAsync(r) ? r : Promise.resolve(r)];
+            return t = { path: (a == null ? void 0 : a.path) || [], issues: [], contextualErrorMap: a == null ? void 0 : a.errorMap, schemaErrorMap: this._def.errorMap, async: true, typeCache: typeof Map != "undefined" ? /* @__PURE__ */ new Map() : void 0, parent: null, data: n, parsedType: getParsedType(n) }, r = this._parse({ data: n, path: [], parent: t }), [4, isAsync(r) ? r : Promise.resolve(r)];
           case 1:
             return r = e2.sent(), [2, handleResult(t, r)];
         }
@@ -19274,7 +19279,7 @@ var ZodType = function() {
         var e3;
       }
       var e2 = a(t);
-      return e2 instanceof Promise ? e2.then(function(e3) {
+      return typeof Promise != "undefined" && e2 instanceof Promise ? e2.then(function(e3) {
         return !!e3 || (n(), false);
       }) : !!e2 || (n(), false);
     });
@@ -19313,7 +19318,7 @@ var ZodType = function() {
   }, e;
 }();
 var cuidRegex = /^c[^\s-]{8,}$/i;
-var uuidRegex = /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
+var uuidRegex = /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
 var emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 var ZodString = function(e) {
   function t() {
@@ -19411,6 +19416,11 @@ var ZodString = function(e) {
     return new t(__assign({ checks: [], typeName: ZodFirstPartyTypeKind.ZodString }, processCreateParams(e2)));
   }, t;
 }(ZodType);
+function floatSafeRemainder(e, t) {
+  var r = (e.toString().split(".")[1] || "").length, n = (t.toString().split(".")[1] || "").length, n = n < r ? r : n;
+  return parseInt(e.toFixed(n).replace(".", "")) % parseInt(t.toFixed(n).replace(".", "")) / Math.pow(10, n);
+}
+var objectUtil;
 var ZodNumber = function(t) {
   function a() {
     var e = t !== null && t.apply(this, arguments) || this;
@@ -19423,7 +19433,7 @@ var ZodNumber = function(t) {
     try {
       for (var o = __values(this._def.checks), s = o.next(); !s.done; s = o.next()) {
         var i = s.value;
-        i.kind === "int" ? util.isInteger(a2.data) || (addIssueToContext(a2, { code: ZodIssueCode.invalid_type, expected: "integer", received: "float", message: i.message }), n.dirty()) : i.kind === "min" ? (i.inclusive ? a2.data < i.value : a2.data <= i.value) && (addIssueToContext(a2, { code: ZodIssueCode.too_small, minimum: i.value, type: "number", inclusive: i.inclusive, message: i.message }), n.dirty()) : i.kind === "max" ? (i.inclusive ? a2.data > i.value : a2.data >= i.value) && (addIssueToContext(a2, { code: ZodIssueCode.too_big, maximum: i.value, type: "number", inclusive: i.inclusive, message: i.message }), n.dirty()) : i.kind === "multipleOf" ? a2.data % i.value != 0 && (addIssueToContext(a2, { code: ZodIssueCode.not_multiple_of, multipleOf: i.value, message: i.message }), n.dirty()) : util.assertNever(i);
+        i.kind === "int" ? util.isInteger(a2.data) || (addIssueToContext(a2, { code: ZodIssueCode.invalid_type, expected: "integer", received: "float", message: i.message }), n.dirty()) : i.kind === "min" ? (i.inclusive ? a2.data < i.value : a2.data <= i.value) && (addIssueToContext(a2, { code: ZodIssueCode.too_small, minimum: i.value, type: "number", inclusive: i.inclusive, message: i.message }), n.dirty()) : i.kind === "max" ? (i.inclusive ? a2.data > i.value : a2.data >= i.value) && (addIssueToContext(a2, { code: ZodIssueCode.too_big, maximum: i.value, type: "number", inclusive: i.inclusive, message: i.message }), n.dirty()) : i.kind === "multipleOf" ? floatSafeRemainder(a2.data, i.value) !== 0 && (addIssueToContext(a2, { code: ZodIssueCode.not_multiple_of, multipleOf: i.value, message: i.message }), n.dirty()) : util.assertNever(i);
       }
     } catch (e2) {
       t2 = { error: e2 };
@@ -19501,7 +19511,7 @@ var ZodNumber = function(t) {
       return e.kind === "int";
     });
   }, enumerable: false, configurable: true }), a.create = function(e) {
-    return new a(__assign(__assign({ checks: [], typeName: ZodFirstPartyTypeKind.ZodNumber }, processCreateParams(e)), processCreateParams(e)));
+    return new a(__assign({ checks: [], typeName: ZodFirstPartyTypeKind.ZodNumber }, processCreateParams(e)));
   }, a;
 }(ZodType);
 var ZodBigInt = function(e) {
@@ -19685,20 +19695,20 @@ var ZodObject = function(t) {
         c.push({ key: { status: "valid", value: f }, value: _._parse({ parent: d, data: h, path: __spreadArray(__spreadArray([], __read(d.path), false), [f], false) }), alwaysSet: f in d.data });
       }
     } catch (e2) {
-      v = { error: e2 };
+      m = { error: e2 };
     } finally {
       try {
         y && !y.done && (t2 = l.return) && t2.call(l);
       } finally {
-        if (v)
-          throw v.error;
+        if (m)
+          throw m.error;
       }
     }
     if (this._def.catchall instanceof ZodNever) {
-      var v = this._def.unknownKeys;
-      if (v === "passthrough")
+      var m = this._def.unknownKeys;
+      if (m === "passthrough")
         try {
-          for (var m = __values(e), Z = m.next(); !Z.done; Z = m.next()) {
+          for (var v = __values(e), Z = v.next(); !Z.done; Z = v.next()) {
             f = Z.value;
             c.push({ key: { status: "valid", value: f }, value: { status: "valid", value: d.data[f] } });
           }
@@ -19706,15 +19716,15 @@ var ZodObject = function(t) {
           r = { error: e2 };
         } finally {
           try {
-            Z && !Z.done && (n = m.return) && n.call(m);
+            Z && !Z.done && (n = v.return) && n.call(v);
           } finally {
             if (r)
               throw r.error;
           }
         }
-      else if (v === "strict")
+      else if (m === "strict")
         0 < e.length && (addIssueToContext(d, { code: ZodIssueCode.unrecognized_keys, keys: e }), u.dirty());
-      else if (v !== "strip")
+      else if (m !== "strip")
         throw new Error("Internal ZodObject error: invalid unknownKeys value.");
     } else {
       var g = this._def.catchall;
@@ -19909,6 +19919,37 @@ var ZodUnion = function(e) {
     return new r(__assign({ options: e2, typeName: ZodFirstPartyTypeKind.ZodUnion }, processCreateParams(t)));
   }, r;
 }(ZodType);
+var ZodDiscriminatedUnion = function(e) {
+  function a() {
+    return e !== null && e.apply(this, arguments) || this;
+  }
+  return __extends(a, e), a.prototype._parse = function(e2) {
+    var t = this._processInputParams(e2).ctx;
+    if (t.parsedType !== ZodParsedType.object)
+      return addIssueToContext(t, { code: ZodIssueCode.invalid_type, expected: ZodParsedType.object, received: t.parsedType }), INVALID;
+    var r = this.discriminator, e2 = t.data[r], e2 = this.options.get(e2);
+    return e2 ? t.async ? e2._parseAsync({ data: t.data, path: t.path, parent: t }) : e2._parseSync({ data: t.data, path: t.path, parent: t }) : (addIssueToContext(t, { code: ZodIssueCode.invalid_union_discriminator, options: this.validDiscriminatorValues, path: [r] }), INVALID);
+  }, Object.defineProperty(a.prototype, "discriminator", { get: function() {
+    return this._def.discriminator;
+  }, enumerable: false, configurable: true }), Object.defineProperty(a.prototype, "validDiscriminatorValues", { get: function() {
+    return Array.from(this.options.keys());
+  }, enumerable: false, configurable: true }), Object.defineProperty(a.prototype, "options", { get: function() {
+    return this._def.options;
+  }, enumerable: false, configurable: true }), a.create = function(r, e2, t) {
+    var n = /* @__PURE__ */ new Map();
+    try {
+      e2.forEach(function(e3) {
+        var t2 = e3.shape[r].value;
+        n.set(t2, e3);
+      });
+    } catch (e3) {
+      throw new Error("The discriminator value could not be extracted from all the provided schemas");
+    }
+    if (n.size !== e2.length)
+      throw new Error("Some of the discriminator values are not unique");
+    return new a(__assign({ typeName: ZodFirstPartyTypeKind.ZodDiscriminatedUnion, discriminator: r, options: n }, processCreateParams(t)));
+  }, a;
+}(ZodType);
 function mergeValues(e, t) {
   var r, n, a = getParsedType(e), o = getParsedType(t);
   if (e === t)
@@ -19937,7 +19978,7 @@ function mergeValues(e, t) {
     return { valid: true, data: u };
   }
   if (a !== ZodParsedType.array || o !== ZodParsedType.array)
-    return { valid: false };
+    return a === ZodParsedType.date && o === ZodParsedType.date && +e == +t ? { valid: true, data: e } : { valid: false };
   if (e.length !== t.length)
     return { valid: false };
   for (var l, y = [], f = 0; f < e.length; f++) {
@@ -20098,6 +20139,8 @@ var ZodSet = function(e) {
     var e2 = this._processInputParams(e2), i = e2.status, r2 = e2.ctx;
     if (r2.parsedType !== ZodParsedType.set)
       return addIssueToContext(r2, { code: ZodIssueCode.invalid_type, expected: ZodParsedType.set, received: r2.parsedType }), INVALID;
+    e2 = this._def;
+    e2.minSize !== null && r2.data.size < e2.minSize.value && (addIssueToContext(r2, { code: ZodIssueCode.too_small, minimum: e2.minSize.value, type: "set", inclusive: true, message: e2.minSize.message }), i.dirty()), e2.maxSize !== null && r2.data.size > e2.maxSize.value && (addIssueToContext(r2, { code: ZodIssueCode.too_big, maximum: e2.maxSize.value, type: "set", inclusive: true, message: e2.maxSize.message }), i.dirty());
     var n = this._def.valueType;
     function t(e3) {
       var t2, r3, n2 = /* @__PURE__ */ new Set();
@@ -20124,8 +20167,16 @@ var ZodSet = function(e) {
       return n._parse({ data: e3, path: __spreadArray(__spreadArray([], __read(r2.path), false), [t2], false), parent: r2 });
     });
     return r2.async ? Promise.all(e2).then(t) : t(e2);
+  }, r.prototype.min = function(e2, t) {
+    return new r(__assign(__assign({}, this._def), { minSize: { value: e2, message: errorUtil.toString(t) } }));
+  }, r.prototype.max = function(e2, t) {
+    return new r(__assign(__assign({}, this._def), { maxSize: { value: e2, message: errorUtil.toString(t) } }));
+  }, r.prototype.size = function(e2, t) {
+    return this.min(e2, t).max(e2, t);
+  }, r.prototype.nonempty = function(e2) {
+    return this.min(1, e2);
   }, r.create = function(e2, t) {
-    return new r(__assign({ valueType: e2, typeName: ZodFirstPartyTypeKind.ZodSet }, processCreateParams(t)));
+    return new r(__assign({ valueType: e2, minSize: null, maxSize: null, typeName: ZodFirstPartyTypeKind.ZodSet }, processCreateParams(t)));
   }, r;
 }(ZodType);
 var ZodFunction = function(t) {
@@ -20218,7 +20269,7 @@ var ZodLiteral = function(e) {
   }
   return __extends(r, e), r.prototype._parse = function(e2) {
     var t = this._processInputParams(e2), e2 = t.status, t = t.ctx;
-    return t.data !== this._def.value ? (addIssueToContext(t, { code: ZodIssueCode.invalid_type, expected: this._def.value, received: t.data }), INVALID) : { status: e2.value, value: t.data };
+    return t.data !== this._def.value ? (addIssueToContext(t, { code: ZodIssueCode.invalid_type, expected: getParsedType(this._def.value), received: t.parsedType }), INVALID) : { status: e2.value, value: t.data };
   }, Object.defineProperty(r.prototype, "value", { get: function() {
     return this._def.value;
   }, enumerable: false, configurable: true }), r.create = function(e2, t) {
@@ -20423,10 +20474,10 @@ var custom = function(e, t) {
 };
 var late = { object: ZodObject.lazycreate };
 !function(e) {
-  e.ZodString = "ZodString", e.ZodNumber = "ZodNumber", e.ZodBigInt = "ZodBigInt", e.ZodBoolean = "ZodBoolean", e.ZodDate = "ZodDate", e.ZodUndefined = "ZodUndefined", e.ZodNull = "ZodNull", e.ZodAny = "ZodAny", e.ZodUnknown = "ZodUnknown", e.ZodNever = "ZodNever", e.ZodVoid = "ZodVoid", e.ZodArray = "ZodArray", e.ZodObject = "ZodObject", e.ZodUnion = "ZodUnion", e.ZodIntersection = "ZodIntersection", e.ZodTuple = "ZodTuple", e.ZodRecord = "ZodRecord", e.ZodMap = "ZodMap", e.ZodSet = "ZodSet", e.ZodFunction = "ZodFunction", e.ZodLazy = "ZodLazy", e.ZodLiteral = "ZodLiteral", e.ZodEnum = "ZodEnum", e.ZodEffects = "ZodEffects", e.ZodNativeEnum = "ZodNativeEnum", e.ZodOptional = "ZodOptional", e.ZodNullable = "ZodNullable", e.ZodDefault = "ZodDefault", e.ZodPromise = "ZodPromise";
+  e.ZodString = "ZodString", e.ZodNumber = "ZodNumber", e.ZodBigInt = "ZodBigInt", e.ZodBoolean = "ZodBoolean", e.ZodDate = "ZodDate", e.ZodUndefined = "ZodUndefined", e.ZodNull = "ZodNull", e.ZodAny = "ZodAny", e.ZodUnknown = "ZodUnknown", e.ZodNever = "ZodNever", e.ZodVoid = "ZodVoid", e.ZodArray = "ZodArray", e.ZodObject = "ZodObject", e.ZodUnion = "ZodUnion", e.ZodDiscriminatedUnion = "ZodDiscriminatedUnion", e.ZodIntersection = "ZodIntersection", e.ZodTuple = "ZodTuple", e.ZodRecord = "ZodRecord", e.ZodMap = "ZodMap", e.ZodSet = "ZodSet", e.ZodFunction = "ZodFunction", e.ZodLazy = "ZodLazy", e.ZodLiteral = "ZodLiteral", e.ZodEnum = "ZodEnum", e.ZodEffects = "ZodEffects", e.ZodNativeEnum = "ZodNativeEnum", e.ZodOptional = "ZodOptional", e.ZodNullable = "ZodNullable", e.ZodDefault = "ZodDefault", e.ZodPromise = "ZodPromise";
 }(ZodFirstPartyTypeKind = ZodFirstPartyTypeKind || {});
 var instanceOfType = function(t, e) {
-  return e === void 0 && (e = { message: "Input not instance of " + t.name }), custom(function(e2) {
+  return e === void 0 && (e = { message: "Input not instance of ".concat(t.name) }), custom(function(e2) {
     return e2 instanceof t;
   }, e);
 };
@@ -20445,6 +20496,7 @@ var arrayType = ZodArray.create;
 var objectType = ZodObject.create;
 var strictObjectType = ZodObject.strictCreate;
 var unionType = ZodUnion.create;
+var discriminatedUnionType = ZodDiscriminatedUnion.create;
 var intersectionType = ZodIntersection.create;
 var tupleType = ZodTuple.create;
 var recordType = ZodRecord.create;
@@ -20471,9 +20523,9 @@ var oboolean = function() {
 };
 var external = Object.freeze({ __proto__: null, ZodParsedType, getParsedType, makeIssue, EMPTY_PATH, addIssueToContext, ParseStatus, INVALID, DIRTY, OK, isAborted, isDirty, isValid, isAsync, ZodType, ZodString, ZodNumber, ZodBigInt, ZodBoolean, ZodDate, ZodUndefined, ZodNull, ZodAny, ZodUnknown, ZodNever, ZodVoid, ZodArray, get objectUtil() {
   return objectUtil;
-}, ZodObject, ZodUnion, ZodIntersection, ZodTuple, ZodRecord, ZodMap, ZodSet, ZodFunction, ZodLazy, ZodLiteral, ZodEnum, ZodNativeEnum, ZodPromise, ZodEffects, ZodTransformer: ZodEffects, ZodOptional, ZodNullable, ZodDefault, custom, Schema: ZodType, ZodSchema: ZodType, late, get ZodFirstPartyTypeKind() {
+}, ZodObject, ZodUnion, ZodDiscriminatedUnion, ZodIntersection, ZodTuple, ZodRecord, ZodMap, ZodSet, ZodFunction, ZodLazy, ZodLiteral, ZodEnum, ZodNativeEnum, ZodPromise, ZodEffects, ZodTransformer: ZodEffects, ZodOptional, ZodNullable, ZodDefault, custom, Schema: ZodType, ZodSchema: ZodType, late, get ZodFirstPartyTypeKind() {
   return ZodFirstPartyTypeKind;
-}, any: anyType, array: arrayType, bigint: bigIntType, boolean: booleanType, date: dateType, effect: effectsType, enum: enumType, function: functionType, instanceof: instanceOfType, intersection: intersectionType, lazy: lazyType, literal: literalType, map: mapType, nativeEnum: nativeEnumType, never: neverType, null: nullType, nullable: nullableType, number: numberType, object: objectType, oboolean, onumber, optional: optionalType, ostring, preprocess: preprocessType, promise: promiseType, record: recordType, set: setType, strictObject: strictObjectType, string: stringType, transformer: effectsType, tuple: tupleType, undefined: undefinedType, union: unionType, unknown: unknownType, void: voidType, ZodIssueCode, quotelessJson, ZodError, defaultErrorMap, get overrideErrorMap() {
+}, any: anyType, array: arrayType, bigint: bigIntType, boolean: booleanType, date: dateType, discriminatedUnion: discriminatedUnionType, effect: effectsType, enum: enumType, function: functionType, instanceof: instanceOfType, intersection: intersectionType, lazy: lazyType, literal: literalType, map: mapType, nativeEnum: nativeEnumType, never: neverType, null: nullType, nullable: nullableType, number: numberType, object: objectType, oboolean, onumber, optional: optionalType, ostring, preprocess: preprocessType, promise: promiseType, record: recordType, set: setType, strictObject: strictObjectType, string: stringType, transformer: effectsType, tuple: tupleType, undefined: undefinedType, union: unionType, unknown: unknownType, void: voidType, ZodIssueCode, quotelessJson, ZodError, defaultErrorMap, get overrideErrorMap() {
   return overrideErrorMap;
 }, setErrorMap });
 

@@ -25,6 +25,10 @@ var __markAsModule = (target) => __defProp(target, "__esModule", { value: true }
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
+var __export = (target, all) => {
+  for (var name2 in all)
+    __defProp(target, name2, { get: all[name2], enumerable: true });
+};
 var __reExport = (target, module2, copyDefault, desc) => {
   if (module2 && typeof module2 === "object" || typeof module2 === "function") {
     for (let key of __getOwnPropNames(module2))
@@ -110,8 +114,8 @@ var require_command = __commonJS({
       process.stdout.write(cmd.toString() + os.EOL);
     }
     exports.issueCommand = issueCommand;
-    function issue(name, message = "") {
-      issueCommand(name, {}, message);
+    function issue(name2, message = "") {
+      issueCommand(name2, {}, message);
     }
     exports.issue = issue;
     var CMD_STRING = "::";
@@ -1180,16 +1184,16 @@ var require_core = __commonJS({
       ExitCode2[ExitCode2["Success"] = 0] = "Success";
       ExitCode2[ExitCode2["Failure"] = 1] = "Failure";
     })(ExitCode = exports.ExitCode || (exports.ExitCode = {}));
-    function exportVariable(name, val) {
+    function exportVariable(name2, val) {
       const convertedVal = utils_1.toCommandValue(val);
-      process.env[name] = convertedVal;
+      process.env[name2] = convertedVal;
       const filePath = process.env["GITHUB_ENV"] || "";
       if (filePath) {
         const delimiter = "_GitHubActionsFileCommandDelimeter_";
-        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
+        const commandValue = `${name2}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
         file_command_1.issueCommand("ENV", commandValue);
       } else {
-        command_1.issueCommand("set-env", { name }, convertedVal);
+        command_1.issueCommand("set-env", { name: name2 }, convertedVal);
       }
     }
     exports.exportVariable = exportVariable;
@@ -1207,10 +1211,10 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
     exports.addPath = addPath;
-    function getInput2(name, options) {
-      const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
+    function getInput2(name2, options) {
+      const val = process.env[`INPUT_${name2.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
-        throw new Error(`Input required and not supplied: ${name}`);
+        throw new Error(`Input required and not supplied: ${name2}`);
       }
       if (options && options.trimWhitespace === false) {
         return val;
@@ -1218,26 +1222,26 @@ var require_core = __commonJS({
       return val.trim();
     }
     exports.getInput = getInput2;
-    function getMultilineInput(name, options) {
-      const inputs = getInput2(name, options).split("\n").filter((x) => x !== "");
+    function getMultilineInput(name2, options) {
+      const inputs = getInput2(name2, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
     exports.getMultilineInput = getMultilineInput;
-    function getBooleanInput(name, options) {
+    function getBooleanInput(name2, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput2(name, options);
+      const val = getInput2(name2, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
         return false;
-      throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
+      throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name2}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports.getBooleanInput = getBooleanInput;
-    function setOutput(name, value) {
+    function setOutput(name2, value) {
       process.stdout.write(os.EOL);
-      command_1.issueCommand("set-output", { name }, value);
+      command_1.issueCommand("set-output", { name: name2 }, value);
     }
     exports.setOutput = setOutput;
     function setCommandEcho(enabled) {
@@ -1273,17 +1277,17 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       process.stdout.write(message + os.EOL);
     }
     exports.info = info3;
-    function startGroup(name) {
-      command_1.issue("group", name);
+    function startGroup(name2) {
+      command_1.issue("group", name2);
     }
     exports.startGroup = startGroup;
     function endGroup() {
       command_1.issue("endgroup");
     }
     exports.endGroup = endGroup;
-    function group(name, fn) {
+    function group(name2, fn) {
       return __awaiter(this, void 0, void 0, function* () {
-        startGroup(name);
+        startGroup(name2);
         let result;
         try {
           result = yield fn();
@@ -1294,12 +1298,12 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       });
     }
     exports.group = group;
-    function saveState(name, value) {
-      command_1.issueCommand("save-state", { name }, value);
+    function saveState(name2, value) {
+      command_1.issueCommand("save-state", { name: name2 }, value);
     }
     exports.saveState = saveState;
-    function getState(name) {
-      return process.env[`STATE_${name}`] || "";
+    function getState(name2) {
+      return process.env[`STATE_${name2}`] || "";
     }
     exports.getState = getState;
     function getIDToken(aud) {
@@ -1444,23 +1448,23 @@ var require_dist_node = __commonJS({
 var require_register = __commonJS({
   "node_modules/before-after-hook/lib/register.js"(exports, module2) {
     module2.exports = register;
-    function register(state, name, method, options) {
+    function register(state, name2, method, options) {
       if (typeof method !== "function") {
         throw new Error("method for before hook must be a function");
       }
       if (!options) {
         options = {};
       }
-      if (Array.isArray(name)) {
-        return name.reverse().reduce(function(callback, name2) {
-          return register.bind(null, state, name2, callback, options);
+      if (Array.isArray(name2)) {
+        return name2.reverse().reduce(function(callback, name3) {
+          return register.bind(null, state, name3, callback, options);
         }, method)();
       }
       return Promise.resolve().then(function() {
-        if (!state.registry[name]) {
+        if (!state.registry[name2]) {
           return method(options);
         }
-        return state.registry[name].reduce(function(method2, registered) {
+        return state.registry[name2].reduce(function(method2, registered) {
           return registered.hook.bind(null, method2, options);
         }, method)();
       });
@@ -1472,10 +1476,10 @@ var require_register = __commonJS({
 var require_add = __commonJS({
   "node_modules/before-after-hook/lib/add.js"(exports, module2) {
     module2.exports = addHook;
-    function addHook(state, kind, name, hook) {
+    function addHook(state, kind, name2, hook) {
       var orig = hook;
-      if (!state.registry[name]) {
-        state.registry[name] = [];
+      if (!state.registry[name2]) {
+        state.registry[name2] = [];
       }
       if (kind === "before") {
         hook = function(method, options) {
@@ -1500,7 +1504,7 @@ var require_add = __commonJS({
           });
         };
       }
-      state.registry[name].push({
+      state.registry[name2].push({
         hook,
         orig
       });
@@ -1512,17 +1516,17 @@ var require_add = __commonJS({
 var require_remove = __commonJS({
   "node_modules/before-after-hook/lib/remove.js"(exports, module2) {
     module2.exports = removeHook;
-    function removeHook(state, name, method) {
-      if (!state.registry[name]) {
+    function removeHook(state, name2, method) {
+      if (!state.registry[name2]) {
         return;
       }
-      var index = state.registry[name].map(function(registered) {
+      var index = state.registry[name2].map(function(registered) {
         return registered.orig;
       }).indexOf(method);
       if (index === -1) {
         return;
       }
-      state.registry[name].splice(index, 1);
+      state.registry[name2].splice(index, 1);
     }
   }
 });
@@ -1535,12 +1539,12 @@ var require_before_after_hook = __commonJS({
     var removeHook = require_remove();
     var bind = Function.bind;
     var bindable = bind.bind(bind);
-    function bindApi(hook, state, name) {
-      var removeHookRef = bindable(removeHook, null).apply(null, name ? [state, name] : [state]);
+    function bindApi(hook, state, name2) {
+      var removeHookRef = bindable(removeHook, null).apply(null, name2 ? [state, name2] : [state]);
       hook.api = { remove: removeHookRef };
       hook.remove = removeHookRef;
       ["before", "error", "after", "wrap"].forEach(function(kind) {
-        var args = name ? [state, kind, name] : [state, kind];
+        var args = name2 ? [state, kind, name2] : [state, kind];
         hook[kind] = hook.api[kind] = bindable(addHook, null).apply(null, args);
       });
     }
@@ -1675,11 +1679,11 @@ var require_dist_node2 = __commonJS({
       if (names.length === 0) {
         return url;
       }
-      return url + separator + names.map((name) => {
-        if (name === "q") {
+      return url + separator + names.map((name2) => {
+        if (name2 === "q") {
           return "q=" + parameters.q.split("+").map(encodeURIComponent).join("+");
         }
-        return `${name}=${encodeURIComponent(parameters[name])}`;
+        return `${name2}=${encodeURIComponent(parameters[name2])}`;
       }).join("&");
     }
     var urlVariableRegex = /\{[^}]+\}/g;
@@ -3903,10 +3907,10 @@ var require_lib2 = __commonJS({
       text: { enumerable: true }
     });
     Body.mixIn = function(proto) {
-      for (const name of Object.getOwnPropertyNames(Body.prototype)) {
-        if (!(name in proto)) {
-          const desc = Object.getOwnPropertyDescriptor(Body.prototype, name);
-          Object.defineProperty(proto, name, desc);
+      for (const name2 of Object.getOwnPropertyNames(Body.prototype)) {
+        if (!(name2 in proto)) {
+          const desc = Object.getOwnPropertyDescriptor(Body.prototype, name2);
+          Object.defineProperty(proto, name2, desc);
         }
       }
     };
@@ -4094,10 +4098,10 @@ var require_lib2 = __commonJS({
     Body.Promise = global.Promise;
     var invalidTokenRegex = /[^\^_`a-zA-Z\-0-9!#$%&'*+.|~]/;
     var invalidHeaderCharRegex = /[^\t\x20-\x7e\x80-\xff]/;
-    function validateName(name) {
-      name = `${name}`;
-      if (invalidTokenRegex.test(name) || name === "") {
-        throw new TypeError(`${name} is not a legal HTTP header name`);
+    function validateName(name2) {
+      name2 = `${name2}`;
+      if (invalidTokenRegex.test(name2) || name2 === "") {
+        throw new TypeError(`${name2} is not a legal HTTP header name`);
       }
     }
     function validateValue(value) {
@@ -4106,10 +4110,10 @@ var require_lib2 = __commonJS({
         throw new TypeError(`${value} is not a legal HTTP header value`);
       }
     }
-    function find(map, name) {
-      name = name.toLowerCase();
+    function find(map, name2) {
+      name2 = name2.toLowerCase();
       for (const key in map) {
-        if (key.toLowerCase() === name) {
+        if (key.toLowerCase() === name2) {
           return key;
         }
       }
@@ -4161,10 +4165,10 @@ var require_lib2 = __commonJS({
           throw new TypeError("Provided initializer must be an object");
         }
       }
-      get(name) {
-        name = `${name}`;
-        validateName(name);
-        const key = find(this[MAP], name);
+      get(name2) {
+        name2 = `${name2}`;
+        validateName(name2);
+        const key = find(this[MAP], name2);
         if (key === void 0) {
           return null;
         }
@@ -4176,41 +4180,41 @@ var require_lib2 = __commonJS({
         let i = 0;
         while (i < pairs.length) {
           var _pairs$i = pairs[i];
-          const name = _pairs$i[0], value = _pairs$i[1];
-          callback.call(thisArg, value, name, this);
+          const name2 = _pairs$i[0], value = _pairs$i[1];
+          callback.call(thisArg, value, name2, this);
           pairs = getHeaders(this);
           i++;
         }
       }
-      set(name, value) {
-        name = `${name}`;
+      set(name2, value) {
+        name2 = `${name2}`;
         value = `${value}`;
-        validateName(name);
+        validateName(name2);
         validateValue(value);
-        const key = find(this[MAP], name);
-        this[MAP][key !== void 0 ? key : name] = [value];
+        const key = find(this[MAP], name2);
+        this[MAP][key !== void 0 ? key : name2] = [value];
       }
-      append(name, value) {
-        name = `${name}`;
+      append(name2, value) {
+        name2 = `${name2}`;
         value = `${value}`;
-        validateName(name);
+        validateName(name2);
         validateValue(value);
-        const key = find(this[MAP], name);
+        const key = find(this[MAP], name2);
         if (key !== void 0) {
           this[MAP][key].push(value);
         } else {
-          this[MAP][name] = [value];
+          this[MAP][name2] = [value];
         }
       }
-      has(name) {
-        name = `${name}`;
-        validateName(name);
-        return find(this[MAP], name) !== void 0;
+      has(name2) {
+        name2 = `${name2}`;
+        validateName(name2);
+        return find(this[MAP], name2) !== void 0;
       }
-      delete(name) {
-        name = `${name}`;
-        validateName(name);
-        const key = find(this[MAP], name);
+      delete(name2) {
+        name2 = `${name2}`;
+        validateName(name2);
+        const key = find(this[MAP], name2);
         if (key !== void 0) {
           delete this[MAP][key];
         }
@@ -4305,23 +4309,23 @@ var require_lib2 = __commonJS({
     }
     function createHeadersLenient(obj) {
       const headers = new Headers();
-      for (const name of Object.keys(obj)) {
-        if (invalidTokenRegex.test(name)) {
+      for (const name2 of Object.keys(obj)) {
+        if (invalidTokenRegex.test(name2)) {
           continue;
         }
-        if (Array.isArray(obj[name])) {
-          for (const val of obj[name]) {
+        if (Array.isArray(obj[name2])) {
+          for (const val of obj[name2]) {
             if (invalidHeaderCharRegex.test(val)) {
               continue;
             }
-            if (headers[MAP][name] === void 0) {
-              headers[MAP][name] = [val];
+            if (headers[MAP][name2] === void 0) {
+              headers[MAP][name2] = [val];
             } else {
-              headers[MAP][name].push(val);
+              headers[MAP][name2].push(val);
             }
           }
-        } else if (!invalidHeaderCharRegex.test(obj[name])) {
-          headers[MAP][name] = [obj[name]];
+        } else if (!invalidHeaderCharRegex.test(obj[name2])) {
+          headers[MAP][name2] = [obj[name2]];
         }
       }
       return headers;
@@ -4661,8 +4665,8 @@ var require_lib2 = __commonJS({
                   size: request.size
                 };
                 if (!isDomainOrSubdomain(request.url, locationURL)) {
-                  for (const name of ["authorization", "www-authenticate", "cookie", "cookie2"]) {
-                    requestOpts.headers.delete(name);
+                  for (const name2 of ["authorization", "www-authenticate", "cookie", "cookie2"]) {
+                    requestOpts.headers.delete(name2);
                   }
                 }
                 if (res.statusCode !== 303 && request.body && getTotalBytes(request) === null) {
@@ -4835,8 +4839,8 @@ var require_once = __commonJS({
         f.called = true;
         return f.value = fn.apply(this, arguments);
       };
-      var name = fn.name || "Function wrapped with `once`";
-      f.onceError = name + " shouldn't be called more than once";
+      var name2 = fn.name || "Function wrapped with `once`";
+      f.onceError = name2 + " shouldn't be called more than once";
       f.called = false;
       return f;
     }
@@ -6502,13 +6506,13 @@ var require_dist_node9 = __commonJS({
         }
         if (decorations.renamedParameters) {
           const options2 = requestWithDefaults.endpoint.merge(...args);
-          for (const [name, alias] of Object.entries(decorations.renamedParameters)) {
-            if (name in options2) {
-              octokit.log.warn(`"${name}" parameter is deprecated for "octokit.${scope}.${methodName}()". Use "${alias}" instead`);
+          for (const [name2, alias] of Object.entries(decorations.renamedParameters)) {
+            if (name2 in options2) {
+              octokit.log.warn(`"${name2}" parameter is deprecated for "octokit.${scope}.${methodName}()". Use "${alias}" instead`);
               if (!(alias in options2)) {
-                options2[alias] = options2[name];
+                options2[alias] = options2[name2];
               }
-              delete options2[name];
+              delete options2[name2];
             }
           }
           return requestWithDefaults(options2);
@@ -6812,13 +6816,6 @@ var import_github = __toESM(require_github());
 // lib/github.ts
 var import_core = __toESM(require_core());
 var import_fs = require("fs");
-async function getPr(octokit, repo, number) {
-  return (await octokit.rest.pulls.get({
-    owner: "exivity",
-    repo,
-    pull_number: parseInt(String(number), 10)
-  })).data;
-}
 function getRepository() {
   const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
   if (!owner || !component) {
@@ -6857,42 +6854,33 @@ async function getEventData(eventName) {
   return JSON.parse(fileData);
 }
 
+// sync-defaults/src/plugins/settings.ts
+var settings_exports = {};
+__export(settings_exports, {
+  name: () => name,
+  run: () => run
+});
+var name = "settings";
+async function run() {
+  return "";
+}
+
 // sync-defaults/src/index.ts
 var supportedEvents = ["push", "workflow_dispatch", "schedule"];
-async function run() {
+async function run2() {
   const token = getToken();
   const component = getRepository().component;
   const eventName = getEventName(supportedEvents);
   const eventData = await getEventData(eventName);
   const octokit = (0, import_github.getOctokit)(token);
-  const pr = await getPr(octokit, component, eventData.pull_request.number);
-  if (!validateCommitMessage(pr.title)) {
-    throw new Error(`PR title "${pr.title}" is not semantic, see above for more details.`);
-  }
-  const commits = [];
-  let nonMergeCommits = [];
-  for await (const response of octokit.paginate.iterator(octokit.rest.pulls.listCommits, {
-    owner: "exivity",
-    repo: component,
-    pull_number: pr.number
-  })) {
-    commits.push(...response.data);
-    nonMergeCommits = commits.filter((commit) => commit.parents.length < 2);
-    if (nonMergeCommits.length >= 2)
-      break;
-  }
-  if (nonMergeCommits.length === 1) {
-    const commitTitle = nonMergeCommits[0].commit.message.split("\n")[0];
-    if (!validateCommitMessage(commitTitle)) {
-      throw new Error(`Pull request has only one commit and it's not semantic; this may lead to a non-semantic commit in the base branch (see https://github.community/t/how-to-change-the-default-squash-merge-commit-message/1155). Amend the commit message to match the pull request title, or add another commit.`);
-    }
-    if (commitTitle !== pr.title) {
-      throw new Error(`The pull request has only one (non-merge) commit and in this case Github will use it as the default commit message when merging. The pull request title doesn't match the commit though ("${pr.title}" vs. "${commitTitle}"). Please update the pull request title accordingly to avoid surprises.`);
-    }
+  const plugins = [settings_exports];
+  for (const { name: name2, run: run3 } of plugins) {
+    (0, import_core2.info)(`Running sync plugin "${name2}"`);
+    await run3();
   }
   (0, import_core2.info)("\u{1F389} Congratulation! Your pull request is semantic.");
 }
-run().catch(import_core2.setFailed);
+run2().catch(import_core2.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

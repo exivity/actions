@@ -6805,6 +6805,14 @@ var require_github = __commonJS({
   }
 });
 
+// node_modules/minimatch/lib/path.js
+var require_path = __commonJS({
+  "node_modules/minimatch/lib/path.js"(exports, module2) {
+    var isWindows = typeof process === "object" && process && process.platform === "win32";
+    module2.exports = isWindows ? { sep: "\\" } : { sep: "/" };
+  }
+});
+
 // node_modules/balanced-match/index.js
 var require_balanced_match = __commonJS({
   "node_modules/balanced-match/index.js"(exports, module2) {
@@ -7024,14 +7032,7 @@ var require_minimatch = __commonJS({
       return new Minimatch(pattern, options).match(p);
     };
     module2.exports = minimatch2;
-    var path7 = (() => {
-      try {
-        return require("path");
-      } catch (e) {
-      }
-    })() || {
-      sep: "/"
-    };
+    var path7 = require_path();
     minimatch2.sep = path7.sep;
     var GLOBSTAR = Symbol("globstar **");
     minimatch2.GLOBSTAR = GLOBSTAR;
