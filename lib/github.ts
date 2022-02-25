@@ -1,10 +1,19 @@
 import { getInput, info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { EmitterWebhookEvent, EmitterWebhookEventName } from '@octokit/webhooks'
+import { EventPayloadMap, WebhookEventName } from '@octokit/webhooks-types'
 import { promises as fsPromises } from 'fs'
 
-export type EventData<T extends EmitterWebhookEventName> =
-  EmitterWebhookEvent<T>['payload']
+export type ScheduleEvent = {
+  schedule: string
+}
+
+export type EventName = WebhookEventName | 'schedule'
+
+export type EventData<T extends EventName> = T extends WebhookEventName
+  ? EventPayloadMap[T]
+  : T extends 'schedule'
+  ? ScheduleEvent
+  : never
 
 type Options = {
   octokit: ReturnType<typeof getOctokit>
@@ -156,10 +165,10 @@ export function getToken(inputName = 'gh-token') {
 }
 
 /**
- * Schedule is not in the EmitterWebhookEventName, but is valid, so we add it
+ * Schedule is not in the WebhookEventName, but is valid, so we add it
  * to the type here.
  */
-export function getEventName<T extends EmitterWebhookEventName | 'schedule'>(
+export function getEventName<T extends EventName>(
   supportedEvents?: readonly T[]
 ) {
   const eventName = process.env['GITHUB_EVENT_NAME']
@@ -175,10 +184,11 @@ export function getEventName<T extends EmitterWebhookEventName | 'schedule'>(
   return eventName as T
 }
 
-export function isEvent<T extends EmitterWebhookEventName, U extends T>(
+export function isEvent<T extends EventName, U extends T>(
   input: T,
   compare: U,
   eventData: EventData<T>
+  // @ts-ignore
 ): eventData is EventData<U> {
   return input === compare
 }
@@ -188,11 +198,9 @@ export function isEvent<T extends EmitterWebhookEventName, U extends T>(
  * some trickery to allow it, but this function will return null in this case,
  * because we don't know how the eventData looks.
  */
-export async function getEventData<
-  T extends EmitterWebhookEventName | 'schedule'
->(
+export async function getEventData<T extends EventName>(
   eventName?: T
-): Promise<T extends EmitterWebhookEventName ? EventData<T> : null> {
+): Promise<EventData<T>> {
   if (eventName === 'schedule') {
     return null as any
   }

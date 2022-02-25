@@ -10,5 +10,11 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["node_modules/checkout/src", "*/src/*.ts", "lib/*.ts"]
+  "include": [
+    "node_modules/checkout/src",
+    "*/src/*.ts",
+    "lib/*.ts",
+    "types/*.d.ts",
+    "types/probot-settings.ts"
+  ]
 }

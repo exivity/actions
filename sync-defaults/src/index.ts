@@ -1,5 +1,4 @@
 import { info, setFailed } from '@actions/core'
-import { getOctokit } from '@actions/github'
 import {
   getEventData,
   getEventName,
@@ -18,16 +17,19 @@ async function run() {
   const eventName = getEventName(supportedEvents)
   const eventData = await getEventData(eventName)
 
-  // Client
-  const octokit = getOctokit(token)
-
   // Run plugins
+  // @ts-ignore Expression produces a union type that is too complex to represent.ts(2590)
   const plugins: SyncPlugin[] = [settings]
 
   for (const { name, run } of plugins) {
     info(`Running sync plugin "${name}"`)
 
-    await run()
+    await run({
+      ghToken: token,
+      component,
+      eventName,
+      eventData,
+    })
   }
 
   info('🎉 Congratulation! Your pull request is semantic.')
