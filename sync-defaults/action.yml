@@ -1,0 +1,9 @@
+name: sync-defaults
+description: Syncs the repo settings with org defaults
+inputs:
+  gh-token:
+    description: GitHub token with write access to the repository
+    required: true
+runs:
+  using: node16
+  main: dist/index.js

@@ -6844,6 +6844,9 @@ function getEventName(supportedEvents2) {
   return eventName;
 }
 async function getEventData(eventName) {
+  if (eventName === "schedule") {
+    return null;
+  }
   const eventPath = process.env["GITHUB_EVENT_PATH"];
   if (!eventPath) {
     throw new Error("The GitHub event path is missing");

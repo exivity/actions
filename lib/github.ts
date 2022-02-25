@@ -155,7 +155,11 @@ export function getToken(inputName = 'gh-token') {
   return ghToken
 }
 
-export function getEventName<T extends EmitterWebhookEventName>(
+/**
+ * Schedule is not in the EmitterWebhookEventName, but is valid, so we add it
+ * to the type here.
+ */
+export function getEventName<T extends EmitterWebhookEventName | 'schedule'>(
   supportedEvents?: readonly T[]
 ) {
   const eventName = process.env['GITHUB_EVENT_NAME']
@@ -179,9 +183,20 @@ export function isEvent<T extends EmitterWebhookEventName, U extends T>(
   return input === compare
 }
 
-export async function getEventData<T extends EmitterWebhookEventName>(
+/**
+ * Schedule is not in the EmitterWebhookEventName, but is valid, so we include
+ * some trickery to allow it, but this function will return null in this case,
+ * because we don't know how the eventData looks.
+ */
+export async function getEventData<
+  T extends EmitterWebhookEventName | 'schedule'
+>(
   eventName?: T
-): Promise<EventData<T>> {
+): Promise<T extends EmitterWebhookEventName ? EventData<T> : null> {
+  if (eventName === 'schedule') {
+    return null as any
+  }
+
   const eventPath = process.env['GITHUB_EVENT_PATH']
 
   if (!eventPath) {

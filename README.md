@@ -19,6 +19,7 @@ _Available actions:_
 - [`semantic-pull-request`](#semantic-pull-request)
 - [`sign-file`](#sign-file)
 - [`slack`](#slack)
+- [`sync-settings`](#sync-settings)
 - [`virustotal`](#virustotal)
 
 # `accept`
@@ -381,6 +382,29 @@ available).
 | `channel`         |          |                    | If provided, send message to this channel instead of commit author. Can be a channel ID, user ID, channel name as `"#channel-name"` or a users display name as `"@display-name"` |
 | `slack-api-token` | ✅       |                    | Slack API token                                                                                                                                                                  |
 | `gh-token`        |          | `env.GITHUB_TOKEN` | GitHub token with read access to the repository                                                                                                                                  |
+
+# `sync-defaults`
+
+Syncs the repo settings with org defaults.
+
+See [.github repository](https://github.com/exivity/.github#sync-defaults)
+for example usage.
+
+_Based on original work from [probot/settings](https://github.com/probot/settings)_
+
+## Example
+
+```yaml
+- uses: exivity/actions/sync-defaults@main
+  with:
+    gh-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+## Inputs
+
+| name       | required | default            | description                                      |
+| ---------- | -------- | ------------------ | ------------------------------------------------ |
+| `gh-token` |          | `env.GITHUB_TOKEN` | GitHub token with write access to the repository |
 
 # `virustotal`
 

@@ -21,6 +21,7 @@
     "build:semantic-pull-request": "yarn esbuild:generic semantic-pull-request/src/index.ts --outfile=semantic-pull-request/dist/index.js",
     "build:sign-file": "yarn esbuild:generic sign-file/src/index.ts --outfile=sign-file/dist/index.js",
     "build:slack": "yarn esbuild:generic slack/src/index.ts --outfile=slack/dist/index.js",
+    "build:sync-defaults": "yarn esbuild:generic sync-defaults/src/index.ts --outfile=sync-defaults/dist/index.js",
     "build:virustotal": "yarn esbuild:generic virustotal/src/index.ts --outfile=virustotal/dist/index.js",
     "esbuild:generic": "esbuild --bundle --platform=node --target=node16",
     "format": "prettier --write .",
