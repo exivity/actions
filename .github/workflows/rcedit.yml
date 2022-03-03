@@ -17,6 +17,6 @@ jobs:
       - uses: ./rcedit
         with:
           path: fixtures/build/*.exe
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: fixtures/build/*.exe
