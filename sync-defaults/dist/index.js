@@ -22,6 +22,9 @@ var __spreadValues = (a, b) => {
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -40,6 +43,11 @@ var __reExport = (target, module2, copyDefault, desc) => {
 var __toESM = (module2, isNodeMode) => {
   return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
 };
+var __toCommonJS = /* @__PURE__ */ ((cache) => {
+  return (module2, temp) => {
+    return cache && cache.get(module2) || (temp = __reExport(__markAsModule({}), module2, 1), cache && cache.set(module2, temp), temp);
+  };
+})(typeof WeakMap !== "undefined" ? /* @__PURE__ */ new WeakMap() : 0);
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
@@ -6809,71 +6817,30 @@ var require_github = __commonJS({
   }
 });
 
-// node_modules/probot-settings/lib/plugins/repository.js
-var require_repository = __commonJS({
-  "node_modules/probot-settings/lib/plugins/repository.js"(exports, module2) {
-    var enableAutomatedSecurityFixes = ({ github, settings, enabled }) => {
-      if (enabled === void 0) {
-        return Promise.resolve();
-      }
-      const args = {
-        owner: settings.owner,
-        repo: settings.repo,
-        mediaType: {
-          previews: ["london"]
-        }
-      };
-      const methodName = enabled ? "enableAutomatedSecurityFixes" : "disableAutomatedSecurityFixes";
-      return github.repos[methodName](args);
-    };
-    var enableVulnerabilityAlerts = ({ github, settings, enabled }) => {
-      if (enabled === void 0) {
-        return Promise.resolve();
-      }
-      const args = {
-        owner: settings.owner,
-        repo: settings.repo,
-        mediaType: {
-          previews: ["dorian"]
-        }
-      };
-      const methodName = enabled ? "enableVulnerabilityAlerts" : "disableVulnerabilityAlerts";
-      return github.repos[methodName](args);
-    };
-    module2.exports = class Repository {
+// sync-defaults/src/settings/plugins/types.ts
+var GitHubSettingsPlugin;
+var init_types = __esm({
+  "sync-defaults/src/settings/plugins/types.ts"() {
+    GitHubSettingsPlugin = class {
       constructor(github, repo, settings) {
         this.github = github;
-        this.settings = Object.assign({ mediaType: { previews: ["baptiste"] } }, settings, repo);
-        this.topics = this.settings.topics;
-        delete this.settings.topics;
-        this.enableVulnerabilityAlerts = this.settings.enable_vulnerability_alerts;
-        delete this.settings.enable_vulnerability_alerts;
-        this.enableAutomatedSecurityFixes = this.settings.enable_automated_security_fixes;
-        delete this.settings.enable_automated_security_fixes;
-      }
-      sync() {
-        this.settings.name = this.settings.name || this.settings.repo;
-        return this.github.repos.update(this.settings).then(() => {
-          if (this.topics) {
-            return this.github.repos.replaceAllTopics({
-              owner: this.settings.owner,
-              repo: this.settings.repo,
-              names: this.topics.split(/\s*,\s*/),
-              mediaType: {
-                previews: ["mercy"]
-              }
-            });
-          }
-        }).then(() => enableVulnerabilityAlerts(__spreadValues({ enabled: this.enableVulnerabilityAlerts }, this))).then(() => enableAutomatedSecurityFixes(__spreadValues({ enabled: this.enableAutomatedSecurityFixes }, this)));
+        this.repo = repo;
+        this.settings = settings;
       }
     };
   }
 });
 
-// node_modules/probot-settings/lib/plugins/diffable.js
-var require_diffable = __commonJS({
-  "node_modules/probot-settings/lib/plugins/diffable.js"(exports, module2) {
-    module2.exports = class Diffable {
+// sync-defaults/src/settings/plugins/diffable.ts
+var diffable_exports = {};
+__export(diffable_exports, {
+  Diffable: () => Diffable
+});
+var Diffable;
+var init_diffable = __esm({
+  "sync-defaults/src/settings/plugins/diffable.ts"() {
+    init_types();
+    Diffable = class extends GitHubSettingsPlugin {
       constructor(github, repo, entries) {
         this.github = github;
         this.repo = repo;
@@ -6906,12 +6873,70 @@ var require_diffable = __commonJS({
   }
 });
 
-// node_modules/probot-settings/lib/plugins/labels.js
-var require_labels = __commonJS({
-  "node_modules/probot-settings/lib/plugins/labels.js"(exports, module2) {
-    var Diffable = require_diffable();
-    var previewHeaders = { accept: "application/vnd.github.symmetra-preview+json" };
-    module2.exports = class Labels extends Diffable {
+// sync-defaults/src/settings/plugins/collaborators.ts
+var collaborators_exports = {};
+__export(collaborators_exports, {
+  Collaborators: () => Collaborators
+});
+var Diffable2, Collaborators;
+var init_collaborators = __esm({
+  "sync-defaults/src/settings/plugins/collaborators.ts"() {
+    Diffable2 = (init_diffable(), __toCommonJS(diffable_exports));
+    Collaborators = class extends Diffable2 {
+      constructor(...args) {
+        super(...args);
+        if (this.entries) {
+          this.entries.forEach((collaborator) => {
+            collaborator.username = collaborator.username.toLowerCase();
+          });
+        }
+      }
+      find() {
+        return this.github.repos.listCollaborators({
+          repo: this.repo.repo,
+          owner: this.repo.owner,
+          affiliation: "direct"
+        }).then((res) => {
+          return res.data.map((user) => {
+            return {
+              username: user.login.toLowerCase(),
+              permission: user.permissions.admin && "admin" || user.permissions.push && "push" || user.permissions.pull && "pull"
+            };
+          });
+        });
+      }
+      comparator(existing, attrs) {
+        return existing.username === attrs.username;
+      }
+      changed(existing, attrs) {
+        return existing.permission !== attrs.permission;
+      }
+      update(existing, attrs) {
+        return this.add(attrs);
+      }
+      add(attrs) {
+        return this.github.repos.addCollaborator(Object.assign({}, attrs, this.repo));
+      }
+      remove(existing) {
+        return this.github.repos.removeCollaborator(Object.assign({ username: existing.username }, this.repo));
+      }
+    };
+  }
+});
+
+// sync-defaults/src/settings/plugins/labels.ts
+var labels_exports = {};
+__export(labels_exports, {
+  Labels: () => Labels
+});
+var Diffable3, previewHeaders2, Labels;
+var init_labels = __esm({
+  "sync-defaults/src/settings/plugins/labels.ts"() {
+    Diffable3 = (init_diffable(), __toCommonJS(diffable_exports));
+    previewHeaders2 = {
+      accept: "application/vnd.github.symmetra-preview+json"
+    };
+    Labels = class extends Diffable3 {
       constructor(...args) {
         super(...args);
         if (this.entries) {
@@ -6945,97 +6970,22 @@ var require_labels = __commonJS({
         return this.github.issues.deleteLabel(this.wrapAttrs({ name: existing.name }));
       }
       wrapAttrs(attrs) {
-        return Object.assign({}, attrs, this.repo, { headers: previewHeaders });
+        return Object.assign({}, attrs, this.repo, { headers: previewHeaders2 });
       }
     };
   }
 });
 
-// node_modules/probot-settings/lib/plugins/collaborators.js
-var require_collaborators = __commonJS({
-  "node_modules/probot-settings/lib/plugins/collaborators.js"(exports, module2) {
-    var Diffable = require_diffable();
-    module2.exports = class Collaborators extends Diffable {
-      constructor(...args) {
-        super(...args);
-        if (this.entries) {
-          this.entries.forEach((collaborator) => {
-            collaborator.username = collaborator.username.toLowerCase();
-          });
-        }
-      }
-      find() {
-        return this.github.repos.listCollaborators({ repo: this.repo.repo, owner: this.repo.owner, affiliation: "direct" }).then((res) => {
-          return res.data.map((user) => {
-            return {
-              username: user.login.toLowerCase(),
-              permission: user.permissions.admin && "admin" || user.permissions.push && "push" || user.permissions.pull && "pull"
-            };
-          });
-        });
-      }
-      comparator(existing, attrs) {
-        return existing.username === attrs.username;
-      }
-      changed(existing, attrs) {
-        return existing.permission !== attrs.permission;
-      }
-      update(existing, attrs) {
-        return this.add(attrs);
-      }
-      add(attrs) {
-        return this.github.repos.addCollaborator(Object.assign({}, attrs, this.repo));
-      }
-      remove(existing) {
-        return this.github.repos.removeCollaborator(Object.assign({ username: existing.username }, this.repo));
-      }
-    };
-  }
+// sync-defaults/src/settings/plugins/milestones.ts
+var milestones_exports = {};
+__export(milestones_exports, {
+  Milestones: () => Milestones
 });
-
-// node_modules/probot-settings/lib/plugins/teams.js
-var require_teams = __commonJS({
-  "node_modules/probot-settings/lib/plugins/teams.js"(exports, module2) {
-    var Diffable = require_diffable();
-    var teamRepoEndpoint = "/teams/:team_id/repos/:owner/:repo";
-    module2.exports = class Teams extends Diffable {
-      find() {
-        return this.github.repos.listTeams(this.repo).then((res) => res.data);
-      }
-      comparator(existing, attrs) {
-        return existing.slug === attrs.name;
-      }
-      changed(existing, attrs) {
-        return existing.permission !== attrs.permission;
-      }
-      update(existing, attrs) {
-        return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
-      }
-      async add(attrs) {
-        const { data: existing } = await this.github.request("GET /orgs/:org/teams/:team_slug", { org: this.repo.owner, team_slug: attrs.name });
-        return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
-      }
-      remove(existing) {
-        return this.github.request(`DELETE ${teamRepoEndpoint}`, __spreadProps(__spreadValues({ team_id: existing.id }, this.repo), { org: this.repo.owner }));
-      }
-      toParams(existing, attrs) {
-        return {
-          team_id: existing.id,
-          owner: this.repo.owner,
-          repo: this.repo.repo,
-          org: this.repo.owner,
-          permission: attrs.permission
-        };
-      }
-    };
-  }
-});
-
-// node_modules/probot-settings/lib/plugins/milestones.js
-var require_milestones = __commonJS({
-  "node_modules/probot-settings/lib/plugins/milestones.js"(exports, module2) {
-    var Diffable = require_diffable();
-    module2.exports = class Milestones extends Diffable {
+var Diffable4, Milestones;
+var init_milestones = __esm({
+  "sync-defaults/src/settings/plugins/milestones.ts"() {
+    Diffable4 = (init_diffable(), __toCommonJS(diffable_exports));
+    Milestones = class extends Diffable4 {
       constructor(...args) {
         super(...args);
         if (this.entries) {
@@ -7058,7 +7008,10 @@ var require_milestones = __commonJS({
       }
       update(existing, attrs) {
         const { owner, repo } = this.repo;
-        return this.github.issues.updateMilestone(Object.assign({ milestone_number: existing.number }, attrs, { owner, repo }));
+        return this.github.issues.updateMilestone(Object.assign({ milestone_number: existing.number }, attrs, {
+          owner,
+          repo
+        }));
       }
       add(attrs) {
         const { owner, repo } = this.repo;
@@ -7072,65 +7025,120 @@ var require_milestones = __commonJS({
   }
 });
 
-// node_modules/probot-settings/lib/plugins/branches.js
-var require_branches = __commonJS({
-  "node_modules/probot-settings/lib/plugins/branches.js"(exports, module2) {
-    var previewHeaders = { accept: "application/vnd.github.hellcat-preview+json,application/vnd.github.luke-cage-preview+json,application/vnd.github.zzzax-preview+json" };
-    module2.exports = class Branches {
+// sync-defaults/src/settings/plugins/repository.ts
+var repository_exports = {};
+__export(repository_exports, {
+  Repository: () => Repository
+});
+var enableAutomatedSecurityFixes, enableVulnerabilityAlerts, Repository;
+var init_repository = __esm({
+  "sync-defaults/src/settings/plugins/repository.ts"() {
+    enableAutomatedSecurityFixes = ({ github, settings, enabled }) => {
+      if (enabled === void 0) {
+        return Promise.resolve();
+      }
+      const args = {
+        owner: settings.owner,
+        repo: settings.repo,
+        mediaType: {
+          previews: ["london"]
+        }
+      };
+      const methodName = enabled ? "enableAutomatedSecurityFixes" : "disableAutomatedSecurityFixes";
+      return github.repos[methodName](args);
+    };
+    enableVulnerabilityAlerts = ({ github, settings, enabled }) => {
+      if (enabled === void 0) {
+        return Promise.resolve();
+      }
+      const args = {
+        owner: settings.owner,
+        repo: settings.repo,
+        mediaType: {
+          previews: ["dorian"]
+        }
+      };
+      const methodName = enabled ? "enableVulnerabilityAlerts" : "disableVulnerabilityAlerts";
+      return github.repos[methodName](args);
+    };
+    Repository = class {
       constructor(github, repo, settings) {
         this.github = github;
-        this.repo = repo;
-        this.branches = settings;
+        this.settings = Object.assign({ mediaType: { previews: ["baptiste"] } }, settings, repo);
+        this.topics = this.settings.topics;
+        delete this.settings.topics;
+        this.enableVulnerabilityAlerts = this.settings.enable_vulnerability_alerts;
+        delete this.settings.enable_vulnerability_alerts;
+        this.enableAutomatedSecurityFixes = this.settings.enable_automated_security_fixes;
+        delete this.settings.enable_automated_security_fixes;
       }
       sync() {
-        return Promise.all(this.branches.filter((branch) => branch.protection !== void 0).map((branch) => {
-          const params = Object.assign(this.repo, { branch: branch.name });
-          if (this.isEmpty(branch.protection)) {
-            return this.github.repos.deleteBranchProtection(params);
-          } else {
-            Object.assign(params, branch.protection, { headers: previewHeaders });
-            return this.github.repos.updateBranchProtection(params);
+        this.settings.name = this.settings.name || this.settings.repo;
+        return this.github.repos.update(this.settings).then(() => {
+          if (this.topics) {
+            return this.github.repos.replaceAllTopics({
+              owner: this.settings.owner,
+              repo: this.settings.repo,
+              names: this.topics.split(/\s*,\s*/),
+              mediaType: {
+                previews: ["mercy"]
+              }
+            });
           }
-        }));
-      }
-      isEmpty(maybeEmpty) {
-        return maybeEmpty === null || Object.keys(maybeEmpty).length === 0;
+        }).then(() => enableVulnerabilityAlerts(__spreadValues({
+          enabled: this.enableVulnerabilityAlerts
+        }, this))).then(() => enableAutomatedSecurityFixes(__spreadValues({
+          enabled: this.enableAutomatedSecurityFixes
+        }, this)));
       }
     };
   }
 });
 
-// node_modules/probot-settings/lib/settings.js
-var require_settings = __commonJS({
-  "node_modules/probot-settings/lib/settings.js"(exports, module2) {
-    var Settings2 = class {
-      static sync(github, repo, config) {
-        return new Settings2(github, repo, config).update();
+// sync-defaults/src/settings/plugins/teams.ts
+var teams_exports = {};
+__export(teams_exports, {
+  Teams: () => Teams
+});
+var Diffable5, teamRepoEndpoint, Teams;
+var init_teams = __esm({
+  "sync-defaults/src/settings/plugins/teams.ts"() {
+    Diffable5 = (init_diffable(), __toCommonJS(diffable_exports));
+    teamRepoEndpoint = "/teams/:team_id/repos/:owner/:repo";
+    Teams = class extends Diffable5 {
+      find() {
+        return this.github.repos.listTeams(this.repo).then((res) => res.data);
       }
-      constructor(github, repo, config) {
-        this.github = github;
-        this.repo = repo;
-        this.config = config;
+      comparator(existing, attrs) {
+        return existing.slug === attrs.name;
       }
-      update() {
-        return Promise.all(Object.entries(this.config).map(([section, config]) => {
-          const debug = { repo: this.repo };
-          debug[section] = config;
-          const Plugin = Settings2.PLUGINS[section];
-          return new Plugin(this.github, this.repo, config).sync();
+      changed(existing, attrs) {
+        return existing.permission !== attrs.permission;
+      }
+      update(existing, attrs) {
+        return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
+      }
+      async add(attrs) {
+        const { data: existing } = await this.github.request("GET /orgs/:org/teams/:team_slug", { org: this.repo.owner, team_slug: attrs.name });
+        return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
+      }
+      remove(existing) {
+        return this.github.request(`DELETE ${teamRepoEndpoint}`, __spreadProps(__spreadValues({
+          team_id: existing.id
+        }, this.repo), {
+          org: this.repo.owner
         }));
       }
+      toParams(existing, attrs) {
+        return {
+          team_id: existing.id,
+          owner: this.repo.owner,
+          repo: this.repo.repo,
+          org: this.repo.owner,
+          permission: attrs.permission
+        };
+      }
     };
-    Settings2.FILE_NAME = ".github/settings.yml";
-    Settings2.PLUGINS = {
-      repository: require_repository(),
-      labels: require_labels(),
-      collaborators: require_collaborators(),
-      teams: require_teams(),
-      milestones: require_milestones(),
-      branches: require_branches()
-    };
-    module2.exports = Settings2;
   }
 });
 
@@ -7178,15 +7186,55 @@ async function getEventData(eventName) {
   return JSON.parse(fileData);
 }
 
-// sync-defaults/src/plugins/settings.ts
+// sync-defaults/src/settings/index.ts
 var settings_exports = {};
 __export(settings_exports, {
   name: () => name,
   run: () => run
 });
 var import_github = __toESM(require_github());
-var import_settings = __toESM(require_settings());
+
+// sync-defaults/src/settings/plugins/branches.ts
+init_types();
+var previewHeaders = {
+  accept: "application/vnd.github.hellcat-preview+json,application/vnd.github.luke-cage-preview+json,application/vnd.github.zzzax-preview+json"
+};
+var Branches = class extends GitHubSettingsPlugin {
+  sync() {
+    return Promise.all(this.settings.filter((branch) => branch.protection !== void 0).map((branch) => {
+      const params = Object.assign(this.repo, { branch: branch.name });
+      if (this.isEmpty(branch.protection)) {
+        return this.github.repos.deleteBranchProtection(params);
+      } else {
+        Object.assign(params, branch.protection, {
+          headers: previewHeaders
+        });
+        return this.github.repos.updateBranchProtection(params);
+      }
+    }));
+  }
+  isEmpty(maybeEmpty) {
+    return maybeEmpty === null || Object.keys(maybeEmpty).length === 0;
+  }
+};
+
+// sync-defaults/src/settings/plugins/index.ts
+init_collaborators();
+init_labels();
+init_milestones();
+init_repository();
+init_teams();
+
+// sync-defaults/src/settings/index.ts
 var name = "settings";
+var PLUGINS = {
+  repository: (init_repository(), __toCommonJS(repository_exports)),
+  labels: (init_labels(), __toCommonJS(labels_exports)),
+  collaborators: (init_collaborators(), __toCommonJS(collaborators_exports)),
+  teams: (init_teams(), __toCommonJS(teams_exports)),
+  milestones: (init_milestones(), __toCommonJS(milestones_exports)),
+  branches: Branches
+};
 async function run({
   ghToken,
   component
@@ -7197,7 +7245,13 @@ async function run({
     repo: component
   };
   const config = {};
-  return import_settings.default.sync(octokit, repo, config);
+  return Promise.all(Object.entries(this.config).map(([section, config2]) => {
+    const debug = { repo: this.repo };
+    debug[section] = config2;
+    const Plugin = Settings.PLUGINS[section];
+    return new Plugin(this.github, this.repo, config2).sync();
+  }));
+  return Settings.sync(octokit.rest, repo, config);
 }
 
 // sync-defaults/src/index.ts

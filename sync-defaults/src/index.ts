@@ -5,7 +5,7 @@ import {
   getRepository,
   getToken,
 } from '../../lib/github'
-import { settings } from './plugins'
+import * as settings from './settings'
 import { SyncPlugin } from './types'
 
 const supportedEvents = ['push', 'workflow_dispatch', 'schedule'] as const
