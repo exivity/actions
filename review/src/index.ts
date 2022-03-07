@@ -1,6 +1,12 @@
 import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { getPR, getRef, getRepository, getToken } from '../../lib/github'
+import {
+  getPrFromRef,
+  getRef,
+  getRepository,
+  getToken,
+  review,
+} from '../../lib/github'
 
 const validEvents = ['APPROVE', 'COMMENT', 'REQUEST_CHANGES'] as const
 
@@ -16,10 +22,10 @@ async function run() {
   // inputs
   const ghToken = getToken()
   const pull_request = parseInt(getInput('pull'), 10)
-  const repo = getInput('component') || component
+  const targetRepo = getInput('component') || component
   const event = getInput('event')
   const branch = getInput('branch') || default_branch
-  const customBody = getInput('body')
+  const body = getInput('body')
 
   // Assertions
   if (!isValidEvent(event)) {
@@ -31,34 +37,16 @@ async function run() {
 
   // Get PR number to use
   const pull_number = isNaN(pull_request)
-    ? (await getPR(octokit, repo, branch))?.number
+    ? (await getPrFromRef(octokit, targetRepo, branch))?.number
     : pull_request
 
   if (!pull_number) {
-    info('No pull request to review, skipping action')
+    info('[review] Skipping, no pull request to review')
     return
   }
 
-  info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
-
-  const body = `${customBody}${customBody ? '\n\n---\n\n' : ''}\
-_Automated review from [**${process.env['GITHUB_WORKFLOW']}** \
-workflow in **${process.env['GITHUB_REPOSITORY']}**]\
-(https://github.com/${process.env['GITHUB_REPOSITORY']}/actions/runs/${
-    process.env['GITHUB_RUN_ID']
-  })_`
-
   // Post a review to the GitHub API
-  await octokit.request(
-    'POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
-    {
-      owner,
-      repo,
-      pull_number,
-      event,
-      body,
-    }
-  )
+  await review(octokit, targetRepo, pull_number, event, body)
 }
 
 run().catch(setFailed)

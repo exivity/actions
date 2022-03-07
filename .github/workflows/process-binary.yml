@@ -1,0 +1,80 @@
+name: process-binary
+
+on:
+  push:
+    paths:
+      - '.github/workflows/process-binary.yml'
+      - 'process-binary/**'
+
+env:
+  CERTIFICATE_BASE64: |
+    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
+    4c6aJ60PrVniyDVqBAhijF20wSEcSQICCAA=
+  CERTIFICATE_PASSWORD: test
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - if: matrix.os == 'ubuntu-latest'
+        uses: ./process-binary
+        with:
+          path: fixtures/build/hello
+          certificate-base64: ${{ env.CERTIFICATE_BASE64 }}
+          certificate-password: ${{ env.CERTIFICATE_PASSWORD }}
+          virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
+      - if: matrix.os == 'windows-latest'
+        uses: ./process-binary
+        with:
+          path: fixtures/build/hello.exe
+          certificate-base64: ${{ env.CERTIFICATE_BASE64 }}
+          certificate-password: ${{ env.CERTIFICATE_PASSWORD }}
+          virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}

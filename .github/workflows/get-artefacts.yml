@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/get-artefacts.yml'
       - 'lib/core*'
-      - 'lib/github*'
+      - 'lib/github.ts'
       - 'lib/s3*'
       - 'get-artefacts/**'
 
@@ -21,7 +21,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./get-artefacts
         with:
           component: actions

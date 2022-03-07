@@ -1,0 +1,23 @@
+name: slack
+
+on:
+  push:
+    paths:
+      - '.github/workflows/slack.yml'
+      - 'lib/git.ts'
+      - 'lib/github.ts'
+      - 'slack/**'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./slack
+        with:
+          status: ${{ job.status }}
+          slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}

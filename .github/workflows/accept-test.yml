@@ -1,4 +1,4 @@
-name: accept test
+name: accept-test
 
 on:
   push:
@@ -8,7 +8,10 @@ on:
       - 'lib/github.ts'
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  accept-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - run: echo 'Hello world!'

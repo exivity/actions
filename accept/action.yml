@@ -1,15 +1,20 @@
-name: 'Accept'
-description: 'Triggers a scaffold repository build on AppVeyor'
+name: accept
+description: Triggers a scaffold repository build on AppVeyor
 inputs:
   scaffold-branch:
-    description: 'The scaffold branch to build'
+    description: The scaffold branch to build
     required: false
   gh-token:
-    description: 'A GitHub token'
+    description: A GitHub token
     required: false
   dry-run:
-    description: 'Run scaffold in dry-run mode'
+    description: Run scaffold in dry-run mode
+    required: false
+  filter:
+    description: |
+      If provided, only trigger acceptance tests if files which match this are
+      modified
     required: false
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: node16
+  main: dist/index.js

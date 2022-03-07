@@ -10,21 +10,31 @@ type Options = {
   octokit: ReturnType<typeof getOctokit>
   component: string
   ref: string
+  useFallback?: boolean
 }
 
-export async function getShaFromRef({ octokit, component, ref }: Options) {
-  if (ref === 'develop') {
-    const hasDevelop = (
+export const ReleaseBranches = ['master', 'main']
+export const DevelopBranches = ['develop']
+
+export async function getShaFromRef({
+  octokit,
+  component,
+  ref,
+  useFallback = true,
+}: Options) {
+  if (useFallback && ref === 'develop') {
+    const availableBranches = (
       await octokit.rest.repos.listBranches({
         owner: 'exivity',
         repo: component,
       })
-    ).data.some((repoBranch) => repoBranch.name === 'develop')
-    if (!hasDevelop) {
+    ).data.map((branch) => branch.name)
+    if (!availableBranches.includes('develop')) {
+      const fallback = availableBranches.includes('main') ? 'main' : 'master'
       warning(
-        `Branch "develop" not available in repository "exivity/${component}", falling back to "master".`
+        `Branch "develop" not available in repository "exivity/${component}", falling back to "${fallback}".`
       )
-      ref = 'master'
+      ref = fallback
     }
   }
 
@@ -41,7 +51,7 @@ export async function getShaFromRef({ octokit, component, ref }: Options) {
   return sha
 }
 
-export async function getPR(
+export async function getPrFromRef(
   octokit: ReturnType<typeof getOctokit>,
   repo: string,
   ref: string
@@ -60,6 +70,20 @@ export async function getPR(
   }
 }
 
+export async function getPr(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  number: string | number
+) {
+  return (
+    await octokit.rest.pulls.get({
+      owner: 'exivity',
+      repo,
+      pull_number: parseInt(String(number), 10),
+    })
+  ).data
+}
+
 export function getRepository() {
   const [owner, component] = (process.env['GITHUB_REPOSITORY'] || '').split('/')
 
@@ -70,8 +94,19 @@ export function getRepository() {
   return { owner, component }
 }
 
-export function getSha() {
-  const sha = process.env['GITHUB_SHA']
+export async function getSha() {
+  let sha = process.env['GITHUB_SHA']
+  const eventName = getEventName()
+
+  // See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request:
+  // Note that GITHUB_SHA for this event is the last merge commit of the pull
+  // request merge branch.If you want to get the commit ID for the last commit
+  // to the head branch of the pull request, use
+  // github.event.pull_request.head.sha instead.
+  if (eventName === 'pull_request') {
+    const eventData = await getEventData(eventName)
+    sha = eventData.pull_request.head.sha
+  }
 
   if (!sha) {
     throw new Error('The GitHub sha is missing')
@@ -168,4 +203,87 @@ export function getWorkflowName() {
   }
 
   return workflowName
+}
+
+export function isReleaseBranch(ref?: string) {
+  if (!ref) {
+    ref = getRef()
+  }
+
+  return ReleaseBranches.includes(ref)
+}
+
+export function isDevelopBranch(ref?: string) {
+  if (!ref) {
+    ref = getRef()
+  }
+
+  return DevelopBranches.includes(ref)
+}
+
+export async function getCommit(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  ref: string
+) {
+  return (
+    await octokit.rest.repos.getCommit({
+      owner: 'exivity',
+      repo,
+      ref,
+    })
+  ).data
+}
+
+export async function review(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  pull_number: number,
+  event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT',
+  body?: string
+) {
+  info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
+
+  body = `${body}${body ? '\n\n---\n\n' : ''}\
+_Automated review from [**${process.env.GITHUB_WORKFLOW}** \
+workflow in **${process.env.GITHUB_REPOSITORY}**]\
+(https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${
+    process.env.GITHUB_RUN_ID
+  })_`
+
+  return (
+    await octokit.rest.pulls.createReview({
+      owner: 'exivity',
+      repo,
+      pull_number,
+      event,
+      body,
+    })
+  ).data
+}
+
+export async function writeStatus(
+  octokit: ReturnType<typeof getOctokit>,
+  repo: string,
+  sha: string,
+  state: 'error' | 'failure' | 'pending' | 'success',
+  context: string,
+  description?: string,
+  target_url?: string
+) {
+  info(
+    `Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`
+  )
+
+  return (
+    await octokit.rest.repos.createCommitStatus({
+      owner: 'exivity',
+      repo,
+      sha: sha,
+      state,
+      context,
+      description,
+      target_url,
+    })
+  ).data
 }

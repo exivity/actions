@@ -9,7 +9,7 @@ on:
   pull_request:
     types: [review_requested]
   workflow_run:
-    workflows: ['accept test']
+    workflows: ['accept-test']
     types: [completed]
 
 env:
@@ -22,7 +22,19 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./accept
         with:
+          dry-run: true
+
+  test-filter:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./accept
+        with:
+          filter: non_existing_folder/**
           dry-run: true

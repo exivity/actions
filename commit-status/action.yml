@@ -1,0 +1,27 @@
+name: commit-status
+description: Writes a commit status
+inputs:
+  component:
+    description: Component to write the commit status for, defaults to current
+    required: false
+  sha:
+    description: Sha of commit to write the status for, defaults to current
+    required: false
+  gh-token:
+    description: A GitHub token with write access to the component
+    required: false
+  state:
+    description: The commit status state, can be "error", "failure", "pending" or "success"
+    required: true
+  context:
+    description: A string label to differentiate this status from the status of other systems
+    required: false
+  description:
+    description: A short description of the status
+    required: false
+  target_url:
+    description: The target URL to associate with this status
+    required: false
+runs:
+  using: node16
+  main: dist/index.js

@@ -6,7 +6,12 @@ FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-${VARIANT}
 
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends yarn
+    && apt-get -y install --no-install-recommends yarn mingw-w64
+
+# Install rust
+RUN su node -c "curl https://sh.rustup.rs -sSf | bash -s -- -y"
+ENV PATH="/home/node/.cargo/bin:${PATH}"
+RUN su node -c "rustup target add x86_64-pc-windows-gnu"
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10

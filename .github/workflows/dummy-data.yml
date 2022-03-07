@@ -21,7 +21,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: create exivity dirs
         run: |
           mkdir -p ${{ env.EXIVITY_HOME_PATH }}
@@ -30,3 +30,4 @@ jobs:
         with:
           branch: develop
       - uses: ./dummy-data
+        continue-on-error: true

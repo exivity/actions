@@ -1,0 +1,9 @@
+name: semantic-pull-request
+description: Ensures your pull requests follow the Conventional Commits spec
+inputs:
+  gh-token:
+    description: GitHub token with read access to the repository
+    required: true
+runs:
+  using: node16
+  main: dist/index.js

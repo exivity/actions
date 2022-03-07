@@ -1,0 +1,21 @@
+name: slack
+description: Send a Slack message
+inputs:
+  message:
+    description: The message body to send
+    required: true
+  status:
+    description: Include a status message
+    required: false
+  channel:
+    description: Send message to this channel instead of commit author
+    required: false
+  slack-api-token:
+    description: Slack API key
+    required: true
+  gh-token:
+    description: GitHub token with read access to the repository
+    required: true
+runs:
+  using: node16
+  main: dist/index.js

@@ -13,12 +13,10 @@ jobs:
         os: [windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./rcedit
         with:
           path: fixtures/build/*.exe
-          product-name: Hello world test program
-          file-description: Built from ${{ github.sha }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: fixtures/build/*.exe

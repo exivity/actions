@@ -1,0 +1,21 @@
+name: commit-status
+
+on:
+  push:
+    paths:
+      - '.github/workflows/commit-status.yml'
+      - 'commit-status/**'
+      - 'lib/github.ts'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./commit-status
+        with:
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
+          context: auto-success
