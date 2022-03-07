@@ -8,6 +8,7 @@ _Available actions:_
 - [`accept`](#accept)
 - [`commit-status`](#commit-status)
 - [`db`](#db)
+- [`deploy-image`](#deploy-image)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
@@ -100,6 +101,36 @@ repository migrations and runs them.
 | `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY`                                                      | The AWS secret access key                                                                                                                                                                             |
 | `gh-token`              |          | `env.GITHUB_TOKEN`                                                               | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
+
+# `deploy-image`
+
+Builds and deploys a component image.
+
+## Example
+
+```yaml
+- uses: exivity/actions/deploy-image@main
+  with:
+    docker-hub-user: ${{ secrets.DOCKER_HUB_USER }}
+    docker-hub-password: ${{ secrets.DOCKER_HUB_TOKEN }}
+```
+
+## Inputs
+
+| name                  | required | default            | description                                                     |
+| --------------------- | -------- | ------------------ | --------------------------------------------------------------- |
+| `component`           |          | Current component  | Component name to build the image for                           |
+| `docker-hub-user`     | ✅       |                    | Username for Docker Hub                                         |
+| `docker-hub-password` | ✅       |                    | Password for Docker Hub                                         |
+| `ghcr-user`           |          | `github.actor`     | Username for GitHub Container Registry                          |
+| `ghcr-password`       |          | `env.GITHUB_TOKEN` | Password for GitHub Container Registry                          |
+| `dockerfile`          |          | `"./Dockerfile"`   | Path to the Dockerfile                                          |
+| `gh-token`            |          | `env.GITHUB_TOKEN` | The github token to delete image tags (only for 'delete' event) |
+
+### `dry-run`
+
+**Optional**  
+Do not deploy build artefacts when set to true
 
 # `get-artefacts`
 

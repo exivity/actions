@@ -10,6 +10,7 @@
     "build:accept": "yarn esbuild:generic accept/src/index.ts --outfile=accept/dist/index.js",
     "build:commit-status": "yarn esbuild:generic commit-status/src/index.ts --outfile=commit-status/dist/index.js",
     "build:db": "yarn esbuild:generic db/src/index.ts --outfile=db/dist/index.js",
+    "build:deploy-image": "yarn esbuild:generic deploy-image/src/index.ts --outfile=deploy-image/dist/index.js",
     "build:dummy-data": "yarn esbuild:generic dummy-data/src/index.ts --outfile=dummy-data/dist/index.js",
     "build:get-artefacts": "yarn esbuild:generic get-artefacts/src/index.ts --outfile=get-artefacts/dist/index.js",
     "build:init-ssh": "yarn esbuild:generic init-ssh/src/index.ts --outfile=init-ssh/dist/index.js",
@@ -40,6 +41,7 @@
     "mime": "3.0.0",
     "minimatch": "5.0.1",
     "rcedit": "3.0.1",
+    "semver": "7.3.5",
     "zod": "3.13.4"
   },
   "devDependencies": {
