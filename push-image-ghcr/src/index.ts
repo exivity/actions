@@ -19,7 +19,7 @@ async function run() {
   const ghcrUser = getInput('ghcr-user') || context.actor
   const ghcrPassword = getInput('ghcr-password') || getToken()
   const dockerfile = getInput('dockerfile') || './Dockerfile'
-
+  const private_key = process.env.PRIVATE_KEY
   const tags = await setTags()
   info(`Image name: exivity/${component}`)
   info(`Image tags: ${tags.join(', ')}`)
@@ -62,7 +62,7 @@ async function run() {
 
   // Build the image
   info('Building image')
-  const buildCmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`
+  const buildCmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} --build-arg PRIVATE_KEY="${private_key}" .`
   await exec(buildCmd)
 
   info(`Pushing image`)

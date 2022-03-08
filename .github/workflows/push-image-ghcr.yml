@@ -10,7 +10,7 @@ on:
       - 'push-image-ghcr/**'
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
 jobs:
   test-deploy:
