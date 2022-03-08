@@ -4,7 +4,6 @@ import { context} from '@actions/github'
 import {
   getRepository,
   getToken,
-  getRef,
 } from '../../lib/github'
 import {
   setComponentVersion,
@@ -67,7 +66,7 @@ async function run() {
   await exec(buildCmd)
 
   info(`Pushing image`)
-  await exec(`docker push $exivity/${component}`)
+  await exec(`docker push ghcr.io/exivity/${component}`)
 }
 
 run().catch(setFailed)
