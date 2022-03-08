@@ -35,13 +35,13 @@ async function run() {
   const labelOptions = Object.entries(labels)
     .map(([key, value]) => `--label "${key}=${value}"`)
     .join(' ')
-  info(`Image labels will be:\n${JSON.stringify(labels, undefined, 2)}`)
+  info(`Image labels will be:\n${JSON.stringify(labelOptions, undefined, 2)}`)
 
   // concat list of tags
   const tagOptions =
-    tags.map((tag: string) => `--tag "${tag}"`)
+    tags.map((tag: string) => `--tag "ghcr.io/exivity/${component}":"${tag}"`)
     .join(' ')
-  info(`Image labels will be:\n${JSON.stringify(labels, undefined, 2)}`)
+  info(`Image tags will be:\n${JSON.stringify(tagOptions, undefined, 2)}`)
 
   const componentVersion = setComponentVersion()
   info(`Component version will be: ${componentVersion}`)
@@ -66,7 +66,7 @@ async function run() {
   await exec(buildCmd)
 
   info(`Pushing image`)
-  await exec(`docker push ghcr.io/exivity/${component}`)
+  await exec(`docker push ghcr.io/exivity/${component} --all-tags`)
 }
 
 run().catch(setFailed)
