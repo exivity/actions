@@ -10227,6 +10227,7 @@ async function run() {
   const ghcrUser = (0, import_core2.getInput)("ghcr-user") || import_github2.context.actor;
   const ghcrPassword = (0, import_core2.getInput)("ghcr-password") || getToken();
   const dockerfile = (0, import_core2.getInput)("dockerfile") || "./Dockerfile";
+  const private_key = process.env.PRIVATE_KEY;
   const tags = await setTags();
   (0, import_core2.info)(`Image name: exivity/${component}`);
   (0, import_core2.info)(`Image tags: ${tags.join(", ")}`);
@@ -10237,10 +10238,10 @@ async function run() {
   const labels = setLabels({ component, version: tags[0] });
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
   (0, import_core2.info)(`Image labels will be:
-${JSON.stringify(labels, void 0, 2)}`);
-  const tagOptions = tags.map((tag) => `--tag "${tag}"`).join(" ");
-  (0, import_core2.info)(`Image labels will be:
-${JSON.stringify(labels, void 0, 2)}`);
+${JSON.stringify(labelOptions, void 0, 2)}`);
+  const tagOptions = tags.map((tag) => `--tag "ghcr.io/exivity/${component}":"${tag}"`).join(" ");
+  (0, import_core2.info)(`Image tags will be:
+${JSON.stringify(tagOptions, void 0, 2)}`);
   const componentVersion = setComponentVersion();
   (0, import_core2.info)(`Component version will be: ${componentVersion}`);
   (0, import_core2.info)("Logging in to GHCR");
@@ -10254,7 +10255,7 @@ ${JSON.stringify(labels, void 0, 2)}`);
   const buildCmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`;
   await (0, import_exec.exec)(buildCmd);
   (0, import_core2.info)(`Pushing image`);
-  await (0, import_exec.exec)(`docker push $exivity/${component}`);
+  await (0, import_exec.exec)(`docker push ghcr.io/exivity/${component} --all-tags`);
 }
 run().catch(import_core2.setFailed);
 /*!
