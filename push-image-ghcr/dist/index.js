@@ -190,7 +190,7 @@ var require_file_command = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.issueCommand = void 0;
-    var fs2 = __importStar(require("fs"));
+    var fs = __importStar(require("fs"));
     var os = __importStar(require("os"));
     var utils_1 = require_utils();
     function issueCommand(command, message) {
@@ -198,10 +198,10 @@ var require_file_command = __commonJS({
       if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
       }
-      if (!fs2.existsSync(filePath)) {
+      if (!fs.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
       }
-      fs2.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+      fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
         encoding: "utf8"
       });
     }
@@ -366,7 +366,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug2("making CONNECT request");
+      debug("making CONNECT request");
       var connectReq = self.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -386,7 +386,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug2("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug("tunneling socket could not be established, statusCode=%d", res.statusCode);
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -395,7 +395,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug2("got illegal response body from proxy");
+          debug("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -403,13 +403,13 @@ var require_tunnel = __commonJS({
           self.removeSocket(placeholder);
           return;
         }
-        debug2("tunneling connection has established");
+        debug("tunneling connection has established");
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug2("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
@@ -467,9 +467,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug2;
+    var debug;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug2 = function() {
+      debug = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -479,10 +479,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug2 = function() {
+      debug = function() {
       };
     }
-    exports.debug = debug2;
+    exports.debug = debug;
   }
 });
 
@@ -1207,7 +1207,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
     exports.addPath = addPath;
-    function getInput4(name, options) {
+    function getInput3(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -1217,16 +1217,16 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports.getInput = getInput4;
+    exports.getInput = getInput3;
     function getMultilineInput(name, options) {
-      const inputs = getInput4(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput3(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
     exports.getMultilineInput = getMultilineInput;
-    function getBooleanInput2(name, options) {
+    function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput4(name, options);
+      const val = getInput3(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -1234,7 +1234,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports.getBooleanInput = getBooleanInput2;
+    exports.getBooleanInput = getBooleanInput;
     function setOutput(name, value) {
       process.stdout.write(os.EOL);
       command_1.issueCommand("set-output", { name }, value);
@@ -1253,10 +1253,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug2(message) {
+    function debug(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug2;
+    exports.debug = debug;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -1373,9 +1373,9 @@ var require_io_util = __commonJS({
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rename = exports.readlink = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
-    var fs2 = __importStar(require("fs"));
+    var fs = __importStar(require("fs"));
     var path = __importStar(require("path"));
-    _a = fs2.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
+    _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
     exports.IS_WINDOWS = process.platform === "win32";
     function exists(fsPath) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -1553,7 +1553,7 @@ var require_io = __commonJS({
     var path = __importStar(require("path"));
     var util_1 = require("util");
     var ioUtil = __importStar(require_io_util());
-    var exec3 = util_1.promisify(childProcess.exec);
+    var exec2 = util_1.promisify(childProcess.exec);
     var execFile = util_1.promisify(childProcess.execFile);
     function cp(source, dest, options = {}) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -1612,11 +1612,11 @@ var require_io = __commonJS({
           try {
             const cmdPath = ioUtil.getCmdPath();
             if (yield ioUtil.isDirectory(inputPath, true)) {
-              yield exec3(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
+              yield exec2(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
                 env: { inputPath }
               });
             } else {
-              yield exec3(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
+              yield exec2(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
                 env: { inputPath }
               });
             }
@@ -2312,7 +2312,7 @@ var require_exec = __commonJS({
     exports.getExecOutput = exports.exec = void 0;
     var string_decoder_1 = require("string_decoder");
     var tr = __importStar(require_toolrunner());
-    function exec3(commandLine, args, options) {
+    function exec2(commandLine, args, options) {
       return __awaiter(this, void 0, void 0, function* () {
         const commandArgs = tr.argStringToArray(commandLine);
         if (commandArgs.length === 0) {
@@ -2324,8 +2324,8 @@ var require_exec = __commonJS({
         return runner.exec();
       });
     }
-    exports.exec = exec3;
-    function getExecOutput2(commandLine, args, options) {
+    exports.exec = exec2;
+    function getExecOutput(commandLine, args, options) {
       var _a, _b;
       return __awaiter(this, void 0, void 0, function* () {
         let stdout = "";
@@ -2347,7 +2347,7 @@ var require_exec = __commonJS({
           }
         };
         const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
-        const exitCode = yield exec3(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+        const exitCode = yield exec2(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
         stdout += stdoutDecoder.end();
         stderr += stderrDecoder.end();
         return {
@@ -2357,7 +2357,7 @@ var require_exec = __commonJS({
         };
       });
     }
-    exports.getExecOutput = getExecOutput2;
+    exports.getExecOutput = getExecOutput;
   }
 });
 
@@ -7848,10 +7848,10 @@ var require_github = __commonJS({
     var Context = __importStar(require_context());
     var utils_1 = require_utils4();
     exports.context = new Context.Context();
-    function getOctokit2(token, options) {
+    function getOctokit(token, options) {
       return new utils_1.GitHub(utils_1.getOctokitOptions(token, options));
     }
-    exports.getOctokit = getOctokit2;
+    exports.getOctokit = getOctokit;
   }
 });
 
@@ -7874,9 +7874,9 @@ var require_constants = __commonJS({
 // node_modules/semver/internal/debug.js
 var require_debug = __commonJS({
   "node_modules/semver/internal/debug.js"(exports, module2) {
-    var debug2 = typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG) ? (...args) => console.error("SEMVER", ...args) : () => {
+    var debug = typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG) ? (...args) => console.error("SEMVER", ...args) : () => {
     };
-    module2.exports = debug2;
+    module2.exports = debug;
   }
 });
 
@@ -7884,7 +7884,7 @@ var require_debug = __commonJS({
 var require_re = __commonJS({
   "node_modules/semver/internal/re.js"(exports, module2) {
     var { MAX_SAFE_COMPONENT_LENGTH } = require_constants();
-    var debug2 = require_debug();
+    var debug = require_debug();
     exports = module2.exports = {};
     var re = exports.re = [];
     var src = exports.src = [];
@@ -7892,7 +7892,7 @@ var require_re = __commonJS({
     var R = 0;
     var createToken = (name, value, isGlobal) => {
       const index = R++;
-      debug2(index, value);
+      debug(index, value);
       t[name] = index;
       src[index] = value;
       re[index] = new RegExp(value, isGlobal ? "g" : void 0);
@@ -7979,7 +7979,7 @@ var require_identifiers = __commonJS({
 // node_modules/semver/classes/semver.js
 var require_semver = __commonJS({
   "node_modules/semver/classes/semver.js"(exports, module2) {
-    var debug2 = require_debug();
+    var debug = require_debug();
     var { MAX_LENGTH, MAX_SAFE_INTEGER } = require_constants();
     var { re, t } = require_re();
     var parseOptions = require_parse_options();
@@ -7999,7 +7999,7 @@ var require_semver = __commonJS({
         if (version.length > MAX_LENGTH) {
           throw new TypeError(`version is longer than ${MAX_LENGTH} characters`);
         }
-        debug2("SemVer", version, options);
+        debug("SemVer", version, options);
         this.options = options;
         this.loose = !!options.loose;
         this.includePrerelease = !!options.includePrerelease;
@@ -8047,7 +8047,7 @@ var require_semver = __commonJS({
         return this.version;
       }
       compare(other) {
-        debug2("SemVer.compare", this.version, this.options, other);
+        debug("SemVer.compare", this.version, this.options, other);
         if (!(other instanceof SemVer)) {
           if (typeof other === "string" && other === this.version) {
             return 0;
@@ -8080,7 +8080,7 @@ var require_semver = __commonJS({
         do {
           const a = this.prerelease[i];
           const b = other.prerelease[i];
-          debug2("prerelease compare", i, a, b);
+          debug("prerelease compare", i, a, b);
           if (a === void 0 && b === void 0) {
             return 0;
           } else if (b === void 0) {
@@ -8102,7 +8102,7 @@ var require_semver = __commonJS({
         do {
           const a = this.build[i];
           const b = other.build[i];
-          debug2("prerelease compare", i, a, b);
+          debug("prerelease compare", i, a, b);
           if (a === void 0 && b === void 0) {
             return 0;
           } else if (b === void 0) {
@@ -9250,9 +9250,9 @@ var require_range = __commonJS({
         const loose = this.options.loose;
         const hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
         range = range.replace(hr, hyphenReplace(this.options.includePrerelease));
-        debug2("hyphen replace", range);
+        debug("hyphen replace", range);
         range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
-        debug2("comparator trim", range, re[t.COMPARATORTRIM]);
+        debug("comparator trim", range, re[t.COMPARATORTRIM]);
         range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
         range = range.replace(re[t.CARETTRIM], caretTrimReplace);
         range = range.split(/\s+/).join(" ");
@@ -9309,7 +9309,7 @@ var require_range = __commonJS({
     var cache = new LRU({ max: 1e3 });
     var parseOptions = require_parse_options();
     var Comparator = require_comparator();
-    var debug2 = require_debug();
+    var debug = require_debug();
     var SemVer = require_semver();
     var {
       re,
@@ -9333,15 +9333,15 @@ var require_range = __commonJS({
       return result;
     };
     var parseComparator = (comp, options) => {
-      debug2("comp", comp, options);
+      debug("comp", comp, options);
       comp = replaceCarets(comp, options);
-      debug2("caret", comp);
+      debug("caret", comp);
       comp = replaceTildes(comp, options);
-      debug2("tildes", comp);
+      debug("tildes", comp);
       comp = replaceXRanges(comp, options);
-      debug2("xrange", comp);
+      debug("xrange", comp);
       comp = replaceStars(comp, options);
-      debug2("stars", comp);
+      debug("stars", comp);
       return comp;
     };
     var isX = (id) => !id || id.toLowerCase() === "x" || id === "*";
@@ -9351,7 +9351,7 @@ var require_range = __commonJS({
     var replaceTilde = (comp, options) => {
       const r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
       return comp.replace(r, (_, M, m, p, pr) => {
-        debug2("tilde", comp, _, M, m, p, pr);
+        debug("tilde", comp, _, M, m, p, pr);
         let ret;
         if (isX(M)) {
           ret = "";
@@ -9360,12 +9360,12 @@ var require_range = __commonJS({
         } else if (isX(p)) {
           ret = `>=${M}.${m}.0 <${M}.${+m + 1}.0-0`;
         } else if (pr) {
-          debug2("replaceTilde pr", pr);
+          debug("replaceTilde pr", pr);
           ret = `>=${M}.${m}.${p}-${pr} <${M}.${+m + 1}.0-0`;
         } else {
           ret = `>=${M}.${m}.${p} <${M}.${+m + 1}.0-0`;
         }
-        debug2("tilde return", ret);
+        debug("tilde return", ret);
         return ret;
       });
     };
@@ -9373,11 +9373,11 @@ var require_range = __commonJS({
       return replaceCaret(comp2, options);
     }).join(" ");
     var replaceCaret = (comp, options) => {
-      debug2("caret", comp, options);
+      debug("caret", comp, options);
       const r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
       const z = options.includePrerelease ? "-0" : "";
       return comp.replace(r, (_, M, m, p, pr) => {
-        debug2("caret", comp, _, M, m, p, pr);
+        debug("caret", comp, _, M, m, p, pr);
         let ret;
         if (isX(M)) {
           ret = "";
@@ -9390,7 +9390,7 @@ var require_range = __commonJS({
             ret = `>=${M}.${m}.0${z} <${+M + 1}.0.0-0`;
           }
         } else if (pr) {
-          debug2("replaceCaret pr", pr);
+          debug("replaceCaret pr", pr);
           if (M === "0") {
             if (m === "0") {
               ret = `>=${M}.${m}.${p}-${pr} <${M}.${m}.${+p + 1}-0`;
@@ -9401,7 +9401,7 @@ var require_range = __commonJS({
             ret = `>=${M}.${m}.${p}-${pr} <${+M + 1}.0.0-0`;
           }
         } else {
-          debug2("no pr");
+          debug("no pr");
           if (M === "0") {
             if (m === "0") {
               ret = `>=${M}.${m}.${p}${z} <${M}.${m}.${+p + 1}-0`;
@@ -9412,12 +9412,12 @@ var require_range = __commonJS({
             ret = `>=${M}.${m}.${p} <${+M + 1}.0.0-0`;
           }
         }
-        debug2("caret return", ret);
+        debug("caret return", ret);
         return ret;
       });
     };
     var replaceXRanges = (comp, options) => {
-      debug2("replaceXRanges", comp, options);
+      debug("replaceXRanges", comp, options);
       return comp.split(/\s+/).map((comp2) => {
         return replaceXRange(comp2, options);
       }).join(" ");
@@ -9426,7 +9426,7 @@ var require_range = __commonJS({
       comp = comp.trim();
       const r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
       return comp.replace(r, (ret, gtlt, M, m, p, pr) => {
-        debug2("xRange", comp, ret, gtlt, M, m, p, pr);
+        debug("xRange", comp, ret, gtlt, M, m, p, pr);
         const xM = isX(M);
         const xm = xM || isX(m);
         const xp = xm || isX(p);
@@ -9472,16 +9472,16 @@ var require_range = __commonJS({
         } else if (xp) {
           ret = `>=${M}.${m}.0${pr} <${M}.${+m + 1}.0-0`;
         }
-        debug2("xRange return", ret);
+        debug("xRange return", ret);
         return ret;
       });
     };
     var replaceStars = (comp, options) => {
-      debug2("replaceStars", comp, options);
+      debug("replaceStars", comp, options);
       return comp.trim().replace(re[t.STAR], "");
     };
     var replaceGTE0 = (comp, options) => {
-      debug2("replaceGTE0", comp, options);
+      debug("replaceGTE0", comp, options);
       return comp.trim().replace(re[options.includePrerelease ? t.GTE0PRE : t.GTE0], "");
     };
     var hyphenReplace = (incPr) => ($0, from, fM, fm, fp, fpr, fb, to, tM, tm, tp, tpr, tb) => {
@@ -9519,7 +9519,7 @@ var require_range = __commonJS({
       }
       if (version.prerelease.length && !options.includePrerelease) {
         for (let i = 0; i < set.length; i++) {
-          debug2(set[i].semver);
+          debug(set[i].semver);
           if (set[i].semver === Comparator.ANY) {
             continue;
           }
@@ -9554,7 +9554,7 @@ var require_comparator = __commonJS({
             comp = comp.value;
           }
         }
-        debug2("comparator", comp, options);
+        debug("comparator", comp, options);
         this.options = options;
         this.loose = !!options.loose;
         this.parse(comp);
@@ -9563,7 +9563,7 @@ var require_comparator = __commonJS({
         } else {
           this.value = this.operator + this.semver.version;
         }
-        debug2("comp", this);
+        debug("comp", this);
       }
       parse(comp) {
         const r = this.options.loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR];
@@ -9585,7 +9585,7 @@ var require_comparator = __commonJS({
         return this.value;
       }
       test(version) {
-        debug2("Comparator.test", version, this.options.loose);
+        debug("Comparator.test", version, this.options.loose);
         if (this.semver === ANY || version === ANY) {
           return true;
         }
@@ -9632,7 +9632,7 @@ var require_comparator = __commonJS({
     var parseOptions = require_parse_options();
     var { re, t } = require_re();
     var cmp = require_cmp();
-    var debug2 = require_debug();
+    var debug = require_debug();
     var SemVer = require_semver();
     var Range = require_range();
   }
@@ -10125,30 +10125,13 @@ var require_semver2 = __commonJS({
   }
 });
 
-// deploy-image/src/index.ts
-var import_core3 = __toESM(require_core());
-var import_exec3 = __toESM(require_exec());
-var import_github2 = __toESM(require_github());
-var import_fs2 = require("fs");
-
-// lib/core.ts
-var import_core = __toESM(require_core());
+// push-image-ghcr/src/index.ts
+var import_core2 = __toESM(require_core());
 var import_exec = __toESM(require_exec());
-var TRUE_VALUES = [true, "true", "TRUE"];
-var FALSE_VALUES = [false, "false", "FALSE"];
-function getBooleanInput(name, defaultValue) {
-  let inputValue = (0, import_core.getInput)(name) || defaultValue;
-  if (TRUE_VALUES.includes(inputValue)) {
-    return true;
-  }
-  if (FALSE_VALUES.includes(inputValue)) {
-    return false;
-  }
-  throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
-}
+var import_github2 = __toESM(require_github());
 
 // lib/github.ts
-var import_core2 = __toESM(require_core());
+var import_core = __toESM(require_core());
 var import_fs = require("fs");
 function getRepository() {
   const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
@@ -10182,7 +10165,7 @@ function getTag() {
   return ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : null;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core2.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
@@ -10198,9 +10181,6 @@ function getEventName(supportedEvents) {
   }
   return eventName;
 }
-function isEvent(input, compare, eventData) {
-  return input === compare;
-}
 async function getEventData(eventName) {
   const eventPath = process.env["GITHUB_EVENT_PATH"];
   if (!eventPath) {
@@ -10212,73 +10192,14 @@ async function getEventData(eventName) {
   return JSON.parse(fileData);
 }
 
-// deploy-image/src/metadata.ts
-var import_exec2 = __toESM(require_exec());
+// push-image-ghcr/src/metadata.ts
 var import_semver = __toESM(require_semver2());
-var GHCR = "ghcr.io/";
-var RELEASE_BRANCHES = ["main", "master"];
-var BETA_BRANCHES = [];
-var CANARY_BRANCHES = ["develop"];
-var RELEASE_TAG = "latest";
-var CANARY_TAG = "canary";
-function getDeployType() {
-  const tag = getTag();
-  const semver = (0, import_semver.parse)(tag);
-  if (semver) {
-    return "tag:semver";
-  }
-  if (tag) {
-    return "tag";
-  }
+async function setTags() {
   const ref = getRef();
-  if (RELEASE_BRANCHES.includes(ref)) {
-    return "branch:release";
-  }
-  if (BETA_BRANCHES.includes(ref)) {
-    return "branch:beta";
-  }
-  if (CANARY_BRANCHES.includes(ref)) {
-    return "branch:canary";
-  }
-  return "branch";
+  const sha = await getSha();
+  return [ref, sha];
 }
-async function getImagePrefixAndTags() {
-  const type = getDeployType();
-  switch (type) {
-    case "tag:semver":
-      const tag = getTag();
-      const semver = (0, import_semver.parse)(tag);
-      const repoShaOfTagCommit = (await (0, import_exec2.getExecOutput)(`git rev-list -n 1 tags/${tag}`)).stdout.trim();
-      const commitsSinceTagCommit = (await (0, import_exec2.getExecOutput)(`git rev-list --count ${repoShaOfTagCommit}..HEAD`)).stdout.trim();
-      if (Number(commitsSinceTagCommit) === 0) {
-        return {
-          prefix: null,
-          tags: [
-            semver.version,
-            `${semver.major}.${semver.minor}`,
-            semver.major.toString(),
-            RELEASE_TAG
-          ]
-        };
-      }
-      return { prefix: null, tags: [semver.version] };
-    case "tag":
-      return { prefix: GHCR, tags: [] };
-    case "branch:release":
-      return { prefix: null, tags: [] };
-    case "branch:beta":
-      return { prefix: null, tags: [] };
-    case "branch:canary":
-      return { prefix: GHCR, tags: [CANARY_TAG] };
-    case "branch":
-      const ref = getRef();
-      return {
-        prefix: GHCR,
-        tags: [ref.replace(/[^\w\w.-]/g, "-").substr(0, 127)]
-      };
-  }
-}
-function getImageLabels({
+function setLabels({
   component,
   version
 }) {
@@ -10289,127 +10210,53 @@ function getImageLabels({
     "org.opencontainers.image.url": "https://exivity.com",
     "org.opencontainers.image.documentation": "https://docs.exivity.com",
     "org.opencontainers.image.source": `https://github.com/${process.env["GITHUB_REPOSITORY"]}`,
-    "org.opencontainers.image.version": version,
     "org.opencontainers.image.created": new Date().toISOString(),
     "org.opencontainers.image.revision": getSha()
   };
 }
-function getComponentVersion() {
+function setComponentVersion() {
   const tag = getTag();
   const semver = (0, import_semver.parse)(tag);
   return ((semver == null ? void 0 : semver.version) ?? process.env["GITHUB_SHA"]) || "unknown";
 }
 
-// deploy-image/src/index.ts
-var METADATA_FILENAME = "metadata.json";
+// push-image-ghcr/src/index.ts
 async function run() {
-  var _a, _b, _c;
   const { component: defaultComponent } = getRepository();
-  const component = (0, import_core3.getInput)("component") || defaultComponent;
-  const dockerUser = (0, import_core3.getInput)("docker-hub-user", { required: true });
-  const dockerPassword = (0, import_core3.getInput)("docker-hub-password", { required: true });
-  const ghcrUser = (0, import_core3.getInput)("ghcr-user") || import_github2.context.actor;
-  const ghcrPassword = (0, import_core3.getInput)("ghcr-password") || getToken();
-  const dryRun = getBooleanInput("dry-run", false);
-  const dockerfile = (0, import_core3.getInput)("dockerfile") || "./Dockerfile";
-  const eventName = getEventName(["push", "delete"]);
-  const eventData = await getEventData();
-  const type = getDeployType();
-  const { prefix, tags } = await getImagePrefixAndTags();
-  (0, import_core3.info)(`Image deploy type: ${type}`);
-  (0, import_core3.info)(`Image prefix: ${prefix ?? "none"}`);
-  (0, import_core3.info)(`Image name: exivity/${component}`);
-  (0, import_core3.info)(`Image tags: ${tags.join(",")}`);
-  if (isEvent(eventName, "delete", eventData) || !!process.env["EMULATE_DELETE"]) {
-    if (type !== "branch") {
-      (0, import_core3.info)(`Not deleting images for deploy type "${type}"`);
-      return;
-    }
-    const ghToken = getToken();
-    const octokit = (0, import_github2.getOctokit)(ghToken);
-    const { data: versions } = await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
-      org: "exivity",
-      package_type: "container",
-      package_name: component,
-      per_page: 100
-    });
-    if (versions.length === 100) {
-      (0, import_core3.warning)(`Please clean up package versions or implement pagination, we found 100 or more!`);
-    }
-    if (!versions.length) {
-      (0, import_core3.info)("No package versions found");
-    }
-    for (const version of versions) {
-      const tagOverlap = tags.filter((tag) => {
-        var _a2, _b2, _c2;
-        return (_c2 = (_b2 = (_a2 = version.metadata) == null ? void 0 : _a2.container) == null ? void 0 : _b2.tags) == null ? void 0 : _c2.includes(tag);
-      });
-      if (tagOverlap.length > 0) {
-        (0, import_core3.info)(`Deleting package version ${version.id}, it was tagged with "${(_c = (_b = (_a = version.metadata) == null ? void 0 : _a.container) == null ? void 0 : _b.tags) == null ? void 0 : _c.join(",")}"`);
-        await octokit.rest.packages.deletePackageVersionForOrg({
-          org: "exivity",
-          package_type: "container",
-          package_name: component,
-          package_version_id: version.id
-        });
-      } else {
-        (0, import_core3.warning)("Could not find matching package version to delete");
-      }
-    }
-    return;
-  }
+  const component = (0, import_core2.getInput)("component") || defaultComponent;
+  const ghcrUser = (0, import_core2.getInput)("ghcr-user") || import_github2.context.actor;
+  const ghcrPassword = (0, import_core2.getInput)("ghcr-password") || getToken();
+  const dockerfile = (0, import_core2.getInput)("dockerfile") || "./Dockerfile";
+  const tags = await setTags();
+  (0, import_core2.info)(`Image name: exivity/${component}`);
+  (0, import_core2.info)(`Image tags: ${tags.join(", ")}`);
   if (tags.length === 0) {
-    (0, import_core3.warning)("No tags set, skipping deploy docker action");
+    (0, import_core2.warning)("No tags set, skipping deploy docker action");
     return;
   }
-  const labels = getImageLabels({ component, version: tags[0] });
-  (0, import_core3.info)(`Image labels will be:
-${JSON.stringify(labels, void 0, 2)}`);
-  const componentVersion = getComponentVersion();
-  (0, import_core3.info)(`Component version will be: ${componentVersion}`);
-  const metadata = {
-    component,
-    version: componentVersion,
-    created: new Date().toISOString()
-  };
-  (0, import_core3.info)(`Writing metadata to ${METADATA_FILENAME}:
-${JSON.stringify(metadata, void 0, 2)}`);
-  await import_fs2.promises.writeFile("./" + METADATA_FILENAME, JSON.stringify(metadata, void 0, 2));
-  if (prefix === GHCR) {
-    (0, import_core3.info)("Logging in to GitHub Packages");
-    await (0, import_exec3.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {
-      env: __spreadProps(__spreadValues({}, process.env), {
-        GHCR_PASSWORD: ghcrPassword,
-        GHCR_USER: ghcrUser
-      })
-    });
-  } else {
-    (0, import_core3.info)("Logging in to Docker Hub");
-    await (0, import_exec3.exec)('bash -c "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin"', void 0, {
-      env: __spreadProps(__spreadValues({}, process.env), {
-        DOCKER_HUB_PASSWORD: dockerPassword,
-        DOCKER_HUB_USER: dockerUser
-      })
-    });
-  }
+  const labels = setLabels({ component, version: tags[0] });
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
-  const buildCmd = `docker build -f ${dockerfile} --tag ${component} ${labelOptions} .`;
-  (0, import_core3.info)(`Building image`);
-  await (0, import_exec3.exec)(buildCmd);
-  (0, import_core3.info)(`Tagging and pushing image`);
-  for (const tag of tags) {
-    const name = `${prefix}exivity/${component}:${tag}`;
-    await (0, import_exec3.exec)(`docker image tag ${component} ${name}`);
-    const pushCmd = `docker push ${name}`;
-    if (!dryRun) {
-      await (0, import_exec3.exec)(pushCmd);
-    } else {
-      (0, import_core3.debug)(pushCmd);
-      (0, import_core3.info)("dry-run set, would have executed push command");
-    }
-  }
+  (0, import_core2.info)(`Image labels will be:
+${JSON.stringify(labels, void 0, 2)}`);
+  const tagOptions = tags.map((tag) => `--tag "${tag}"`).join(" ");
+  (0, import_core2.info)(`Image labels will be:
+${JSON.stringify(labels, void 0, 2)}`);
+  const componentVersion = setComponentVersion();
+  (0, import_core2.info)(`Component version will be: ${componentVersion}`);
+  (0, import_core2.info)("Logging in to GHCR");
+  await (0, import_exec.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {
+    env: __spreadProps(__spreadValues({}, process.env), {
+      GHCR_PASSWORD: ghcrPassword,
+      GHCR_USER: ghcrUser
+    })
+  });
+  (0, import_core2.info)("Building image");
+  const buildCmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`;
+  await (0, import_exec.exec)(buildCmd);
+  (0, import_core2.info)(`Pushing image`);
+  await (0, import_exec.exec)(`docker push $exivity/${component}`);
 }
-run().catch(import_core3.setFailed);
+run().catch(import_core2.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

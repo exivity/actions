@@ -1,4 +1,4 @@
-name: deploy-image
+name: push-image-ghcr
 description: Builds and deploys a component image
 inputs:
   component:
