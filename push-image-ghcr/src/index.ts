@@ -62,7 +62,7 @@ async function run() {
 
   // Build the image
   info('Building image')
-  const buildCmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} --build-arg PRIVATE_KEY="${private_key}" .`
+  const buildCmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`
   await exec(buildCmd)
 
   info(`Pushing image`)
