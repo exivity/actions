@@ -9,9 +9,6 @@ on:
       - 'lib/s3*'
       - 'deploy-image/**'
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-
 jobs:
   test-deploy:
     runs-on: ubuntu-latest
@@ -35,5 +32,6 @@ jobs:
           dockerfile: fixtures/Dockerfile
           docker-hub-user: ${{ secrets.DOCKER_HUB_USER }}
           docker-hub-password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
         env:
           EMULATE_DELETE: 1

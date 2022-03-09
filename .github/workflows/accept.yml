@@ -12,9 +12,6 @@ on:
     workflows: ['accept-test']
     types: [completed]
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-
 jobs:
   test:
     strategy:
@@ -26,6 +23,7 @@ jobs:
       - uses: ./accept
         with:
           dry-run: true
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
 
   test-filter:
     strategy:
@@ -38,3 +36,4 @@ jobs:
         with:
           filter: non_existing_folder/**
           dry-run: true
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}

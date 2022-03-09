@@ -7922,7 +7922,7 @@ function getWorkspacePath() {
   return workspacePath;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core2.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core2.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
@@ -7980,8 +7980,8 @@ async function downloadS3object({
   });
 }
 function getAWSCredentials() {
-  const awsKeyId = (0, import_core3.getInput)("aws-access-key-id") || process.env["AWS_ACCESS_KEY_ID"];
-  const awsSecretKey = (0, import_core3.getInput)("aws-secret-access-key") || process.env["AWS_SECRET_ACCESS_KEY"];
+  const awsKeyId = (0, import_core3.getInput)("aws-access-key-id");
+  const awsSecretKey = (0, import_core3.getInput)("aws-secret-access-key");
   if (!awsKeyId || !awsSecretKey) {
     throw new Error("A required AWS input is missing");
   }

@@ -98,8 +98,8 @@ repository migrations and runs them.
 | `db-name`               |          | `"exdb-test"`                                                                    | The db name to create.                                                                                                                                                                                |
 | `mode`                  |          | `"host"`                                                                         | Whether to run PostgreSQL as a Docker container or start the server installed on the host. Either `"host"` or `"docker"`.                                                                             |
 | `version`               |          | `"14.0"`                                                                         | The PostgreSQL version to use. Only affects Docker mode (host mode always uses default version). Make sure to use a string type to avoid truncation. Available versions: `"14.0"`, `"13.0"`, `"12.3"` |
-| `aws-access-key-id`     |          | `env.AWS_ACCESS_KEY_ID`                                                          | The AWS access key ID                                                                                                                                                                                 |
-| `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY`                                                      | The AWS secret access key                                                                                                                                                                             |
+| `aws-access-key-id`     | ✅       |                                                                                  | The AWS access key ID                                                                                                                                                                                 |
+| `aws-secret-access-key` | ✅       |                                                                                  | The AWS secret access key                                                                                                                                                                             |
 | `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
 
@@ -118,20 +118,16 @@ Builds and deploys a component image.
 
 ## Inputs
 
-| name                  | required | default           | description                                                     |
-| --------------------- | -------- | ----------------- | --------------------------------------------------------------- |
-| `component`           |          | Current component | Component name to build the image for                           |
-| `docker-hub-user`     | ✅       |                   | Username for Docker Hub                                         |
-| `docker-hub-password` | ✅       |                   | Password for Docker Hub                                         |
-| `ghcr-user`           |          | `github.actor`    | Username for GitHub Container Registry                          |
-| `ghcr-password`       |          | `github.token`    | Password for GitHub Container Registry                          |
-| `dockerfile`          |          | `"./Dockerfile"`  | Path to the Dockerfile                                          |
-| `gh-token`            |          | `github.token`    | The github token to delete image tags (only for 'delete' event) |
-
-### `dry-run`
-
-**Optional**  
-Do not deploy build artefacts when set to true
+| name                  | required | default           | description                                                                                      |
+| --------------------- | -------- | ----------------- | ------------------------------------------------------------------------------------------------ |
+| `component`           |          | Current component | Component name to build the image for                                                            |
+| `docker-hub-user`     | ✅       |                   | Username for Docker Hub                                                                          |
+| `docker-hub-password` | ✅       |                   | Password for Docker Hub                                                                          |
+| `ghcr-user`           |          | `github.actor`    | Username for GitHub Container Registry                                                           |
+| `ghcr-password`       |          | `github.token`    | Password for GitHub Container Registry                                                           |
+| `dockerfile`          |          | `"./Dockerfile"`  | Path to the Dockerfile                                                                           |
+| `dry-run`             |          | `false`           | Do not deploy build artefacts when set to `true`                                                 |
+| `gh-token`            |          | `github.token`    | The github token to delete image tags (only for 'delete' event), must have `packages:read` scope |
 
 # `get-artefacts`
 
@@ -163,8 +159,8 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 | `prefix`                |          |                                                                                                 | If specified, download artefacts from this prefix (appended after platform prefix if specified). |
 | `path`                  |          | `"../{component}/build"`                                                                        | Put artefacts in this path                                                                       |
 | `auto-unzip`            |          | `true`                                                                                          | Automatically unzip artefact files                                                               |
-| `aws-access-key-id`     |          | `env.AWS_ACCESS_KEY_ID`                                                                         | The AWS access key ID                                                                            |
-| `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY`                                                                     | The AWS secret access key                                                                        |
+| `aws-access-key-id`     | ✅       |                                                                                                 | The AWS access key ID                                                                            |
+| `aws-secret-access-key` | ✅       |                                                                                                 | The AWS secret access key                                                                        |
 | `gh-token`              |          | `github.token`                                                                                  | A GitHub token with access to the exivity/{component} repository.                                |
 
 # `init-ssh`
@@ -253,14 +249,14 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ## Inputs
 
-| name                    | required | default                     | description                                                                                    |
-| ----------------------- | -------- | --------------------------- | ---------------------------------------------------------------------------------------------- |
-| `use-platform-prefix`   |          | `false`                     | If `true`, uses `windows` or `linux` prefix depending on current os.                           |
-| `prefix`                |          |                             | If specified, upload artefacts with this prefix (appended after platform prefix if specified). |
-| `path`                  |          | `"build"`                   | Upload artefacts from this path.                                                               |
-| `zip`                   |          | `false`                     | Zip artefact files before uploading as `{component_name}.tar.gz`                               |
-| `aws-access-key-id`     |          | `env.AWS_ACCESS_KEY_ID`     | The AWS access key ID                                                                          |
-| `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY` | The AWS secret access key                                                                      |
+| name                    | required | default   | description                                                                                    |
+| ----------------------- | -------- | --------- | ---------------------------------------------------------------------------------------------- |
+| `use-platform-prefix`   |          | `false`   | If `true`, uses `windows` or `linux` prefix depending on current os.                           |
+| `prefix`                |          |           | If specified, upload artefacts with this prefix (appended after platform prefix if specified). |
+| `path`                  |          | `"build"` | Upload artefacts from this path.                                                               |
+| `zip`                   |          | `false`   | Zip artefact files before uploading as `{component_name}.tar.gz`                               |
+| `aws-access-key-id`     | ✅       |           | The AWS access key ID                                                                          |
+| `aws-secret-access-key` | ✅       |           | The AWS secret access key                                                                      |
 
 # `rabbitmq`
 

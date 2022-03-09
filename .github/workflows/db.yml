@@ -10,11 +10,6 @@ on:
       - 'lib/s3*'
       - 'db/**'
 
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-
 jobs:
   test:
     strategy:
@@ -36,3 +31,6 @@ jobs:
           branch: develop
           mode: ${{ matrix.mode }}
           version: ${{ matrix.version }}
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
