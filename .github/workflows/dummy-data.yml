@@ -8,9 +8,6 @@ on:
       - 'lib/github.ts'
 
 env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
   EXIVITY_HOME_PATH: ${{ github.workspace }}/exivity/home
   EXIVITY_PROGRAM_PATH: ${{ github.workspace }}/exivity/program
 
@@ -29,5 +26,8 @@ jobs:
       - uses: ./db
         with:
           branch: develop
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
       - uses: ./dummy-data
         continue-on-error: true
