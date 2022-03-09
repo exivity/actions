@@ -8125,7 +8125,7 @@ async function run() {
   };
   const runBlock = {
     type: "mrkdwn",
-    text: `\u26A1 <https://github.com/exivity/${component}/actions/runs/${import_github.context.runId}|${import_github.context.workflow} / ${import_github.context.job} (${import_github.context.eventName})>`
+    text: `\u26A1 <https://github.com/exivity/${component}/actions/runs/${import_github.context.runId}|${import_github.context.workflow} / ${import_github.context.job} (${import_github.context.eventName})>     \u26A12 <https://github.com/exivity/${component}/runs/${import_github.context.runNumber}|${import_github.context.workflow} / ${import_github.context.job} (${import_github.context.eventName})>`
   };
   const blocks = [
     {
