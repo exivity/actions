@@ -30,7 +30,7 @@ async function run() {
   const dryRun = getBooleanInput('dry-run', false)
   const dockerfile = getInput('dockerfile') || './Dockerfile'
   const eventName = getEventName(['push', 'delete'])
-  const eventData = await getEventData<typeof eventName>()
+  const eventData = getEventData<typeof eventName>()
 
   const type = getDeployType()
   const { prefix, tags } = await getImagePrefixAndTags()

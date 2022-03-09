@@ -1726,8 +1726,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context2, operator, key, modifier) {
-      var value = context2[key], result = [];
+    function getValues(context3, operator, key, modifier) {
+      var value = context3[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -1787,7 +1787,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context2) {
+    function expand(template, context3) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -1799,7 +1799,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context3, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -7877,7 +7877,7 @@ async function getCommitAuthorEmail() {
 
 // lib/github.ts
 var import_core = __toESM(require_core());
-var import_fs = require("fs");
+var import_utils = __toESM(require_utils4());
 async function getPrFromRef(octokit, repo, ref) {
   const { data } = await octokit.rest.pulls.list({
     owner: "exivity",
@@ -7890,18 +7890,17 @@ async function getPrFromRef(octokit, repo, ref) {
   }
 }
 function getRepository() {
-  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
+  const { owner, repo: component } = import_utils.context.repo;
   if (!owner || !component) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component };
+  return { owner, component, fqn: `${owner}/${component}` };
 }
-async function getSha() {
-  let sha = process.env["GITHUB_SHA"];
+function getSha() {
+  let sha = import_utils.context.sha;
   const eventName = getEventName();
   if (eventName === "pull_request") {
-    const eventData = await getEventData(eventName);
-    sha = eventData.pull_request.head.sha;
+    sha = getEventData(eventName).pull_request.head.sha;
   }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
@@ -7910,7 +7909,7 @@ async function getSha() {
 }
 function getRef() {
   var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
+  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : (_c = import_utils.context.ref) == null ? void 0 : _c.slice(11);
   if (!ref) {
     throw new Error("The GitHub ref is missing");
   }
@@ -7924,7 +7923,7 @@ function getToken(inputName = "gh-token") {
   return ghToken;
 }
 function getEventName(supportedEvents) {
-  const eventName = process.env["GITHUB_EVENT_NAME"];
+  const eventName = import_utils.context.eventName;
   if (!eventName) {
     throw new Error("The GitHub event name is missing");
   }
@@ -7933,15 +7932,12 @@ function getEventName(supportedEvents) {
   }
   return eventName;
 }
-async function getEventData(eventName) {
-  const eventPath = process.env["GITHUB_EVENT_PATH"];
-  if (!eventPath) {
-    throw new Error("The GitHub event path is missing");
+function getEventData(eventName) {
+  const payload = import_utils.context.payload;
+  if (Object.keys(payload).length === 0) {
+    throw new Error("The GitHub event payload is missing");
   }
-  const fileData = await import_fs.promises.readFile(eventPath, {
-    encoding: "utf8"
-  });
-  return JSON.parse(fileData);
+  return payload;
 }
 
 // slack/src/slack.ts
@@ -8057,7 +8053,7 @@ async function run() {
   const message = (0, import_core3.getInput)("message");
   const status = (0, import_core3.getInput)("status");
   const component = getRepository().component;
-  const sha = await getSha();
+  const sha = getSha();
   const slackApiToken = (0, import_core3.getInput)("slack-api-token", {
     required: true
   });
@@ -8121,7 +8117,7 @@ async function run() {
   };
   const componentBlock = {
     type: "mrkdwn",
-    text: `\u{1F5C3}\uFE0F ${component}`
+    text: `\u{1F4C2} ${component}`
   };
   const refBlock = {
     type: "mrkdwn",
@@ -8129,7 +8125,7 @@ async function run() {
   };
   const runBlock = {
     type: "mrkdwn",
-    text: `\u26A1 <https://github.com/exivity/${component}/actions/runs/${process.env.GITHUB_RUN_ID}|${import_github.context.workflow}>`
+    text: `\u26A1 <https://github.com/exivity/${component}/actions/runs/${import_github.context.runId}|${import_github.context.workflow} / ${import_github.context.job} (${import_github.context.eventName})>`
   };
   const blocks = [
     {
