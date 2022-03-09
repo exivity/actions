@@ -8,10 +8,10 @@ export async function getCommitMessage() {
   return execGit('git log -1 --pretty=format:"%s"')
 }
 
-export async function getCommitAuthor() {
+export async function getCommitAuthorName() {
   return execGit('git log -1 --pretty=format:"%an"')
 }
 
-export async function getCommitEmail() {
+export async function getCommitAuthorEmail() {
   return execGit('git log -1 --pretty=format:"%ae"')
 }
