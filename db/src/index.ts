@@ -1,6 +1,6 @@
 import { getInput, info, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
-import { getOctokit } from '@actions/github'
+import { context, getOctokit } from '@actions/github'
 import { platform } from 'os'
 import path from 'path'
 import { startDocker } from '../../lib/docker'
@@ -12,9 +12,9 @@ async function run() {
   // Input
   const branch =
     getInput('branch') ||
-    (process.env.GITHUB_REF === 'refs/heads/main'
+    (context.ref === 'refs/heads/main'
       ? 'main'
-      : process.env.GITHUB_REF === 'refs/heads/master'
+      : context.ref === 'refs/heads/master'
       ? 'master'
       : 'develop')
   const dbName = getInput('db-name') || 'exdb-test'

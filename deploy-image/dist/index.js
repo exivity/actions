@@ -2776,8 +2776,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context2, operator, key, modifier) {
-      var value = context2[key], result = [];
+    function getValues(context4, operator, key, modifier) {
+      var value = context4[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -2837,7 +2837,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context2) {
+    function expand(template, context4) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -2849,7 +2849,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context4, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -10128,8 +10128,8 @@ var require_semver2 = __commonJS({
 // deploy-image/src/index.ts
 var import_core3 = __toESM(require_core());
 var import_exec3 = __toESM(require_exec());
-var import_github2 = __toESM(require_github());
-var import_fs2 = require("fs");
+var import_github3 = __toESM(require_github());
+var import_fs = require("fs");
 
 // lib/core.ts
 var import_core = __toESM(require_core());
@@ -10149,20 +10149,19 @@ function getBooleanInput(name, defaultValue) {
 
 // lib/github.ts
 var import_core2 = __toESM(require_core());
-var import_fs = require("fs");
+var import_utils = __toESM(require_utils4());
 function getRepository() {
-  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
+  const { owner, repo: component } = import_utils.context.repo;
   if (!owner || !component) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component };
+  return { owner, component, fqn: `${owner}/${component}` };
 }
-async function getSha() {
-  let sha = process.env["GITHUB_SHA"];
+function getSha() {
+  let sha = import_utils.context.sha;
   const eventName = getEventName();
   if (eventName === "pull_request") {
-    const eventData = await getEventData(eventName);
-    sha = eventData.pull_request.head.sha;
+    sha = getEventData(eventName).pull_request.head.sha;
   }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
@@ -10171,7 +10170,7 @@ async function getSha() {
 }
 function getRef() {
   var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
+  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : (_c = import_utils.context.ref) == null ? void 0 : _c.slice(11);
   if (!ref) {
     throw new Error("The GitHub ref is missing");
   }
@@ -10179,7 +10178,7 @@ function getRef() {
 }
 function getTag() {
   var _a, _b;
-  return ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : null;
+  return ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : null;
 }
 function getToken(inputName = "gh-token") {
   const ghToken = (0, import_core2.getInput)(inputName);
@@ -10189,7 +10188,7 @@ function getToken(inputName = "gh-token") {
   return ghToken;
 }
 function getEventName(supportedEvents) {
-  const eventName = process.env["GITHUB_EVENT_NAME"];
+  const eventName = import_utils.context.eventName;
   if (!eventName) {
     throw new Error("The GitHub event name is missing");
   }
@@ -10201,19 +10200,17 @@ function getEventName(supportedEvents) {
 function isEvent(input, compare, eventData) {
   return input === compare;
 }
-async function getEventData(eventName) {
-  const eventPath = process.env["GITHUB_EVENT_PATH"];
-  if (!eventPath) {
-    throw new Error("The GitHub event path is missing");
+function getEventData(eventName) {
+  const payload = import_utils.context.payload;
+  if (Object.keys(payload).length === 0) {
+    throw new Error("The GitHub event payload is missing");
   }
-  const fileData = await import_fs.promises.readFile(eventPath, {
-    encoding: "utf8"
-  });
-  return JSON.parse(fileData);
+  return payload;
 }
 
 // deploy-image/src/metadata.ts
 var import_exec2 = __toESM(require_exec());
+var import_github = __toESM(require_github());
 var import_semver = __toESM(require_semver2());
 var GHCR = "ghcr.io/";
 var RELEASE_BRANCHES = ["main", "master"];
@@ -10288,7 +10285,7 @@ function getImageLabels({
     "org.opencontainers.image.description": component,
     "org.opencontainers.image.url": "https://exivity.com",
     "org.opencontainers.image.documentation": "https://docs.exivity.com",
-    "org.opencontainers.image.source": `https://github.com/${process.env["GITHUB_REPOSITORY"]}`,
+    "org.opencontainers.image.source": `https://github.com/${import_github.context.repo.owner}/${import_github.context.repo.repo}`,
     "org.opencontainers.image.version": version,
     "org.opencontainers.image.created": new Date().toISOString(),
     "org.opencontainers.image.revision": getSha()
@@ -10297,7 +10294,7 @@ function getImageLabels({
 function getComponentVersion() {
   const tag = getTag();
   const semver = (0, import_semver.parse)(tag);
-  return ((semver == null ? void 0 : semver.version) ?? process.env["GITHUB_SHA"]) || "unknown";
+  return ((semver == null ? void 0 : semver.version) ?? getSha()) || "unknown";
 }
 
 // deploy-image/src/index.ts
@@ -10308,12 +10305,12 @@ async function run() {
   const component = (0, import_core3.getInput)("component") || defaultComponent;
   const dockerUser = (0, import_core3.getInput)("docker-hub-user", { required: true });
   const dockerPassword = (0, import_core3.getInput)("docker-hub-password", { required: true });
-  const ghcrUser = (0, import_core3.getInput)("ghcr-user") || import_github2.context.actor;
+  const ghcrUser = (0, import_core3.getInput)("ghcr-user") || import_github3.context.actor;
   const ghcrPassword = (0, import_core3.getInput)("ghcr-password") || getToken();
   const dryRun = getBooleanInput("dry-run", false);
   const dockerfile = (0, import_core3.getInput)("dockerfile") || "./Dockerfile";
   const eventName = getEventName(["push", "delete"]);
-  const eventData = await getEventData();
+  const eventData = getEventData();
   const type = getDeployType();
   const { prefix, tags } = await getImagePrefixAndTags();
   (0, import_core3.info)(`Image deploy type: ${type}`);
@@ -10326,7 +10323,7 @@ async function run() {
       return;
     }
     const ghToken = getToken();
-    const octokit = (0, import_github2.getOctokit)(ghToken);
+    const octokit = (0, import_github3.getOctokit)(ghToken);
     const { data: versions } = await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
       org: "exivity",
       package_type: "container",
@@ -10374,7 +10371,7 @@ ${JSON.stringify(labels, void 0, 2)}`);
   };
   (0, import_core3.info)(`Writing metadata to ${METADATA_FILENAME}:
 ${JSON.stringify(metadata, void 0, 2)}`);
-  await import_fs2.promises.writeFile("./" + METADATA_FILENAME, JSON.stringify(metadata, void 0, 2));
+  await import_fs.promises.writeFile("./" + METADATA_FILENAME, JSON.stringify(metadata, void 0, 2));
   if (prefix === GHCR) {
     (0, import_core3.info)("Logging in to GitHub Packages");
     await (0, import_exec3.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {

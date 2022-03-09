@@ -54,10 +54,10 @@ async function run() {
   const ghToken = getToken()
   const octokit = getOctokit(ghToken)
   let ref = getRef()
-  let sha = await getSha()
+  let sha = getSha()
   const { component } = getRepository()
   const eventName = getEventName(supportedEvents)
-  const eventData = await getEventData(eventName)
+  const eventData = getEventData(eventName)
   const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
   const filter = getMultilineInput('filter')
   const dryRun = getBooleanInput('dry-run', false)

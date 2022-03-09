@@ -1,4 +1,5 @@
 import { getExecOutput } from '@actions/exec'
+import { context } from '@actions/github'
 import { parse as semverParse } from 'semver'
 import { getRef, getSha, getTag } from '../../lib/github'
 
@@ -134,7 +135,7 @@ export function getImageLabels({
     'org.opencontainers.image.description': component,
     'org.opencontainers.image.url': 'https://exivity.com',
     'org.opencontainers.image.documentation': 'https://docs.exivity.com',
-    'org.opencontainers.image.source': `https://github.com/${process.env['GITHUB_REPOSITORY']}`,
+    'org.opencontainers.image.source': `https://github.com/${context.repo.owner}/${context.repo.repo}`,
     'org.opencontainers.image.version': version,
     'org.opencontainers.image.created': new Date().toISOString(),
     'org.opencontainers.image.revision': getSha(),
@@ -145,5 +146,5 @@ export function getComponentVersion() {
   const tag = getTag()
   const semver = semverParse(tag)
 
-  return (semver?.version ?? process.env['GITHUB_SHA']) || 'unknown'
+  return (semver?.version ?? getSha()) || 'unknown'
 }

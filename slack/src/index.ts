@@ -27,7 +27,7 @@ async function run() {
   const message = getInput('message')
   const status = getInput('status')
   const component = getRepository().component
-  const sha = await getSha()
+  const sha = getSha()
   const slackApiToken = getInput('slack-api-token', {
     required: true,
   })
@@ -126,7 +126,7 @@ user attributes "name", "display_name", "real_name" or "email".`
   }
   const componentBlock = {
     type: 'mrkdwn',
-    text: `🗃️ ${component}`,
+    text: `📂 ${component}`,
   }
   const refBlock = {
     type: 'mrkdwn',
@@ -134,7 +134,7 @@ user attributes "name", "display_name", "real_name" or "email".`
   }
   const runBlock = {
     type: 'mrkdwn',
-    text: `⚡ <https://github.com/exivity/${component}/actions/runs/${process.env.GITHUB_RUN_ID}|${context.workflow}>`,
+    text: `⚡ <https://github.com/exivity/${component}/actions/runs/${context.runId}|${context.workflow} / ${context.job} (${context.eventName})>`,
   }
   const blocks: Blocks = [
     {

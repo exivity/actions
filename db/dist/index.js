@@ -2776,8 +2776,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context, operator, key, modifier) {
-      var value = context[key], result = [];
+    function getValues(context3, operator, key, modifier) {
+      var value = context3[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -2837,7 +2837,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context) {
+    function expand(template, context3) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -2849,7 +2849,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context3, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -7889,6 +7889,7 @@ async function startDocker({ defaultVersion: defaultVersion2, image: image2, por
 
 // lib/github.ts
 var import_core2 = __toESM(require_core());
+var import_utils = __toESM(require_utils4());
 async function getShaFromRef({
   octokit,
   component,
@@ -7990,7 +7991,7 @@ function getAWSCredentials() {
 
 // db/src/index.ts
 async function run() {
-  const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/main" ? "main" : process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
+  const branch = (0, import_core4.getInput)("branch") || (import_github2.context.ref === "refs/heads/main" ? "main" : import_github2.context.ref === "refs/heads/master" ? "master" : "develop");
   const dbName = (0, import_core4.getInput)("db-name") || "exdb-test";
   const mode = (0, import_core4.getInput)("mode") || "host";
   const password = (0, import_core4.getInput)("password") || "postgres";

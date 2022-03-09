@@ -56,7 +56,7 @@ async function run() {
   const token = getToken()
   const component = getRepository().component
   const eventName = getEventName(supportedEvents)
-  const eventData = await getEventData(eventName)
+  const eventData = getEventData(eventName)
 
   // Client
   const octokit = getOctokit(token)
