@@ -10,6 +10,7 @@ inputs:
   gh-token:
     description: 'A GitHub token from the PR reviewer'
     required: false
+    default: ${{ github.token }}
   event:
     description: 'What to do, defaults to APPROVE, other options are REQUEST_CHANGES, COMMENT or PENDING'
     default: 'APPROVE'

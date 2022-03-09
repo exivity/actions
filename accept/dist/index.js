@@ -29465,7 +29465,7 @@ function getWorkspacePath() {
   return workspacePath;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core2.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core2.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }

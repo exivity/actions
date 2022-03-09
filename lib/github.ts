@@ -146,7 +146,7 @@ export function getWorkspacePath() {
 }
 
 export function getToken(inputName = 'gh-token') {
-  const ghToken = getInput(inputName) || process.env['GITHUB_TOKEN']
+  const ghToken = getInput(inputName)
 
   if (!ghToken) {
     throw new Error('The GitHub token is missing')

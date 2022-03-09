@@ -10,6 +10,7 @@ inputs:
   gh-token:
     description: A GitHub token with write access to the component
     required: false
+    default: ${{ github.token }}
   state:
     description: The commit status state, can be "error", "failure", "pending" or "success"
     required: true

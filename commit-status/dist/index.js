@@ -6832,7 +6832,7 @@ async function getSha() {
   return sha;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }

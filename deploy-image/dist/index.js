@@ -10182,7 +10182,7 @@ function getTag() {
   return ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : null;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core2.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core2.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
