@@ -134,8 +134,7 @@ user attributes "name", "display_name", "real_name" or "email".`
   }
   const runBlock = {
     type: 'mrkdwn',
-    text: `⚡ <https://github.com/exivity/${component}/actions/runs/${context.runId}|${context.workflow} / ${context.job} (${context.eventName})> \
-    ⚡2 <https://github.com/exivity/${component}/runs/${context.runNumber}|${context.workflow} / ${context.job} (${context.eventName})>`,
+    text: `⚡ <https://github.com/exivity/${component}/actions/runs/${context.runId}|${context.workflow} / ${context.job} (${context.eventName})>`,
   }
   const blocks: Blocks = [
     {
