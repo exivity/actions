@@ -12,7 +12,7 @@ import { types } from './types'
 const supportedEvents = ['pull_request'] as const
 
 function validateCommitMessage(message: string) {
-  const matches = message.match(/^(\w+)(?:\((\w+)\))?(!)?:\s+(.*)/)
+  const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/)
   const availableTypes = Object.keys(types)
 
   const genericHelp =
