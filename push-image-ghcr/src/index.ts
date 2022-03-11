@@ -1,15 +1,8 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { exec } from '@actions/exec'
-import { context} from '@actions/github'
-import {
-  getRepository,
-  getToken,
-} from '../../lib/github'
-import {
-  getComponentVersion,
-  getLabels,
-  getTags,
-} from './metadata'
+import { context } from '@actions/github'
+import { getRepository, getToken } from '../../lib/github'
+import { getComponentVersion, getLabels, getTags } from './metadata'
 import { promises as fs } from 'fs'
 
 const METADATA_FILENAME = 'metadata.json'
@@ -38,8 +31,8 @@ async function run() {
   info(`Image labels will be:\n${JSON.stringify(labelOptions, undefined, 2)}`)
 
   // concat list of tags
-  const tagOptions =
-    tags.map((tag: string) => `--tag "ghcr.io/exivity/${component}":"${tag}"`)
+  const tagOptions = tags
+    .map((tag: string) => `--tag "ghcr.io/exivity/${component}":"${tag}"`)
     .join(' ')
   info(`Image tags will be:\n${JSON.stringify(tagOptions, undefined, 2)}`)
 
@@ -47,8 +40,8 @@ async function run() {
   info(`Component version will be: ${componentVersion}`)
 
   // this piece of code composes a metadata.json file that is to be copied into the
-  // docker image on build. This requires the line 
-  // COPY ./metadata.json <<target>> 
+  // docker image on build. This requires the line
+  // COPY ./metadata.json <<target>>
   // to a present in the Dockerfile
   const metadata = {
     component,
