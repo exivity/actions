@@ -1726,8 +1726,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context, operator, key, modifier) {
-      var value = context[key], result = [];
+    function getValues(context2, operator, key, modifier) {
+      var value = context2[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -1787,7 +1787,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context) {
+    function expand(template, context2) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -1799,7 +1799,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -6811,7 +6811,7 @@ var import_github = __toESM(require_github());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
-var import_fs = require("fs");
+var import_utils = __toESM(require_utils4());
 async function getPr(octokit, repo, number) {
   return (await octokit.rest.pulls.get({
     owner: "exivity",
@@ -6820,21 +6820,21 @@ async function getPr(octokit, repo, number) {
   })).data;
 }
 function getRepository() {
-  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
+  const { owner, repo: component } = import_utils.context.repo;
   if (!owner || !component) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component };
+  return { owner, component, fqn: `${owner}/${component}` };
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
 }
 function getEventName(supportedEvents2) {
-  const eventName = process.env["GITHUB_EVENT_NAME"];
+  const eventName = import_utils.context.eventName;
   if (!eventName) {
     throw new Error("The GitHub event name is missing");
   }
@@ -6843,18 +6843,12 @@ function getEventName(supportedEvents2) {
   }
   return eventName;
 }
-async function getEventData(eventName) {
-  if (eventName === "schedule") {
-    return null;
+function getEventData(eventName) {
+  const payload = import_utils.context.payload;
+  if (Object.keys(payload).length === 0) {
+    throw new Error("The GitHub event payload is missing");
   }
-  const eventPath = process.env["GITHUB_EVENT_PATH"];
-  if (!eventPath) {
-    throw new Error("The GitHub event path is missing");
-  }
-  const fileData = await import_fs.promises.readFile(eventPath, {
-    encoding: "utf8"
-  });
-  return JSON.parse(fileData);
+  return payload;
 }
 
 // semantic-pull-request/src/types.ts
@@ -6908,7 +6902,7 @@ var types = {
 // semantic-pull-request/src/index.ts
 var supportedEvents = ["pull_request"];
 function validateCommitMessage(message) {
-  const matches = message.match(/^(\w+)(?:\((\w+)\))?(!)?:\s+(.*)/);
+  const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/);
   const availableTypes = Object.keys(types);
   const genericHelp = "See https://www.conventionalcommits.org/en/v1.0.0/ for more details.";
   const typesHelp = `Available types:
@@ -6938,7 +6932,7 @@ async function run() {
   const token = getToken();
   const component = getRepository().component;
   const eventName = getEventName(supportedEvents);
-  const eventData = await getEventData(eventName);
+  const eventData = getEventData(eventName);
   const octokit = (0, import_github.getOctokit)(token);
   const pr = await getPr(octokit, component, eventData.pull_request.number);
   if (!validateCommitMessage(pr.title)) {

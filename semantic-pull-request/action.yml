@@ -3,7 +3,8 @@ description: Ensures your pull requests follow the Conventional Commits spec
 inputs:
   gh-token:
     description: GitHub token with read access to the repository
-    required: true
+    required: false
+    default: ${{ github.token }}
 runs:
   using: node16
   main: dist/index.js

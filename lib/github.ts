@@ -1,7 +1,7 @@
 import { getInput, info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { context } from '@actions/github/lib/utils'
 import { EventPayloadMap, WebhookEventName } from '@octokit/webhooks-types'
-import { promises as fsPromises } from 'fs'
 
 export type ScheduleEvent = {
   schedule: string
@@ -94,27 +94,26 @@ export async function getPr(
 }
 
 export function getRepository() {
-  const [owner, component] = (process.env['GITHUB_REPOSITORY'] || '').split('/')
+  const { owner, repo: component } = context.repo
 
   if (!owner || !component) {
     throw new Error('The GitHub repository is missing')
   }
 
-  return { owner, component }
+  return { owner, component, fqn: `${owner}/${component}` }
 }
 
-export async function getSha() {
-  let sha = process.env['GITHUB_SHA']
+export function getSha() {
+  let sha = context.sha
   const eventName = getEventName()
 
   // See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request:
-  // Note that GITHUB_SHA for this event is the last merge commit of the pull
-  // request merge branch.If you want to get the commit ID for the last commit
+  // Note that context.sha for this event is the last merge commit of the pull
+  // request merge branch. If you want to get the commit ID for the last commit
   // to the head branch of the pull request, use
   // github.event.pull_request.head.sha instead.
   if (eventName === 'pull_request') {
-    const eventData = await getEventData(eventName)
-    sha = eventData.pull_request.head.sha
+    sha = getEventData(eventName).pull_request.head.sha
   }
 
   if (!sha) {
@@ -125,11 +124,11 @@ export async function getSha() {
 }
 
 export function getRef() {
+  // HEAD_REF not available from `context`
   const ref =
-    process.env['GITHUB_HEAD_REF'] ||
-    process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
-      ? process.env['GITHUB_REF']?.slice(10) // slice 'refs/tags/'
-      : process.env['GITHUB_REF']?.slice(11) // slice 'refs/heads/'
+    process.env['GITHUB_HEAD_REF'] || context.ref?.slice(0, 10) == 'refs/tags/'
+      ? context.ref?.slice(10) // slice 'refs/tags/'
+      : context.ref?.slice(11) // slice 'refs/heads/'
 
   if (!ref) {
     throw new Error('The GitHub ref is missing')
@@ -139,12 +138,13 @@ export function getRef() {
 }
 
 export function getTag() {
-  return process.env['GITHUB_REF']?.slice(0, 10) == 'refs/tags/'
-    ? process.env['GITHUB_REF']?.slice(10) // slice 'refs/tags/'
+  return context.ref?.slice(0, 10) == 'refs/tags/'
+    ? context.ref?.slice(10) // slice 'refs/tags/'
     : null
 }
 
 export function getWorkspacePath() {
+  // Not available from `context`
   const workspacePath = process.env['GITHUB_WORKSPACE']
 
   if (!workspacePath) {
@@ -155,7 +155,7 @@ export function getWorkspacePath() {
 }
 
 export function getToken(inputName = 'gh-token') {
-  const ghToken = getInput(inputName) || process.env['GITHUB_TOKEN']
+  const ghToken = getInput(inputName)
 
   if (!ghToken) {
     throw new Error('The GitHub token is missing')
@@ -171,7 +171,7 @@ export function getToken(inputName = 'gh-token') {
 export function getEventName<T extends EventName>(
   supportedEvents?: readonly T[]
 ) {
-  const eventName = process.env['GITHUB_EVENT_NAME']
+  const eventName = context.eventName
 
   if (!eventName) {
     throw new Error('The GitHub event name is missing')
@@ -193,33 +193,18 @@ export function isEvent<T extends EventName, U extends T>(
   return input === compare
 }
 
-/**
- * Schedule is not in the EmitterWebhookEventName, but is valid, so we include
- * some trickery to allow it, but this function will return null in this case,
- * because we don't know how the eventData looks.
- */
-export async function getEventData<T extends EventName>(
-  eventName?: T
-): Promise<EventData<T>> {
-  if (eventName === 'schedule') {
-    return null as any
+export function getEventData<T extends EventName>(eventName?: T): EventData<T> {
+  const payload = context.payload as EventData<T>
+
+  if (Object.keys(payload).length === 0) {
+    throw new Error('The GitHub event payload is missing')
   }
 
-  const eventPath = process.env['GITHUB_EVENT_PATH']
-
-  if (!eventPath) {
-    throw new Error('The GitHub event path is missing')
-  }
-
-  const fileData = await fsPromises.readFile(eventPath, {
-    encoding: 'utf8',
-  })
-
-  return JSON.parse(fileData)
+  return payload
 }
 
 export function getWorkflowName() {
-  const workflowName = process.env['GITHUB_WORKFLOW']
+  const workflowName = context.workflow
 
   if (!workflowName) {
     throw new Error('The GitHub workflow name is missing')
@@ -267,12 +252,11 @@ export async function review(
 ) {
   info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
 
+  const repository = getRepository().fqn
   body = `${body}${body ? '\n\n---\n\n' : ''}\
-_Automated review from [**${process.env.GITHUB_WORKFLOW}** \
-workflow in **${process.env.GITHUB_REPOSITORY}**]\
-(https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${
-    process.env.GITHUB_RUN_ID
-  })_`
+_Automated review from [**${getWorkflowName()}** \
+workflow in **${repository}**]\
+(https://github.com/${repository}/actions/runs/${context.runId})_`
 
   return (
     await octokit.rest.pulls.createReview({

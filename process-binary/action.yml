@@ -16,6 +16,7 @@ inputs:
   gh-token:
     description: GitHub token used for writing commit status
     required: false
+    default: ${{ github.token }}
 runs:
   using: 'composite'
   steps:

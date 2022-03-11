@@ -1726,8 +1726,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context3, operator, key, modifier) {
-      var value = context3[key], result = [];
+    function getValues(context4, operator, key, modifier) {
+      var value = context4[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -1787,7 +1787,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context3) {
+    function expand(template, context4) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -1799,7 +1799,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context3, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context4, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -22742,9 +22742,9 @@ var require_readShebang = __commonJS({
   }
 });
 
-// node_modules/semver/semver.js
+// node_modules/cross-spawn/node_modules/semver/semver.js
 var require_semver = __commonJS({
-  "node_modules/semver/semver.js"(exports, module2) {
+  "node_modules/cross-spawn/node_modules/semver/semver.js"(exports, module2) {
     exports = module2.exports = SemVer;
     var debug6;
     if (typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG)) {
@@ -29416,7 +29416,7 @@ function getBooleanInput(name, defaultValue) {
 
 // lib/github.ts
 var import_core2 = __toESM(require_core());
-var import_fs = require("fs");
+var import_utils = __toESM(require_utils4());
 var ReleaseBranches = ["master", "main"];
 var DevelopBranches = ["develop"];
 async function getPrFromRef(octokit, repo, ref) {
@@ -29431,18 +29431,17 @@ async function getPrFromRef(octokit, repo, ref) {
   }
 }
 function getRepository() {
-  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
+  const { owner, repo: component } = import_utils.context.repo;
   if (!owner || !component) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component };
+  return { owner, component, fqn: `${owner}/${component}` };
 }
-async function getSha() {
-  let sha = process.env["GITHUB_SHA"];
+function getSha() {
+  let sha = import_utils.context.sha;
   const eventName = getEventName();
   if (eventName === "pull_request") {
-    const eventData = await getEventData(eventName);
-    sha = eventData.pull_request.head.sha;
+    sha = getEventData(eventName).pull_request.head.sha;
   }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
@@ -29451,7 +29450,7 @@ async function getSha() {
 }
 function getRef() {
   var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
+  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : (_c = import_utils.context.ref) == null ? void 0 : _c.slice(11);
   if (!ref) {
     throw new Error("The GitHub ref is missing");
   }
@@ -29465,14 +29464,14 @@ function getWorkspacePath() {
   return workspacePath;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core2.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core2.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
 }
 function getEventName(supportedEvents2) {
-  const eventName = process.env["GITHUB_EVENT_NAME"];
+  const eventName = import_utils.context.eventName;
   if (!eventName) {
     throw new Error("The GitHub event name is missing");
   }
@@ -29484,21 +29483,15 @@ function getEventName(supportedEvents2) {
 function isEvent(input, compare, eventData) {
   return input === compare;
 }
-async function getEventData(eventName) {
-  if (eventName === "schedule") {
-    return null;
+function getEventData(eventName) {
+  const payload = import_utils.context.payload;
+  if (Object.keys(payload).length === 0) {
+    throw new Error("The GitHub event payload is missing");
   }
-  const eventPath = process.env["GITHUB_EVENT_PATH"];
-  if (!eventPath) {
-    throw new Error("The GitHub event path is missing");
-  }
-  const fileData = await import_fs.promises.readFile(eventPath, {
-    encoding: "utf8"
-  });
-  return JSON.parse(fileData);
+  return payload;
 }
 function getWorkflowName() {
-  const workflowName = process.env["GITHUB_WORKFLOW"];
+  const workflowName = import_utils.context.workflow;
   if (!workflowName) {
     throw new Error("The GitHub workflow name is missing");
   }
@@ -29525,7 +29518,8 @@ async function getCommit(octokit, repo, ref) {
 }
 async function review(octokit, repo, pull_number, event, body) {
   (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
-  body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
+  const repository = getRepository().fqn;
+  body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${getWorkflowName()}** workflow in **${repository}**](https://github.com/${repository}/actions/runs/${import_utils.context.runId})_`;
   return (await octokit.rest.pulls.createReview({
     owner: "exivity",
     repo,
@@ -29534,14 +29528,14 @@ async function review(octokit, repo, pull_number, event, body) {
     body
   })).data;
 }
-async function writeStatus(octokit, repo, sha, state, context3, description, target_url) {
+async function writeStatus(octokit, repo, sha, state, context4, description, target_url) {
   (0, import_core2.info)(`Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`);
   return (await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
     repo,
     sha,
     state,
-    context: context3,
+    context: context4,
     description,
     target_url
   })).data;
@@ -30808,7 +30802,7 @@ function getInputs() {
 }
 
 // accept/src/checks.ts
-var import_fs2 = require("fs");
+var import_fs = require("fs");
 
 // node_modules/js-yaml/dist/js-yaml.mjs
 function isNothing(subject) {
@@ -33476,7 +33470,7 @@ async function isWorkflowDependencyDone(octokit, token, sha, repo) {
   if (!existsSync(workflowPath)) {
     throw new Error(`Workflow file not found at "${workflowPath}"`);
   }
-  const workflow = js_yaml_default.load((0, import_fs2.readFileSync)(workflowPath, "utf8"));
+  const workflow = js_yaml_default.load((0, import_fs.readFileSync)(workflowPath, "utf8"));
   const needsWorkflows = ((_b = (_a = workflow.on) == null ? void 0 : _a.workflow_run) == null ? void 0 : _b.workflows) || [];
   (0, import_core3.info)(`on.workflow_run.workflows resolves to "${JSON.stringify(needsWorkflows)}"`);
   const checks = await getChecks(octokit, sha, repo);
@@ -33575,10 +33569,10 @@ async function run() {
   const ghToken = getToken();
   const octokit = (0, import_github2.getOctokit)(ghToken);
   let ref = getRef();
-  let sha = await getSha();
+  let sha = getSha();
   const { component } = getRepository();
   const eventName = getEventName(supportedEvents);
-  const eventData = await getEventData(eventName);
+  const eventData = getEventData(eventName);
   const scaffoldBranch = (0, import_core5.getInput)("scaffold-branch") || defaultScaffoldBranch;
   const filter = (0, import_core5.getMultilineInput)("filter");
   const dryRun = getBooleanInput("dry-run", false);

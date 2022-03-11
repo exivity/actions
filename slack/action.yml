@@ -10,12 +10,17 @@ inputs:
   channel:
     description: Send message to this channel instead of commit author
     required: false
+  fallback-channel:
+    description: Use this channel as a fallback
+    required: false
+    default: '#builds'
   slack-api-token:
     description: Slack API key
     required: true
   gh-token:
     description: GitHub token with read access to the repository
-    required: true
+    required: false
+    default: ${{ github.token }}
 runs:
   using: node16
   main: dist/index.js

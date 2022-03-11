@@ -15,7 +15,7 @@ async function run() {
   const token = getToken()
   const component = getRepository().component
   const eventName = getEventName(supportedEvents)
-  const eventData = await getEventData(eventName)
+  const eventData = getEventData(eventName)
 
   // Run plugins
   // @ts-ignore Expression produces a union type that is too complex to represent.ts(2590)

@@ -12,7 +12,7 @@ import { types } from './types'
 const supportedEvents = ['pull_request'] as const
 
 function validateCommitMessage(message: string) {
-  const matches = message.match(/^(\w+)(?:\((\w+)\))?(!)?:\s+(.*)/)
+  const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/)
   const availableTypes = Object.keys(types)
 
   const genericHelp =
@@ -56,7 +56,7 @@ async function run() {
   const token = getToken()
   const component = getRepository().component
   const eventName = getEventName(supportedEvents)
-  const eventData = await getEventData(eventName)
+  const eventData = getEventData(eventName)
 
   // Client
   const octokit = getOctokit(token)

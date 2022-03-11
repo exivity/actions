@@ -16,7 +16,7 @@ async function run() {
   const comments = getInput('comments')
   const companyName = getInput('company-name') || 'Exivity'
   const productName = getInput('product-name') || 'Exivity'
-  const sha = await getSha()
+  const sha = getSha()
   const fileDescription =
     getInput('file-description') || `${getRepository().component}:${sha}`
   const internalFilename = getInput('internal-filename')

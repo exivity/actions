@@ -12,9 +12,6 @@ on:
     workflows: ['accept-test']
     types: [completed]
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-
 jobs:
   test:
     strategy:
@@ -22,10 +19,11 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./accept
         with:
           dry-run: true
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
 
   test-filter:
     strategy:
@@ -33,8 +31,9 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./accept
         with:
           filter: non_existing_folder/**
           dry-run: true
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
