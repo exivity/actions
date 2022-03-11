@@ -190,7 +190,7 @@ var require_file_command = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.issueCommand = void 0;
-    var fs = __importStar(require("fs"));
+    var fs2 = __importStar(require("fs"));
     var os = __importStar(require("os"));
     var utils_1 = require_utils();
     function issueCommand(command, message) {
@@ -198,10 +198,10 @@ var require_file_command = __commonJS({
       if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
       }
-      if (!fs.existsSync(filePath)) {
+      if (!fs2.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
       }
-      fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+      fs2.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
         encoding: "utf8"
       });
     }
@@ -1373,9 +1373,9 @@ var require_io_util = __commonJS({
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rename = exports.readlink = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
-    var fs = __importStar(require("fs"));
+    var fs2 = __importStar(require("fs"));
     var path = __importStar(require("path"));
-    _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
+    _a = fs2.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
     exports.IS_WINDOWS = process.platform === "win32";
     function exists(fsPath) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -10194,12 +10194,12 @@ async function getEventData(eventName) {
 
 // push-image-ghcr/src/metadata.ts
 var import_semver = __toESM(require_semver2());
-async function setTags() {
+async function getTags() {
   const ref = getRef();
   const sha = await getSha();
   return [ref, sha];
 }
-function setLabels({
+function getLabels({
   component,
   version
 }) {
@@ -10214,36 +10214,45 @@ function setLabels({
     "org.opencontainers.image.revision": getSha()
   };
 }
-function setComponentVersion() {
+function getComponentVersion() {
   const tag = getTag();
   const semver = (0, import_semver.parse)(tag);
   return ((semver == null ? void 0 : semver.version) ?? process.env["GITHUB_SHA"]) || "unknown";
 }
 
 // push-image-ghcr/src/index.ts
+var import_fs2 = require("fs");
+var METADATA_FILENAME = "metadata.json";
 async function run() {
   const { component: defaultComponent } = getRepository();
   const component = (0, import_core2.getInput)("component") || defaultComponent;
   const ghcrUser = (0, import_core2.getInput)("ghcr-user") || import_github2.context.actor;
   const ghcrPassword = (0, import_core2.getInput)("ghcr-password") || getToken();
   const dockerfile = (0, import_core2.getInput)("dockerfile") || "./Dockerfile";
-  const private_key = process.env.PRIVATE_KEY;
-  const tags = await setTags();
+  const tags = await getTags();
   (0, import_core2.info)(`Image name: exivity/${component}`);
   (0, import_core2.info)(`Image tags: ${tags.join(", ")}`);
   if (tags.length === 0) {
     (0, import_core2.warning)("No tags set, skipping deploy docker action");
     return;
   }
-  const labels = setLabels({ component, version: tags[0] });
+  const labels = getLabels({ component, version: tags[0] });
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
   (0, import_core2.info)(`Image labels will be:
 ${JSON.stringify(labelOptions, void 0, 2)}`);
   const tagOptions = tags.map((tag) => `--tag "ghcr.io/exivity/${component}":"${tag}"`).join(" ");
   (0, import_core2.info)(`Image tags will be:
 ${JSON.stringify(tagOptions, void 0, 2)}`);
-  const componentVersion = setComponentVersion();
+  const componentVersion = getComponentVersion();
   (0, import_core2.info)(`Component version will be: ${componentVersion}`);
+  const metadata = {
+    component,
+    version: componentVersion,
+    created: new Date().toISOString()
+  };
+  (0, import_core2.info)(`Writing metadata to ${METADATA_FILENAME}:
+${JSON.stringify(metadata, void 0, 2)}`);
+  await import_fs2.promises.writeFile("./" + METADATA_FILENAME, JSON.stringify(metadata, void 0, 2));
   (0, import_core2.info)("Logging in to GHCR");
   await (0, import_exec.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {
     env: __spreadProps(__spreadValues({}, process.env), {

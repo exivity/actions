@@ -2,13 +2,13 @@ import { getExecOutput } from '@actions/exec'
 import { parse as semverParse } from 'semver'
 import { getRef, getSha, getTag } from '../../lib/github'
 
-export async function setTags() {
+export async function getTags() {
   const ref = getRef()
   const sha = await getSha()
   return [ref, sha]
 }
 
-export function setLabels({
+export function getLabels({
   component,
   version,
 }: {
@@ -27,7 +27,7 @@ export function setLabels({
   }
 }
 
-export function setComponentVersion() {
+export function getComponentVersion() {
   const tag = getTag()
   const semver = semverParse(tag)
 

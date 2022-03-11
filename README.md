@@ -8,11 +8,11 @@ _Available actions:_
 - [`accept`](#accept)
 - [`commit-status`](#commit-status)
 - [`db`](#db)
-- [`push-image-ghcr`](#push-image-ghcr)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
 - [`process-binary`](#process-binary)
+- [`push-image-ghcr`](#push-image-ghcr)
 - [`put-artefacts`](#put-artefacts)
 - [`rabbitmq`](#rabbitmq)
 - [`rcedit`](#rcedit)
@@ -101,30 +101,6 @@ repository migrations and runs them.
 | `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY`                                                      | The AWS secret access key                                                                                                                                                                             |
 | `gh-token`              |          | `env.GITHUB_TOKEN`                                                               | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
-
-# `push-image-ghcr`
-
-Builds a container image and pushes it to GHCR
-
-## Example
-
-```yaml
-- uses: exivity/actions/push-image-ghcr@main
-  with:
-    ghcr-user: ${{ secrets.DOCKER_HUB_USER }}
-    ghcr-password: ${{ secrets.DOCKER_HUB_TOKEN }}
-```
-
-## Inputs
-
-| name                  | required | default            | description                                                     |
-| --------------------- | -------- | ------------------ | --------------------------------------------------------------- |
-
-| `ghcr-user`           |          | `github.actor`     | Username for GitHub Container Registry                          |
-| `ghcr-password`       |          | `env.GITHUB_TOKEN` | Password for GitHub Container Registry                          |
-| `dockerfile`          |          | `"./Dockerfile"`   | Path to the Dockerfile                                          |
-| `gh-token`            |          | `env.GITHUB_TOKEN` |
-
 
 # `get-artefacts`
 
@@ -228,6 +204,29 @@ A composite action running [`rcedit`](#rcedit), [`sign-file`](#sign-file) and
 ## Inputs
 
 See individual actions for inputs.
+
+# `push-image-ghcr`
+
+Builds a container image and pushes it to GHCR
+
+## Example
+
+```yaml
+- uses: exivity/actions/push-image-ghcr@main
+  with:
+    ghcr-user: ${{ secrets.DOCKER_HUB_USER }}
+    ghcr-password: ${{ secrets.DOCKER_HUB_TOKEN }}
+```
+
+## Inputs
+
+| name                  | required | default            | description                                                     |
+| --------------------- | -------- | ------------------ | --------------------------------------------------------------- |
+
+| `ghcr-user`           |          | `github.actor`     | Username for GitHub Container Registry                          |
+| `ghcr-password`       |          | `env.GITHUB_TOKEN` | Password for GitHub Container Registry                          |
+| `dockerfile`          |          | `"./Dockerfile"`   | Path to the Dockerfile                                          |
+| `gh-token` | | `env.GITHUB_TOKEN` | The github token to delete image tags (only for 'delete' event) |
 
 # `put-artefacts`
 

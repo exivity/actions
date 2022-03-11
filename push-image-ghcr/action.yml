@@ -4,12 +4,6 @@ inputs:
   component:
     description: Component name to build the image for
     required: false
-  docker-hub-user:
-    description: Username for Docker Hub
-    required: true
-  docker-hub-password:
-    description: Password for Docker Hub
-    required: true
   ghcr-user:
     description: Username for GitHub Container Registry
     required: false
@@ -22,9 +16,7 @@ inputs:
   gh-token:
     description: The github token to delete image tags (only for 'delete' event)
     required: false
-  dry-run:
-    description: Do not deploy build artefacts
-    required: false
+    default: ${{ github.token }}
 runs:
   using: node16
   main: dist/index.js

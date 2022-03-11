@@ -6,10 +6,11 @@ import {
   getToken,
 } from '../../lib/github'
 import {
-  setComponentVersion,
-  setLabels,
-  setTags,
+  getComponentVersion,
+  getLabels,
+  getTags,
 } from './metadata'
+import { promises as fs } from 'fs'
 
 const METADATA_FILENAME = 'metadata.json'
 
@@ -19,8 +20,7 @@ async function run() {
   const ghcrUser = getInput('ghcr-user') || context.actor
   const ghcrPassword = getInput('ghcr-password') || getToken()
   const dockerfile = getInput('dockerfile') || './Dockerfile'
-  const private_key = process.env.PRIVATE_KEY
-  const tags = await setTags()
+  const tags = await getTags()
   info(`Image name: exivity/${component}`)
   info(`Image tags: ${tags.join(', ')}`)
 
@@ -29,7 +29,7 @@ async function run() {
     warning('No tags set, skipping deploy docker action')
     return
   }
-  const labels = setLabels({ component, version: tags[0] })
+  const labels = getLabels({ component, version: tags[0] })
 
   // concat list of labels
   const labelOptions = Object.entries(labels)
@@ -43,8 +43,29 @@ async function run() {
     .join(' ')
   info(`Image tags will be:\n${JSON.stringify(tagOptions, undefined, 2)}`)
 
-  const componentVersion = setComponentVersion()
+  const componentVersion = getComponentVersion()
   info(`Component version will be: ${componentVersion}`)
+
+  // this piece of code composes a metadata.json file that is to be copied into the
+  // docker image on build. This requires the line 
+  // COPY ./metadata.json <<target>> 
+  // to a present in the Dockerfile
+  const metadata = {
+    component,
+    version: componentVersion,
+    created: new Date().toISOString(),
+  }
+  info(
+    `Writing metadata to ${METADATA_FILENAME}:\n${JSON.stringify(
+      metadata,
+      undefined,
+      2
+    )}`
+  )
+  await fs.writeFile(
+    './' + METADATA_FILENAME,
+    JSON.stringify(metadata, undefined, 2)
+  )
 
   // All built images get pushed to GHCR
   info('Logging in to GHCR')
