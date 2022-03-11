@@ -222,12 +222,11 @@ Builds a container image and pushes it to GHCR
 
 | name                  | required | default            | description                                                     |
 | --------------------- | -------- | ------------------ | --------------------------------------------------------------- |
-
 | `ghcr-user`           |          | `github.actor`     | Username for GitHub Container Registry                          |
 | `ghcr-password`       |          | `env.GITHUB_TOKEN` | Password for GitHub Container Registry                          |
 | `dockerfile`          |          | `"./Dockerfile"`   | Path to the Dockerfile                                          |
 | `gh-token` | | `env.GITHUB_TOKEN` | The github token to delete image tags (only for 'delete' event) |
-| `component` |          | Current component                     | The component build containerized.|
+| `component` |          | `Current component`                     | The component being containerized.|
 
 
 # `put-artefacts`
