@@ -6902,7 +6902,7 @@ var types = {
 // semantic-pull-request/src/index.ts
 var supportedEvents = ["pull_request"];
 function validateCommitMessage(message) {
-  const matches = message.match(/^(\w+)(?:\((\w+)\))?(!)?:\s+(.*)/);
+  const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/);
   const availableTypes = Object.keys(types);
   const genericHelp = "See https://www.conventionalcommits.org/en/v1.0.0/ for more details.";
   const typesHelp = `Available types:
