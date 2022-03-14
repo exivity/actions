@@ -20,7 +20,7 @@ _Available actions:_
 - [`semantic-pull-request`](#semantic-pull-request)
 - [`sign-file`](#sign-file)
 - [`slack`](#slack)
-- [`sync-settings`](#sync-settings)
+- [`sync-defaults`](#sync-defaults)
 - [`virustotal`](#virustotal)
 
 # `accept`
