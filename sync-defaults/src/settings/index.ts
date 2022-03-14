@@ -1,5 +1,6 @@
 import { debug, info } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import merge from 'deepmerge'
 import yaml from 'js-yaml'
 import { EventName } from '../../../lib/github'
 import { SyncPluginOptions } from '../types'
@@ -59,7 +60,7 @@ export async function run<T extends EventName>({
         if ('_extends' in repoConfig) {
           delete repoConfig._extends
         }
-        config = { ...config, ...repoConfig }
+        config = merge(config, repoConfig)
       } else {
         debug(
           `Could not get settings from "exivity/${repo}" (not a file), ignoring`
