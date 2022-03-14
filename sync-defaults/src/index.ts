@@ -22,7 +22,7 @@ async function run() {
   const plugins: SyncPlugin[] = [settings]
 
   for (const { name, run } of plugins) {
-    info(`Running plugin "${name}"`)
+    info(`➡️ Running plugin "${name}"`)
 
     await run({
       ghToken: token,

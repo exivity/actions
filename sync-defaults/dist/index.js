@@ -370,7 +370,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug("making CONNECT request");
+      debug2("making CONNECT request");
       var connectReq = self.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -390,7 +390,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug2("tunneling socket could not be established, statusCode=%d", res.statusCode);
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -399,7 +399,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug("got illegal response body from proxy");
+          debug2("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -407,13 +407,13 @@ var require_tunnel = __commonJS({
           self.removeSocket(placeholder);
           return;
         }
-        debug("tunneling connection has established");
+        debug2("tunneling connection has established");
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug2("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
@@ -471,9 +471,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug;
+    var debug2;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug = function() {
+      debug2 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -483,10 +483,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug = function() {
+      debug2 = function() {
       };
     }
-    exports.debug = debug;
+    exports.debug = debug2;
   }
 });
 
@@ -689,12 +689,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info4 = this._prepareRequest(verb, parsedUrl, headers);
+        let info6 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info4, data);
+          response = await this.requestRaw(info6, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -704,7 +704,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info4, data);
+              return authenticationHandler.handleAuthentication(this, info6, data);
             } else {
               return response;
             }
@@ -727,8 +727,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info4 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info4, data);
+            info6 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info6, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -748,7 +748,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info4, data) {
+      requestRaw(info6, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -756,13 +756,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info4, data, callbackForResult);
+          this.requestRawWithCallback(info6, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info4, data, onResult) {
+      requestRawWithCallback(info6, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info4.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info6.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -771,7 +771,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info4.httpModule.request(info4.options, (msg) => {
+        let req = info6.httpModule.request(info6.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -782,7 +782,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info4.options.path), null);
+          handleResult(new Error("Request timeout: " + info6.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -804,27 +804,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info4 = {};
-        info4.parsedUrl = requestUrl;
-        const usingSsl = info4.parsedUrl.protocol === "https:";
-        info4.httpModule = usingSsl ? https : http;
+        const info6 = {};
+        info6.parsedUrl = requestUrl;
+        const usingSsl = info6.parsedUrl.protocol === "https:";
+        info6.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info4.options = {};
-        info4.options.host = info4.parsedUrl.hostname;
-        info4.options.port = info4.parsedUrl.port ? parseInt(info4.parsedUrl.port) : defaultPort;
-        info4.options.path = (info4.parsedUrl.pathname || "") + (info4.parsedUrl.search || "");
-        info4.options.method = method;
-        info4.options.headers = this._mergeHeaders(headers);
+        info6.options = {};
+        info6.options.host = info6.parsedUrl.hostname;
+        info6.options.port = info6.parsedUrl.port ? parseInt(info6.parsedUrl.port) : defaultPort;
+        info6.options.path = (info6.parsedUrl.pathname || "") + (info6.parsedUrl.search || "");
+        info6.options.method = method;
+        info6.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info4.options.headers["user-agent"] = this.userAgent;
+          info6.options.headers["user-agent"] = this.userAgent;
         }
-        info4.options.agent = this._getAgent(info4.parsedUrl);
+        info6.options.agent = this._getAgent(info6.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info4.options);
+            handler.prepareRequest(info6.options);
           });
         }
-        return info4;
+        return info6;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1257,10 +1257,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug(message) {
+    function debug2(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug;
+    exports.debug = debug2;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -1273,10 +1273,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info4(message) {
+    function info6(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info4;
+    exports.info = info6;
     function startGroup(name2) {
       command_1.issue("group", name2);
     }
@@ -6810,7 +6810,7 @@ var require_github = __commonJS({
 });
 
 // sync-defaults/src/index.ts
-var import_core3 = __toESM(require_core());
+var import_core5 = __toESM(require_core());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
@@ -6853,8 +6853,11 @@ __export(settings_exports, {
   name: () => name,
   run: () => run
 });
-var import_core2 = __toESM(require_core());
+var import_core4 = __toESM(require_core());
 var import_github = __toESM(require_github());
+
+// sync-defaults/src/settings/plugins/branches.ts
+var import_core2 = __toESM(require_core());
 
 // sync-defaults/src/settings/types.ts
 var GitHubSettingsPlugin = class {
@@ -6877,8 +6880,10 @@ var Branches = class extends GitHubSettingsPlugin {
     return Promise.all(this.config.filter((branch) => branch.protection !== void 0).map((branch) => {
       const commonParams = __spreadProps(__spreadValues({}, this.repo), { branch: branch.name });
       if (this.isEmpty(branch.protection)) {
+        (0, import_core2.info)(`    \u274C Removing branch protection for "${branch.name}"`);
         return this.github.rest.repos.deleteBranchProtection(commonParams);
       } else {
+        (0, import_core2.info)(`    \u{1F503} Updating branch protection for "${branch.name}"`);
         const updateParams = __spreadProps(__spreadValues(__spreadValues({}, commonParams), branch.protection), {
           headers: previewHeaders
         });
@@ -6976,6 +6981,7 @@ var Collaborators = class extends Diffable {
 };
 
 // sync-defaults/src/settings/plugins/labels.ts
+var import_core3 = __toESM(require_core());
 var previewHeaders2 = {
   accept: "application/vnd.github.symmetra-preview+json"
 };
@@ -7003,12 +7009,15 @@ var Labels = class extends Diffable {
     return "new_name" in attrs || existing.color !== attrs.color || existing.description !== attrs.description;
   }
   update(existing, attrs) {
+    (0, import_core3.info)(`    \u{1F503} Updating label "${existing.name}"`);
     return this.github.rest.issues.updateLabel(this.wrapAttrs(attrs));
   }
   add(attrs) {
+    (0, import_core3.info)(`    \u2705 Adding label "${attrs.name}"`);
     return this.github.rest.issues.createLabel(this.wrapAttrs(attrs));
   }
   remove(existing) {
+    (0, import_core3.info)(`    \u274C Removing label "${existing.name}"`);
     return this.github.rest.issues.deleteLabel(this.wrapAttrs({ name: existing.name }));
   }
   wrapAttrs(attrs) {
@@ -7186,6 +7195,14 @@ async function run({
     owner: "exivity",
     repo: component
   };
+  for (const repo2 in [".github", component]) {
+    const settings = await octokit.rest.repos.getContent({
+      owner: "exivity",
+      repo: repo2,
+      path: ".github/settings.yml"
+    });
+    (0, import_core4.debug)(JSON.stringify(settings.data, void 0, 2));
+  }
   const config = {
     labels: [
       {
@@ -7205,9 +7222,10 @@ async function run({
       }
     ]
   };
+  (0, import_core4.debug)(`Got config:
+${JSON.stringify(config, void 0, 2)}`);
   return Promise.all(Object.entries(config).map(([section, sectionConfig]) => {
-    (0, import_core2.info)(`Running settings plugin "${section}" with config:
-${JSON.stringify(sectionConfig, void 0, 2)}`);
+    (0, import_core4.info)(`  \u27A1\uFE0F Running settings plugin "${section}"`);
     const Plugin = PLUGINS[section];
     return new Plugin(octokit, repo, sectionConfig).sync();
   }));
@@ -7222,7 +7240,7 @@ async function run2() {
   const eventData = getEventData(eventName);
   const plugins = [settings_exports];
   for (const { name: name2, run: run3 } of plugins) {
-    (0, import_core3.info)(`Running plugin "${name2}"`);
+    (0, import_core5.info)(`\u27A1\uFE0F Running plugin "${name2}"`);
     await run3({
       ghToken: token,
       component,
@@ -7230,9 +7248,9 @@ async function run2() {
       eventData
     });
   }
-  (0, import_core3.info)("\u2705 Running plugins done");
+  (0, import_core5.info)("\u2705 Running plugins done");
 }
-run2().catch(import_core3.setFailed);
+run2().catch(import_core5.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

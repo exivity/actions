@@ -1,4 +1,4 @@
-import { info } from '@actions/core'
+import { debug, info } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { EventName } from '../../../lib/github'
 import { SyncPluginOptions } from '../types'
@@ -34,6 +34,18 @@ export async function run<T extends EventName>({
     owner: 'exivity',
     repo: component,
   }
+
+  // Grab settings from .github/settings.yml
+  for (const repo in ['.github', component]) {
+    const settings = await octokit.rest.repos.getContent({
+      owner: 'exivity',
+      repo,
+      path: '.github/settings.yml',
+    })
+
+    debug(JSON.stringify(settings.data, undefined, 2))
+  }
+
   const config: Config = {
     labels: [
       {
@@ -54,15 +66,11 @@ export async function run<T extends EventName>({
     ],
   }
 
+  debug(`Got config:\n${JSON.stringify(config, undefined, 2)}`)
+
   return Promise.all(
     Object.entries(config).map(([section, sectionConfig]) => {
-      info(
-        `Running settings plugin "${section}" with config:\n${JSON.stringify(
-          sectionConfig,
-          undefined,
-          2
-        )}`
-      )
+      info(`  ➡️ Running settings plugin "${section}"`)
 
       const Plugin = PLUGINS[section as keyof typeof PLUGINS]
       return new Plugin(octokit, repo, sectionConfig as any).sync()
