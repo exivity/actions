@@ -9807,7 +9807,6 @@ var Repository = class extends GitHubSettingsPlugin {
 
 // sync-defaults/src/settings/plugins/teams.ts
 var import_core3 = __toESM(require_core());
-var teamRepoEndpoint = "/teams/:team_id/repos/:owner/:repo";
 var Teams = class extends Diffable {
   async find() {
     try {
@@ -9824,30 +9823,26 @@ var Teams = class extends Diffable {
     return existing.permission !== attrs.permission;
   }
   update(existing, attrs) {
-    this.logUpdate(`Updating team "${existing.name}"`);
-    return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
+    return this.add(attrs);
   }
-  async add(attrs) {
-    this.logUpdate(`Adding team "${attrs.name}"`);
-    const { data: existing } = await this.github.request("GET /orgs/:org/teams/:team_slug", { org: this.repo.owner, team_slug: attrs.name });
-    return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
+  add(attrs) {
+    this.logAdd(`Adding team "${attrs.name}"`);
+    return this.github.rest.teams.addOrUpdateRepoPermissionsInOrg({
+      team_slug: attrs.name,
+      permission: attrs.permission,
+      owner: this.repo.owner,
+      repo: this.repo.repo,
+      org: this.repo.owner
+    });
   }
   remove(existing) {
     this.logUpdate(`Removing team "${existing.name}"`);
-    return this.github.request(`DELETE ${teamRepoEndpoint}`, __spreadProps(__spreadValues({
-      team_id: existing.id
-    }, this.repo), {
-      org: this.repo.owner
-    }));
-  }
-  toParams(existing, attrs) {
-    return {
-      team_id: existing.id,
+    return this.github.rest.teams.removeRepoInOrg({
+      team_slug: existing.name,
       owner: this.repo.owner,
       repo: this.repo.repo,
-      org: this.repo.owner,
-      permission: attrs.permission
-    };
+      org: this.repo.owner
+    });
   }
 };
 

@@ -2,10 +2,6 @@ import { warning } from '@actions/core'
 import { Team } from '../types'
 import { Diffable } from './diffable'
 
-// it is necessary to use this endpoint until GitHub Enterprise supports
-// the modern version under /orgs
-const teamRepoEndpoint = '/teams/:team_id/repos/:owner/:repo'
-
 export class Teams extends Diffable<'teams'> {
   async find() {
     try {
@@ -25,42 +21,27 @@ export class Teams extends Diffable<'teams'> {
   }
 
   update(existing: Team, attrs: Team) {
-    this.logUpdate(`Updating team "${existing.name}"`)
-    return this.github.request(
-      `PUT ${teamRepoEndpoint}`,
-      this.toParams(existing, attrs)
-    )
+    return this.add(attrs)
   }
 
-  async add(attrs: Team) {
-    this.logUpdate(`Adding team "${attrs.name}"`)
-    const { data: existing } = await this.github.request(
-      'GET /orgs/:org/teams/:team_slug',
-      { org: this.repo.owner, team_slug: attrs.name }
-    )
-
-    return this.github.request(
-      `PUT ${teamRepoEndpoint}`,
-      this.toParams(existing, attrs)
-    )
-  }
-
-  remove(existing: Team) {
-    this.logUpdate(`Removing team "${existing.name}"`)
-    return this.github.request(`DELETE ${teamRepoEndpoint}`, {
-      team_id: existing.id,
-      ...this.repo,
+  add(attrs: Team) {
+    this.logAdd(`Adding team "${attrs.name}"`)
+    return this.github.rest.teams.addOrUpdateRepoPermissionsInOrg({
+      team_slug: attrs.name,
+      permission: attrs.permission,
+      owner: this.repo.owner,
+      repo: this.repo.repo,
       org: this.repo.owner,
     })
   }
 
-  toParams(existing: Team, attrs: Team) {
-    return {
-      team_id: existing.id,
+  remove(existing: Team) {
+    this.logUpdate(`Removing team "${existing.name}"`)
+    return this.github.rest.teams.removeRepoInOrg({
+      team_slug: existing.name,
       owner: this.repo.owner,
       repo: this.repo.repo,
       org: this.repo.owner,
-      permission: attrs.permission,
-    }
+    })
   }
 }
