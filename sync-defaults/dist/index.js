@@ -9836,7 +9836,7 @@ var Teams = class extends Diffable {
     });
   }
   remove(existing) {
-    this.logUpdate(`Removing team "${existing.name}"`);
+    this.logRemove(`Removing team "${existing.name}"`);
     return this.github.rest.teams.removeRepoInOrg({
       team_slug: existing.name,
       owner: this.repo.owner,

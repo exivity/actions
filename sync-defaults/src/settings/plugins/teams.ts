@@ -36,7 +36,7 @@ export class Teams extends Diffable<'teams'> {
   }
 
   remove(existing: Team) {
-    this.logUpdate(`Removing team "${existing.name}"`)
+    this.logRemove(`Removing team "${existing.name}"`)
     return this.github.rest.teams.removeRepoInOrg({
       team_slug: existing.name,
       owner: this.repo.owner,
