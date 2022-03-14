@@ -20,6 +20,7 @@ _Available actions:_
 - [`semantic-pull-request`](#semantic-pull-request)
 - [`sign-file`](#sign-file)
 - [`slack`](#slack)
+- [`sync-settings`](#sync-settings)
 - [`virustotal`](#virustotal)
 
 # `accept`
@@ -406,6 +407,32 @@ available).
 | `fallback-channel` |          | `"#builds"`    | If a Slack user can't be resolved, use this channel as a fallback.                                                                                                               |
 | `slack-api-token`  | ✅       |                | Slack API token                                                                                                                                                                  |
 | `gh-token`         |          | `github.token` | GitHub token with read access to the repository                                                                                                                                  |
+
+# `sync-defaults`
+
+Syncs the repo settings with org defaults. Override org settings in a local
+`.github/settings.yml` file. See
+[probot/settings](https://github.com/probot/settings#usage) for all available
+options.
+
+See [.github repository](https://github.com/exivity/.github#sync-defaults)
+for example usage.
+
+_Based on original work from [probot/settings](https://github.com/probot/settings)_
+
+## Example
+
+```yaml
+- uses: exivity/actions/sync-defaults@main
+  with:
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name       | required | default        | description                                      |
+| ---------- | -------- | -------------- | ------------------------------------------------ |
+| `gh-token` |          | `github.token` | GitHub token with admin access to the repository |
 
 # `virustotal`
 

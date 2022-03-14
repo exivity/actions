@@ -372,7 +372,6 @@ chalk@^2.4.1:
 
 "checkout@https://github.com/actions/checkout#v3":
   version "2.0.2"
-  uid a12a3943b4bdde767164f792f33f40b04645d846
   resolved "https://github.com/actions/checkout#a12a3943b4bdde767164f792f33f40b04645d846"
   dependencies:
     "@actions/core" "^1.2.6"
@@ -439,6 +438,11 @@ cross-spawn@^7.0.1:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
+
+deepmerge@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
+  integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
 
 define-properties@^1.1.3:
   version "1.1.3"

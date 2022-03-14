@@ -1,10 +1,19 @@
 import { getInput, info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { context } from '@actions/github/lib/utils'
-import { EmitterWebhookEvent, EmitterWebhookEventName } from '@octokit/webhooks'
+import { EventPayloadMap, WebhookEventName } from '@octokit/webhooks-types'
 
-export type EventData<T extends EmitterWebhookEventName> =
-  EmitterWebhookEvent<T>['payload']
+export type ScheduleEvent = {
+  schedule: string
+}
+
+export type EventName = WebhookEventName | 'schedule'
+
+export type EventData<T extends EventName> = T extends WebhookEventName
+  ? EventPayloadMap[T]
+  : T extends 'schedule'
+  ? ScheduleEvent
+  : never
 
 type Options = {
   octokit: ReturnType<typeof getOctokit>
@@ -155,7 +164,11 @@ export function getToken(inputName = 'gh-token') {
   return ghToken
 }
 
-export function getEventName<T extends EmitterWebhookEventName>(
+/**
+ * Schedule is not in the WebhookEventName, but is valid, so we add it
+ * to the type here.
+ */
+export function getEventName<T extends EventName>(
   supportedEvents?: readonly T[]
 ) {
   const eventName = context.eventName
@@ -171,17 +184,16 @@ export function getEventName<T extends EmitterWebhookEventName>(
   return eventName as T
 }
 
-export function isEvent<T extends EmitterWebhookEventName, U extends T>(
+export function isEvent<T extends EventName, U extends T>(
   input: T,
   compare: U,
   eventData: EventData<T>
+  // @ts-ignore
 ): eventData is EventData<U> {
   return input === compare
 }
 
-export function getEventData<T extends EmitterWebhookEventName>(
-  eventName?: T
-): EventData<T> {
+export function getEventData<T extends EventName>(eventName?: T): EventData<T> {
   const payload = context.payload as EventData<T>
 
   if (Object.keys(payload).length === 0) {
