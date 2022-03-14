@@ -410,7 +410,10 @@ available).
 
 # `sync-defaults`
 
-Syncs the repo settings with org defaults.
+Syncs the repo settings with org defaults. Override org settings in a local
+`.github/settings.yml` file. See
+[probot/settings](https://github.com/probot/settings#usage) for all available
+options.
 
 See [.github repository](https://github.com/exivity/.github#sync-defaults)
 for example usage.
@@ -422,14 +425,14 @@ _Based on original work from [probot/settings](https://github.com/probot/setting
 ```yaml
 - uses: exivity/actions/sync-defaults@main
   with:
-    gh-token: ${{ secrets.GITHUB_TOKEN }}
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
 
 ## Inputs
 
-| name       | required | default            | description                                      |
-| ---------- | -------- | ------------------ | ------------------------------------------------ |
-| `gh-token` |          | `env.GITHUB_TOKEN` | GitHub token with write access to the repository |
+| name       | required | default        | description                                      |
+| ---------- | -------- | -------------- | ------------------------------------------------ |
+| `gh-token` |          | `github.token` | GitHub token with admin access to the repository |
 
 # `virustotal`
 
