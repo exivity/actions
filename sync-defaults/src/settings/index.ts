@@ -1,5 +1,6 @@
 import { debug, info } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import yaml from 'js-yaml'
 import { EventName } from '../../../lib/github'
 import { SyncPluginOptions } from '../types'
 import {
@@ -43,9 +44,20 @@ export async function run<T extends EventName>({
         repo,
         path: '.github/settings.yml',
       })
-      debug(JSON.stringify(settings.data, undefined, 2))
+      if ('content' in settings.data) {
+        const buffer = Buffer.from(settings.data.content, 'base64')
+        const content = buffer.toString('utf8')
+        const config = yaml.load(content)
+        debug(JSON.stringify(config, undefined, 2))
+      } else {
+        debug(
+          `Could not get settings from "exivity/${repo}" (not a file), ignoring`
+        )
+      }
     } catch (error: unknown) {
-      debug(`Could not get settings from "exivity/${repo}", ignoring`)
+      debug(
+        `Could not get settings from "exivity/${repo}" (fetch error), ignoring`
+      )
     }
   }
 
