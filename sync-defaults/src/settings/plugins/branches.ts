@@ -1,4 +1,4 @@
-import { GitHubSettingsPlugin } from './types'
+import { GitHubSettingsPlugin } from '../types'
 
 const previewHeaders = {
   accept:
@@ -6,26 +6,27 @@ const previewHeaders = {
 }
 
 export class Branches extends GitHubSettingsPlugin<'branches'> {
-  sync() {
+  async sync() {
     return Promise.all(
-      this.settings
+      this.config
         .filter((branch) => branch.protection !== undefined)
         .map((branch) => {
-          const params = Object.assign(this.repo, { branch: branch.name })
-
+          const commonParams = { ...this.repo, branch: branch.name }
           if (this.isEmpty(branch.protection)) {
-            return this.github.repos.deleteBranchProtection(params)
+            return this.github.rest.repos.deleteBranchProtection(commonParams)
           } else {
-            Object.assign(params, branch.protection, {
+            const updateParams = {
+              ...commonParams,
+              ...branch.protection,
               headers: previewHeaders,
-            })
-            return this.github.repos.updateBranchProtection(params)
+            }
+            return this.github.rest.repos.updateBranchProtection(updateParams)
           }
         })
     )
   }
 
-  isEmpty(maybeEmpty) {
+  isEmpty(maybeEmpty: null | {}): maybeEmpty is null {
     return maybeEmpty === null || Object.keys(maybeEmpty).length === 0
   }
 }

@@ -1,61 +1,66 @@
-// Base class to make it easy to check for changes to a list of items
-//
-//     class Thing extends Diffable {
-//       find() {
-//       }
-//
-//       comparator(existing, attrs) {
-//       }
-//
-//       changed(existing, attrs) {
-//       }
-//
-//       update(existing, attrs) {
-//       }
-//
-//       add(attrs) {
-//       }
-//
-//       remove(existing) {
-//       }
+import { Config, GitHubSettingsPlugin, OctokitResponse } from '../types'
 
-import { GitHubSettingsPlugin, Settings } from './types'
+type DiffableSettingKeys =
+  | 'labels'
+  | 'milestones'
+  | 'collaborators'
+  | 'teams'
+  | 'branches'
 
-//     }
-export class Diffable<
-  T extends keyof Settings
+export abstract class Diffable<
+  T extends DiffableSettingKeys
 > extends GitHubSettingsPlugin<T> {
-  constructor(github, repo, entries) {
-    this.github = github
-    this.repo = repo
-    this.entries = entries
-  }
-
-  sync() {
-    if (this.entries) {
-      return this.find().then((existingRecords) => {
-        const changes = []
-
-        this.entries.forEach((attrs) => {
-          const existing = existingRecords.find((record) => {
+  async sync() {
+    if (this.config) {
+      const existingRecords = await this.find()
+      const changes: Promise<OctokitResponse>[] = []
+      this.config.forEach((attrs: Config[T][number]) => {
+        const existing = (existingRecords as any[]).find(
+          (record: Config[T][number]) => {
             return this.comparator(record, attrs)
-          })
-
-          if (!existing) {
-            changes.push(this.add(attrs))
-          } else if (this.changed(existing, attrs)) {
-            changes.push(this.update(existing, attrs))
           }
-        })
+        )
 
-        existingRecords.forEach((x) => {
-          if (!this.entries.find((y) => this.comparator(x, y))) {
-            changes.push(this.remove(x))
-          }
-        })
-
-        return Promise.all(changes)
+        if (!existing) {
+          changes.push(this.add(attrs))
+        } else if (this.changed(existing, attrs)) {
+          changes.push(this.update(existing, attrs))
+        }
       })
+      ;(existingRecords as any[]).forEach((x: Config[T][number]) => {
+        if (
+          !(this.config as any[]).find((y: Config[T][number]) =>
+            this.comparator(x, y)
+          )
+        ) {
+          changes.push(this.remove(x))
+        }
+      })
+
+      return Promise.all(changes)
     }
+
+    return []
   }
+
+  abstract find(): Promise<Config[T]>
+
+  abstract comparator(
+    existing: Config[T][number],
+    attrs: Config[T][number]
+  ): boolean
+
+  abstract changed(
+    existing: Config[T][number],
+    attrs: Config[T][number]
+  ): boolean
+
+  abstract update(
+    existing: Config[T][number],
+    attrs: Config[T][number]
+  ): Promise<OctokitResponse>
+
+  abstract add(attrs: Config[T][number]): Promise<OctokitResponse>
+
+  abstract remove(existing: Config[T][number]): Promise<OctokitResponse>
 }

@@ -1,20 +1,29 @@
+import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { EventName } from '../../../lib/github'
 import { SyncPluginOptions } from '../types'
-import { Branches, Collaborators } from './plugins'
+import {
+  Branches,
+  Collaborators,
+  Labels,
+  Milestones,
+  Repository,
+  Teams,
+} from './plugins'
+import { Config } from './types'
 
-export const name = 'settings'
-
-const FILE_NAME = '.github/settings.yml'
+const CONFIG_FILENAME = '.github/settings.yml'
 
 const PLUGINS = {
-  repository: require('./plugins/repository'),
-  labels: require('./plugins/labels'),
-  collaborators: require('./plugins/collaborators'),
-  teams: require('./plugins/teams'),
-  milestones: require('./plugins/milestones'),
+  repository: Repository,
+  labels: Labels,
+  collaborators: Collaborators,
+  teams: Teams,
+  milestones: Milestones,
   branches: Branches,
 }
+
+export const name = 'settings'
 
 export async function run<T extends EventName>({
   ghToken,
@@ -25,16 +34,38 @@ export async function run<T extends EventName>({
     owner: 'exivity',
     repo: component,
   }
-  const config = {}
-  return Promise.all(
-    Object.entries(this.config).map(([section, config]) => {
-      const debug = { repo: this.repo }
-      debug[section] = config
+  const config: Config = {
+    labels: [
+      {
+        name: 'feature',
+        color: '#0E8A16',
+        description: 'Adds functionality for end-users',
+      },
+      {
+        name: 'bug',
+        color: '#D93F0B',
+        description: 'Undesired or defective behaviour',
+      },
+      {
+        name: 'chore',
+        color: '#1D76DB',
+        description: "Doesn't affect functionality}",
+      },
+    ],
+  }
 
-      const Plugin = Settings.PLUGINS[section]
-      return new Plugin(this.github, this.repo, config).sync()
+  return Promise.all(
+    Object.entries(config).map(([section, sectionConfig]) => {
+      info(
+        `Running settings plugin "${section}" with config:\n${JSON.stringify(
+          sectionConfig,
+          undefined,
+          2
+        )}`
+      )
+
+      const Plugin = PLUGINS[section as keyof typeof PLUGINS]
+      return new Plugin(octokit, repo, sectionConfig as any).sync()
     })
   )
-
-  return Settings.sync(octokit.rest, repo, config)
 }

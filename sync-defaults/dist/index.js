@@ -22,9 +22,6 @@ var __spreadValues = (a, b) => {
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-var __esm = (fn, res) => function __init() {
-  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
-};
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -43,11 +40,6 @@ var __reExport = (target, module2, copyDefault, desc) => {
 var __toESM = (module2, isNodeMode) => {
   return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
 };
-var __toCommonJS = /* @__PURE__ */ ((cache) => {
-  return (module2, temp) => {
-    return cache && cache.get(module2) || (temp = __reExport(__markAsModule({}), module2, 1), cache && cache.set(module2, temp), temp);
-  };
-})(typeof WeakMap !== "undefined" ? /* @__PURE__ */ new WeakMap() : 0);
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
@@ -697,12 +689,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info3 = this._prepareRequest(verb, parsedUrl, headers);
+        let info4 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info3, data);
+          response = await this.requestRaw(info4, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -712,7 +704,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info3, data);
+              return authenticationHandler.handleAuthentication(this, info4, data);
             } else {
               return response;
             }
@@ -735,8 +727,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info3 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info3, data);
+            info4 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info4, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -756,7 +748,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info3, data) {
+      requestRaw(info4, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -764,13 +756,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info3, data, callbackForResult);
+          this.requestRawWithCallback(info4, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info3, data, onResult) {
+      requestRawWithCallback(info4, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info3.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info4.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -779,7 +771,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info3.httpModule.request(info3.options, (msg) => {
+        let req = info4.httpModule.request(info4.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -790,7 +782,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info3.options.path), null);
+          handleResult(new Error("Request timeout: " + info4.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -812,27 +804,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info3 = {};
-        info3.parsedUrl = requestUrl;
-        const usingSsl = info3.parsedUrl.protocol === "https:";
-        info3.httpModule = usingSsl ? https : http;
+        const info4 = {};
+        info4.parsedUrl = requestUrl;
+        const usingSsl = info4.parsedUrl.protocol === "https:";
+        info4.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info3.options = {};
-        info3.options.host = info3.parsedUrl.hostname;
-        info3.options.port = info3.parsedUrl.port ? parseInt(info3.parsedUrl.port) : defaultPort;
-        info3.options.path = (info3.parsedUrl.pathname || "") + (info3.parsedUrl.search || "");
-        info3.options.method = method;
-        info3.options.headers = this._mergeHeaders(headers);
+        info4.options = {};
+        info4.options.host = info4.parsedUrl.hostname;
+        info4.options.port = info4.parsedUrl.port ? parseInt(info4.parsedUrl.port) : defaultPort;
+        info4.options.path = (info4.parsedUrl.pathname || "") + (info4.parsedUrl.search || "");
+        info4.options.method = method;
+        info4.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info3.options.headers["user-agent"] = this.userAgent;
+          info4.options.headers["user-agent"] = this.userAgent;
         }
-        info3.options.agent = this._getAgent(info3.parsedUrl);
+        info4.options.agent = this._getAgent(info4.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info3.options);
+            handler.prepareRequest(info4.options);
           });
         }
-        return info3;
+        return info4;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1281,10 +1273,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info3(message) {
+    function info4(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info3;
+    exports.info = info4;
     function startGroup(name2) {
       command_1.issue("group", name2);
     }
@@ -6817,333 +6809,8 @@ var require_github = __commonJS({
   }
 });
 
-// sync-defaults/src/settings/plugins/types.ts
-var GitHubSettingsPlugin;
-var init_types = __esm({
-  "sync-defaults/src/settings/plugins/types.ts"() {
-    GitHubSettingsPlugin = class {
-      constructor(github, repo, settings) {
-        this.github = github;
-        this.repo = repo;
-        this.settings = settings;
-      }
-    };
-  }
-});
-
-// sync-defaults/src/settings/plugins/diffable.ts
-var diffable_exports = {};
-__export(diffable_exports, {
-  Diffable: () => Diffable
-});
-var Diffable;
-var init_diffable = __esm({
-  "sync-defaults/src/settings/plugins/diffable.ts"() {
-    init_types();
-    Diffable = class extends GitHubSettingsPlugin {
-      constructor(github, repo, entries) {
-        this.github = github;
-        this.repo = repo;
-        this.entries = entries;
-      }
-      sync() {
-        if (this.entries) {
-          return this.find().then((existingRecords) => {
-            const changes = [];
-            this.entries.forEach((attrs) => {
-              const existing = existingRecords.find((record) => {
-                return this.comparator(record, attrs);
-              });
-              if (!existing) {
-                changes.push(this.add(attrs));
-              } else if (this.changed(existing, attrs)) {
-                changes.push(this.update(existing, attrs));
-              }
-            });
-            existingRecords.forEach((x) => {
-              if (!this.entries.find((y) => this.comparator(x, y))) {
-                changes.push(this.remove(x));
-              }
-            });
-            return Promise.all(changes);
-          });
-        }
-      }
-    };
-  }
-});
-
-// sync-defaults/src/settings/plugins/collaborators.ts
-var collaborators_exports = {};
-__export(collaborators_exports, {
-  Collaborators: () => Collaborators
-});
-var Diffable2, Collaborators;
-var init_collaborators = __esm({
-  "sync-defaults/src/settings/plugins/collaborators.ts"() {
-    Diffable2 = (init_diffable(), __toCommonJS(diffable_exports));
-    Collaborators = class extends Diffable2 {
-      constructor(...args) {
-        super(...args);
-        if (this.entries) {
-          this.entries.forEach((collaborator) => {
-            collaborator.username = collaborator.username.toLowerCase();
-          });
-        }
-      }
-      find() {
-        return this.github.repos.listCollaborators({
-          repo: this.repo.repo,
-          owner: this.repo.owner,
-          affiliation: "direct"
-        }).then((res) => {
-          return res.data.map((user) => {
-            return {
-              username: user.login.toLowerCase(),
-              permission: user.permissions.admin && "admin" || user.permissions.push && "push" || user.permissions.pull && "pull"
-            };
-          });
-        });
-      }
-      comparator(existing, attrs) {
-        return existing.username === attrs.username;
-      }
-      changed(existing, attrs) {
-        return existing.permission !== attrs.permission;
-      }
-      update(existing, attrs) {
-        return this.add(attrs);
-      }
-      add(attrs) {
-        return this.github.repos.addCollaborator(Object.assign({}, attrs, this.repo));
-      }
-      remove(existing) {
-        return this.github.repos.removeCollaborator(Object.assign({ username: existing.username }, this.repo));
-      }
-    };
-  }
-});
-
-// sync-defaults/src/settings/plugins/labels.ts
-var labels_exports = {};
-__export(labels_exports, {
-  Labels: () => Labels
-});
-var Diffable3, previewHeaders2, Labels;
-var init_labels = __esm({
-  "sync-defaults/src/settings/plugins/labels.ts"() {
-    Diffable3 = (init_diffable(), __toCommonJS(diffable_exports));
-    previewHeaders2 = {
-      accept: "application/vnd.github.symmetra-preview+json"
-    };
-    Labels = class extends Diffable3 {
-      constructor(...args) {
-        super(...args);
-        if (this.entries) {
-          this.entries.forEach((label) => {
-            if (label.color) {
-              label.color = String(label.color).replace(/^#/, "");
-              if (label.color.length < 6) {
-                label.color.padStart(6, "0");
-              }
-            }
-          });
-        }
-      }
-      find() {
-        const options = this.github.issues.listLabelsForRepo.endpoint.merge(this.wrapAttrs({ per_page: 100 }));
-        return this.github.paginate(options);
-      }
-      comparator(existing, attrs) {
-        return existing.name === attrs.name;
-      }
-      changed(existing, attrs) {
-        return "new_name" in attrs || existing.color !== attrs.color || existing.description !== attrs.description;
-      }
-      update(existing, attrs) {
-        return this.github.issues.updateLabel(this.wrapAttrs(attrs));
-      }
-      add(attrs) {
-        return this.github.issues.createLabel(this.wrapAttrs(attrs));
-      }
-      remove(existing) {
-        return this.github.issues.deleteLabel(this.wrapAttrs({ name: existing.name }));
-      }
-      wrapAttrs(attrs) {
-        return Object.assign({}, attrs, this.repo, { headers: previewHeaders2 });
-      }
-    };
-  }
-});
-
-// sync-defaults/src/settings/plugins/milestones.ts
-var milestones_exports = {};
-__export(milestones_exports, {
-  Milestones: () => Milestones
-});
-var Diffable4, Milestones;
-var init_milestones = __esm({
-  "sync-defaults/src/settings/plugins/milestones.ts"() {
-    Diffable4 = (init_diffable(), __toCommonJS(diffable_exports));
-    Milestones = class extends Diffable4 {
-      constructor(...args) {
-        super(...args);
-        if (this.entries) {
-          this.entries.forEach((milestone) => {
-            if (milestone.due_on) {
-              delete milestone.due_on;
-            }
-          });
-        }
-      }
-      find() {
-        const options = this.github.issues.listMilestones.endpoint.merge(Object.assign({ per_page: 100, state: "all" }, this.repo));
-        return this.github.paginate(options);
-      }
-      comparator(existing, attrs) {
-        return existing.title === attrs.title;
-      }
-      changed(existing, attrs) {
-        return existing.description !== attrs.description || existing.state !== attrs.state;
-      }
-      update(existing, attrs) {
-        const { owner, repo } = this.repo;
-        return this.github.issues.updateMilestone(Object.assign({ milestone_number: existing.number }, attrs, {
-          owner,
-          repo
-        }));
-      }
-      add(attrs) {
-        const { owner, repo } = this.repo;
-        return this.github.issues.createMilestone(Object.assign({}, attrs, { owner, repo }));
-      }
-      remove(existing) {
-        const { owner, repo } = this.repo;
-        return this.github.issues.deleteMilestone(Object.assign({ milestone_number: existing.number }, { owner, repo }));
-      }
-    };
-  }
-});
-
-// sync-defaults/src/settings/plugins/repository.ts
-var repository_exports = {};
-__export(repository_exports, {
-  Repository: () => Repository
-});
-var enableAutomatedSecurityFixes, enableVulnerabilityAlerts, Repository;
-var init_repository = __esm({
-  "sync-defaults/src/settings/plugins/repository.ts"() {
-    enableAutomatedSecurityFixes = ({ github, settings, enabled }) => {
-      if (enabled === void 0) {
-        return Promise.resolve();
-      }
-      const args = {
-        owner: settings.owner,
-        repo: settings.repo,
-        mediaType: {
-          previews: ["london"]
-        }
-      };
-      const methodName = enabled ? "enableAutomatedSecurityFixes" : "disableAutomatedSecurityFixes";
-      return github.repos[methodName](args);
-    };
-    enableVulnerabilityAlerts = ({ github, settings, enabled }) => {
-      if (enabled === void 0) {
-        return Promise.resolve();
-      }
-      const args = {
-        owner: settings.owner,
-        repo: settings.repo,
-        mediaType: {
-          previews: ["dorian"]
-        }
-      };
-      const methodName = enabled ? "enableVulnerabilityAlerts" : "disableVulnerabilityAlerts";
-      return github.repos[methodName](args);
-    };
-    Repository = class {
-      constructor(github, repo, settings) {
-        this.github = github;
-        this.settings = Object.assign({ mediaType: { previews: ["baptiste"] } }, settings, repo);
-        this.topics = this.settings.topics;
-        delete this.settings.topics;
-        this.enableVulnerabilityAlerts = this.settings.enable_vulnerability_alerts;
-        delete this.settings.enable_vulnerability_alerts;
-        this.enableAutomatedSecurityFixes = this.settings.enable_automated_security_fixes;
-        delete this.settings.enable_automated_security_fixes;
-      }
-      sync() {
-        this.settings.name = this.settings.name || this.settings.repo;
-        return this.github.repos.update(this.settings).then(() => {
-          if (this.topics) {
-            return this.github.repos.replaceAllTopics({
-              owner: this.settings.owner,
-              repo: this.settings.repo,
-              names: this.topics.split(/\s*,\s*/),
-              mediaType: {
-                previews: ["mercy"]
-              }
-            });
-          }
-        }).then(() => enableVulnerabilityAlerts(__spreadValues({
-          enabled: this.enableVulnerabilityAlerts
-        }, this))).then(() => enableAutomatedSecurityFixes(__spreadValues({
-          enabled: this.enableAutomatedSecurityFixes
-        }, this)));
-      }
-    };
-  }
-});
-
-// sync-defaults/src/settings/plugins/teams.ts
-var teams_exports = {};
-__export(teams_exports, {
-  Teams: () => Teams
-});
-var Diffable5, teamRepoEndpoint, Teams;
-var init_teams = __esm({
-  "sync-defaults/src/settings/plugins/teams.ts"() {
-    Diffable5 = (init_diffable(), __toCommonJS(diffable_exports));
-    teamRepoEndpoint = "/teams/:team_id/repos/:owner/:repo";
-    Teams = class extends Diffable5 {
-      find() {
-        return this.github.repos.listTeams(this.repo).then((res) => res.data);
-      }
-      comparator(existing, attrs) {
-        return existing.slug === attrs.name;
-      }
-      changed(existing, attrs) {
-        return existing.permission !== attrs.permission;
-      }
-      update(existing, attrs) {
-        return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
-      }
-      async add(attrs) {
-        const { data: existing } = await this.github.request("GET /orgs/:org/teams/:team_slug", { org: this.repo.owner, team_slug: attrs.name });
-        return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
-      }
-      remove(existing) {
-        return this.github.request(`DELETE ${teamRepoEndpoint}`, __spreadProps(__spreadValues({
-          team_id: existing.id
-        }, this.repo), {
-          org: this.repo.owner
-        }));
-      }
-      toParams(existing, attrs) {
-        return {
-          team_id: existing.id,
-          owner: this.repo.owner,
-          repo: this.repo.repo,
-          org: this.repo.owner,
-          permission: attrs.permission
-        };
-      }
-    };
-  }
-});
-
 // sync-defaults/src/index.ts
-var import_core2 = __toESM(require_core());
+var import_core3 = __toESM(require_core());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
@@ -7186,24 +6853,36 @@ __export(settings_exports, {
   name: () => name,
   run: () => run
 });
+var import_core2 = __toESM(require_core());
 var import_github = __toESM(require_github());
 
+// sync-defaults/src/settings/types.ts
+var GitHubSettingsPlugin = class {
+  constructor(github, repo, config) {
+    this.github = github;
+    this.repo = repo;
+    this.config = config;
+    this.init();
+  }
+  init() {
+  }
+};
+
 // sync-defaults/src/settings/plugins/branches.ts
-init_types();
 var previewHeaders = {
   accept: "application/vnd.github.hellcat-preview+json,application/vnd.github.luke-cage-preview+json,application/vnd.github.zzzax-preview+json"
 };
 var Branches = class extends GitHubSettingsPlugin {
-  sync() {
-    return Promise.all(this.settings.filter((branch) => branch.protection !== void 0).map((branch) => {
-      const params = Object.assign(this.repo, { branch: branch.name });
+  async sync() {
+    return Promise.all(this.config.filter((branch) => branch.protection !== void 0).map((branch) => {
+      const commonParams = __spreadProps(__spreadValues({}, this.repo), { branch: branch.name });
       if (this.isEmpty(branch.protection)) {
-        return this.github.repos.deleteBranchProtection(params);
+        return this.github.rest.repos.deleteBranchProtection(commonParams);
       } else {
-        Object.assign(params, branch.protection, {
+        const updateParams = __spreadProps(__spreadValues(__spreadValues({}, commonParams), branch.protection), {
           headers: previewHeaders
         });
-        return this.github.repos.updateBranchProtection(params);
+        return this.github.rest.repos.updateBranchProtection(updateParams);
       }
     }));
   }
@@ -7212,23 +6891,292 @@ var Branches = class extends GitHubSettingsPlugin {
   }
 };
 
-// sync-defaults/src/settings/plugins/index.ts
-init_collaborators();
-init_labels();
-init_milestones();
-init_repository();
-init_teams();
+// sync-defaults/src/settings/plugins/diffable.ts
+var Diffable = class extends GitHubSettingsPlugin {
+  async sync() {
+    if (this.config) {
+      const existingRecords = await this.find();
+      const changes = [];
+      this.config.forEach((attrs) => {
+        const existing = existingRecords.find((record) => {
+          return this.comparator(record, attrs);
+        });
+        if (!existing) {
+          changes.push(this.add(attrs));
+        } else if (this.changed(existing, attrs)) {
+          changes.push(this.update(existing, attrs));
+        }
+      });
+      existingRecords.forEach((x) => {
+        if (!this.config.find((y) => this.comparator(x, y))) {
+          changes.push(this.remove(x));
+        }
+      });
+      return Promise.all(changes);
+    }
+    return [];
+  }
+};
+
+// sync-defaults/src/settings/plugins/collaborators.ts
+var Collaborators = class extends Diffable {
+  init() {
+    if (this.config) {
+      this.config.forEach((collaborator) => {
+        collaborator.username = collaborator.username.toLowerCase();
+      });
+    }
+  }
+  async find() {
+    return (await this.github.rest.repos.listCollaborators({
+      repo: this.repo.repo,
+      owner: this.repo.owner,
+      affiliation: "direct"
+    })).data.map((user) => {
+      let permission;
+      if (!user.permissions) {
+        throw new Error("User permissions not set");
+      }
+      switch (true) {
+        case user.permissions.admin:
+          permission = "admin";
+          break;
+        case user.permissions.push:
+          permission = "push";
+          break;
+        case user.permissions.pull:
+          permission = "pull";
+          break;
+        default:
+          throw new Error("User permissions are invalid");
+      }
+      return {
+        username: user.login.toLowerCase(),
+        permission
+      };
+    });
+  }
+  comparator(existing, attrs) {
+    return existing.username === attrs.username;
+  }
+  changed(existing, attrs) {
+    return existing.permission !== attrs.permission;
+  }
+  update(existing, attrs) {
+    return this.add(attrs);
+  }
+  add(attrs) {
+    return this.github.rest.repos.addCollaborator(__spreadValues(__spreadValues({}, attrs), this.repo));
+  }
+  remove(existing) {
+    return this.github.rest.repos.removeCollaborator(__spreadValues({
+      username: existing.username
+    }, this.repo));
+  }
+};
+
+// sync-defaults/src/settings/plugins/labels.ts
+var previewHeaders2 = {
+  accept: "application/vnd.github.symmetra-preview+json"
+};
+var Labels = class extends Diffable {
+  init() {
+    if (this.config) {
+      this.config.forEach((label) => {
+        if (label.color) {
+          label.color = String(label.color).replace(/^#/, "");
+          if (label.color.length < 6) {
+            label.color.padStart(6, "0");
+          }
+        }
+      });
+    }
+  }
+  find() {
+    const options = this.github.rest.issues.listLabelsForRepo.endpoint.merge(this.wrapAttrs({ per_page: 100 }));
+    return this.github.paginate(options);
+  }
+  comparator(existing, attrs) {
+    return existing.name === attrs.name;
+  }
+  changed(existing, attrs) {
+    return "new_name" in attrs || existing.color !== attrs.color || existing.description !== attrs.description;
+  }
+  update(existing, attrs) {
+    return this.github.rest.issues.updateLabel(this.wrapAttrs(attrs));
+  }
+  add(attrs) {
+    return this.github.rest.issues.createLabel(this.wrapAttrs(attrs));
+  }
+  remove(existing) {
+    return this.github.rest.issues.deleteLabel(this.wrapAttrs({ name: existing.name }));
+  }
+  wrapAttrs(attrs) {
+    return __spreadProps(__spreadValues(__spreadValues({}, attrs), this.repo), { headers: previewHeaders2 });
+  }
+};
+
+// sync-defaults/src/settings/plugins/milestones.ts
+var Milestones = class extends Diffable {
+  init() {
+    if (this.config) {
+      this.config.forEach((milestone) => {
+        if (milestone.due_on) {
+          delete milestone.due_on;
+        }
+      });
+    }
+  }
+  find() {
+    const options = this.github.rest.issues.listMilestones.endpoint.merge(__spreadValues({
+      per_page: 100,
+      state: "all"
+    }, this.repo));
+    return this.github.paginate(options);
+  }
+  comparator(existing, attrs) {
+    return existing.title === attrs.title;
+  }
+  changed(existing, attrs) {
+    return existing.description !== attrs.description || existing.state !== attrs.state;
+  }
+  update(existing, attrs) {
+    return this.github.rest.issues.updateMilestone(__spreadValues(__spreadValues({
+      milestone_number: existing.number
+    }, attrs), this.repo));
+  }
+  add(attrs) {
+    return this.github.rest.issues.createMilestone(__spreadValues(__spreadValues({}, attrs), this.repo));
+  }
+  remove(existing) {
+    return this.github.rest.issues.deleteMilestone(__spreadValues({
+      milestone_number: existing.number
+    }, this.repo));
+  }
+};
+
+// sync-defaults/src/settings/plugins/repository.ts
+function enableAutomatedSecurityFixes({
+  github,
+  settings,
+  enabled
+}) {
+  if (typeof enabled === "undefined" || typeof settings === "undefined") {
+    return Promise.resolve();
+  }
+  const args = {
+    owner: settings.owner,
+    repo: settings.repo,
+    mediaType: {
+      previews: ["london"]
+    }
+  };
+  const methodName = enabled ? "enableAutomatedSecurityFixes" : "disableAutomatedSecurityFixes";
+  return github.rest.repos[methodName](args);
+}
+function enableVulnerabilityAlerts({
+  github,
+  settings,
+  enabled
+}) {
+  if (typeof enabled === "undefined" || typeof settings === "undefined") {
+    return Promise.resolve();
+  }
+  const args = {
+    owner: settings.owner,
+    repo: settings.repo,
+    mediaType: {
+      previews: ["dorian"]
+    }
+  };
+  const methodName = enabled ? "enableVulnerabilityAlerts" : "disableVulnerabilityAlerts";
+  return github.rest.repos[methodName](args);
+}
+var Repository = class extends GitHubSettingsPlugin {
+  init() {
+    this.settings = __spreadValues(__spreadValues({
+      mediaType: { previews: ["baptiste"] }
+    }, this.config), this.repo);
+    this.topics = this.config.topics;
+    delete this.config.topics;
+    this.enableVulnerabilityAlerts = this.config.enable_vulnerability_alerts;
+    delete this.config.enable_vulnerability_alerts;
+    this.enableAutomatedSecurityFixes = this.config.enable_automated_security_fixes;
+    delete this.config.enable_automated_security_fixes;
+  }
+  async sync() {
+    this.config.name = this.config.name || this.config.repo;
+    if (!this.settings) {
+      throw new Error("New settings not defined");
+    }
+    await this.github.rest.repos.update(this.settings);
+    if (this.topics) {
+      await this.github.rest.repos.replaceAllTopics({
+        owner: this.settings.owner,
+        repo: this.settings.repo,
+        names: this.topics.split(/\s*,\s*/),
+        mediaType: {
+          previews: ["mercy"]
+        }
+      });
+    }
+    await enableVulnerabilityAlerts(__spreadValues({
+      enabled: this.enableVulnerabilityAlerts
+    }, this));
+    await enableAutomatedSecurityFixes(__spreadValues({
+      enabled: this.enableAutomatedSecurityFixes
+    }, this));
+  }
+};
+
+// sync-defaults/src/settings/plugins/teams.ts
+var teamRepoEndpoint = "/teams/:team_id/repos/:owner/:repo";
+var Teams = class extends Diffable {
+  async find() {
+    const res = await this.github.rest.repos.listTeams(this.repo);
+    return res.data;
+  }
+  comparator(existing, attrs) {
+    return existing.slug === attrs.name;
+  }
+  changed(existing, attrs) {
+    return existing.permission !== attrs.permission;
+  }
+  update(existing, attrs) {
+    return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
+  }
+  async add(attrs) {
+    const { data: existing } = await this.github.request("GET /orgs/:org/teams/:team_slug", { org: this.repo.owner, team_slug: attrs.name });
+    return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
+  }
+  remove(existing) {
+    return this.github.request(`DELETE ${teamRepoEndpoint}`, __spreadProps(__spreadValues({
+      team_id: existing.id
+    }, this.repo), {
+      org: this.repo.owner
+    }));
+  }
+  toParams(existing, attrs) {
+    return {
+      team_id: existing.id,
+      owner: this.repo.owner,
+      repo: this.repo.repo,
+      org: this.repo.owner,
+      permission: attrs.permission
+    };
+  }
+};
 
 // sync-defaults/src/settings/index.ts
-var name = "settings";
 var PLUGINS = {
-  repository: (init_repository(), __toCommonJS(repository_exports)),
-  labels: (init_labels(), __toCommonJS(labels_exports)),
-  collaborators: (init_collaborators(), __toCommonJS(collaborators_exports)),
-  teams: (init_teams(), __toCommonJS(teams_exports)),
-  milestones: (init_milestones(), __toCommonJS(milestones_exports)),
+  repository: Repository,
+  labels: Labels,
+  collaborators: Collaborators,
+  teams: Teams,
+  milestones: Milestones,
   branches: Branches
 };
+var name = "settings";
 async function run({
   ghToken,
   component
@@ -7238,14 +7186,31 @@ async function run({
     owner: "exivity",
     repo: component
   };
-  const config = {};
-  return Promise.all(Object.entries(this.config).map(([section, config2]) => {
-    const debug = { repo: this.repo };
-    debug[section] = config2;
-    const Plugin = Settings.PLUGINS[section];
-    return new Plugin(this.github, this.repo, config2).sync();
+  const config = {
+    labels: [
+      {
+        name: "feature",
+        color: "#0E8A16",
+        description: "Adds functionality for end-users"
+      },
+      {
+        name: "bug",
+        color: "#D93F0B",
+        description: "Undesired or defective behaviour"
+      },
+      {
+        name: "chore",
+        color: "#1D76DB",
+        description: "Doesn't affect functionality}"
+      }
+    ]
+  };
+  return Promise.all(Object.entries(config).map(([section, sectionConfig]) => {
+    (0, import_core2.info)(`Running settings plugin "${section}" with config:
+${JSON.stringify(sectionConfig, void 0, 2)}`);
+    const Plugin = PLUGINS[section];
+    return new Plugin(octokit, repo, sectionConfig).sync();
   }));
-  return Settings.sync(octokit.rest, repo, config);
 }
 
 // sync-defaults/src/index.ts
@@ -7257,7 +7222,7 @@ async function run2() {
   const eventData = getEventData(eventName);
   const plugins = [settings_exports];
   for (const { name: name2, run: run3 } of plugins) {
-    (0, import_core2.info)(`Running sync plugin "${name2}"`);
+    (0, import_core3.info)(`Running plugin "${name2}"`);
     await run3({
       ghToken: token,
       component,
@@ -7265,9 +7230,9 @@ async function run2() {
       eventData
     });
   }
-  (0, import_core2.info)("\u{1F389} Congratulation! Your pull request is semantic.");
+  (0, import_core3.info)("\u2705 Running plugins done");
 }
-run2().catch(import_core2.setFailed);
+run2().catch(import_core3.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

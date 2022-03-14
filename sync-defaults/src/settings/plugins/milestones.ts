@@ -1,11 +1,10 @@
-const Diffable = require('./diffable')
+import { Milestone } from '../types'
+import { Diffable } from './diffable'
 
-export class Milestones extends Diffable {
-  constructor(...args) {
-    super(...args)
-
-    if (this.entries) {
-      this.entries.forEach((milestone) => {
+export class Milestones extends Diffable<'milestones'> {
+  init() {
+    if (this.config) {
+      this.config.forEach((milestone: Milestone & { due_on?: string }) => {
         if (milestone.due_on) {
           delete milestone.due_on
         }
@@ -14,47 +13,41 @@ export class Milestones extends Diffable {
   }
 
   find() {
-    const options = this.github.issues.listMilestones.endpoint.merge(
-      Object.assign({ per_page: 100, state: 'all' }, this.repo)
-    )
-    return this.github.paginate(options)
+    const options = this.github.rest.issues.listMilestones.endpoint.merge({
+      per_page: 100,
+      state: 'all',
+      ...this.repo,
+    })
+    return this.github.paginate(options) as Promise<Milestone[]>
   }
 
-  comparator(existing, attrs) {
+  comparator(existing: Milestone, attrs: Milestone) {
     return existing.title === attrs.title
   }
 
-  changed(existing, attrs) {
+  changed(existing: Milestone, attrs: Milestone) {
     return (
       existing.description !== attrs.description ||
       existing.state !== attrs.state
     )
   }
 
-  update(existing, attrs) {
-    const { owner, repo } = this.repo
-
-    return this.github.issues.updateMilestone(
-      Object.assign({ milestone_number: existing.number }, attrs, {
-        owner,
-        repo,
-      })
-    )
+  update(existing: Milestone, attrs: Milestone) {
+    return this.github.rest.issues.updateMilestone({
+      milestone_number: existing.number,
+      ...attrs,
+      ...this.repo,
+    })
   }
 
-  add(attrs) {
-    const { owner, repo } = this.repo
-
-    return this.github.issues.createMilestone(
-      Object.assign({}, attrs, { owner, repo })
-    )
+  add(attrs: Milestone) {
+    return this.github.rest.issues.createMilestone({ ...attrs, ...this.repo })
   }
 
-  remove(existing) {
-    const { owner, repo } = this.repo
-
-    return this.github.issues.deleteMilestone(
-      Object.assign({ milestone_number: existing.number }, { owner, repo })
-    )
+  remove(existing: Milestone) {
+    return this.github.rest.issues.deleteMilestone({
+      milestone_number: existing.number,
+      ...this.repo,
+    })
   }
 }

@@ -1,5 +1,22 @@
-const enableAutomatedSecurityFixes = ({ github, settings, enabled }) => {
-  if (enabled === undefined) {
+import { getOctokit } from '@actions/github'
+import { Config, GitHubSettingsPlugin } from '../types'
+
+type RepositorySettings = Config['repository'] & {
+  mediaType: {}
+  owner: string
+  repo: string
+}
+
+function enableAutomatedSecurityFixes({
+  github,
+  settings,
+  enabled,
+}: {
+  github: ReturnType<typeof getOctokit>
+  settings?: RepositorySettings
+  enabled?: boolean
+}) {
+  if (typeof enabled === 'undefined' || typeof settings === 'undefined') {
     return Promise.resolve()
   }
 
@@ -14,11 +31,19 @@ const enableAutomatedSecurityFixes = ({ github, settings, enabled }) => {
     ? 'enableAutomatedSecurityFixes'
     : 'disableAutomatedSecurityFixes'
 
-  return github.repos[methodName](args)
+  return github.rest.repos[methodName](args)
 }
 
-const enableVulnerabilityAlerts = ({ github, settings, enabled }) => {
-  if (enabled === undefined) {
+function enableVulnerabilityAlerts({
+  github,
+  settings,
+  enabled,
+}: {
+  github: ReturnType<typeof getOctokit>
+  settings?: RepositorySettings
+  enabled?: boolean
+}) {
+  if (typeof enabled === 'undefined' || typeof settings === 'undefined') {
     return Promise.resolve()
   }
 
@@ -33,55 +58,65 @@ const enableVulnerabilityAlerts = ({ github, settings, enabled }) => {
     ? 'enableVulnerabilityAlerts'
     : 'disableVulnerabilityAlerts'
 
-  return github.repos[methodName](args)
+  return github.rest.repos[methodName](args)
 }
 
-export class Repository {
-  constructor(github, repo, settings) {
-    this.github = github
-    this.settings = Object.assign(
-      { mediaType: { previews: ['baptiste'] } },
-      settings,
-      repo
-    )
-    this.topics = this.settings.topics
-    delete this.settings.topics
+export class Repository extends GitHubSettingsPlugin<'repository'> {
+  public settings?: Config['repository'] & {
+    mediaType: {}
+    owner: string
+    repo: string
+  }
+  public topics?: Config['repository']['topics']
+  public enableVulnerabilityAlerts?: boolean
+  public enableAutomatedSecurityFixes?: boolean
 
-    this.enableVulnerabilityAlerts = this.settings.enable_vulnerability_alerts
-    delete this.settings.enable_vulnerability_alerts
+  init() {
+    this.settings = {
+      mediaType: { previews: ['baptiste'] },
+      ...this.config,
+      ...this.repo,
+    }
+
+    this.topics = this.config.topics
+    delete this.config.topics
+
+    this.enableVulnerabilityAlerts = this.config.enable_vulnerability_alerts
+    delete this.config.enable_vulnerability_alerts
 
     this.enableAutomatedSecurityFixes =
-      this.settings.enable_automated_security_fixes
-    delete this.settings.enable_automated_security_fixes
+      this.config.enable_automated_security_fixes
+    delete this.config.enable_automated_security_fixes
   }
 
-  sync() {
-    this.settings.name = this.settings.name || this.settings.repo
-    return this.github.repos
-      .update(this.settings)
-      .then(() => {
-        if (this.topics) {
-          return this.github.repos.replaceAllTopics({
-            owner: this.settings.owner,
-            repo: this.settings.repo,
-            names: this.topics.split(/\s*,\s*/),
-            mediaType: {
-              previews: ['mercy'],
-            },
-          })
-        }
+  async sync() {
+    this.config.name = this.config.name || (this.config as any).repo
+
+    if (!this.settings) {
+      throw new Error('New settings not defined')
+    }
+
+    await this.github.rest.repos.update(this.settings)
+
+    if (this.topics) {
+      await this.github.rest.repos.replaceAllTopics({
+        owner: this.settings!.owner,
+        repo: this.settings!.repo,
+        names: this.topics.split(/\s*,\s*/),
+        mediaType: {
+          previews: ['mercy'],
+        },
       })
-      .then(() =>
-        enableVulnerabilityAlerts({
-          enabled: this.enableVulnerabilityAlerts,
-          ...this,
-        })
-      )
-      .then(() =>
-        enableAutomatedSecurityFixes({
-          enabled: this.enableAutomatedSecurityFixes,
-          ...this,
-        })
-      )
+    }
+
+    await enableVulnerabilityAlerts({
+      enabled: this.enableVulnerabilityAlerts,
+      ...this,
+    })
+
+    await enableAutomatedSecurityFixes({
+      enabled: this.enableAutomatedSecurityFixes,
+      ...this,
+    })
   }
 }

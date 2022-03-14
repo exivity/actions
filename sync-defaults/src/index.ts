@@ -22,7 +22,7 @@ async function run() {
   const plugins: SyncPlugin[] = [settings]
 
   for (const { name, run } of plugins) {
-    info(`Running sync plugin "${name}"`)
+    info(`Running plugin "${name}"`)
 
     await run({
       ghToken: token,
@@ -32,7 +32,7 @@ async function run() {
     })
   }
 
-  info('🎉 Congratulation! Your pull request is semantic.')
+  info('✅ Running plugins done')
 }
 
 run().catch(setFailed)

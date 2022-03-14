@@ -1,30 +1,33 @@
-const Diffable = require('./diffable')
+import { Team } from '../types'
+import { Diffable } from './diffable'
 
 // it is necessary to use this endpoint until GitHub Enterprise supports
 // the modern version under /orgs
 const teamRepoEndpoint = '/teams/:team_id/repos/:owner/:repo'
 
-export class Teams extends Diffable {
-  find() {
-    return this.github.repos.listTeams(this.repo).then((res) => res.data)
+export class Teams extends Diffable<'teams'> {
+  async find() {
+    const res = await this.github.rest.repos.listTeams(this.repo)
+
+    return res.data as Team[]
   }
 
-  comparator(existing, attrs) {
+  comparator(existing: Team, attrs: Team) {
     return existing.slug === attrs.name
   }
 
-  changed(existing, attrs) {
+  changed(existing: Team, attrs: Team) {
     return existing.permission !== attrs.permission
   }
 
-  update(existing, attrs) {
+  update(existing: Team, attrs: Team) {
     return this.github.request(
       `PUT ${teamRepoEndpoint}`,
       this.toParams(existing, attrs)
     )
   }
 
-  async add(attrs) {
+  async add(attrs: Team) {
     const { data: existing } = await this.github.request(
       'GET /orgs/:org/teams/:team_slug',
       { org: this.repo.owner, team_slug: attrs.name }
@@ -36,7 +39,7 @@ export class Teams extends Diffable {
     )
   }
 
-  remove(existing) {
+  remove(existing: Team) {
     return this.github.request(`DELETE ${teamRepoEndpoint}`, {
       team_id: existing.id,
       ...this.repo,
@@ -44,7 +47,7 @@ export class Teams extends Diffable {
     })
   }
 
-  toParams(existing, attrs) {
+  toParams(existing: Team, attrs: Team) {
     return {
       team_id: existing.id,
       owner: this.repo.owner,
