@@ -7196,12 +7196,16 @@ async function run({
     repo: component
   };
   for (const repo2 in [".github", component]) {
-    const settings = await octokit.rest.repos.getContent({
-      owner: "exivity",
-      repo: repo2,
-      path: ".github/settings.yml"
-    });
-    (0, import_core4.debug)(JSON.stringify(settings.data, void 0, 2));
+    try {
+      const settings = await octokit.rest.repos.getContent({
+        owner: "exivity",
+        repo: repo2,
+        path: ".github/settings.yml"
+      });
+      (0, import_core4.debug)(JSON.stringify(settings.data, void 0, 2));
+    } catch (error) {
+      (0, import_core4.debug)(`Could not get settings from "exivity/${repo2}", ignoring`);
+    }
   }
   const config = {
     labels: [

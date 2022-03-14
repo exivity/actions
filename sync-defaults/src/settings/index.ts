@@ -37,13 +37,16 @@ export async function run<T extends EventName>({
 
   // Grab settings from .github/settings.yml
   for (const repo in ['.github', component]) {
-    const settings = await octokit.rest.repos.getContent({
-      owner: 'exivity',
-      repo,
-      path: '.github/settings.yml',
-    })
-
-    debug(JSON.stringify(settings.data, undefined, 2))
+    try {
+      const settings = await octokit.rest.repos.getContent({
+        owner: 'exivity',
+        repo,
+        path: '.github/settings.yml',
+      })
+      debug(JSON.stringify(settings.data, undefined, 2))
+    } catch (error: unknown) {
+      debug(`Could not get settings from "exivity/${repo}", ignoring`)
+    }
   }
 
   const config: Config = {
