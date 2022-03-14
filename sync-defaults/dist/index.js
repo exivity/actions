@@ -9809,7 +9809,12 @@ var Repository = class extends GitHubSettingsPlugin {
 var teamRepoEndpoint = "/teams/:team_id/repos/:owner/:repo";
 var Teams = class extends Diffable {
   async find() {
-    const res = await this.github.rest.repos.listTeams(this.repo);
+    let res;
+    try {
+      res = await this.github.rest.repos.listTeams(this.repo);
+    } catch (error) {
+      console.log(error);
+    }
     return res.data;
   }
   comparator(existing, attrs) {

@@ -7,7 +7,12 @@ const teamRepoEndpoint = '/teams/:team_id/repos/:owner/:repo'
 
 export class Teams extends Diffable<'teams'> {
   async find() {
-    const res = await this.github.rest.repos.listTeams(this.repo)
+    let res: any
+    try {
+      res = await this.github.rest.repos.listTeams(this.repo)
+    } catch (error) {
+      console.log(error)
+    }
 
     return res.data as Team[]
   }
