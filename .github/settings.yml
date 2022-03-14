@@ -1,1 +1,5 @@
-_extends: exivity/.github
+teams:
+  - name: developers
+    permission: maintain
+  - name: admins
+    permission: admin
