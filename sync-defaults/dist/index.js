@@ -9846,6 +9846,7 @@ async function run({
     owner: "exivity",
     repo: component
   };
+  let config = {};
   for (const repo2 of [".github", component]) {
     try {
       const settings = await octokit.rest.repos.getContent({
@@ -9856,8 +9857,13 @@ async function run({
       if ("content" in settings.data) {
         const buffer = Buffer.from(settings.data.content, "base64");
         const content = buffer.toString("utf8");
-        const config2 = js_yaml_default.load(content);
-        (0, import_core4.debug)(JSON.stringify(config2, void 0, 2));
+        const repoConfig = js_yaml_default.load(content);
+        (0, import_core4.debug)(`Got config from "exivity/${repo2}":
+${JSON.stringify(repoConfig, void 0, 2)}`);
+        if ("_extends" in repoConfig) {
+          delete repoConfig._extends;
+        }
+        config = __spreadValues(__spreadValues({}, config), repoConfig);
       } else {
         (0, import_core4.debug)(`Could not get settings from "exivity/${repo2}" (not a file), ignoring`);
       }
@@ -9865,25 +9871,6 @@ async function run({
       (0, import_core4.debug)(`Could not get settings from "exivity/${repo2}" (fetch error), ignoring`);
     }
   }
-  const config = {
-    labels: [
-      {
-        name: "feature",
-        color: "#0E8A16",
-        description: "Adds functionality for end-users"
-      },
-      {
-        name: "bug",
-        color: "#D93F0B",
-        description: "Undesired or defective behaviour"
-      },
-      {
-        name: "chore",
-        color: "#1D76DB",
-        description: "Doesn't affect functionality}"
-      }
-    ]
-  };
   (0, import_core4.debug)(`Got config:
 ${JSON.stringify(config, void 0, 2)}`);
   return Promise.all(Object.entries(config).map(([section, sectionConfig]) => {

@@ -37,6 +37,7 @@ export async function run<T extends EventName>({
   }
 
   // Grab settings from .github/settings.yml
+  let config: Config = {}
   for (const repo of ['.github', component]) {
     try {
       const settings = await octokit.rest.repos.getContent({
@@ -47,8 +48,18 @@ export async function run<T extends EventName>({
       if ('content' in settings.data) {
         const buffer = Buffer.from(settings.data.content, 'base64')
         const content = buffer.toString('utf8')
-        const config = yaml.load(content)
-        debug(JSON.stringify(config, undefined, 2))
+        const repoConfig = yaml.load(content) as Config & { _extends?: string }
+        debug(
+          `Got config from "exivity/${repo}":\n${JSON.stringify(
+            repoConfig,
+            undefined,
+            2
+          )}`
+        )
+        if ('_extends' in repoConfig) {
+          delete repoConfig._extends
+        }
+        config = { ...config, ...repoConfig }
       } else {
         debug(
           `Could not get settings from "exivity/${repo}" (not a file), ignoring`
@@ -60,27 +71,6 @@ export async function run<T extends EventName>({
       )
     }
   }
-
-  const config: Config = {
-    labels: [
-      {
-        name: 'feature',
-        color: '#0E8A16',
-        description: 'Adds functionality for end-users',
-      },
-      {
-        name: 'bug',
-        color: '#D93F0B',
-        description: 'Undesired or defective behaviour',
-      },
-      {
-        name: 'chore',
-        color: '#1D76DB',
-        description: "Doesn't affect functionality}",
-      },
-    ],
-  }
-
   debug(`Got config:\n${JSON.stringify(config, undefined, 2)}`)
 
   return Promise.all(
