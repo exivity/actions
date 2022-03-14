@@ -9681,6 +9681,24 @@ var Branches = class extends GitHubSettingsPlugin {
   }
 };
 
+// sync-defaults/src/settings/permissions.ts
+function mapPermissionsToPermission(permissions) {
+  switch (true) {
+    case permissions.admin:
+      return "admin";
+    case permissions.maintain:
+      return "maintain";
+    case permissions.push:
+      return "push";
+    case permissions.triage:
+      return "triage";
+    case permissions.pull:
+      return "pull";
+    default:
+      throw new Error("Permissions object is invalid");
+  }
+}
+
 // sync-defaults/src/settings/plugins/diffable.ts
 var Diffable = class extends GitHubSettingsPlugin {
   async sync() {
@@ -9723,26 +9741,12 @@ var Collaborators = class extends Diffable {
       owner: this.repo.owner,
       affiliation: "direct"
     })).data.map((user) => {
-      let permission;
       if (!user.permissions) {
         throw new Error("User permissions not set");
       }
-      switch (true) {
-        case user.permissions.admin:
-          permission = "admin";
-          break;
-        case user.permissions.push:
-          permission = "push";
-          break;
-        case user.permissions.pull:
-          permission = "pull";
-          break;
-        default:
-          throw new Error("User permissions are invalid");
-      }
       return {
         username: user.login.toLowerCase(),
-        permission
+        permission: mapPermissionsToPermission(user.permissions)
       };
     });
   }
