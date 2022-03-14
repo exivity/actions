@@ -1,3 +1,4 @@
+import { warning } from '@actions/core'
 import { Team } from '../types'
 import { Diffable } from './diffable'
 
@@ -7,14 +8,12 @@ const teamRepoEndpoint = '/teams/:team_id/repos/:owner/:repo'
 
 export class Teams extends Diffable<'teams'> {
   async find() {
-    let res: any
     try {
-      res = await this.github.rest.repos.listTeams(this.repo)
+      return (await this.github.rest.repos.listTeams(this.repo)).data as Team[]
     } catch (error) {
-      console.log(error)
+      warning('Could not fetch teams for repository, are you an owner/admin?')
+      return []
     }
-
-    return res.data as Team[]
   }
 
   comparator(existing: Team, attrs: Team) {

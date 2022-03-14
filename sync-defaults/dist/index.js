@@ -1265,10 +1265,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning2(message, properties = {}) {
+    function warning3(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning2;
+    exports.warning = warning3;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -6810,7 +6810,7 @@ var require_github = __commonJS({
 });
 
 // sync-defaults/src/index.ts
-var import_core4 = __toESM(require_core());
+var import_core5 = __toESM(require_core());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
@@ -6853,7 +6853,7 @@ __export(settings_exports, {
   name: () => name,
   run: () => run
 });
-var import_core3 = __toESM(require_core());
+var import_core4 = __toESM(require_core());
 var import_github = __toESM(require_github());
 
 // node_modules/js-yaml/dist/js-yaml.mjs
@@ -9806,16 +9806,16 @@ var Repository = class extends GitHubSettingsPlugin {
 };
 
 // sync-defaults/src/settings/plugins/teams.ts
+var import_core3 = __toESM(require_core());
 var teamRepoEndpoint = "/teams/:team_id/repos/:owner/:repo";
 var Teams = class extends Diffable {
   async find() {
-    let res;
     try {
-      res = await this.github.rest.repos.listTeams(this.repo);
+      return (await this.github.rest.repos.listTeams(this.repo)).data;
     } catch (error) {
-      console.log(error);
+      (0, import_core3.warning)("Could not fetch teams for repository, are you an owner/admin?");
+      return [];
     }
-    return res.data;
   }
   comparator(existing, attrs) {
     return existing.slug === attrs.name;
@@ -9882,23 +9882,23 @@ async function run({
         const buffer = Buffer.from(settings.data.content, "base64");
         const content = buffer.toString("utf8");
         const repoConfig = js_yaml_default.load(content);
-        (0, import_core3.debug)(`Got config from "exivity/${repo2}":
+        (0, import_core4.debug)(`Got config from "exivity/${repo2}":
 ${JSON.stringify(repoConfig, void 0, 2)}`);
         if ("_extends" in repoConfig) {
           delete repoConfig._extends;
         }
         config = __spreadValues(__spreadValues({}, config), repoConfig);
       } else {
-        (0, import_core3.debug)(`Could not get settings from "exivity/${repo2}" (not a file), ignoring`);
+        (0, import_core4.debug)(`Could not get settings from "exivity/${repo2}" (not a file), ignoring`);
       }
     } catch (error) {
-      (0, import_core3.debug)(`Could not get settings from "exivity/${repo2}" (fetch error), ignoring`);
+      (0, import_core4.debug)(`Could not get settings from "exivity/${repo2}" (fetch error), ignoring`);
     }
   }
-  (0, import_core3.debug)(`Got config:
+  (0, import_core4.debug)(`Got config:
 ${JSON.stringify(config, void 0, 2)}`);
   return Promise.all(Object.entries(config).map(([section, sectionConfig]) => {
-    (0, import_core3.info)(`  \u27A1\uFE0F Running settings plugin "${section}"`);
+    (0, import_core4.info)(`  \u27A1\uFE0F Running settings plugin "${section}"`);
     const Plugin = PLUGINS[section];
     return new Plugin(octokit, repo, sectionConfig).sync();
   }));
@@ -9913,7 +9913,7 @@ async function run2() {
   const eventData = getEventData(eventName);
   const plugins = [settings_exports];
   for (const { name: name2, run: run3 } of plugins) {
-    (0, import_core4.info)(`Running plugin "${name2}"`);
+    (0, import_core5.info)(`Running plugin "${name2}"`);
     await run3({
       ghToken: token,
       component,
@@ -9921,9 +9921,9 @@ async function run2() {
       eventData
     });
   }
-  (0, import_core4.info)("Running plugins done");
+  (0, import_core5.info)("Running plugins done");
 }
-run2().catch(import_core4.setFailed);
+run2().catch(import_core5.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
