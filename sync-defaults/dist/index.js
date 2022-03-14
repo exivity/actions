@@ -1651,7 +1651,7 @@ var require_dist_node2 = __commonJS({
       }
       return obj;
     }
-    function merge3(defaults, route, options) {
+    function merge2(defaults, route, options) {
       if (typeof route === "string") {
         let [method, url] = route.split(" ");
         options = Object.assign(url ? {
@@ -1877,15 +1877,15 @@ var require_dist_node2 = __commonJS({
       } : null);
     }
     function endpointWithDefaults(defaults, route, options) {
-      return parse(merge3(defaults, route, options));
+      return parse(merge2(defaults, route, options));
     }
     function withDefaults(oldDefaults, newDefaults) {
-      const DEFAULTS2 = merge3(oldDefaults, newDefaults);
+      const DEFAULTS2 = merge2(oldDefaults, newDefaults);
       const endpoint2 = endpointWithDefaults.bind(null, DEFAULTS2);
       return Object.assign(endpoint2, {
         DEFAULTS: DEFAULTS2,
         defaults: withDefaults.bind(null, DEFAULTS2),
-        merge: merge3.bind(null, DEFAULTS2),
+        merge: merge2.bind(null, DEFAULTS2),
         parse
       });
     }
@@ -6832,7 +6832,7 @@ var require_cjs = __commonJS({
       return Array.isArray(val) ? [] : {};
     }
     function cloneUnlessOtherwiseSpecified(value, options) {
-      return options.clone !== false && options.isMergeableObject(value) ? deepmerge(emptyTarget(value), value, options) : value;
+      return options.clone !== false && options.isMergeableObject(value) ? deepmerge3(emptyTarget(value), value, options) : value;
     }
     function defaultArrayMerge(target, source, options) {
       return target.concat(source).map(function(element) {
@@ -6841,10 +6841,10 @@ var require_cjs = __commonJS({
     }
     function getMergeFunction(key, options) {
       if (!options.customMerge) {
-        return deepmerge;
+        return deepmerge3;
       }
       var customMerge = options.customMerge(key);
-      return typeof customMerge === "function" ? customMerge : deepmerge;
+      return typeof customMerge === "function" ? customMerge : deepmerge3;
     }
     function getEnumerableOwnPropertySymbols(target) {
       return Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(target).filter(function(symbol) {
@@ -6883,7 +6883,7 @@ var require_cjs = __commonJS({
       });
       return destination;
     }
-    function deepmerge(target, source, options) {
+    function deepmerge3(target, source, options) {
       options = options || {};
       options.arrayMerge = options.arrayMerge || defaultArrayMerge;
       options.isMergeableObject = options.isMergeableObject || isMergeableObject;
@@ -6899,15 +6899,15 @@ var require_cjs = __commonJS({
         return mergeObject(target, source, options);
       }
     }
-    deepmerge.all = function deepmergeAll(array, options) {
+    deepmerge3.all = function deepmergeAll(array, options) {
       if (!Array.isArray(array)) {
         throw new Error("first argument should be an array");
       }
       return array.reduce(function(prev, next) {
-        return deepmerge(prev, next, options);
+        return deepmerge3(prev, next, options);
       }, {});
     };
-    var deepmerge_1 = deepmerge;
+    var deepmerge_1 = deepmerge3;
     module2.exports = deepmerge_1;
   }
 });
@@ -6958,7 +6958,7 @@ __export(settings_exports, {
 });
 var import_core4 = __toESM(require_core());
 var import_github = __toESM(require_github());
-var import_deepmerge = __toESM(require_cjs());
+var import_deepmerge2 = __toESM(require_cjs());
 
 // node_modules/js-yaml/dist/js-yaml.mjs
 function isNothing(subject) {
@@ -9611,6 +9611,26 @@ var jsYaml = {
 };
 var js_yaml_default = jsYaml;
 
+// sync-defaults/src/settings/arrayMerge.ts
+var import_deepmerge = __toESM(require_cjs());
+function findMatchingIndex(sourceItem, target) {
+  if (Object.prototype.hasOwnProperty.call(sourceItem, "name")) {
+    return target.filter((targetItem) => Object.prototype.hasOwnProperty.call(targetItem, "name")).findIndex((targetItem) => sourceItem.name === targetItem.name);
+  }
+}
+function arrayMerge(target, source, options) {
+  const destination = target.slice();
+  source.forEach((sourceItem) => {
+    const matchingIndex = findMatchingIndex(sourceItem, target);
+    if (matchingIndex > -1) {
+      destination[matchingIndex] = (0, import_deepmerge.default)(target[matchingIndex], sourceItem, options);
+    } else {
+      destination.push(sourceItem);
+    }
+  });
+  return destination;
+}
+
 // sync-defaults/src/settings/types.ts
 var import_core2 = __toESM(require_core());
 var GitHubSettingsPlugin = class {
@@ -9986,7 +10006,7 @@ ${JSON.stringify(repoConfig, void 0, 2)}`);
         if ("_extends" in repoConfig) {
           delete repoConfig._extends;
         }
-        config = (0, import_deepmerge.default)(config, repoConfig);
+        config = (0, import_deepmerge2.default)(config, repoConfig, { arrayMerge });
       } else {
         (0, import_core4.debug)(`Could not get settings from "exivity/${repo2}" (not a file), ignoring`);
       }
