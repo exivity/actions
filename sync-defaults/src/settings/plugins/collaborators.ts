@@ -57,10 +57,12 @@ export class Collaborators extends Diffable<'collaborators'> {
   }
 
   add(attrs: Collaborator) {
+    this.logUpdate(`Adding collaborator "${attrs.username}"`)
     return this.github.rest.repos.addCollaborator({ ...attrs, ...this.repo })
   }
 
   remove(existing: Collaborator) {
+    this.logRemove(`Removing collaborator "${existing.username}"`)
     return this.github.rest.repos.removeCollaborator({
       username: existing.username,
       ...this.repo,

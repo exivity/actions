@@ -33,6 +33,7 @@ export class Milestones extends Diffable<'milestones'> {
   }
 
   update(existing: Milestone, attrs: Milestone) {
+    this.logUpdate(`Updating milestone "${attrs.title}"`)
     return this.github.rest.issues.updateMilestone({
       milestone_number: existing.number,
       ...attrs,
@@ -41,10 +42,12 @@ export class Milestones extends Diffable<'milestones'> {
   }
 
   add(attrs: Milestone) {
+    this.logUpdate(`Adding milestone "${attrs.title}"`)
     return this.github.rest.issues.createMilestone({ ...attrs, ...this.repo })
   }
 
   remove(existing: Milestone) {
+    this.logUpdate(`Removing milestone "${existing.title}"`)
     return this.github.rest.issues.deleteMilestone({
       milestone_number: existing.number,
       ...this.repo,

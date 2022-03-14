@@ -689,12 +689,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info6 = this._prepareRequest(verb, parsedUrl, headers);
+        let info5 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info6, data);
+          response = await this.requestRaw(info5, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -704,7 +704,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info6, data);
+              return authenticationHandler.handleAuthentication(this, info5, data);
             } else {
               return response;
             }
@@ -727,8 +727,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info6 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info6, data);
+            info5 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info5, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -748,7 +748,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info6, data) {
+      requestRaw(info5, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -756,13 +756,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info6, data, callbackForResult);
+          this.requestRawWithCallback(info5, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info6, data, onResult) {
+      requestRawWithCallback(info5, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info6.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info5.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -771,7 +771,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info6.httpModule.request(info6.options, (msg) => {
+        let req = info5.httpModule.request(info5.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -782,7 +782,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info6.options.path), null);
+          handleResult(new Error("Request timeout: " + info5.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -804,27 +804,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info6 = {};
-        info6.parsedUrl = requestUrl;
-        const usingSsl = info6.parsedUrl.protocol === "https:";
-        info6.httpModule = usingSsl ? https : http;
+        const info5 = {};
+        info5.parsedUrl = requestUrl;
+        const usingSsl = info5.parsedUrl.protocol === "https:";
+        info5.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info6.options = {};
-        info6.options.host = info6.parsedUrl.hostname;
-        info6.options.port = info6.parsedUrl.port ? parseInt(info6.parsedUrl.port) : defaultPort;
-        info6.options.path = (info6.parsedUrl.pathname || "") + (info6.parsedUrl.search || "");
-        info6.options.method = method;
-        info6.options.headers = this._mergeHeaders(headers);
+        info5.options = {};
+        info5.options.host = info5.parsedUrl.hostname;
+        info5.options.port = info5.parsedUrl.port ? parseInt(info5.parsedUrl.port) : defaultPort;
+        info5.options.path = (info5.parsedUrl.pathname || "") + (info5.parsedUrl.search || "");
+        info5.options.method = method;
+        info5.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info6.options.headers["user-agent"] = this.userAgent;
+          info5.options.headers["user-agent"] = this.userAgent;
         }
-        info6.options.agent = this._getAgent(info6.parsedUrl);
+        info5.options.agent = this._getAgent(info5.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info6.options);
+            handler.prepareRequest(info5.options);
           });
         }
-        return info6;
+        return info5;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1273,10 +1273,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info6(message) {
+    function info5(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info6;
+    exports.info = info5;
     function startGroup(name2) {
       command_1.issue("group", name2);
     }
@@ -6810,7 +6810,7 @@ var require_github = __commonJS({
 });
 
 // sync-defaults/src/index.ts
-var import_core5 = __toESM(require_core());
+var import_core4 = __toESM(require_core());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
@@ -6853,7 +6853,7 @@ __export(settings_exports, {
   name: () => name,
   run: () => run
 });
-var import_core4 = __toESM(require_core());
+var import_core3 = __toESM(require_core());
 var import_github = __toESM(require_github());
 
 // node_modules/js-yaml/dist/js-yaml.mjs
@@ -9507,10 +9507,8 @@ var jsYaml = {
 };
 var js_yaml_default = jsYaml;
 
-// sync-defaults/src/settings/plugins/branches.ts
-var import_core2 = __toESM(require_core());
-
 // sync-defaults/src/settings/types.ts
+var import_core2 = __toESM(require_core());
 var GitHubSettingsPlugin = class {
   constructor(github, repo, config) {
     this.github = github;
@@ -9519,6 +9517,18 @@ var GitHubSettingsPlugin = class {
     this.init();
   }
   init() {
+  }
+  log(message) {
+    (0, import_core2.info)(`    \u2139\uFE0F ${message}`);
+  }
+  logAdd(message) {
+    (0, import_core2.info)(`    \u2705 ${message}`);
+  }
+  logUpdate(message) {
+    (0, import_core2.info)(`    \u{1F503} ${message}`);
+  }
+  logRemove(message) {
+    (0, import_core2.info)(`    \u274C ${message}`);
   }
 };
 
@@ -9531,10 +9541,10 @@ var Branches = class extends GitHubSettingsPlugin {
     return Promise.all(this.config.filter((branch) => branch.protection !== void 0).map((branch) => {
       const commonParams = __spreadProps(__spreadValues({}, this.repo), { branch: branch.name });
       if (this.isEmpty(branch.protection)) {
-        (0, import_core2.info)(`    \u274C Removing branch protection for "${branch.name}"`);
+        this.logRemove(`Removing branch protection for "${branch.name}"`);
         return this.github.rest.repos.deleteBranchProtection(commonParams);
       } else {
-        (0, import_core2.info)(`    \u{1F503} Updating branch protection for "${branch.name}"`);
+        this.logUpdate(`Updating branch protection for "${branch.name}"`);
         const updateParams = __spreadProps(__spreadValues(__spreadValues({}, commonParams), branch.protection), {
           headers: previewHeaders
         });
@@ -9622,9 +9632,11 @@ var Collaborators = class extends Diffable {
     return this.add(attrs);
   }
   add(attrs) {
+    this.logUpdate(`Adding collaborator "${attrs.username}"`);
     return this.github.rest.repos.addCollaborator(__spreadValues(__spreadValues({}, attrs), this.repo));
   }
   remove(existing) {
+    this.logRemove(`Removing collaborator "${existing.username}"`);
     return this.github.rest.repos.removeCollaborator(__spreadValues({
       username: existing.username
     }, this.repo));
@@ -9632,7 +9644,6 @@ var Collaborators = class extends Diffable {
 };
 
 // sync-defaults/src/settings/plugins/labels.ts
-var import_core3 = __toESM(require_core());
 var previewHeaders2 = {
   accept: "application/vnd.github.symmetra-preview+json"
 };
@@ -9660,15 +9671,15 @@ var Labels = class extends Diffable {
     return "new_name" in attrs || existing.color !== attrs.color || existing.description !== attrs.description;
   }
   update(existing, attrs) {
-    (0, import_core3.info)(`    \u{1F503} Updating label "${existing.name}"`);
+    this.logUpdate(`Updating label "${existing.name}"`);
     return this.github.rest.issues.updateLabel(this.wrapAttrs(attrs));
   }
   add(attrs) {
-    (0, import_core3.info)(`    \u2705 Adding label "${attrs.name}"`);
+    this.logAdd(`Adding label "${attrs.name}"`);
     return this.github.rest.issues.createLabel(this.wrapAttrs(attrs));
   }
   remove(existing) {
-    (0, import_core3.info)(`    \u274C Removing label "${existing.name}"`);
+    this.logRemove(`Removing label "${existing.name}"`);
     return this.github.rest.issues.deleteLabel(this.wrapAttrs({ name: existing.name }));
   }
   wrapAttrs(attrs) {
@@ -9701,14 +9712,17 @@ var Milestones = class extends Diffable {
     return existing.description !== attrs.description || existing.state !== attrs.state;
   }
   update(existing, attrs) {
+    this.logUpdate(`Updating milestone "${attrs.title}"`);
     return this.github.rest.issues.updateMilestone(__spreadValues(__spreadValues({
       milestone_number: existing.number
     }, attrs), this.repo));
   }
   add(attrs) {
+    this.logUpdate(`Adding milestone "${attrs.title}"`);
     return this.github.rest.issues.createMilestone(__spreadValues(__spreadValues({}, attrs), this.repo));
   }
   remove(existing) {
+    this.logUpdate(`Removing milestone "${existing.title}"`);
     return this.github.rest.issues.deleteMilestone(__spreadValues({
       milestone_number: existing.number
     }, this.repo));
@@ -9769,8 +9783,10 @@ var Repository = class extends GitHubSettingsPlugin {
     if (!this.settings) {
       throw new Error("New settings not defined");
     }
+    this.logUpdate(`Updating repository settings for "${this.repo.repo}"`);
     await this.github.rest.repos.update(this.settings);
     if (this.topics) {
+      this.logUpdate(`Updating topics for "${this.repo.repo}"`);
       await this.github.rest.repos.replaceAllTopics({
         owner: this.settings.owner,
         repo: this.settings.repo,
@@ -9803,13 +9819,16 @@ var Teams = class extends Diffable {
     return existing.permission !== attrs.permission;
   }
   update(existing, attrs) {
+    this.logUpdate(`Updating team "${existing.name}"`);
     return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
   }
   async add(attrs) {
+    this.logUpdate(`Adding team "${attrs.name}"`);
     const { data: existing } = await this.github.request("GET /orgs/:org/teams/:team_slug", { org: this.repo.owner, team_slug: attrs.name });
     return this.github.request(`PUT ${teamRepoEndpoint}`, this.toParams(existing, attrs));
   }
   remove(existing) {
+    this.logUpdate(`Removing team "${existing.name}"`);
     return this.github.request(`DELETE ${teamRepoEndpoint}`, __spreadProps(__spreadValues({
       team_id: existing.id
     }, this.repo), {
@@ -9858,23 +9877,23 @@ async function run({
         const buffer = Buffer.from(settings.data.content, "base64");
         const content = buffer.toString("utf8");
         const repoConfig = js_yaml_default.load(content);
-        (0, import_core4.debug)(`Got config from "exivity/${repo2}":
+        (0, import_core3.debug)(`Got config from "exivity/${repo2}":
 ${JSON.stringify(repoConfig, void 0, 2)}`);
         if ("_extends" in repoConfig) {
           delete repoConfig._extends;
         }
         config = __spreadValues(__spreadValues({}, config), repoConfig);
       } else {
-        (0, import_core4.debug)(`Could not get settings from "exivity/${repo2}" (not a file), ignoring`);
+        (0, import_core3.debug)(`Could not get settings from "exivity/${repo2}" (not a file), ignoring`);
       }
     } catch (error) {
-      (0, import_core4.debug)(`Could not get settings from "exivity/${repo2}" (fetch error), ignoring`);
+      (0, import_core3.debug)(`Could not get settings from "exivity/${repo2}" (fetch error), ignoring`);
     }
   }
-  (0, import_core4.debug)(`Got config:
+  (0, import_core3.debug)(`Got config:
 ${JSON.stringify(config, void 0, 2)}`);
   return Promise.all(Object.entries(config).map(([section, sectionConfig]) => {
-    (0, import_core4.info)(`  \u27A1\uFE0F Running settings plugin "${section}"`);
+    (0, import_core3.info)(`  \u27A1\uFE0F Running settings plugin "${section}"`);
     const Plugin = PLUGINS[section];
     return new Plugin(octokit, repo, sectionConfig).sync();
   }));
@@ -9889,7 +9908,7 @@ async function run2() {
   const eventData = getEventData(eventName);
   const plugins = [settings_exports];
   for (const { name: name2, run: run3 } of plugins) {
-    (0, import_core5.info)(`Running plugin "${name2}"`);
+    (0, import_core4.info)(`Running plugin "${name2}"`);
     await run3({
       ghToken: token,
       component,
@@ -9897,9 +9916,9 @@ async function run2() {
       eventData
     });
   }
-  (0, import_core5.info)("Running plugins done");
+  (0, import_core4.info)("Running plugins done");
 }
-run2().catch(import_core5.setFailed);
+run2().catch(import_core4.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

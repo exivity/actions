@@ -1,3 +1,4 @@
+import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
 
 export type Branch = {
@@ -120,4 +121,20 @@ export abstract class GitHubSettingsPlugin<T extends keyof Config> {
   init() {}
 
   abstract sync(): Promise<any>
+
+  log(message: string) {
+    info(`    ℹ️ ${message}`)
+  }
+
+  logAdd(message: string) {
+    info(`    ✅ ${message}`)
+  }
+
+  logUpdate(message: string) {
+    info(`    🔃 ${message}`)
+  }
+
+  logRemove(message: string) {
+    info(`    ❌ ${message}`)
+  }
 }

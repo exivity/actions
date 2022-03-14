@@ -1,4 +1,3 @@
-import { info } from '@actions/core'
 import { Label } from '../types'
 import { Diffable } from './diffable'
 
@@ -41,17 +40,17 @@ export class Labels extends Diffable<'labels'> {
   }
 
   update(existing: Label, attrs: Label) {
-    info(`    🔃 Updating label "${existing.name}"`)
+    this.logUpdate(`Updating label "${existing.name}"`)
     return this.github.rest.issues.updateLabel(this.wrapAttrs(attrs))
   }
 
   add(attrs: Label) {
-    info(`    ✅ Adding label "${attrs.name}"`)
+    this.logAdd(`Adding label "${attrs.name}"`)
     return this.github.rest.issues.createLabel(this.wrapAttrs(attrs))
   }
 
   remove(existing: Label) {
-    info(`    ❌ Removing label "${existing.name}"`)
+    this.logRemove(`Removing label "${existing.name}"`)
     return this.github.rest.issues.deleteLabel(
       this.wrapAttrs({ name: existing.name })
     )

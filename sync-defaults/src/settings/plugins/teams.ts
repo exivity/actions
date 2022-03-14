@@ -21,6 +21,7 @@ export class Teams extends Diffable<'teams'> {
   }
 
   update(existing: Team, attrs: Team) {
+    this.logUpdate(`Updating team "${existing.name}"`)
     return this.github.request(
       `PUT ${teamRepoEndpoint}`,
       this.toParams(existing, attrs)
@@ -28,6 +29,7 @@ export class Teams extends Diffable<'teams'> {
   }
 
   async add(attrs: Team) {
+    this.logUpdate(`Adding team "${attrs.name}"`)
     const { data: existing } = await this.github.request(
       'GET /orgs/:org/teams/:team_slug',
       { org: this.repo.owner, team_slug: attrs.name }
@@ -40,6 +42,7 @@ export class Teams extends Diffable<'teams'> {
   }
 
   remove(existing: Team) {
+    this.logUpdate(`Removing team "${existing.name}"`)
     return this.github.request(`DELETE ${teamRepoEndpoint}`, {
       team_id: existing.id,
       ...this.repo,

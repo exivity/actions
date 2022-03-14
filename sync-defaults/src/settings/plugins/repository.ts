@@ -67,7 +67,7 @@ export class Repository extends GitHubSettingsPlugin<'repository'> {
     owner: string
     repo: string
   }
-  public topics?: Config['repository']['topics']
+  public topics?: NonNullable<Config['repository']>['topics']
   public enableVulnerabilityAlerts?: boolean
   public enableAutomatedSecurityFixes?: boolean
 
@@ -96,9 +96,11 @@ export class Repository extends GitHubSettingsPlugin<'repository'> {
       throw new Error('New settings not defined')
     }
 
+    this.logUpdate(`Updating repository settings for "${this.repo.repo}"`)
     await this.github.rest.repos.update(this.settings)
 
     if (this.topics) {
+      this.logUpdate(`Updating topics for "${this.repo.repo}"`)
       await this.github.rest.repos.replaceAllTopics({
         owner: this.settings!.owner,
         repo: this.settings!.repo,

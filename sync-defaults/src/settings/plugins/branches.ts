@@ -1,4 +1,3 @@
-import { info } from '@actions/core'
 import { GitHubSettingsPlugin } from '../types'
 
 const previewHeaders = {
@@ -14,11 +13,11 @@ export class Branches extends GitHubSettingsPlugin<'branches'> {
         .map((branch) => {
           const commonParams = { ...this.repo, branch: branch.name }
           if (this.isEmpty(branch.protection)) {
-            info(`    ❌ Removing branch protection for "${branch.name}"`)
+            this.logRemove(`Removing branch protection for "${branch.name}"`)
 
             return this.github.rest.repos.deleteBranchProtection(commonParams)
           } else {
-            info(`    🔃 Updating branch protection for "${branch.name}"`)
+            this.logUpdate(`Updating branch protection for "${branch.name}"`)
             const updateParams = {
               ...commonParams,
               ...branch.protection,
