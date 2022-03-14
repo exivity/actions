@@ -33147,7 +33147,7 @@ async function isWorkflowDependencyDone(octokit, token, sha, repo) {
   var _a, _b;
   (0, import_core3.info)("Checking out repository to get workflow contents...");
   process.env["INPUT_TOKEN"] = token;
-  const sourceSettings = getInputs();
+  const sourceSettings = await getInputs();
   await getSource(sourceSettings);
   const workflowName = getWorkflowName();
   const workspacePath = getWorkspacePath();

@@ -25,7 +25,7 @@ export async function isWorkflowDependencyDone(
   // Need to 'fake' the token, it defaults to ${{ github.token }}
   // see https://github.com/actions/checkout/blob/main/action.yml
   process.env['INPUT_TOKEN'] = token
-  const sourceSettings = inputHelper.getInputs()
+  const sourceSettings = await inputHelper.getInputs()
   await gitSourceProvider.getSource(sourceSettings)
 
   const workflowName = getWorkflowName()
