@@ -3,6 +3,7 @@ name: sync-defaults
 on:
   push:
     paths:
+      - '.github/settings.yml'
       - '.github/workflows/sync-defaults.yml'
       - 'sync-defaults/**'
       - 'lib/github.ts'
