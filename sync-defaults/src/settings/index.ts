@@ -36,7 +36,7 @@ export async function run<T extends EventName>({
   }
 
   // Grab settings from .github/settings.yml
-  for (const repo in ['.github', component]) {
+  for (const repo of ['.github', component]) {
     try {
       const settings = await octokit.rest.repos.getContent({
         owner: 'exivity',

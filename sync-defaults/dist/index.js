@@ -7195,7 +7195,7 @@ async function run({
     owner: "exivity",
     repo: component
   };
-  for (const repo2 in [".github", component]) {
+  for (const repo2 of [".github", component]) {
     try {
       const settings = await octokit.rest.repos.getContent({
         owner: "exivity",
@@ -7244,7 +7244,7 @@ async function run2() {
   const eventData = getEventData(eventName);
   const plugins = [settings_exports];
   for (const { name: name2, run: run3 } of plugins) {
-    (0, import_core5.info)(`\u27A1\uFE0F Running plugin "${name2}"`);
+    (0, import_core5.info)(`Running plugin "${name2}"`);
     await run3({
       ghToken: token,
       component,
@@ -7252,7 +7252,7 @@ async function run2() {
       eventData
     });
   }
-  (0, import_core5.info)("\u2705 Running plugins done");
+  (0, import_core5.info)("Running plugins done");
 }
 run2().catch(import_core5.setFailed);
 /*!
