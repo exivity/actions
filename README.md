@@ -6,9 +6,10 @@ sense outside the context of the Exivity development environment.
 _Available actions:_
 
 - [`accept`](#accept)
+- [`build-push-image`](#build-push-image)
 - [`commit-status`](#commit-status)
 - [`db`](#db)
-- [`deploy-image`](#deploy-image)
+- [`delete-package`](#delete-package)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
@@ -50,6 +51,26 @@ usage.
 | `gh-token`        |          | `github.token` | A GitHub token with access to the exivity/scaffold repository.                                                                                                                                                                               |
 | `dry-run`         |          | `false`        | If `true`, scaffold will not build or run any tests.                                                                                                                                                                                         |
 | `filter`          |          |                | If provided, only trigger acceptance tests if files which match this input are modified. Glob patterns allowed. Multiple entries eparated by newline. If provided, and changed files do not match, writes a successful status to the commit. |
+
+# `build-push-image`
+
+Builds a container image and pushes it to a Docker registry
+
+## Example
+
+```yaml
+- uses: exivity/actions/build-push-image@main
+```
+
+## Inputs
+
+| name         | required | default           | description                                                                   |
+| ------------ | -------- | ----------------- | ----------------------------------------------------------------------------- |
+| `component`  |          | Current component | The component being containerized.                                            |
+| `dockerfile` |          | `"./Dockerfile"`  | Path to the Dockerfile                                                        |
+| `registry`   |          | `"ghcr.io"`       | Registry to use, e.g. `"ghcr.io"` (default) or `"docker.io"` (for Docker Hub) |
+| `user`       |          | `github.actor`    | Username for the Docker registry                                              |
+| `password`   |          | `github.token`    | Password for the Docker registry                                              |
 
 # `commit-status`
 
@@ -104,31 +125,34 @@ repository migrations and runs them.
 | `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
 
-# `deploy-image`
+# `delete-package`
 
-Builds and deploys a component image.
+Delete a package version if a branch or tag is deleted. This is useful to purge
+the GitHub Container Registry from packages built from branches or tags that are
+deleted.
 
 ## Example
 
+Full example workflow:
+
 ```yaml
-- uses: exivity/actions/deploy-image@main
-  with:
-    docker-hub-user: ${{ secrets.DOCKER_HUB_USER }}
-    docker-hub-password: ${{ secrets.DOCKER_HUB_TOKEN }}
+name: purge-ghcr
+
+on: delete
+
+jobs:
+  purge-ghcr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: exivity/actions/delete-package@main
 ```
 
 ## Inputs
 
-| name                  | required | default           | description                                                                                      |
-| --------------------- | -------- | ----------------- | ------------------------------------------------------------------------------------------------ |
-| `component`           |          | Current component | Component name to build the image for                                                            |
-| `docker-hub-user`     | ✅       |                   | Username for Docker Hub                                                                          |
-| `docker-hub-password` | ✅       |                   | Password for Docker Hub                                                                          |
-| `ghcr-user`           |          | `github.actor`    | Username for GitHub Container Registry                                                           |
-| `ghcr-password`       |          | `github.token`    | Password for GitHub Container Registry                                                           |
-| `dockerfile`          |          | `"./Dockerfile"`  | Path to the Dockerfile                                                                           |
-| `dry-run`             |          | `false`           | Do not deploy build artefacts when set to `true`                                                 |
-| `gh-token`            |          | `github.token`    | The github token to delete image tags (only for 'delete' event), must have `packages:read` scope |
+| name        | required | default           | description                                     |
+| ----------- | -------- | ----------------- | ----------------------------------------------- |
+| `component` |          | Current component | The component to delete packages for.           |
+| `gh-token`  |          | `github.token`    | The github token with write access to packages. |
 
 # `get-artefacts`
 

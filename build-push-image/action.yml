@@ -1,0 +1,25 @@
+name: build-push-image
+description: Builds and pushes a component image
+inputs:
+  component:
+    description: Component name to build the image for
+    required: false
+  dockerfile:
+    description: Path to the Dockerfile, defaults to ./Dockerfile
+    required: false
+    default: ./Dockerfile
+  registry:
+    description: The Docker registry to use
+    required: false
+    default: ghcr.io
+  user:
+    description: Username for Docker registry
+    required: false
+    default: ${{ github.actor }}
+  password:
+    description: Password for Docker registry
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: node16
+  main: dist/index.js

@@ -685,12 +685,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info3 = this._prepareRequest(verb, parsedUrl, headers);
+        let info5 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info3, data);
+          response = await this.requestRaw(info5, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -700,7 +700,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info3, data);
+              return authenticationHandler.handleAuthentication(this, info5, data);
             } else {
               return response;
             }
@@ -723,8 +723,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info3 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info3, data);
+            info5 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info5, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -744,7 +744,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info3, data) {
+      requestRaw(info5, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -752,13 +752,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info3, data, callbackForResult);
+          this.requestRawWithCallback(info5, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info3, data, onResult) {
+      requestRawWithCallback(info5, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info3.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info5.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -767,7 +767,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info3.httpModule.request(info3.options, (msg) => {
+        let req = info5.httpModule.request(info5.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -778,7 +778,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info3.options.path), null);
+          handleResult(new Error("Request timeout: " + info5.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -800,27 +800,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info3 = {};
-        info3.parsedUrl = requestUrl;
-        const usingSsl = info3.parsedUrl.protocol === "https:";
-        info3.httpModule = usingSsl ? https : http;
+        const info5 = {};
+        info5.parsedUrl = requestUrl;
+        const usingSsl = info5.parsedUrl.protocol === "https:";
+        info5.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info3.options = {};
-        info3.options.host = info3.parsedUrl.hostname;
-        info3.options.port = info3.parsedUrl.port ? parseInt(info3.parsedUrl.port) : defaultPort;
-        info3.options.path = (info3.parsedUrl.pathname || "") + (info3.parsedUrl.search || "");
-        info3.options.method = method;
-        info3.options.headers = this._mergeHeaders(headers);
+        info5.options = {};
+        info5.options.host = info5.parsedUrl.hostname;
+        info5.options.port = info5.parsedUrl.port ? parseInt(info5.parsedUrl.port) : defaultPort;
+        info5.options.path = (info5.parsedUrl.pathname || "") + (info5.parsedUrl.search || "");
+        info5.options.method = method;
+        info5.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info3.options.headers["user-agent"] = this.userAgent;
+          info5.options.headers["user-agent"] = this.userAgent;
         }
-        info3.options.agent = this._getAgent(info3.parsedUrl);
+        info5.options.agent = this._getAgent(info5.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info3.options);
+            handler.prepareRequest(info5.options);
           });
         }
-        return info3;
+        return info5;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1223,7 +1223,7 @@ var require_core = __commonJS({
       return inputs;
     }
     exports.getMultilineInput = getMultilineInput;
-    function getBooleanInput2(name, options) {
+    function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
       const val = getInput4(name, options);
@@ -1234,7 +1234,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports.getBooleanInput = getBooleanInput2;
+    exports.getBooleanInput = getBooleanInput;
     function setOutput(name, value) {
       process.stdout.write(os.EOL);
       command_1.issueCommand("set-output", { name }, value);
@@ -1269,10 +1269,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info3(message) {
+    function info5(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info3;
+    exports.info = info5;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -2325,7 +2325,7 @@ var require_exec = __commonJS({
       });
     }
     exports.exec = exec3;
-    function getExecOutput2(commandLine, args, options) {
+    function getExecOutput(commandLine, args, options) {
       var _a, _b;
       return __awaiter(this, void 0, void 0, function* () {
         let stdout = "";
@@ -2357,7 +2357,7 @@ var require_exec = __commonJS({
         };
       });
     }
-    exports.getExecOutput = getExecOutput2;
+    exports.getExecOutput = getExecOutput;
   }
 });
 
@@ -2776,8 +2776,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context4, operator, key, modifier) {
-      var value = context4[key], result = [];
+    function getValues(context2, operator, key, modifier) {
+      var value = context2[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -2837,7 +2837,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context4) {
+    function expand(template, context2) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -2849,7 +2849,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context4, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -7811,50 +7811,6 @@ var require_utils4 = __commonJS({
   }
 });
 
-// node_modules/@actions/github/lib/github.js
-var require_github = __commonJS({
-  "node_modules/@actions/github/lib/github.js"(exports) {
-    "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      o[k2] = m[k];
-    });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
-      Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
-      o["default"] = v;
-    });
-    var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
-      var result = {};
-      if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
-      }
-      __setModuleDefault(result, mod);
-      return result;
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getOctokit = exports.context = void 0;
-    var Context = __importStar(require_context());
-    var utils_1 = require_utils4();
-    exports.context = new Context.Context();
-    function getOctokit2(token, options) {
-      return new utils_1.GitHub(utils_1.getOctokitOptions(token, options));
-    }
-    exports.getOctokit = getOctokit2;
-  }
-});
-
 // node_modules/semver/internal/constants.js
 var require_constants = __commonJS({
   "node_modules/semver/internal/constants.js"(exports, module2) {
@@ -10125,26 +10081,14 @@ var require_semver2 = __commonJS({
   }
 });
 
-// deploy-image/src/index.ts
-var import_core3 = __toESM(require_core());
-var import_exec3 = __toESM(require_exec());
-var import_github3 = __toESM(require_github());
-var import_fs = require("fs");
+// build-push-image/src/index.ts
+var import_core5 = __toESM(require_core());
 
 // lib/core.ts
 var import_core = __toESM(require_core());
 var import_exec = __toESM(require_exec());
-var TRUE_VALUES = [true, "true", "TRUE"];
-var FALSE_VALUES = [false, "false", "FALSE"];
-function getBooleanInput(name, defaultValue) {
-  let inputValue = (0, import_core.getInput)(name) || defaultValue;
-  if (TRUE_VALUES.includes(inputValue)) {
-    return true;
-  }
-  if (FALSE_VALUES.includes(inputValue)) {
-    return false;
-  }
-  throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
+function table(key, value) {
+  (0, import_core.info)(`${key.padEnd(15)}: ${value}`);
 }
 
 // lib/github.ts
@@ -10180,13 +10124,6 @@ function getTag() {
   var _a, _b;
   return ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : null;
 }
-function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core2.getInput)(inputName);
-  if (!ghToken) {
-    throw new Error("The GitHub token is missing");
-  }
-  return ghToken;
-}
 function getEventName(supportedEvents) {
   const eventName = import_utils.context.eventName;
   if (!eventName) {
@@ -10197,9 +10134,6 @@ function getEventName(supportedEvents) {
   }
   return eventName;
 }
-function isEvent(input, compare, eventData) {
-  return input === compare;
-}
 function getEventData(eventName) {
   const payload = import_utils.context.payload;
   if (Object.keys(payload).length === 0) {
@@ -10208,85 +10142,60 @@ function getEventData(eventName) {
   return payload;
 }
 
-// deploy-image/src/metadata.ts
+// build-push-image/src/dockerCli.ts
+var import_core3 = __toESM(require_core());
 var import_exec2 = __toESM(require_exec());
-var import_github = __toESM(require_github());
-var import_semver = __toESM(require_semver2());
-var GHCR = "ghcr.io/";
-var RELEASE_BRANCHES = ["main", "master"];
-var BETA_BRANCHES = [];
-var CANARY_BRANCHES = ["develop"];
-var RELEASE_TAG = "latest";
-var CANARY_TAG = "canary";
-function getDeployType() {
-  const tag = getTag();
-  const semver = (0, import_semver.parse)(tag);
-  if (semver) {
-    return "tag:semver";
-  }
-  if (tag) {
-    return "tag";
-  }
-  const ref = getRef();
-  if (RELEASE_BRANCHES.includes(ref)) {
-    return "branch:release";
-  }
-  if (BETA_BRANCHES.includes(ref)) {
-    return "branch:beta";
-  }
-  if (CANARY_BRANCHES.includes(ref)) {
-    return "branch:canary";
-  }
-  return "branch";
+async function dockerLogin({ registry, user, password }) {
+  (0, import_core3.info)(`Logging in to Docker registry "${registry}"...`);
+  const cmd = 'bash -c "echo $REGISTRY_PASSWORD | docker login $REGISTRY -u $REGISTRY_USER --password-stdin"';
+  (0, import_core3.debug)(`Executing command:
+${cmd}`);
+  await (0, import_exec2.exec)(cmd, void 0, {
+    env: __spreadProps(__spreadValues({}, process.env), {
+      REGISTRY: registry,
+      REGISTRY_USER: user,
+      REGISTRY_PASSWORD: password
+    })
+  });
 }
-async function getImagePrefixAndTags() {
-  const type = getDeployType();
-  switch (type) {
-    case "tag:semver":
-      const tag = getTag();
-      const semver = (0, import_semver.parse)(tag);
-      const repoShaOfTagCommit = (await (0, import_exec2.getExecOutput)(`git rev-list -n 1 tags/${tag}`)).stdout.trim();
-      const commitsSinceTagCommit = (await (0, import_exec2.getExecOutput)(`git rev-list --count ${repoShaOfTagCommit}..HEAD`)).stdout.trim();
-      if (Number(commitsSinceTagCommit) === 0) {
-        return {
-          prefix: null,
-          tags: [
-            semver.version,
-            `${semver.major}.${semver.minor}`,
-            semver.major.toString(),
-            RELEASE_TAG
-          ]
-        };
-      }
-      return { prefix: null, tags: [semver.version] };
-    case "tag":
-      return { prefix: GHCR, tags: [] };
-    case "branch:release":
-      return { prefix: null, tags: [] };
-    case "branch:beta":
-      return { prefix: null, tags: [] };
-    case "branch:canary":
-      return { prefix: GHCR, tags: [CANARY_TAG] };
-    case "branch":
-      const ref = getRef();
-      return {
-        prefix: GHCR,
-        tags: [ref.replace(/[^\w\w.-]/g, "-").substr(0, 127)]
-      };
-  }
-}
-function getImageLabels({
-  component,
-  version
+async function dockerBuild({
+  dockerfile,
+  labels,
+  tagsFQN
 }) {
+  (0, import_core3.info)("Building image...");
+  const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
+  const tagOptions = tagsFQN.map((tag) => `--tag "${tag}"`).join(" ");
+  const cmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`;
+  (0, import_core3.debug)(`Executing command:
+${cmd}`);
+  await (0, import_exec2.exec)(cmd);
+}
+async function dockerPush({ repository }) {
+  (0, import_core3.info)("Pushing image...");
+  const cmd = `docker push ${repository} --all-tags`;
+  (0, import_core3.debug)(`Executing command:
+${cmd}`);
+  await (0, import_exec2.exec)(cmd);
+}
+
+// build-push-image/src/imageProperties.ts
+var import_semver = __toESM(require_semver2());
+function getTags() {
+  const tags = [getRef()];
+  return tags.map((tag) => tag.replace(/[^\w\w.-]/g, "-").substring(0, 127));
+}
+function getTagsFQN({ repository, tags }) {
+  return tags.map((tag) => `${repository}:${tag}`);
+}
+function getLabels({ repository }) {
   return {
     "org.opencontainers.image.vendor": "Exivity",
-    "org.opencontainers.image.title": component,
-    "org.opencontainers.image.description": component,
+    "org.opencontainers.image.title": repository.component,
+    "org.opencontainers.image.description": repository.component,
     "org.opencontainers.image.url": "https://exivity.com",
     "org.opencontainers.image.documentation": "https://docs.exivity.com",
-    "org.opencontainers.image.source": `https://github.com/${import_github.context.repo.owner}/${import_github.context.repo.repo}`,
-    "org.opencontainers.image.version": version,
+    "org.opencontainers.image.source": `https://github.com/${repository.fqn}`,
     "org.opencontainers.image.created": new Date().toISOString(),
     "org.opencontainers.image.revision": getSha()
   };
@@ -10297,116 +10206,55 @@ function getComponentVersion() {
   return ((semver == null ? void 0 : semver.version) ?? getSha()) || "unknown";
 }
 
-// deploy-image/src/index.ts
+// build-push-image/src/metadataFile.ts
+var import_core4 = __toESM(require_core());
+var import_fs = require("fs");
 var METADATA_FILENAME = "metadata.json";
-async function run() {
-  var _a, _b, _c;
-  const { component: defaultComponent } = getRepository();
-  const component = (0, import_core3.getInput)("component") || defaultComponent;
-  const dockerUser = (0, import_core3.getInput)("docker-hub-user", { required: true });
-  const dockerPassword = (0, import_core3.getInput)("docker-hub-password", { required: true });
-  const ghcrUser = (0, import_core3.getInput)("ghcr-user") || import_github3.context.actor;
-  const ghcrPassword = (0, import_core3.getInput)("ghcr-password") || getToken();
-  const dryRun = getBooleanInput("dry-run", false);
-  const dockerfile = (0, import_core3.getInput)("dockerfile") || "./Dockerfile";
-  const eventName = getEventName(["push", "delete"]);
-  const eventData = getEventData();
-  const type = getDeployType();
-  const { prefix, tags } = await getImagePrefixAndTags();
-  (0, import_core3.info)(`Image deploy type: ${type}`);
-  (0, import_core3.info)(`Image prefix: ${prefix ?? "none"}`);
-  (0, import_core3.info)(`Image name: exivity/${component}`);
-  (0, import_core3.info)(`Image tags: ${tags.join(",")}`);
-  if (isEvent(eventName, "delete", eventData) || !!process.env["EMULATE_DELETE"]) {
-    if (type !== "branch") {
-      (0, import_core3.info)(`Not deleting images for deploy type "${type}"`);
-      return;
-    }
-    const ghToken = getToken();
-    const octokit = (0, import_github3.getOctokit)(ghToken);
-    const { data: versions } = await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
-      org: "exivity",
-      package_type: "container",
-      package_name: component,
-      per_page: 100
-    });
-    if (versions.length === 100) {
-      (0, import_core3.warning)(`Please clean up package versions or implement pagination, we found 100 or more!`);
-    }
-    if (!versions.length) {
-      (0, import_core3.info)("No package versions found");
-    }
-    for (const version of versions) {
-      const tagOverlap = tags.filter((tag) => {
-        var _a2, _b2, _c2;
-        return (_c2 = (_b2 = (_a2 = version.metadata) == null ? void 0 : _a2.container) == null ? void 0 : _b2.tags) == null ? void 0 : _c2.includes(tag);
-      });
-      if (tagOverlap.length > 0) {
-        (0, import_core3.info)(`Deleting package version ${version.id}, it was tagged with "${(_c = (_b = (_a = version.metadata) == null ? void 0 : _a.container) == null ? void 0 : _b.tags) == null ? void 0 : _c.join(",")}"`);
-        await octokit.rest.packages.deletePackageVersionForOrg({
-          org: "exivity",
-          package_type: "container",
-          package_name: component,
-          package_version_id: version.id
-        });
-      } else {
-        (0, import_core3.warning)("Could not find matching package version to delete");
-      }
-    }
-    return;
-  }
-  if (tags.length === 0) {
-    (0, import_core3.warning)("No tags set, skipping deploy docker action");
-    return;
-  }
-  const labels = getImageLabels({ component, version: tags[0] });
-  (0, import_core3.info)(`Image labels will be:
-${JSON.stringify(labels, void 0, 2)}`);
-  const componentVersion = getComponentVersion();
-  (0, import_core3.info)(`Component version will be: ${componentVersion}`);
+async function writeExivityMetadataFile(repository) {
   const metadata = {
-    component,
-    version: componentVersion,
+    component: repository.component,
+    version: getComponentVersion(),
     created: new Date().toISOString()
   };
-  (0, import_core3.info)(`Writing metadata to ${METADATA_FILENAME}:
-${JSON.stringify(metadata, void 0, 2)}`);
-  await import_fs.promises.writeFile("./" + METADATA_FILENAME, JSON.stringify(metadata, void 0, 2));
-  if (prefix === GHCR) {
-    (0, import_core3.info)("Logging in to GitHub Packages");
-    await (0, import_exec3.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {
-      env: __spreadProps(__spreadValues({}, process.env), {
-        GHCR_PASSWORD: ghcrPassword,
-        GHCR_USER: ghcrUser
-      })
-    });
-  } else {
-    (0, import_core3.info)("Logging in to Docker Hub");
-    await (0, import_exec3.exec)('bash -c "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin"', void 0, {
-      env: __spreadProps(__spreadValues({}, process.env), {
-        DOCKER_HUB_PASSWORD: dockerPassword,
-        DOCKER_HUB_USER: dockerUser
-      })
-    });
-  }
-  const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
-  const buildCmd = `docker build -f ${dockerfile} --tag ${component} ${labelOptions} .`;
-  (0, import_core3.info)(`Building image`);
-  await (0, import_exec3.exec)(buildCmd);
-  (0, import_core3.info)(`Tagging and pushing image`);
-  for (const tag of tags) {
-    const name = `${prefix}exivity/${component}:${tag}`;
-    await (0, import_exec3.exec)(`docker image tag ${component} ${name}`);
-    const pushCmd = `docker push ${name}`;
-    if (!dryRun) {
-      await (0, import_exec3.exec)(pushCmd);
-    } else {
-      (0, import_core3.debug)(pushCmd);
-      (0, import_core3.info)("dry-run set, would have executed push command");
-    }
-  }
+  const contents = JSON.stringify(metadata, void 0, 2);
+  (0, import_core4.info)(`Writing metadata to ${METADATA_FILENAME}:
+${contents}`);
+  await import_fs.promises.writeFile("./" + METADATA_FILENAME, contents);
 }
-run().catch(import_core3.setFailed);
+
+// build-push-image/src/index.ts
+async function run() {
+  const gitRepository = getRepository();
+  const component = (0, import_core5.getInput)("component") || gitRepository.component;
+  const dockerfile = (0, import_core5.getInput)("dockerfile") || "./Dockerfile";
+  const registry = (0, import_core5.getInput)("registry");
+  const user = (0, import_core5.getInput)("user");
+  const password = (0, import_core5.getInput)("password");
+  const imageRepository = `${registry}/exivity/${component}`;
+  const tags = getTags();
+  const tagsFQN = getTagsFQN({ repository: imageRepository, tags });
+  const labels = getLabels({ repository: gitRepository });
+  if (tags.length === 0) {
+    (0, import_core5.warning)("No tags set, skipping build-push-image action");
+    return;
+  }
+  table("Repository", imageRepository);
+  table("Tags", tags.join(", "));
+  table("Labels", JSON.stringify(labels, void 0, 2));
+  await writeExivityMetadataFile(gitRepository);
+  await dockerLogin({
+    registry,
+    user,
+    password
+  });
+  await dockerBuild({
+    dockerfile,
+    labels,
+    tagsFQN
+  });
+  await dockerPush({ repository: imageRepository });
+}
+run().catch(import_core5.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

@@ -1,0 +1,17 @@
+name: delete-package
+
+on:
+  workflow_dispatch:
+    tag:
+      description: The tag to delete
+      required: true
+  delete:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./delete-package
+        with:
+          component: actions-test
