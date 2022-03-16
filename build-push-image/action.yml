@@ -1,5 +1,5 @@
 name: build-push-image
-description: Builds and pushes a component image
+description: Builds and pushes a component image!
 inputs:
   component:
     description: Component name to build the image for
