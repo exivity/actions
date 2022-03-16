@@ -1,10 +1,9 @@
-import { getExecOutput } from '@actions/exec'
 import { parse as semverParse } from 'semver'
 import { getRef, getSha, getTag } from '../../lib/github'
 
-export async function getTags() {
+export function getTags() {
   const ref = getRef()
-  const sha = await getSha()
+  const sha = getSha()
   return [ref, sha]
 }
 

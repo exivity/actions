@@ -685,12 +685,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info10 = this._prepareRequest(verb, parsedUrl, headers);
+        let info11 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info10, data);
+          response = await this.requestRaw(info11, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -700,7 +700,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info10, data);
+              return authenticationHandler.handleAuthentication(this, info11, data);
             } else {
               return response;
             }
@@ -723,8 +723,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info10 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info10, data);
+            info11 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info11, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -744,7 +744,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info10, data) {
+      requestRaw(info11, data) {
         return new Promise((resolve2, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -752,13 +752,13 @@ var require_http_client = __commonJS({
             }
             resolve2(res);
           };
-          this.requestRawWithCallback(info10, data, callbackForResult);
+          this.requestRawWithCallback(info11, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info10, data, onResult) {
+      requestRawWithCallback(info11, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info10.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info11.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -767,7 +767,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info10.httpModule.request(info10.options, (msg) => {
+        let req = info11.httpModule.request(info11.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -778,7 +778,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info10.options.path), null);
+          handleResult(new Error("Request timeout: " + info11.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -800,27 +800,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info10 = {};
-        info10.parsedUrl = requestUrl;
-        const usingSsl = info10.parsedUrl.protocol === "https:";
-        info10.httpModule = usingSsl ? https : http;
+        const info11 = {};
+        info11.parsedUrl = requestUrl;
+        const usingSsl = info11.parsedUrl.protocol === "https:";
+        info11.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info10.options = {};
-        info10.options.host = info10.parsedUrl.hostname;
-        info10.options.port = info10.parsedUrl.port ? parseInt(info10.parsedUrl.port) : defaultPort;
-        info10.options.path = (info10.parsedUrl.pathname || "") + (info10.parsedUrl.search || "");
-        info10.options.method = method;
-        info10.options.headers = this._mergeHeaders(headers);
+        info11.options = {};
+        info11.options.host = info11.parsedUrl.hostname;
+        info11.options.port = info11.parsedUrl.port ? parseInt(info11.parsedUrl.port) : defaultPort;
+        info11.options.path = (info11.parsedUrl.pathname || "") + (info11.parsedUrl.search || "");
+        info11.options.method = method;
+        info11.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info10.options.headers["user-agent"] = this.userAgent;
+          info11.options.headers["user-agent"] = this.userAgent;
         }
-        info10.options.agent = this._getAgent(info10.parsedUrl);
+        info11.options.agent = this._getAgent(info11.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info10.options);
+            handler.prepareRequest(info11.options);
           });
         }
-        return info10;
+        return info11;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1269,10 +1269,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info10(message) {
+    function info11(message) {
       process.stdout.write(message + os2.EOL);
     }
-    exports.info = info10;
+    exports.info = info11;
     function startGroup4(name) {
       command_1.issue("group", name);
     }
@@ -8918,10 +8918,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issue("warning", message instanceof Error ? message.toString() : message);
     }
     exports.warning = warning6;
-    function info10(message) {
+    function info11(message) {
       process.stdout.write(message + os2.EOL);
     }
-    exports.info = info10;
+    exports.info = info11;
     function startGroup4(name) {
       command_1.issue("group", name);
     }
@@ -22534,10 +22534,10 @@ var require_which = __commonJS({
         cb = opt;
         opt = {};
       }
-      var info10 = getPathInfo(cmd, opt);
-      var pathEnv = info10.env;
-      var pathExt = info10.ext;
-      var pathExtExe = info10.extExe;
+      var info11 = getPathInfo(cmd, opt);
+      var pathEnv = info11.env;
+      var pathExt = info11.ext;
+      var pathExtExe = info11.extExe;
       var found = [];
       (function F(i, l) {
         if (i === l) {
@@ -22572,10 +22572,10 @@ var require_which = __commonJS({
     }
     function whichSync(cmd, opt) {
       opt = opt || {};
-      var info10 = getPathInfo(cmd, opt);
-      var pathEnv = info10.env;
-      var pathExt = info10.ext;
-      var pathExtExe = info10.extExe;
+      var info11 = getPathInfo(cmd, opt);
+      var pathEnv = info11.env;
+      var pathExt = info11.ext;
+      var pathExtExe = info11.extExe;
       var found = [];
       for (var i = 0, l = pathEnv.length; i < l; i++) {
         var pathPart = pathEnv[i];
@@ -29063,6 +29063,9 @@ function getBooleanInput(name, defaultValue) {
   }
   throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
 }
+function table(key, value) {
+  (0, import_core.info)(`${key.padEnd(15)}: ${value}`);
+}
 
 // lib/github.ts
 var import_core2 = __toESM(require_core());
@@ -33246,9 +33249,6 @@ var defaultScaffoldBranch = "develop";
 function detectIssueKey(input) {
   const match = input.match(/([A-Z0-9]{1,10}-\d+)/);
   return match !== null && match.length > 0 ? match[0] : void 0;
-}
-function table(key, value) {
-  (0, import_core5.info)(`${key.padEnd(15)}: ${value}`);
 }
 async function run() {
   const ghToken = getToken();

@@ -685,12 +685,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info3 = this._prepareRequest(verb, parsedUrl, headers);
+        let info4 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info3, data);
+          response = await this.requestRaw(info4, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -700,7 +700,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info3, data);
+              return authenticationHandler.handleAuthentication(this, info4, data);
             } else {
               return response;
             }
@@ -723,8 +723,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info3 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info3, data);
+            info4 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info4, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -744,7 +744,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info3, data) {
+      requestRaw(info4, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -752,13 +752,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info3, data, callbackForResult);
+          this.requestRawWithCallback(info4, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info3, data, onResult) {
+      requestRawWithCallback(info4, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info3.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info4.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -767,7 +767,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info3.httpModule.request(info3.options, (msg) => {
+        let req = info4.httpModule.request(info4.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -778,7 +778,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info3.options.path), null);
+          handleResult(new Error("Request timeout: " + info4.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -800,27 +800,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info3 = {};
-        info3.parsedUrl = requestUrl;
-        const usingSsl = info3.parsedUrl.protocol === "https:";
-        info3.httpModule = usingSsl ? https : http;
+        const info4 = {};
+        info4.parsedUrl = requestUrl;
+        const usingSsl = info4.parsedUrl.protocol === "https:";
+        info4.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info3.options = {};
-        info3.options.host = info3.parsedUrl.hostname;
-        info3.options.port = info3.parsedUrl.port ? parseInt(info3.parsedUrl.port) : defaultPort;
-        info3.options.path = (info3.parsedUrl.pathname || "") + (info3.parsedUrl.search || "");
-        info3.options.method = method;
-        info3.options.headers = this._mergeHeaders(headers);
+        info4.options = {};
+        info4.options.host = info4.parsedUrl.hostname;
+        info4.options.port = info4.parsedUrl.port ? parseInt(info4.parsedUrl.port) : defaultPort;
+        info4.options.path = (info4.parsedUrl.pathname || "") + (info4.parsedUrl.search || "");
+        info4.options.method = method;
+        info4.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info3.options.headers["user-agent"] = this.userAgent;
+          info4.options.headers["user-agent"] = this.userAgent;
         }
-        info3.options.agent = this._getAgent(info3.parsedUrl);
+        info4.options.agent = this._getAgent(info4.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info3.options);
+            handler.prepareRequest(info4.options);
           });
         }
-        return info3;
+        return info4;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1207,7 +1207,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
     exports.addPath = addPath;
-    function getInput3(name, options) {
+    function getInput4(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -1217,16 +1217,16 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports.getInput = getInput3;
+    exports.getInput = getInput4;
     function getMultilineInput(name, options) {
-      const inputs = getInput3(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput4(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
     exports.getMultilineInput = getMultilineInput;
     function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput3(name, options);
+      const val = getInput4(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -1269,10 +1269,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info3(message) {
+    function info4(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info3;
+    exports.info = info4;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -1553,7 +1553,7 @@ var require_io = __commonJS({
     var path = __importStar(require("path"));
     var util_1 = require("util");
     var ioUtil = __importStar(require_io_util());
-    var exec2 = util_1.promisify(childProcess.exec);
+    var exec3 = util_1.promisify(childProcess.exec);
     var execFile = util_1.promisify(childProcess.execFile);
     function cp(source, dest, options = {}) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -1612,11 +1612,11 @@ var require_io = __commonJS({
           try {
             const cmdPath = ioUtil.getCmdPath();
             if (yield ioUtil.isDirectory(inputPath, true)) {
-              yield exec2(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
+              yield exec3(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
                 env: { inputPath }
               });
             } else {
-              yield exec2(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
+              yield exec3(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
                 env: { inputPath }
               });
             }
@@ -2312,7 +2312,7 @@ var require_exec = __commonJS({
     exports.getExecOutput = exports.exec = void 0;
     var string_decoder_1 = require("string_decoder");
     var tr = __importStar(require_toolrunner());
-    function exec2(commandLine, args, options) {
+    function exec3(commandLine, args, options) {
       return __awaiter(this, void 0, void 0, function* () {
         const commandArgs = tr.argStringToArray(commandLine);
         if (commandArgs.length === 0) {
@@ -2324,7 +2324,7 @@ var require_exec = __commonJS({
         return runner.exec();
       });
     }
-    exports.exec = exec2;
+    exports.exec = exec3;
     function getExecOutput(commandLine, args, options) {
       var _a, _b;
       return __awaiter(this, void 0, void 0, function* () {
@@ -2347,7 +2347,7 @@ var require_exec = __commonJS({
           }
         };
         const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
-        const exitCode = yield exec2(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+        const exitCode = yield exec3(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
         stdout += stdoutDecoder.end();
         stderr += stderrDecoder.end();
         return {
@@ -10125,13 +10125,21 @@ var require_semver2 = __commonJS({
   }
 });
 
-// push-image-ghcr/src/index.ts
-var import_core2 = __toESM(require_core());
-var import_exec = __toESM(require_exec());
+// delete-package/src/index.ts
+var import_core3 = __toESM(require_core());
+var import_exec2 = __toESM(require_exec());
 var import_github2 = __toESM(require_github());
+var import_fs = require("fs");
+
+// lib/core.ts
+var import_core = __toESM(require_core());
+var import_exec = __toESM(require_exec());
+function table(key, value) {
+  (0, import_core.info)(`${key.padEnd(15)}: ${value}`);
+}
 
 // lib/github.ts
-var import_core = __toESM(require_core());
+var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 function getRepository() {
   const { owner, repo: component } = import_utils.context.repo;
@@ -10164,7 +10172,7 @@ function getTag() {
   return ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : null;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core.getInput)(inputName);
+  const ghToken = (0, import_core2.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
@@ -10188,11 +10196,11 @@ function getEventData(eventName) {
   return payload;
 }
 
-// push-image-ghcr/src/metadata.ts
+// delete-package/src/metadata.ts
 var import_semver = __toESM(require_semver2());
-async function getTags() {
+function getTags() {
   const ref = getRef();
-  const sha = await getSha();
+  const sha = getSha();
   return [ref, sha];
 }
 function getLabels({
@@ -10216,53 +10224,52 @@ function getComponentVersion() {
   return ((semver == null ? void 0 : semver.version) ?? process.env["GITHUB_SHA"]) || "unknown";
 }
 
-// push-image-ghcr/src/index.ts
-var import_fs = require("fs");
+// delete-package/src/index.ts
 var METADATA_FILENAME = "metadata.json";
 async function run() {
   const { component: defaultComponent } = getRepository();
-  const component = (0, import_core2.getInput)("component") || defaultComponent;
-  const ghcrUser = (0, import_core2.getInput)("ghcr-user") || import_github2.context.actor;
-  const ghcrPassword = (0, import_core2.getInput)("ghcr-password") || getToken();
-  const dockerfile = (0, import_core2.getInput)("dockerfile") || "./Dockerfile";
-  const tags = await getTags();
-  (0, import_core2.info)(`Image name: exivity/${component}`);
-  (0, import_core2.info)(`Image tags: ${tags.join(", ")}`);
+  const component = (0, import_core3.getInput)("component") || defaultComponent;
+  const ghcrUser = (0, import_core3.getInput)("ghcr-user") || import_github2.context.actor;
+  const ghcrPassword = (0, import_core3.getInput)("ghcr-password") || getToken();
+  const dockerfile = (0, import_core3.getInput)("dockerfile") || "./Dockerfile";
+  const tags = getTags();
+  table("Image name", `exivity/${component}`);
+  table("Image tags", tags.join(", "));
   if (tags.length === 0) {
-    (0, import_core2.warning)("No tags set, skipping deploy docker action");
+    (0, import_core3.warning)("No tags set, skipping deploy docker action");
     return;
   }
   const labels = getLabels({ component, version: tags[0] });
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
-  (0, import_core2.info)(`Image labels will be:
+  (0, import_core3.info)(`Image labels will be:
 ${JSON.stringify(labelOptions, void 0, 2)}`);
   const tagOptions = tags.map((tag) => `--tag "ghcr.io/exivity/${component}":"${tag}"`).join(" ");
-  (0, import_core2.info)(`Image tags will be:
+  (0, import_core3.info)(`Image tags will be:
 ${JSON.stringify(tagOptions, void 0, 2)}`);
   const componentVersion = getComponentVersion();
-  (0, import_core2.info)(`Component version will be: ${componentVersion}`);
+  (0, import_core3.info)(`Component version will be: ${componentVersion}`);
   const metadata = {
     component,
     version: componentVersion,
     created: new Date().toISOString()
   };
-  (0, import_core2.info)(`Writing metadata to ${METADATA_FILENAME}:
+  (0, import_core3.info)(`Writing metadata to ${METADATA_FILENAME}:
 ${JSON.stringify(metadata, void 0, 2)}`);
   await import_fs.promises.writeFile("./" + METADATA_FILENAME, JSON.stringify(metadata, void 0, 2));
-  (0, import_core2.info)("Logging in to GHCR");
-  await (0, import_exec.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {
+  (0, import_core3.info)("Logging in to GHCR");
+  await (0, import_exec2.exec)('bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"', void 0, {
     env: __spreadProps(__spreadValues({}, process.env), {
       GHCR_PASSWORD: ghcrPassword,
       GHCR_USER: ghcrUser
     })
   });
-  (0, import_core2.info)("Building image");
+  (0, import_core3.info)("Building image");
   const buildCmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`;
-  await (0, import_exec.exec)(buildCmd);
-  (0, import_core2.info)(`Pushing image`);
-  await (0, import_exec.exec)(`docker push ghcr.io/exivity/${component} --all-tags`);
+  await (0, import_exec2.exec)(buildCmd);
+  (0, import_core3.info)(`Pushing image`);
+  await (0, import_exec2.exec)(`docker push ghcr.io/exivity/${component} --all-tags`);
 }
-run().catch(import_core2.setFailed);
+run().catch(import_core3.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

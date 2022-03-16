@@ -9,7 +9,7 @@ import {
 } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import minimatch from 'minimatch'
-import { getBooleanInput } from '../../lib/core'
+import { getBooleanInput, table } from '../../lib/core'
 import {
   getCommit,
   getEventData,
@@ -44,10 +44,6 @@ function detectIssueKey(input: string) {
   const match = input.match(/([A-Z0-9]{1,10}-\d+)/)
 
   return match !== null && match.length > 0 ? match[0] : undefined
-}
-
-function table(key: string, value: string) {
-  info(`${key.padEnd(15)}: ${value}`)
 }
 
 async function run() {

@@ -1,9 +1,10 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
 import { exec } from '@actions/exec'
 import { context } from '@actions/github'
+import { promises as fs } from 'fs'
+import { table } from '../../lib/core'
 import { getRepository, getToken } from '../../lib/github'
 import { getComponentVersion, getLabels, getTags } from './metadata'
-import { promises as fs } from 'fs'
 
 const METADATA_FILENAME = 'metadata.json'
 
@@ -13,9 +14,10 @@ async function run() {
   const ghcrUser = getInput('ghcr-user') || context.actor
   const ghcrPassword = getInput('ghcr-password') || getToken()
   const dockerfile = getInput('dockerfile') || './Dockerfile'
-  const tags = await getTags()
-  info(`Image name: exivity/${component}`)
-  info(`Image tags: ${tags.join(', ')}`)
+  const tags = getTags()
+
+  table('Image name', `exivity/${component}`)
+  table('Image tags', tags.join(', '))
 
   // Set all relevant labels for the image
   if (tags.length === 0) {

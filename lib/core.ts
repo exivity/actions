@@ -1,4 +1,4 @@
-import { getInput } from '@actions/core'
+import { getInput, info } from '@actions/core'
 import { exec } from '@actions/exec'
 import { promises as fs } from 'fs'
 import { join as pathJoin } from 'path'
@@ -47,4 +47,8 @@ export function shortCircuit<T, R>(
   )
 
   return output
+}
+
+export function table(key: string, value: string) {
+  info(`${key.padEnd(15)}: ${value}`)
 }

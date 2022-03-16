@@ -6,6 +6,7 @@ on:
       - '.github/workflows/accept.yml'
       - 'accept/**'
       - 'lib/github.ts'
+      - 'lib/core.ts'
   pull_request:
     types: [review_requested]
   workflow_run:
