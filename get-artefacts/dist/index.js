@@ -1726,8 +1726,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context, operator, key, modifier) {
-      var value = context[key], result = [];
+    function getValues(context3, operator, key, modifier) {
+      var value = context3[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -1787,7 +1787,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context) {
+    function expand(template, context3) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -1799,7 +1799,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context3, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -7888,6 +7888,7 @@ async function unzipAll(path) {
 
 // lib/github.ts
 var import_core2 = __toESM(require_core());
+var import_utils = __toESM(require_utils4());
 async function getShaFromRef({
   octokit,
   component,
@@ -7921,7 +7922,7 @@ function getWorkspacePath() {
   return workspacePath;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core2.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core2.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
@@ -7962,8 +7963,8 @@ async function downloadS3object({
   });
 }
 function getAWSCredentials() {
-  const awsKeyId = (0, import_core3.getInput)("aws-access-key-id") || process.env["AWS_ACCESS_KEY_ID"];
-  const awsSecretKey = (0, import_core3.getInput)("aws-secret-access-key") || process.env["AWS_SECRET_ACCESS_KEY"];
+  const awsKeyId = (0, import_core3.getInput)("aws-access-key-id");
+  const awsSecretKey = (0, import_core3.getInput)("aws-secret-access-key");
   if (!awsKeyId || !awsSecretKey) {
     throw new Error("A required AWS input is missing");
   }
@@ -7974,7 +7975,7 @@ function getAWSCredentials() {
 async function run() {
   const component = (0, import_core4.getInput)("component", { required: true });
   let sha = (0, import_core4.getInput)("sha");
-  const branch = (0, import_core4.getInput)("branch") || (process.env.GITHUB_REF === "refs/heads/main" ? "main" : process.env.GITHUB_REF === "refs/heads/master" ? "master" : "develop");
+  const branch = (0, import_core4.getInput)("branch") || (import_github2.context.ref === "refs/heads/main" ? "main" : import_github2.context.ref === "refs/heads/master" ? "master" : "develop");
   const usePlatformPrefix = getBooleanInput("use-platform-prefix", false);
   const prefix = (0, import_core4.getInput)("prefix") || void 0;
   const path = (0, import_core4.getInput)("path") || `../${component}/build`;

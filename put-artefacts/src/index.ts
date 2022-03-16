@@ -22,7 +22,7 @@ async function run() {
   const zip = getBooleanInput('zip', false)
 
   // From environment
-  const sha = await getSha()
+  const sha = getSha()
   const { component } = getRepository()
 
   const [awsKeyId, awsSecretKey] = getAWSCredentials()

@@ -1,9 +1,9 @@
-import { getInput, setFailed } from '@actions/core'
+import { getInput, setFailed, warning } from '@actions/core'
 import { context, getOctokit } from '@actions/github'
 import { info } from 'console'
 import {
-  getCommitAuthor,
-  getCommitEmail,
+  getCommitAuthorEmail,
+  getCommitAuthorName,
   getCommitMessage,
 } from '../../lib/git'
 import {
@@ -27,13 +27,14 @@ async function run() {
   const message = getInput('message')
   const status = getInput('status')
   const component = getRepository().component
-  const sha = await getSha()
+  const sha = getSha()
   const slackApiToken = getInput('slack-api-token', {
     required: true,
   })
   const token = getToken()
   const ref = getRef()
-  let userProvidedChannel = getInput('channel') || null
+  const userProvidedChannel = getInput('channel') || null
+  const fallbackChannel = getInput('fallback-channel') || null
   let channel: string | null = null
 
   // Assertions
@@ -51,17 +52,38 @@ async function run() {
 
   // Additional context
   const commitMessage = await getCommitMessage()
-  const author = await getCommitAuthor()
-  const email = await getCommitEmail()
+  const authorName = await getCommitAuthorName()
+  const authorEmail = await getCommitAuthorEmail()
   const pr = await getPrFromRef(octokit, component, ref)
 
   // Try to find Slack user based on commit author
-  const user = await slack.findUserFuzzy([author, email, context.actor])
+  const user = await slack.findUserFuzzy([
+    authorName,
+    authorEmail,
+    context.actor,
+  ])
 
   if (userProvidedChannel) {
-    channel = await slack.resolveChannelToUserId(userProvidedChannel)
+    channel = await slack.resolveChannelId(userProvidedChannel)
   } else if (user) {
     channel = user.id
+  }
+
+  if (!channel) {
+    warning(
+      `Please set the "channel" input or make sure this action can match the \
+author of the commit triggering this workflow to a Slack user (tried with \
+"${authorName}", "${authorEmail}" and "${context.action}").`
+    )
+    info(
+      `This action will try to match the author of the commit using the Slack \
+user attributes "name", "display_name", "real_name" or "email".`
+    )
+
+    if (fallbackChannel) {
+      info(`Using fallback channel "${fallbackChannel}"`)
+      channel = await slack.resolveChannelId(fallbackChannel)
+    }
   }
 
   if (!channel) {
@@ -104,7 +126,7 @@ async function run() {
   }
   const componentBlock = {
     type: 'mrkdwn',
-    text: `🗃️ ${component}`,
+    text: `📂 ${component}`,
   }
   const refBlock = {
     type: 'mrkdwn',
@@ -112,7 +134,7 @@ async function run() {
   }
   const runBlock = {
     type: 'mrkdwn',
-    text: `⚡ <https://github.com/exivity/${component}/actions/runs/${process.env.GITHUB_RUN_ID}|${context.workflow}>`,
+    text: `⚡ <https://github.com/exivity/${component}/actions/runs/${context.runId}|${context.workflow} / ${context.job} (${context.eventName})>`,
   }
   const blocks: Blocks = [
     {

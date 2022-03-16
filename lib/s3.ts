@@ -1,4 +1,4 @@
-import { info, getInput } from '@actions/core'
+import { getInput, info } from '@actions/core'
 import { exec } from '@actions/exec'
 import { promises as fsPromises } from 'fs'
 import { platform } from 'os'
@@ -97,10 +97,8 @@ export async function uploadS3object({
 }
 
 export function getAWSCredentials() {
-  const awsKeyId =
-    getInput('aws-access-key-id') || process.env['AWS_ACCESS_KEY_ID']
-  const awsSecretKey =
-    getInput('aws-secret-access-key') || process.env['AWS_SECRET_ACCESS_KEY']
+  const awsKeyId = getInput('aws-access-key-id')
+  const awsSecretKey = getInput('aws-secret-access-key')
 
   // Assertions
   if (!awsKeyId || !awsSecretKey) {

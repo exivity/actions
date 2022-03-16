@@ -685,12 +685,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info3 = this._prepareRequest(verb, parsedUrl, headers);
+        let info4 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info3, data);
+          response = await this.requestRaw(info4, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -700,7 +700,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info3, data);
+              return authenticationHandler.handleAuthentication(this, info4, data);
             } else {
               return response;
             }
@@ -723,8 +723,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info3 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info3, data);
+            info4 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info4, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -744,7 +744,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info3, data) {
+      requestRaw(info4, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -752,13 +752,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info3, data, callbackForResult);
+          this.requestRawWithCallback(info4, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info3, data, onResult) {
+      requestRawWithCallback(info4, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info3.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info4.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -767,7 +767,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info3.httpModule.request(info3.options, (msg) => {
+        let req = info4.httpModule.request(info4.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -778,7 +778,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info3.options.path), null);
+          handleResult(new Error("Request timeout: " + info4.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -800,27 +800,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info3 = {};
-        info3.parsedUrl = requestUrl;
-        const usingSsl = info3.parsedUrl.protocol === "https:";
-        info3.httpModule = usingSsl ? https : http;
+        const info4 = {};
+        info4.parsedUrl = requestUrl;
+        const usingSsl = info4.parsedUrl.protocol === "https:";
+        info4.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info3.options = {};
-        info3.options.host = info3.parsedUrl.hostname;
-        info3.options.port = info3.parsedUrl.port ? parseInt(info3.parsedUrl.port) : defaultPort;
-        info3.options.path = (info3.parsedUrl.pathname || "") + (info3.parsedUrl.search || "");
-        info3.options.method = method;
-        info3.options.headers = this._mergeHeaders(headers);
+        info4.options = {};
+        info4.options.host = info4.parsedUrl.hostname;
+        info4.options.port = info4.parsedUrl.port ? parseInt(info4.parsedUrl.port) : defaultPort;
+        info4.options.path = (info4.parsedUrl.pathname || "") + (info4.parsedUrl.search || "");
+        info4.options.method = method;
+        info4.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info3.options.headers["user-agent"] = this.userAgent;
+          info4.options.headers["user-agent"] = this.userAgent;
         }
-        info3.options.agent = this._getAgent(info3.parsedUrl);
+        info4.options.agent = this._getAgent(info4.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info3.options);
+            handler.prepareRequest(info4.options);
           });
         }
-        return info3;
+        return info4;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1261,18 +1261,18 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning2(message, properties = {}) {
+    function warning3(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning2;
+    exports.warning = warning3;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info3(message) {
+    function info4(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info3;
+    exports.info = info4;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -1726,8 +1726,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context2, operator, key, modifier) {
-      var value = context2[key], result = [];
+    function getValues(context3, operator, key, modifier) {
+      var value = context3[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -1787,7 +1787,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context2) {
+    function expand(template, context3) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -1799,7 +1799,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context3, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -7868,16 +7868,16 @@ async function execGit(command, silent = true) {
 async function getCommitMessage() {
   return execGit('git log -1 --pretty=format:"%s"');
 }
-async function getCommitAuthor() {
+async function getCommitAuthorName() {
   return execGit('git log -1 --pretty=format:"%an"');
 }
-async function getCommitEmail() {
+async function getCommitAuthorEmail() {
   return execGit('git log -1 --pretty=format:"%ae"');
 }
 
 // lib/github.ts
 var import_core = __toESM(require_core());
-var import_fs = require("fs");
+var import_utils = __toESM(require_utils4());
 async function getPrFromRef(octokit, repo, ref) {
   const { data } = await octokit.rest.pulls.list({
     owner: "exivity",
@@ -7890,18 +7890,17 @@ async function getPrFromRef(octokit, repo, ref) {
   }
 }
 function getRepository() {
-  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
+  const { owner, repo: component } = import_utils.context.repo;
   if (!owner || !component) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component };
+  return { owner, component, fqn: `${owner}/${component}` };
 }
-async function getSha() {
-  let sha = process.env["GITHUB_SHA"];
+function getSha() {
+  let sha = import_utils.context.sha;
   const eventName = getEventName();
   if (eventName === "pull_request") {
-    const eventData = await getEventData(eventName);
-    sha = eventData.pull_request.head.sha;
+    sha = getEventData(eventName).pull_request.head.sha;
   }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
@@ -7910,21 +7909,21 @@ async function getSha() {
 }
 function getRef() {
   var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
+  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : (_c = import_utils.context.ref) == null ? void 0 : _c.slice(11);
   if (!ref) {
     throw new Error("The GitHub ref is missing");
   }
   return ref;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
 }
 function getEventName(supportedEvents) {
-  const eventName = process.env["GITHUB_EVENT_NAME"];
+  const eventName = import_utils.context.eventName;
   if (!eventName) {
     throw new Error("The GitHub event name is missing");
   }
@@ -7933,15 +7932,12 @@ function getEventName(supportedEvents) {
   }
   return eventName;
 }
-async function getEventData(eventName) {
-  const eventPath = process.env["GITHUB_EVENT_PATH"];
-  if (!eventPath) {
-    throw new Error("The GitHub event path is missing");
+function getEventData(eventName) {
+  const payload = import_utils.context.payload;
+  if (Object.keys(payload).length === 0) {
+    throw new Error("The GitHub event payload is missing");
   }
-  const fileData = await import_fs.promises.readFile(eventPath, {
-    encoding: "utf8"
-  });
-  return JSON.parse(fileData);
+  return payload;
 }
 
 // slack/src/slack.ts
@@ -8018,9 +8014,9 @@ ${JSON.stringify(error, void 0, 2)}`);
       throw new Error("Could not retrieve Slack users");
     }
   }
-  async resolveChannelToUserId(value) {
+  async resolveChannelId(value) {
     if (value.startsWith("@")) {
-      (0, import_core2.debug)(`Trying to resolve user ${value}`);
+      (0, import_core2.info)(`Trying to resolve user ${value}...`);
       const users = await this.usersList({
         limit: 1e3
       });
@@ -8028,7 +8024,7 @@ ${JSON.stringify(error, void 0, 2)}`);
       return (userMatch == null ? void 0 : userMatch.id) || null;
     }
     if (value.startsWith("#")) {
-      (0, import_core2.debug)(`Trying to resolve channel ${value}`);
+      (0, import_core2.info)(`Trying to resolve channel ${value}`);
       const channels = await this.conversationsList({
         exclude_archived: false,
         limit: 1e3,
@@ -8057,13 +8053,14 @@ async function run() {
   const message = (0, import_core3.getInput)("message");
   const status = (0, import_core3.getInput)("status");
   const component = getRepository().component;
-  const sha = await getSha();
+  const sha = getSha();
   const slackApiToken = (0, import_core3.getInput)("slack-api-token", {
     required: true
   });
   const token = getToken();
   const ref = getRef();
-  let userProvidedChannel = (0, import_core3.getInput)("channel") || null;
+  const userProvidedChannel = (0, import_core3.getInput)("channel") || null;
+  const fallbackChannel = (0, import_core3.getInput)("fallback-channel") || null;
   let channel = null;
   if (!isValidStatus(status)) {
     throw new Error("The status input is invalid");
@@ -8074,14 +8071,26 @@ async function run() {
   const slack = new Slack(slackApiToken);
   const octokit = (0, import_github.getOctokit)(token);
   const commitMessage = await getCommitMessage();
-  const author = await getCommitAuthor();
-  const email = await getCommitEmail();
+  const authorName = await getCommitAuthorName();
+  const authorEmail = await getCommitAuthorEmail();
   const pr = await getPrFromRef(octokit, component, ref);
-  const user = await slack.findUserFuzzy([author, email, import_github.context.actor]);
+  const user = await slack.findUserFuzzy([
+    authorName,
+    authorEmail,
+    import_github.context.actor
+  ]);
   if (userProvidedChannel) {
-    channel = await slack.resolveChannelToUserId(userProvidedChannel);
+    channel = await slack.resolveChannelId(userProvidedChannel);
   } else if (user) {
     channel = user.id;
+  }
+  if (!channel) {
+    (0, import_core3.warning)(`Please set the "channel" input or make sure this action can match the author of the commit triggering this workflow to a Slack user (tried with "${authorName}", "${authorEmail}" and "${import_github.context.action}").`);
+    (0, import_console.info)(`This action will try to match the author of the commit using the Slack user attributes "name", "display_name", "real_name" or "email".`);
+    if (fallbackChannel) {
+      (0, import_console.info)(`Using fallback channel "${fallbackChannel}"`);
+      channel = await slack.resolveChannelId(fallbackChannel);
+    }
   }
   if (!channel) {
     throw new Error(`Could not find a channel to send the message to`);
@@ -8108,7 +8117,7 @@ async function run() {
   };
   const componentBlock = {
     type: "mrkdwn",
-    text: `\u{1F5C3}\uFE0F ${component}`
+    text: `\u{1F4C2} ${component}`
   };
   const refBlock = {
     type: "mrkdwn",
@@ -8116,7 +8125,7 @@ async function run() {
   };
   const runBlock = {
     type: "mrkdwn",
-    text: `\u26A1 <https://github.com/exivity/${component}/actions/runs/${process.env.GITHUB_RUN_ID}|${import_github.context.workflow}>`
+    text: `\u26A1 <https://github.com/exivity/${component}/actions/runs/${import_github.context.runId}|${import_github.context.workflow} / ${import_github.context.job} (${import_github.context.eventName})>`
   };
   const blocks = [
     {

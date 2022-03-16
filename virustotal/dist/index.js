@@ -1726,8 +1726,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context, operator, key, modifier) {
-      var value = context[key], result = [];
+    function getValues(context2, operator, key, modifier) {
+      var value = context2[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -1787,7 +1787,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context) {
+    function expand(template, context2) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -1799,7 +1799,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -18547,7 +18547,7 @@ var import_glob_promise = __toESM(require_lib3());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
-var import_fs = require("fs");
+var import_utils = __toESM(require_utils4());
 var ReleaseBranches = ["master", "main"];
 var DevelopBranches = ["develop"];
 async function getShaFromRef({
@@ -18576,18 +18576,17 @@ async function getShaFromRef({
   return sha;
 }
 function getRepository() {
-  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
+  const { owner, repo: component } = import_utils.context.repo;
   if (!owner || !component) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component };
+  return { owner, component, fqn: `${owner}/${component}` };
 }
-async function getSha() {
-  let sha = process.env["GITHUB_SHA"];
+function getSha() {
+  let sha = import_utils.context.sha;
   const eventName = getEventName();
   if (eventName === "pull_request") {
-    const eventData = await getEventData(eventName);
-    sha = eventData.pull_request.head.sha;
+    sha = getEventData(eventName).pull_request.head.sha;
   }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
@@ -18596,21 +18595,21 @@ async function getSha() {
 }
 function getRef() {
   var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
+  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : (_c = import_utils.context.ref) == null ? void 0 : _c.slice(11);
   if (!ref) {
     throw new Error("The GitHub ref is missing");
   }
   return ref;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
 }
 function getEventName(supportedEvents) {
-  const eventName = process.env["GITHUB_EVENT_NAME"];
+  const eventName = import_utils.context.eventName;
   if (!eventName) {
     throw new Error("The GitHub event name is missing");
   }
@@ -18619,15 +18618,12 @@ function getEventName(supportedEvents) {
   }
   return eventName;
 }
-async function getEventData(eventName) {
-  const eventPath = process.env["GITHUB_EVENT_PATH"];
-  if (!eventPath) {
-    throw new Error("The GitHub event path is missing");
+function getEventData(eventName) {
+  const payload = import_utils.context.payload;
+  if (Object.keys(payload).length === 0) {
+    throw new Error("The GitHub event payload is missing");
   }
-  const fileData = await import_fs.promises.readFile(eventPath, {
-    encoding: "utf8"
-  });
-  return JSON.parse(fileData);
+  return payload;
 }
 function isReleaseBranch(ref) {
   if (!ref) {
@@ -18641,14 +18637,14 @@ function isDevelopBranch(ref) {
   }
   return DevelopBranches.includes(ref);
 }
-async function writeStatus(octokit, repo, sha, state, context, description, target_url) {
+async function writeStatus(octokit, repo, sha, state, context2, description, target_url) {
   (0, import_core.info)(`Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`);
   return (await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
     repo,
     sha,
     state,
-    context,
+    context: context2,
     description,
     target_url
   })).data;
@@ -18661,7 +18657,7 @@ var import_core3 = __toESM(require_core());
 var import_core2 = __toESM(require_core());
 var import_http_client = __toESM(require_http_client());
 var import_form_data = __toESM(require_form_data());
-var import_fs2 = require("fs");
+var import_fs = require("fs");
 var import_mime = __toESM(require_mime());
 var import_path = require("path");
 
@@ -22260,8 +22256,8 @@ function asset(path) {
   return {
     filename: (0, import_path.basename)(path),
     mimeType: mimeOrDefault(path),
-    size: (0, import_fs2.lstatSync)(path).size,
-    readStream: (0, import_fs2.createReadStream)(path)
+    size: (0, import_fs.lstatSync)(path).size,
+    readStream: (0, import_fs.createReadStream)(path)
   };
 }
 function mimeOrDefault(path) {
@@ -22313,7 +22309,7 @@ async function getPendingVirusTotalStatuses(octokit) {
   return statuses;
 }
 async function writeStatus2(octokit, result, sha) {
-  return writeStatus(octokit, getRepository().component, sha ?? await getSha(), result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure", `virustotal (${result.filename})`, result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0, filehashToGuiUrl(result.filehash));
+  return writeStatus(octokit, getRepository().component, sha ?? getSha(), result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure", `virustotal (${result.filename})`, result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0, filehashToGuiUrl(result.filehash));
 }
 
 // virustotal/src/index.ts

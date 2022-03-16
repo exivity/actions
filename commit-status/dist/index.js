@@ -1726,8 +1726,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context, operator, key, modifier) {
-      var value = context[key], result = [];
+    function getValues(context2, operator, key, modifier) {
+      var value = context2[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -1787,7 +1787,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context) {
+    function expand(template, context2) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -1799,7 +1799,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -6811,20 +6811,19 @@ var import_github = __toESM(require_github());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
-var import_fs = require("fs");
+var import_utils = __toESM(require_utils4());
 function getRepository() {
-  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
+  const { owner, repo: component } = import_utils.context.repo;
   if (!owner || !component) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component };
+  return { owner, component, fqn: `${owner}/${component}` };
 }
-async function getSha() {
-  let sha = process.env["GITHUB_SHA"];
+function getSha() {
+  let sha = import_utils.context.sha;
   const eventName = getEventName();
   if (eventName === "pull_request") {
-    const eventData = await getEventData(eventName);
-    sha = eventData.pull_request.head.sha;
+    sha = getEventData(eventName).pull_request.head.sha;
   }
   if (!sha) {
     throw new Error("The GitHub sha is missing");
@@ -6832,14 +6831,14 @@ async function getSha() {
   return sha;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
 }
 function getEventName(supportedEvents) {
-  const eventName = process.env["GITHUB_EVENT_NAME"];
+  const eventName = import_utils.context.eventName;
   if (!eventName) {
     throw new Error("The GitHub event name is missing");
   }
@@ -6848,24 +6847,21 @@ function getEventName(supportedEvents) {
   }
   return eventName;
 }
-async function getEventData(eventName) {
-  const eventPath = process.env["GITHUB_EVENT_PATH"];
-  if (!eventPath) {
-    throw new Error("The GitHub event path is missing");
+function getEventData(eventName) {
+  const payload = import_utils.context.payload;
+  if (Object.keys(payload).length === 0) {
+    throw new Error("The GitHub event payload is missing");
   }
-  const fileData = await import_fs.promises.readFile(eventPath, {
-    encoding: "utf8"
-  });
-  return JSON.parse(fileData);
+  return payload;
 }
-async function writeStatus(octokit, repo, sha, state, context, description, target_url) {
+async function writeStatus(octokit, repo, sha, state, context2, description, target_url) {
   (0, import_core.info)(`Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`);
   return (await octokit.rest.repos.createCommitStatus({
     owner: "exivity",
     repo,
     sha,
     state,
-    context,
+    context: context2,
     description,
     target_url
   })).data;
@@ -6879,16 +6875,16 @@ function isValidState(state) {
 async function run() {
   const ghToken = getToken();
   const repo = (0, import_core2.getInput)("component") || getRepository().component;
-  const sha = (0, import_core2.getInput)("sha") || await getSha();
+  const sha = (0, import_core2.getInput)("sha") || getSha();
   const state = (0, import_core2.getInput)("state") || "success";
-  const context = (0, import_core2.getInput)("context", { required: true });
+  const context2 = (0, import_core2.getInput)("context", { required: true });
   const target_url = (0, import_core2.getInput)("target_url");
   const description = (0, import_core2.getInput)("description");
   if (!isValidState(state)) {
     throw new Error("The state input is missing or invalid");
   }
   const octokit = (0, import_github.getOctokit)(ghToken);
-  await writeStatus(octokit, repo, sha, state, context, description, target_url);
+  await writeStatus(octokit, repo, sha, state, context2, description, target_url);
 }
 run().catch(import_core2.setFailed);
 /*!

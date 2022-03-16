@@ -7,9 +7,6 @@ on:
       - 'review/**'
       - 'lib/github.ts'
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-
 jobs:
   test:
     strategy:
@@ -19,3 +16,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./review
+        with:
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}

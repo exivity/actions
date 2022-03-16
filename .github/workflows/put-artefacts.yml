@@ -8,10 +8,6 @@ on:
       - 'lib/s3*'
       - 'put-artefacts/**'
 
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
 jobs:
   test:
     strategy:
@@ -25,3 +21,5 @@ jobs:
         with:
           path: fixtures/build
           zip: ${{ matrix.zip }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -1726,8 +1726,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context, operator, key, modifier) {
-      var value = context[key], result = [];
+    function getValues(context2, operator, key, modifier) {
+      var value = context2[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -1787,7 +1787,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context) {
+    function expand(template, context2) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -1799,7 +1799,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -6811,6 +6811,7 @@ var import_github = __toESM(require_github());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
+var import_utils = __toESM(require_utils4());
 async function getPrFromRef(octokit, repo, ref) {
   const { data } = await octokit.rest.pulls.list({
     owner: "exivity",
@@ -6823,30 +6824,38 @@ async function getPrFromRef(octokit, repo, ref) {
   }
 }
 function getRepository() {
-  const [owner, component] = (process.env["GITHUB_REPOSITORY"] || "").split("/");
+  const { owner, repo: component } = import_utils.context.repo;
   if (!owner || !component) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component };
+  return { owner, component, fqn: `${owner}/${component}` };
 }
 function getRef() {
   var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = process.env["GITHUB_REF"]) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = process.env["GITHUB_REF"]) == null ? void 0 : _b.slice(10) : (_c = process.env["GITHUB_REF"]) == null ? void 0 : _c.slice(11);
+  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : (_c = import_utils.context.ref) == null ? void 0 : _c.slice(11);
   if (!ref) {
     throw new Error("The GitHub ref is missing");
   }
   return ref;
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core.getInput)(inputName) || process.env["GITHUB_TOKEN"];
+  const ghToken = (0, import_core.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
 }
+function getWorkflowName() {
+  const workflowName = import_utils.context.workflow;
+  if (!workflowName) {
+    throw new Error("The GitHub workflow name is missing");
+  }
+  return workflowName;
+}
 async function review(octokit, repo, pull_number, event, body) {
   (0, import_core.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
-  body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${process.env.GITHUB_WORKFLOW}** workflow in **${process.env.GITHUB_REPOSITORY}**](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})_`;
+  const repository = getRepository().fqn;
+  body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${getWorkflowName()}** workflow in **${repository}**](https://github.com/${repository}/actions/runs/${import_utils.context.runId})_`;
   return (await octokit.rest.pulls.createReview({
     owner: "exivity",
     repo,

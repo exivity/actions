@@ -1,4 +1,4 @@
-import { debug } from '@actions/core'
+import { debug, info } from '@actions/core'
 import { HttpClient } from '@actions/http-client'
 import { ITypedResponse } from '@actions/http-client/interfaces'
 import { Blocks } from './types'
@@ -236,10 +236,10 @@ export class Slack {
     }
   }
 
-  async resolveChannelToUserId(value: string) {
+  async resolveChannelId(value: string) {
     if (value.startsWith('@')) {
       // Search for a user
-      debug(`Trying to resolve user ${value}`)
+      info(`Trying to resolve user ${value}...`)
       const users = await this.usersList({
         limit: 1000,
       })
@@ -249,7 +249,7 @@ export class Slack {
 
     if (value.startsWith('#')) {
       // Search for a channel
-      debug(`Trying to resolve channel ${value}`)
+      info(`Trying to resolve channel ${value}`)
       const channels = await this.conversationsList({
         exclude_archived: false,
         limit: 1000,

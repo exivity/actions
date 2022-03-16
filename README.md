@@ -20,6 +20,7 @@ _Available actions:_
 - [`semantic-pull-request`](#semantic-pull-request)
 - [`sign-file`](#sign-file)
 - [`slack`](#slack)
+- [`sync-defaults`](#sync-defaults)
 - [`virustotal`](#virustotal)
 
 # `accept`
@@ -43,12 +44,12 @@ usage.
 
 ## Inputs
 
-| name              | required | default            | description                                                                                                                                                                                                                                  |
-| ----------------- | -------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scaffold-branch` |          | `"develop"`        | The scaffold branch to build.                                                                                                                                                                                                                |
-| `gh-token`        |          | `env.GITHUB_TOKEN` | A GitHub token with access to the exivity/scaffold repository.                                                                                                                                                                               |
-| `dry-run`         |          | `false`            | If `true`, scaffold will not build or run any tests.                                                                                                                                                                                         |
-| `filter`          |          |                    | If provided, only trigger acceptance tests if files which match this input are modified. Glob patterns allowed. Multiple entries eparated by newline. If provided, and changed files do not match, writes a successful status to the commit. |
+| name              | required | default        | description                                                                                                                                                                                                                                  |
+| ----------------- | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scaffold-branch` |          | `"develop"`    | The scaffold branch to build.                                                                                                                                                                                                                |
+| `gh-token`        |          | `github.token` | A GitHub token with access to the exivity/scaffold repository.                                                                                                                                                                               |
+| `dry-run`         |          | `false`        | If `true`, scaffold will not build or run any tests.                                                                                                                                                                                         |
+| `filter`          |          |                | If provided, only trigger acceptance tests if files which match this input are modified. Glob patterns allowed. Multiple entries eparated by newline. If provided, and changed files do not match, writes a successful status to the commit. |
 
 # `commit-status`
 
@@ -64,15 +65,15 @@ Writes a [commit status](https://docs.github.com/en/rest/reference/commits#commi
 
 ## Inputs
 
-| name          | required | default            | description                                                                         |
-| ------------- | -------- | ------------------ | ----------------------------------------------------------------------------------- |
-| `component`   |          | Current component  | Component to write the commit status for.                                           |
-| `sha`         |          | Current sha        | Sha of commit to write the status for.                                              |
-| `gh-token`    |          | `env.GITHUB_TOKEN` | A GitHub token with write access to the component.                                  |
-| `state`       |          | `"success"`        | The commit status state, can be `"error"`, `"failure"`, `"pending"` or `"success"`. |
-| `context`     | ✅       |                    | A string label to differentiate this status from the status of other systems.       |
-| `description` |          |                    | A short description of the status.                                                  |
-| `target_url`  |          |                    | The target URL to associate with this status.                                       |
+| name          | required | default           | description                                                                         |
+| ------------- | -------- | ----------------- | ----------------------------------------------------------------------------------- |
+| `component`   |          | Current component | Component to write the commit status for.                                           |
+| `sha`         |          | Current sha       | Sha of commit to write the status for.                                              |
+| `gh-token`    |          | `github.token`    | A GitHub token with write access to the component.                                  |
+| `state`       |          | `"success"`       | The commit status state, can be `"error"`, `"failure"`, `"pending"` or `"success"`. |
+| `context`     | ✅       |                   | A string label to differentiate this status from the status of other systems.       |
+| `description` |          |                   | A short description of the status.                                                  |
+| `target_url`  |          |                   | The target URL to associate with this status.                                       |
 
 # `db`
 
@@ -87,6 +88,7 @@ repository migrations and runs them.
     branch: some-feature-branch
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
 
 ## Inputs
@@ -97,9 +99,9 @@ repository migrations and runs them.
 | `db-name`               |          | `"exdb-test"`                                                                    | The db name to create.                                                                                                                                                                                |
 | `mode`                  |          | `"host"`                                                                         | Whether to run PostgreSQL as a Docker container or start the server installed on the host. Either `"host"` or `"docker"`.                                                                             |
 | `version`               |          | `"14.0"`                                                                         | The PostgreSQL version to use. Only affects Docker mode (host mode always uses default version). Make sure to use a string type to avoid truncation. Available versions: `"14.0"`, `"13.0"`, `"12.3"` |
-| `aws-access-key-id`     |          | `env.AWS_ACCESS_KEY_ID`                                                          | The AWS access key ID                                                                                                                                                                                 |
-| `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY`                                                      | The AWS secret access key                                                                                                                                                                             |
-| `gh-token`              |          | `env.GITHUB_TOKEN`                                                               | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
+| `aws-access-key-id`     | ✅       |                                                                                  | The AWS access key ID                                                                                                                                                                                 |
+| `aws-secret-access-key` | ✅       |                                                                                  | The AWS secret access key                                                                                                                                                                             |
+| `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
 
 # `get-artefacts`
@@ -118,7 +120,7 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
     path: db-artefacts
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    gh-token: ${{ secrets.GITHUB_TOKEN }}
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
 
 ## Inputs
@@ -132,9 +134,9 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 | `prefix`                |          |                                                                                                 | If specified, download artefacts from this prefix (appended after platform prefix if specified). |
 | `path`                  |          | `"../{component}/build"`                                                                        | Put artefacts in this path                                                                       |
 | `auto-unzip`            |          | `true`                                                                                          | Automatically unzip artefact files                                                               |
-| `aws-access-key-id`     |          | `env.AWS_ACCESS_KEY_ID`                                                                         | The AWS access key ID                                                                            |
-| `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY`                                                                     | The AWS secret access key                                                                        |
-| `gh-token`              |          | `env.GITHUB_TOKEN`                                                                              | A GitHub token with access to the exivity/{component} repository.                                |
+| `aws-access-key-id`     | ✅       |                                                                                                 | The AWS access key ID                                                                            |
+| `aws-secret-access-key` | ✅       |                                                                                                 | The AWS secret access key                                                                        |
+| `gh-token`              |          | `github.token`                                                                                  | A GitHub token with access to the exivity/{component} repository.                                |
 
 # `init-ssh`
 
@@ -198,7 +200,6 @@ A composite action running [`rcedit`](#rcedit), [`sign-file`](#sign-file) and
     certificate-base64: ${{ secrets.CODESIGN_CERTIFICATE_BASE64 }}
     certificate-password: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
     virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
-    gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Inputs
@@ -220,13 +221,13 @@ Builds a container image and pushes it to GHCR
 
 ## Inputs
 
-| name            | required | default             | description                                                     |
-| --------------- | -------- | ------------------- | --------------------------------------------------------------- |
-| `ghcr-user`     |          | `github.actor`      | Username for GitHub Container Registry                          |
-| `ghcr-password` |          | `env.GITHUB_TOKEN`  | Password for GitHub Container Registry                          |
-| `dockerfile`    |          | `"./Dockerfile"`    | Path to the Dockerfile                                          |
-| `gh-token`      |          | `env.GITHUB_TOKEN`  | The github token to delete image tags (only for 'delete' event) |
-| `component`     |          | `Current component` | The component being containerized.                              |
+| name            | required | default           | description                                                     |
+| --------------- | -------- | ----------------- | --------------------------------------------------------------- |
+| `component`     |          | Current component | The component being containerized.                              |
+| `ghcr-user`     |          | `github.actor`    | Username for GitHub Container Registry                          |
+| `ghcr-password` |          | `github.token`    | Password for GitHub Container Registry                          |
+| `dockerfile`    |          | `"./Dockerfile"`  | Path to the Dockerfile                                          |
+| `gh-token`      |          | `github.token`    | The github token to delete image tags (only for 'delete' event) |
 
 # `put-artefacts`
 
@@ -246,14 +247,14 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ## Inputs
 
-| name                    | required | default                     | description                                                                                    |
-| ----------------------- | -------- | --------------------------- | ---------------------------------------------------------------------------------------------- |
-| `use-platform-prefix`   |          | `false`                     | If `true`, uses `windows` or `linux` prefix depending on current os.                           |
-| `prefix`                |          |                             | If specified, upload artefacts with this prefix (appended after platform prefix if specified). |
-| `path`                  |          | `"build"`                   | Upload artefacts from this path.                                                               |
-| `zip`                   |          | `false`                     | Zip artefact files before uploading as `{component_name}.tar.gz`                               |
-| `aws-access-key-id`     |          | `env.AWS_ACCESS_KEY_ID`     | The AWS access key ID                                                                          |
-| `aws-secret-access-key` |          | `env.AWS_SECRET_ACCESS_KEY` | The AWS secret access key                                                                      |
+| name                    | required | default   | description                                                                                    |
+| ----------------------- | -------- | --------- | ---------------------------------------------------------------------------------------------- |
+| `use-platform-prefix`   |          | `false`   | If `true`, uses `windows` or `linux` prefix depending on current os.                           |
+| `prefix`                |          |           | If specified, upload artefacts with this prefix (appended after platform prefix if specified). |
+| `path`                  |          | `"build"` | Upload artefacts from this path.                                                               |
+| `zip`                   |          | `false`   | Zip artefact files before uploading as `{component_name}.tar.gz`                               |
+| `aws-access-key-id`     | ✅       |           | The AWS access key ID                                                                          |
+| `aws-secret-access-key` | ✅       |           | The AWS secret access key                                                                      |
 
 # `rabbitmq`
 
@@ -326,7 +327,7 @@ Reviews a PR.
 | ----------- | -------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `component` |          | Current component                     | The component to review a PR for.                                                                                         |
 | `pull`      |          | Latest pull request of current branch | PR number to review.                                                                                                      |
-| `gh-token`  |          | `env.GITHUB_TOKEN`                    | A GitHub token from the PR reviewer.                                                                                      |
+| `gh-token`  |          | `github.token`                        | A GitHub token from the PR reviewer.                                                                                      |
 | `event`     |          | `"APPROVE"`                           | Choose from `"APPROVE"`, `"REQUEST_CHANGES"`, `"COMMENT"` or `"PENDING"`.                                                 |
 | `body`      | Maybe    |                                       | The body of the review text, required when using `"REQUEST_CHANGES"` or `"COMMENT"`.                                      |
 | `branch`    |          | Current branch                        | The head branch the pull request belongs to in order to get latest pull request, not needed if `pull` has been specified. |
@@ -345,15 +346,13 @@ _Based on original work from [amannn/action-semantic-pull-request](https://githu
 
 ```yaml
 - uses: exivity/actions/semantic-pull-request@main
-  with:
-    gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Inputs
 
-| name       | required | default            | description                                     |
-| ---------- | -------- | ------------------ | ----------------------------------------------- |
-| `gh-token` |          | `env.GITHUB_TOKEN` | GitHub token with read access to the repository |
+| name       | required | default        | description                                     |
+| ---------- | -------- | -------------- | ----------------------------------------------- |
+| `gh-token` |          | `github.token` | GitHub token with read access to the repository |
 
 # `sign-file`
 
@@ -393,18 +392,44 @@ available).
   with:
     status: ${{ job.status }}
     slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
-    gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Inputs
 
-| name              | required | default            | description                                                                                                                                                                      |
-| ----------------- | -------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `message`         | Maybe    |                    | The message body to send, markdown is supported. Requid when `status` is not set.                                                                                                |
-| `status`          |          |                    | Include a status message if set to `"success"`, `"failure"` or `"cancelled"`                                                                                                     |
-| `channel`         |          |                    | If provided, send message to this channel instead of commit author. Can be a channel ID, user ID, channel name as `"#channel-name"` or a users display name as `"@display-name"` |
-| `slack-api-token` | ✅       |                    | Slack API token                                                                                                                                                                  |
-| `gh-token`        |          | `env.GITHUB_TOKEN` | GitHub token with read access to the repository                                                                                                                                  |
+| name               | required | default        | description                                                                                                                                                                      |
+| ------------------ | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `message`          | Maybe    |                | The message body to send, markdown is supported. Requid when `status` is not set.                                                                                                |
+| `status`           |          |                | Include a status message if set to `"success"`, `"failure"` or `"cancelled"`                                                                                                     |
+| `channel`          |          |                | If provided, send message to this channel instead of commit author. Can be a channel ID, user ID, channel name as `"#channel-name"` or a users display name as `"@display-name"` |
+| `fallback-channel` |          | `"#builds"`    | If a Slack user can't be resolved, use this channel as a fallback.                                                                                                               |
+| `slack-api-token`  | ✅       |                | Slack API token                                                                                                                                                                  |
+| `gh-token`         |          | `github.token` | GitHub token with read access to the repository                                                                                                                                  |
+
+# `sync-defaults`
+
+Syncs the repo settings with org defaults. Override org settings in a local
+`.github/settings.yml` file. See
+[probot/settings](https://github.com/probot/settings#usage) for all available
+options.
+
+See [.github repository](https://github.com/exivity/.github#sync-defaults)
+for example usage.
+
+_Based on original work from [probot/settings](https://github.com/probot/settings)_
+
+## Example
+
+```yaml
+- uses: exivity/actions/sync-defaults@main
+  with:
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name       | required | default        | description                                      |
+| ---------- | -------- | -------------- | ------------------------------------------------ |
+| `gh-token` |          | `github.token` | GitHub token with admin access to the repository |
 
 # `virustotal`
 
@@ -421,7 +446,6 @@ Build workflow:
   with:
     path: build/foo.exe
     virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
-    gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 Separate check workflow:
@@ -442,17 +466,16 @@ jobs:
         with:
           mode: check
           virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
-          gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Inputs
 
-| name                 | required | default            | description                                                                                         |
-| -------------------- | -------- | ------------------ | --------------------------------------------------------------------------------------------------- |
-| `mode`               |          | `"analyse"`        | Whether to analyse artefacts or check the analysis status. Either `"analyse"` or `"check"`.         |
-| `path`               | Maybe    |                    | The path to the file to analyse, glob patterns allowed. Required when `mode` is set to `"analyse"`. |
-| `virustotal-api-key` | ✅       |                    | The VirusTotal API key                                                                              |
-| `gh-token`           |          | `env.GITHUB_TOKEN` | GitHub token used for writing commit status                                                         |
+| name                 | required | default        | description                                                                                         |
+| -------------------- | -------- | -------------- | --------------------------------------------------------------------------------------------------- |
+| `mode`               |          | `"analyse"`    | Whether to analyse artefacts or check the analysis status. Either `"analyse"` or `"check"`.         |
+| `path`               | Maybe    |                | The path to the file to analyse, glob patterns allowed. Required when `mode` is set to `"analyse"`. |
+| `virustotal-api-key` | ✅       |                | The VirusTotal API key                                                                              |
+| `gh-token`           |          | `github.token` | GitHub token used for writing commit status                                                         |
 
 # Development guide
 

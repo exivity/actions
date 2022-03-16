@@ -4,6 +4,7 @@ inputs:
   gh-token:
     description: 'The github token to pull dummy-data with'
     required: false
+    default: ${{ github.token }}
   seed:
     description: 'A seed for the random number generator used by the fake data generator'
     required: false

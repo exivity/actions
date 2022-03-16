@@ -1,5 +1,5 @@
 import { getInput, setFailed } from '@actions/core'
-import { getOctokit } from '@actions/github'
+import { context, getOctokit } from '@actions/github'
 import { getBooleanInput, unzipAll } from '../../lib/core'
 import { getShaFromRef, getToken } from '../../lib/github'
 import { downloadS3object, getAWSCredentials } from '../../lib/s3'
@@ -10,9 +10,9 @@ async function run() {
   let sha = getInput('sha')
   const branch =
     getInput('branch') ||
-    (process.env.GITHUB_REF === 'refs/heads/main'
+    (context.ref === 'refs/heads/main'
       ? 'main'
-      : process.env.GITHUB_REF === 'refs/heads/master'
+      : context.ref === 'refs/heads/master'
       ? 'master'
       : 'develop')
   const usePlatformPrefix = getBooleanInput('use-platform-prefix', false)

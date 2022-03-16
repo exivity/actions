@@ -4,13 +4,10 @@ on:
   push:
     paths:
       - '.github/workflows/push-image-ghcr.yml'
+      - 'push-image-ghcr/**'
       - 'lib/core*'
       - 'lib/github*'
       - 'lib/s3*'
-      - 'push-image-ghcr/**'
-
-env:
-  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
 jobs:
   test-deploy:
@@ -35,5 +32,6 @@ jobs:
           dockerfile: fixtures/Dockerfile
           docker-hub-user: ${{ secrets.DOCKER_HUB_USER }}
           docker-hub-password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
         env:
           EMULATE_DELETE: 1

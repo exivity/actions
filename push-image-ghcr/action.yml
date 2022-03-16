@@ -10,6 +10,7 @@ inputs:
   ghcr-password:
     description: Password for GitHub Container Registry
     required: false
+    default: ${{ github.token }}
   dockerfile:
     description: Path to the Dockerfile, defaults to ./Dockerfile
     required: false

@@ -82,7 +82,7 @@ export async function writeStatus(
   return writeStatusGitHub(
     octokit,
     getRepository().component,
-    sha ?? (await getSha()),
+    sha ?? getSha(),
     result.status === 'pending'
       ? 'pending'
       : result.flagged === 0

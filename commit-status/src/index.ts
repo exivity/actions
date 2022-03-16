@@ -12,7 +12,7 @@ async function run() {
   // inputs
   const ghToken = getToken()
   const repo = getInput('component') || getRepository().component
-  const sha = getInput('sha') || (await getSha())
+  const sha = getInput('sha') || getSha()
   const state = getInput('state') || 'success'
   const context = getInput('context', { required: true })
   const target_url = getInput('target_url')
