@@ -18,7 +18,7 @@ async function run() {
   // Get all relevant metadata for the image
   const imageRepository = `${registry}/exivity/${component}`
   const tags = getTags()
-  const tagsFQN = getTagsFQN({ tags, registry, component })
+  const tagsFQN = getTagsFQN({ repository: imageRepository, tags })
   const labels = getLabels({ repository: gitRepository })
 
   if (tags.length === 0) {

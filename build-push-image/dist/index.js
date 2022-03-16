@@ -10182,16 +10182,11 @@ ${cmd}`);
 // build-push-image/src/imageProperties.ts
 var import_semver = __toESM(require_semver2());
 function getTags() {
-  return [getRef()];
+  const tags = [getRef()];
+  return tags.map((tag) => tag.replace(/[^\w\w.-]/g, "-").substring(0, 127));
 }
-function getTagsFQN({ tags, registry, component }) {
-  function slugify(tag) {
-    return tag.replace(/[^\w\w.-]/g, "-").substring(0, 127);
-  }
-  function prefix(tag) {
-    return `${registry}/exivity/${component}:${tag}`;
-  }
-  return tags.map(slugify).map(prefix);
+function getTagsFQN({ repository, tags }) {
+  return tags.map((tag) => `${repository}:${tag}`);
 }
 function getLabels({ repository }) {
   return {
@@ -10237,7 +10232,7 @@ async function run() {
   const password = (0, import_core5.getInput)("password");
   const imageRepository = `${registry}/exivity/${component}`;
   const tags = getTags();
-  const tagsFQN = getTagsFQN({ tags, registry, component });
+  const tagsFQN = getTagsFQN({ repository: imageRepository, tags });
   const labels = getLabels({ repository: gitRepository });
   if (tags.length === 0) {
     (0, import_core5.warning)("No tags set, skipping build-push-image action");

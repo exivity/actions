@@ -2,23 +2,14 @@ import { parse as semverParse } from 'semver'
 import { getRef, getRepository, getSha, getTag } from '../../lib/github'
 
 /**
- * Returns a list of plain image tags to use. In the current situation, this is
- * simply the ref name (branch or tag).
+ * Returns a list of plain image tags to use.
  */
 export function getTags() {
-  return [getRef()]
-}
+  /**
+   * We use the the ref name (branch or tag) as the tag.
+   */
+  const tags = [getRef()]
 
-type GetTagsFQNOptions = {
-  tags: string[]
-  registry: string
-  component: string
-}
-
-/**
- * Returns an array of FQN image tags (e.g. `registry/exivity/component:tag`)
- */
-export function getTagsFQN({ tags, registry, component }: GetTagsFQNOptions) {
   /**
    * A tag name must be valid ASCII and may contain lowercase and uppercase
    * letters, digits, underscores, periods and dashes. A tag name may not
@@ -26,15 +17,19 @@ export function getTagsFQN({ tags, registry, component }: GetTagsFQNOptions) {
    * characters.
    * See https://docs.docker.com/engine/reference/commandline/tag/
    */
-  function slugify(tag: string) {
-    return tag.replace(/[^\w\w.-]/g, '-').substring(0, 127)
-  }
+  return tags.map((tag) => tag.replace(/[^\w\w.-]/g, '-').substring(0, 127))
+}
 
-  function prefix(tag: string) {
-    return `${registry}/exivity/${component}:${tag}`
-  }
+type GetTagsFQNOptions = {
+  repository: string
+  tags: string[]
+}
 
-  return tags.map(slugify).map(prefix)
+/**
+ * Returns an array of FQN image tags (e.g. `registry/exivity/component:tag`)
+ */
+export function getTagsFQN({ repository, tags }: GetTagsFQNOptions) {
+  return tags.map((tag: string) => `${repository}:${tag}`)
 }
 
 type GetLabelsOptions = {
