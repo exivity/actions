@@ -9,6 +9,7 @@ _Available actions:_
 - [`build-push-image`](#build-push-image)
 - [`commit-status`](#commit-status)
 - [`db`](#db)
+- [`delete-package`](#delete-package)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
@@ -123,6 +124,35 @@ repository migrations and runs them.
 | `aws-secret-access-key` | ✅       |                                                                                  | The AWS secret access key                                                                                                                                                                             |
 | `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
+
+# `delete-package`
+
+Delete a package version if a branch or tag is deleted. This is useful to purge
+the GitHub Container Registry from packages built from branches or tags that are
+deleted.
+
+## Example
+
+Full example workflow:
+
+```yaml
+name: purge-ghcr
+
+on: delete
+
+jobs:
+  purge-ghcr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: exivity/actions/delete-package@main
+```
+
+## Inputs
+
+| name        | required | default           | description                                     |
+| ----------- | -------- | ----------------- | ----------------------------------------------- |
+| `component` |          | Current component | The component to delete packages for.           |
+| `gh-token`  |          | `github.token`    | The github token with write access to packages. |
 
 # `get-artefacts`
 

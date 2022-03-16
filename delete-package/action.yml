@@ -1,12 +1,13 @@
-name: push-image-ghcr
-description: Builds and deploys a component image
+name: delete-package
+description: Delete a package version if a ref is deleted
 inputs:
   component:
-    description: Component name to build the image for
+    description: Component name to delete the package for
     required: false
-  dockerfile:
-    description: Path to the Dockerfile, defaults to ./Dockerfile
+  gh-token:
+    description: The github token with write access to packages
     required: false
+    default: ${{ github.token }}
 runs:
   using: node16
   main: dist/index.js

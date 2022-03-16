@@ -1,88 +1,73 @@
 import { getInput, info, setFailed, warning } from '@actions/core'
-import { exec } from '@actions/exec'
-import { context } from '@actions/github'
-import { promises as fs } from 'fs'
+import { getOctokit } from '@actions/github'
 import { table } from '../../lib/core'
-import { getRepository, getToken } from '../../lib/github'
-import { getComponentVersion, getLabels, getTags } from './metadata'
-
-const METADATA_FILENAME = 'metadata.json'
+import {
+  getEventData,
+  getEventName,
+  getRepository,
+  getToken,
+  isEvent,
+} from '../../lib/github'
+import { getTags } from '../../lib/image'
 
 async function run() {
-  const { component: defaultComponent } = getRepository()
-  const component = getInput('component') || defaultComponent
-  const ghcrUser = getInput('ghcr-user') || context.actor
-  const ghcrPassword = getInput('ghcr-password') || getToken()
-  const dockerfile = getInput('dockerfile') || './Dockerfile'
-  const tags = getTags()
+  const gitRepository = getRepository()
 
-  table('Image name', `exivity/${component}`)
-  table('Image tags', tags.join(', '))
+  // Inputs
+  const component = getInput('component') || gitRepository.component
+  const ghToken = getToken()
 
-  // Set all relevant labels for the image
-  if (tags.length === 0) {
-    warning('No tags set, skipping deploy docker action')
-    return
+  const eventName = getEventName(['delete', 'workflow_dispatch'])
+  const eventData = getEventData<typeof eventName>()
+
+  let tags: string[]
+
+  if (isEvent(eventName, 'workflow_dispatch', eventData)) {
+    tags = [eventData.inputs?.tag as string]
+  } else {
+    tags = getTags()
   }
-  const labels = getLabels({ component, version: tags[0] })
 
-  // concat list of labels
-  const labelOptions = Object.entries(labels)
-    .map(([key, value]) => `--label "${key}=${value}"`)
-    .join(' ')
-  info(`Image labels will be:\n${JSON.stringify(labelOptions, undefined, 2)}`)
+  table('Tags to delete', tags.join(','))
 
-  // concat list of tags
-  const tagOptions = tags
-    .map((tag: string) => `--tag "ghcr.io/exivity/${component}":"${tag}"`)
-    .join(' ')
-  info(`Image tags will be:\n${JSON.stringify(tagOptions, undefined, 2)}`)
+  const octokit = getOctokit(ghToken)
 
-  const componentVersion = getComponentVersion()
-  info(`Component version will be: ${componentVersion}`)
-
-  // this piece of code composes a metadata.json file that is to be copied into the
-  // docker image on build. This requires the line
-  // COPY ./metadata.json <<target>>
-  // to a present in the Dockerfile
-  const metadata = {
-    component,
-    version: componentVersion,
-    created: new Date().toISOString(),
-  }
-  info(
-    `Writing metadata to ${METADATA_FILENAME}:\n${JSON.stringify(
-      metadata,
-      undefined,
-      2
-    )}`
-  )
-  await fs.writeFile(
-    './' + METADATA_FILENAME,
-    JSON.stringify(metadata, undefined, 2)
-  )
-
-  // All built images get pushed to GHCR
-  info('Logging in to GHCR')
-  await exec(
-    'bash -c "echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USER --password-stdin"',
-    undefined,
+  const versions = await octokit.paginate(
+    octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg,
     {
-      env: {
-        ...process.env,
-        GHCR_PASSWORD: ghcrPassword,
-        GHCR_USER: ghcrUser,
-      },
+      org: 'exivity',
+      package_type: 'container',
+      package_name: component,
+      per_page: 100,
     }
   )
 
-  // Build the image
-  info('Building image')
-  const buildCmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`
-  await exec(buildCmd)
+  if (!versions.length) {
+    info('No package versions found')
+  }
 
-  info(`Pushing image`)
-  await exec(`docker push ghcr.io/exivity/${component} --all-tags`)
+  // Look for versions with matching tags
+  for (const version of versions) {
+    const tagOverlap = tags.filter((tag) =>
+      version.metadata?.container?.tags?.includes(tag)
+    )
+
+    if (tagOverlap.length > 0) {
+      info(
+        `Deleting package version ${
+          version.id
+        }, it was tagged with "${version.metadata?.container?.tags?.join(',')}"`
+      )
+      await octokit.rest.packages.deletePackageVersionForOrg({
+        org: 'exivity',
+        package_type: 'container',
+        package_name: component,
+        package_version_id: version.id,
+      })
+    } else {
+      warning('Could not find matching package version to delete')
+    }
+  }
 }
 
 run().catch(setFailed)
