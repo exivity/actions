@@ -2,9 +2,10 @@ name: delete-package
 
 on:
   workflow_dispatch:
-    tag:
-      description: The tag to delete
-      required: true
+    inputs:
+      tag:
+        description: The tag to delete
+        required: true
   delete:
 
 jobs:
