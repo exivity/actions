@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./build-push-image-ghcr
+      - uses: ./build-push-image
         with:
           component: actions-test
           dockerfile: fixtures/Dockerfile
