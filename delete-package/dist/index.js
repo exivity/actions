@@ -10205,6 +10205,7 @@ async function run() {
   } else {
     tags = getTags();
   }
+  table("Package name", component);
   table("Tags to delete", tags.join(","));
   const octokit = (0, import_github2.getOctokit)(ghToken);
   const versions = await octokit.paginate(octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg, {

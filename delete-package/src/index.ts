@@ -26,6 +26,7 @@ async function run() {
     tags = getTags()
   }
 
+  table('Package name', component)
   table('Tags to delete', tags.join(','))
 
   const octokit = getOctokit(ghToken)
