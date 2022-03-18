@@ -10125,7 +10125,7 @@ var require_semver2 = __commonJS({
   }
 });
 
-// delete-package/src/index.ts
+// purge-ghcr/src/index.ts
 var import_core3 = __toESM(require_core());
 var import_github2 = __toESM(require_github());
 
@@ -10187,12 +10187,12 @@ var import_semver = __toESM(require_semver2());
 function refToTag(ref) {
   return ref.replace(/[^\w\w.-]/g, "-").substring(0, 127);
 }
-function getTags() {
-  const tags = [getRef()];
+function getTags(ref = getRef()) {
+  const tags = [ref];
   return tags.map(refToTag);
 }
 
-// delete-package/src/index.ts
+// purge-ghcr/src/index.ts
 async function run() {
   var _a, _b, _c, _d, _e, _f, _g;
   const component = (0, import_core3.getInput)("component") || getRepository().component;
@@ -10203,7 +10203,7 @@ async function run() {
   if (isEvent(eventName, "workflow_dispatch", eventData)) {
     tags = [(_a = eventData.inputs) == null ? void 0 : _a.tag];
   } else {
-    tags = getTags();
+    tags = getTags(eventData.ref);
   }
   table("Package name", component);
   table("Tags to delete", tags.join(","));

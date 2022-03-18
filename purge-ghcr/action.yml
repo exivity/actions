@@ -1,0 +1,13 @@
+name: purge-ghcr
+description: Delete a version of an image from ghcr.io from a deleted ref
+inputs:
+  component:
+    description: Package name
+    required: false
+  gh-token:
+    description: The GitHub token with appropriate scope
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: node16
+  main: dist/index.js

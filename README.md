@@ -9,11 +9,11 @@ _Available actions:_
 - [`build-push-image`](#build-push-image)
 - [`commit-status`](#commit-status)
 - [`db`](#db)
-- [`delete-package`](#delete-package)
 - [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
 - [`process-binary`](#process-binary)
+- [`purge-ghcr`](#purge-ghcr)
 - [`put-artefacts`](#put-artefacts)
 - [`rabbitmq`](#rabbitmq)
 - [`rcedit`](#rcedit)
@@ -125,35 +125,6 @@ repository migrations and runs them.
 | `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
 
-# `delete-package`
-
-Delete a package version if a branch or tag is deleted. This is useful to purge
-the GitHub Container Registry from packages built from branches or tags that are
-deleted.
-
-## Example
-
-Full example workflow:
-
-```yaml
-name: purge-ghcr
-
-on: delete
-
-jobs:
-  purge-ghcr:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: exivity/actions/delete-package@main
-```
-
-## Inputs
-
-| name        | required | default           | description                                     |
-| ----------- | -------- | ----------------- | ----------------------------------------------- |
-| `component` |          | Current component | The component to delete packages for.           |
-| `gh-token`  |          | `github.token`    | The github token with write access to packages. |
-
 # `get-artefacts`
 
 Download artefacts for the provided component. It will use the S3 _exivity_
@@ -255,6 +226,40 @@ A composite action running [`rcedit`](#rcedit), [`sign-file`](#sign-file) and
 ## Inputs
 
 See individual actions for inputs.
+
+# `purge-ghcr`
+
+Delete a package version from GitHub Container Registry if a branch or tag is
+deleted. This is useful to clean dangling versions from ghcr.io for images built
+with [`build-push-image`](#build-push-image).
+
+See [.github repository](https://github.com/exivity/.github#purge-ghcr) for
+example usage.
+
+## Example
+
+Full example workflow:
+
+```yaml
+name: purge-ghcr
+
+on: delete
+
+jobs:
+  purge-ghcr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: exivity/actions/purge-ghcr@main
+        with:
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name        | required | default           | description                                                                                                            |
+| ----------- | -------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `component` |          | Current component | The component to delete packages for.                                                                                  |
+| `gh-token`  |          | `github.token`    | The GitHub token with admin permissions in the organization and admin permissions to the container you want to delete. |
 
 # `put-artefacts`
 
