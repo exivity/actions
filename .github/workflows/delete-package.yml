@@ -16,3 +16,4 @@ jobs:
       - uses: ./delete-package
         with:
           component: actions-test
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}

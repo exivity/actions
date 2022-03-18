@@ -1,4 +1,4 @@
-import { getInput, info, setFailed, warning } from '@actions/core'
+import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { table } from '../../lib/core'
 import {
@@ -11,10 +11,8 @@ import {
 import { getTags } from '../../lib/image'
 
 async function run() {
-  const gitRepository = getRepository()
-
   // Inputs
-  const component = getInput('component') || gitRepository.component
+  const component = getInput('component') || getRepository().component
   const ghToken = getToken()
 
   const eventName = getEventName(['delete', 'workflow_dispatch'])
@@ -28,6 +26,7 @@ async function run() {
     tags = getTags()
   }
 
+  table('Package name', component)
   table('Tags to delete', tags.join(','))
 
   const octokit = getOctokit(ghToken)
@@ -42,9 +41,7 @@ async function run() {
     }
   )
 
-  if (!versions.length) {
-    info('No package versions found')
-  }
+  info(`Got ${versions.length} package versions, matching with tags...`)
 
   // Look for versions with matching tags
   for (const version of versions) {
@@ -54,9 +51,11 @@ async function run() {
 
     if (tagOverlap.length > 0) {
       info(
-        `Deleting package version ${
+        `🗑️ Package version ${
           version.id
-        }, it was tagged with "${version.metadata?.container?.tags?.join(',')}"`
+        } tagged with "${version.metadata?.container?.tags?.join(
+          '","'
+        )}" matches and will be deleted`
       )
       await octokit.rest.packages.deletePackageVersionForOrg({
         org: 'exivity',
@@ -65,7 +64,13 @@ async function run() {
         package_version_id: version.id,
       })
     } else {
-      warning('Could not find matching package version to delete')
+      info(
+        `ℹ️ Package version ${
+          version.id
+        } tagged with "${version.metadata?.container?.tags?.join(
+          '","'
+        )}" doesn't match any of the tags to delete`
+      )
     }
   }
 }
