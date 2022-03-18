@@ -1,4 +1,4 @@
-import { getInput, info, setFailed, warning } from '@actions/core'
+import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { table } from '../../lib/core'
 import {
@@ -51,9 +51,11 @@ async function run() {
 
     if (tagOverlap.length > 0) {
       info(
-        `❌ Deleting package version ${
+        `🗑️ Package version ${
           version.id
-        } tagged with "${version.metadata?.container?.tags?.join('","')}"`
+        } tagged with "${version.metadata?.container?.tags?.join(
+          '","'
+        )}" matches and will be deleted`
       )
       await octokit.rest.packages.deletePackageVersionForOrg({
         org: 'exivity',
@@ -62,7 +64,13 @@ async function run() {
         package_version_id: version.id,
       })
     } else {
-      warning('Could not find matching package version to delete')
+      info(
+        `ℹ️ Package version ${
+          version.id
+        } tagged with "${version.metadata?.container?.tags?.join(
+          '","'
+        )}" doesn't match any of the tags to delete`
+      )
     }
   }
 }
