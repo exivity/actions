@@ -23,7 +23,7 @@ async function run() {
   if (isEvent(eventName, 'workflow_dispatch', eventData)) {
     tags = [eventData.inputs?.tag as string]
   } else {
-    tags = getTags()
+    tags = getTags(eventData.ref)
   }
 
   table('Package name', component)

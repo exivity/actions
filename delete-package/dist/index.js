@@ -10187,8 +10187,8 @@ var import_semver = __toESM(require_semver2());
 function refToTag(ref) {
   return ref.replace(/[^\w\w.-]/g, "-").substring(0, 127);
 }
-function getTags() {
-  const tags = [getRef()];
+function getTags(ref = getRef()) {
+  const tags = [ref];
   return tags.map(refToTag);
 }
 
@@ -10203,7 +10203,7 @@ async function run() {
   if (isEvent(eventName, "workflow_dispatch", eventData)) {
     tags = [(_a = eventData.inputs) == null ? void 0 : _a.tag];
   } else {
-    tags = getTags();
+    tags = getTags(eventData.ref);
   }
   table("Package name", component);
   table("Tags to delete", tags.join(","));

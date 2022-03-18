@@ -15,9 +15,9 @@ export function refToTag(ref: string) {
 /**
  * Returns a list of plain image tags to use.
  */
-export function getTags() {
+export function getTags(ref = getRef()) {
   // We use the the ref name (branch or tag name).
-  const tags = [getRef()]
+  const tags = [ref]
 
   // Clean up the refs so they can be used as tags.
   return tags.map(refToTag)

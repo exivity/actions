@@ -131,6 +131,9 @@ Delete a package version if a branch or tag is deleted. This is useful to purge
 the GitHub Container Registry from packages built from branches or tags that are
 deleted.
 
+See [.github repository](https://github.com/exivity/.github#purge-ghcr) for
+example usage.
+
 ## Example
 
 Full example workflow:
@@ -145,14 +148,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: exivity/actions/delete-package@main
+        with:
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
 
 ## Inputs
 
-| name        | required | default           | description                                     |
-| ----------- | -------- | ----------------- | ----------------------------------------------- |
-| `component` |          | Current component | The component to delete packages for.           |
-| `gh-token`  |          | `github.token`    | The github token with write access to packages. |
+| name        | required | default           | description                                                                                                            |
+| ----------- | -------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `component` |          | Current component | The component to delete packages for.                                                                                  |
+| `gh-token`  |          | `github.token`    | The GitHub token with admin permissions in the organization and admin permissions to the container you want to delete. |
 
 # `get-artefacts`
 
