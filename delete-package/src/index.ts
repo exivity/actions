@@ -11,10 +11,8 @@ import {
 import { getTags } from '../../lib/image'
 
 async function run() {
-  const gitRepository = getRepository()
-
   // Inputs
-  const component = getInput('component') || gitRepository.component
+  const component = getInput('component') || getRepository().component
   const ghToken = getToken()
 
   const eventName = getEventName(['delete', 'workflow_dispatch'])
@@ -42,9 +40,7 @@ async function run() {
     }
   )
 
-  if (!versions.length) {
-    info('No package versions found')
-  }
+  info(`Got ${versions.length} package versions, matching with tags...`)
 
   // Look for versions with matching tags
   for (const version of versions) {
@@ -54,9 +50,9 @@ async function run() {
 
     if (tagOverlap.length > 0) {
       info(
-        `Deleting package version ${
+        `❌ Deleting package version ${
           version.id
-        }, it was tagged with "${version.metadata?.container?.tags?.join(',')}"`
+        } tagged with "${version.metadata?.container?.tags?.join('","')}"`
       )
       await octokit.rest.packages.deletePackageVersionForOrg({
         org: 'exivity',

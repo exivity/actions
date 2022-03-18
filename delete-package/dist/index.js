@@ -10195,8 +10195,7 @@ function getTags() {
 // delete-package/src/index.ts
 async function run() {
   var _a, _b, _c, _d;
-  const gitRepository = getRepository();
-  const component = (0, import_core3.getInput)("component") || gitRepository.component;
+  const component = (0, import_core3.getInput)("component") || getRepository().component;
   const ghToken = getToken();
   const eventName = getEventName(["delete", "workflow_dispatch"]);
   const eventData = getEventData();
@@ -10214,16 +10213,14 @@ async function run() {
     package_name: component,
     per_page: 100
   });
-  if (!versions.length) {
-    (0, import_core3.info)("No package versions found");
-  }
+  (0, import_core3.info)(`Got ${versions.length} package versions, matching with tags...`);
   for (const version of versions) {
     const tagOverlap = tags.filter((tag) => {
       var _a2, _b2, _c2;
       return (_c2 = (_b2 = (_a2 = version.metadata) == null ? void 0 : _a2.container) == null ? void 0 : _b2.tags) == null ? void 0 : _c2.includes(tag);
     });
     if (tagOverlap.length > 0) {
-      (0, import_core3.info)(`Deleting package version ${version.id}, it was tagged with "${(_d = (_c = (_b = version.metadata) == null ? void 0 : _b.container) == null ? void 0 : _c.tags) == null ? void 0 : _d.join(",")}"`);
+      (0, import_core3.info)(`\u274C Deleting package version ${version.id} tagged with "${(_d = (_c = (_b = version.metadata) == null ? void 0 : _b.container) == null ? void 0 : _c.tags) == null ? void 0 : _d.join('","')}"`);
       await octokit.rest.packages.deletePackageVersionForOrg({
         org: "exivity",
         package_type: "container",
