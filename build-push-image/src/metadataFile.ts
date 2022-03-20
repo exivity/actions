@@ -1,7 +1,7 @@
 import { info } from '@actions/core'
 import { promises as fs } from 'fs'
 import { getRepository } from '../../lib/github'
-import { getComponentVersion } from './imageProperties'
+import { getComponentVersion } from '../../lib/image'
 
 const METADATA_FILENAME = 'metadata.json'
 

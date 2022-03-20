@@ -1,8 +1,8 @@
 import { getInput, setFailed, warning } from '@actions/core'
 import { table } from '../../lib/core'
 import { getRepository } from '../../lib/github'
+import { getLabels, getTags, getTagsFQN } from '../../lib/image'
 import { dockerBuild, dockerLogin, dockerPush } from './dockerCli'
-import { getLabels, getTags, getTagsFQN } from './imageProperties'
 import { writeExivityMetadataFile } from './metadataFile'
 
 async function run() {
