@@ -35,18 +35,16 @@ export function getTagsFQN({ repository, tags }: GetTagsFQNOptions) {
   return tags.map((tag: string) => `${repository}:${tag}`)
 }
 
-type GetLabelsOptions = {
-  repository: ReturnType<typeof getRepository>
-}
+export function getLabels(component: string) {
+  const { fqn } = getRepository()
 
-export function getLabels({ repository }: GetLabelsOptions) {
   return {
     'org.opencontainers.image.vendor': 'Exivity',
-    'org.opencontainers.image.title': repository.component,
-    'org.opencontainers.image.description': repository.component,
+    'org.opencontainers.image.title': component,
+    'org.opencontainers.image.description': component,
     'org.opencontainers.image.url': 'https://exivity.com',
     'org.opencontainers.image.documentation': 'https://docs.exivity.com',
-    'org.opencontainers.image.source': `https://github.com/${repository.fqn}`,
+    'org.opencontainers.image.source': `https://github.com/${fqn}`,
     'org.opencontainers.image.created': new Date().toISOString(),
     'org.opencontainers.image.revision': getSha(),
   }

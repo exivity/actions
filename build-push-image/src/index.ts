@@ -6,31 +6,29 @@ import { dockerBuild, dockerLogin, dockerPush } from './dockerCli'
 import { writeExivityMetadataFile } from './metadataFile'
 
 async function run() {
-  const gitRepository = getRepository()
-
   // Inputs
-  const component = getInput('component') || gitRepository.component
+  const component = getInput('component') || getRepository().component
   const dockerfile = getInput('dockerfile') || './Dockerfile'
   const registry = getInput('registry')
   const user = getInput('user')
   const password = getInput('password')
 
   // Get all relevant metadata for the image
-  const imageRepository = `${registry}/exivity/${component}`
+  const repository = `${registry}/exivity/${component}`
   const tags = getTags()
-  const tagsFQN = getTagsFQN({ repository: imageRepository, tags })
-  const labels = getLabels({ repository: gitRepository })
+  const tagsFQN = getTagsFQN({ repository, tags })
+  const labels = getLabels(component)
 
   if (tags.length === 0) {
     warning('No tags set, skipping build-push-image action')
     return
   }
 
-  table('Repository', imageRepository)
+  table('Repository', repository)
   table('Tags', tags.join(', '))
   table('Labels', JSON.stringify(labels, undefined, 2))
 
-  await writeExivityMetadataFile(gitRepository)
+  await writeExivityMetadataFile(component)
 
   await dockerLogin({
     registry,
@@ -44,7 +42,7 @@ async function run() {
     tagsFQN,
   })
 
-  await dockerPush({ repository: imageRepository })
+  await dockerPush(repository)
 }
 
 run().catch(setFailed)

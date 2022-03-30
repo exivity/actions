@@ -51,11 +51,7 @@ export async function dockerBuild({
   await exec(cmd)
 }
 
-type PushOptions = {
-  repository: string
-}
-
-export async function dockerPush({ repository }: PushOptions) {
+export async function dockerPush(repository: string) {
   info('Pushing image...')
 
   const cmd = `docker push ${repository} --all-tags`

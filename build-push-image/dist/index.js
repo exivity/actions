@@ -10151,14 +10151,15 @@ function getTags(ref = getRef()) {
 function getTagsFQN({ repository, tags }) {
   return tags.map((tag) => `${repository}:${tag}`);
 }
-function getLabels({ repository }) {
+function getLabels(component) {
+  const { fqn } = getRepository();
   return {
     "org.opencontainers.image.vendor": "Exivity",
-    "org.opencontainers.image.title": repository.component,
-    "org.opencontainers.image.description": repository.component,
+    "org.opencontainers.image.title": component,
+    "org.opencontainers.image.description": component,
     "org.opencontainers.image.url": "https://exivity.com",
     "org.opencontainers.image.documentation": "https://docs.exivity.com",
-    "org.opencontainers.image.source": `https://github.com/${repository.fqn}`,
+    "org.opencontainers.image.source": `https://github.com/${fqn}`,
     "org.opencontainers.image.created": new Date().toISOString(),
     "org.opencontainers.image.revision": getSha()
   };
@@ -10198,7 +10199,7 @@ async function dockerBuild({
 ${cmd}`);
   await (0, import_exec2.exec)(cmd);
 }
-async function dockerPush({ repository }) {
+async function dockerPush(repository) {
   (0, import_core3.info)("Pushing image...");
   const cmd = `docker push ${repository} --all-tags`;
   (0, import_core3.debug)(`Executing command:
@@ -10210,9 +10211,9 @@ ${cmd}`);
 var import_core4 = __toESM(require_core());
 var import_fs = require("fs");
 var METADATA_FILENAME = "metadata.json";
-async function writeExivityMetadataFile(repository) {
+async function writeExivityMetadataFile(component) {
   const metadata = {
-    component: repository.component,
+    component,
     version: getComponentVersion(),
     created: new Date().toISOString()
   };
@@ -10224,24 +10225,23 @@ ${contents}`);
 
 // build-push-image/src/index.ts
 async function run() {
-  const gitRepository = getRepository();
-  const component = (0, import_core5.getInput)("component") || gitRepository.component;
+  const component = (0, import_core5.getInput)("component") || getRepository().component;
   const dockerfile = (0, import_core5.getInput)("dockerfile") || "./Dockerfile";
   const registry = (0, import_core5.getInput)("registry");
   const user = (0, import_core5.getInput)("user");
   const password = (0, import_core5.getInput)("password");
-  const imageRepository = `${registry}/exivity/${component}`;
+  const repository = `${registry}/exivity/${component}`;
   const tags = getTags();
-  const tagsFQN = getTagsFQN({ repository: imageRepository, tags });
-  const labels = getLabels({ repository: gitRepository });
+  const tagsFQN = getTagsFQN({ repository, tags });
+  const labels = getLabels(component);
   if (tags.length === 0) {
     (0, import_core5.warning)("No tags set, skipping build-push-image action");
     return;
   }
-  table("Repository", imageRepository);
+  table("Repository", repository);
   table("Tags", tags.join(", "));
   table("Labels", JSON.stringify(labels, void 0, 2));
-  await writeExivityMetadataFile(gitRepository);
+  await writeExivityMetadataFile(component);
   await dockerLogin({
     registry,
     user,
@@ -10252,7 +10252,7 @@ async function run() {
     labels,
     tagsFQN
   });
-  await dockerPush({ repository: imageRepository });
+  await dockerPush(repository);
 }
 run().catch(import_core5.setFailed);
 /*!
