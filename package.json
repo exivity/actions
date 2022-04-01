@@ -33,7 +33,7 @@
   "dependencies": {
     "@actions/core": "1.6.0",
     "@actions/exec": "1.1.1",
-    "@actions/github": "5.0.0",
+    "@actions/github": "5.0.1",
     "@actions/http-client": "1.0.11",
     "checkout": "https://github.com/actions/checkout#v3",
     "deepmerge": "^4.2.2",
