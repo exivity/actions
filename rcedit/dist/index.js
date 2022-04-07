@@ -10074,19 +10074,20 @@ var executionLevels = [
   "requireAdministrator"
 ];
 async function run() {
-  const path = (0, import_core2.getInput)("path", { required: true });
-  const comments = (0, import_core2.getInput)("comments");
-  const companyName = (0, import_core2.getInput)("company-name") || "Exivity";
-  const productName = (0, import_core2.getInput)("product-name") || "Exivity";
+  const component = getRepository().component;
   const sha = getSha();
-  const fileDescription = (0, import_core2.getInput)("file-description") || `${getRepository().component}:${sha}`;
+  const path = (0, import_core2.getInput)("path", { required: true });
+  const fileDescription = (0, import_core2.getInput)("file-description") || component;
+  const fileVersion = (0, import_core2.getInput)("file-version");
+  const productName = (0, import_core2.getInput)("product-name") || component;
+  const productVersion = (0, import_core2.getInput)("product-version") || sha;
+  const companyName = (0, import_core2.getInput)("company-name") || "Exivity";
+  const comments = (0, import_core2.getInput)("comments");
   const internalFilename = (0, import_core2.getInput)("internal-filename");
-  const legalCopyright = (0, import_core2.getInput)("legal-copyright");
+  const legalCopyright = (0, import_core2.getInput)("legal-copyright") || `\xA9 2017 Exivity`;
   const legalTrademarks1 = (0, import_core2.getInput)("legal-trademarks1");
   const legalTrademarks2 = (0, import_core2.getInput)("legal-trademarks2");
   const originalFilename = (0, import_core2.getInput)("original-filename");
-  const fileVersion = (0, import_core2.getInput)("file-version");
-  const productVersion = (0, import_core2.getInput)("product-version");
   const icon = (0, import_core2.getInput)("icon");
   const requestedExecutionLevel = (0, import_core2.getInput)("requested-execution-level");
   const applicationManifest = (0, import_core2.getInput)("application-manifest");

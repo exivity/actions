@@ -10,22 +10,23 @@ const executionLevels = [
 ] as const
 
 async function run() {
+  const component = getRepository().component
+  const sha = getSha()
+
   // Inputs
   const path = getInput('path', { required: true })
 
-  const comments = getInput('comments')
+  const fileDescription = getInput('file-description') || component
+  const fileVersion = getInput('file-version')
+  const productName = getInput('product-name') || component
+  const productVersion = getInput('product-version') || sha
   const companyName = getInput('company-name') || 'Exivity'
-  const productName = getInput('product-name') || 'Exivity'
-  const sha = getSha()
-  const fileDescription =
-    getInput('file-description') || `${getRepository().component}:${sha}`
+  const comments = getInput('comments')
   const internalFilename = getInput('internal-filename')
-  const legalCopyright = getInput('legal-copyright')
+  const legalCopyright = getInput('legal-copyright') || `© 2017 Exivity`
   const legalTrademarks1 = getInput('legal-trademarks1')
   const legalTrademarks2 = getInput('legal-trademarks2')
   const originalFilename = getInput('original-filename')
-  const fileVersion = getInput('file-version')
-  const productVersion = getInput('product-version')
   const icon = getInput('icon')
   const requestedExecutionLevel = getInput(
     'requested-execution-level'
