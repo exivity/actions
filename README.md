@@ -326,7 +326,7 @@ Edit resources of a Windows executable
 | --------------------------- | -------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `path`                      | ✅       |                               | The path to the file to sign, glob patterns allowed                                                                  |
 | `file-description`          |          | `"Exivity ($repo component)"` | File description to be presented to users.                                                                           |
-| `file-version`              |          | Current sha                   | File's version to change to.                                                                                         |
+| `file-version`              |          |                               | File's version to change to.                                                                                         |
 | `product-name`              |          | Current component             | Name of the product with which the file is distributed.                                                              |
 | `product-version`           |          | Current sha                   | Product's version to change to.                                                                                      |
 | `company-name`              |          | `"Exivity"`                   | Company that produced the executable.                                                                                |

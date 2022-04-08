@@ -16,22 +16,23 @@ async function run() {
   // Inputs
   const path = getInput('path', { required: true })
 
-  const fileDescription = getInput('file-description') || component
-  const fileVersion = getInput('file-version') || sha
+  const fileDescription =
+    getInput('file-description') || `Exivity (${component} component)`
+  const fileVersion = getInput('file-version') || undefined
   const productName = getInput('product-name') || component
   const productVersion = getInput('product-version') || sha
   const companyName = getInput('company-name') || 'Exivity'
-  const comments = getInput('comments')
-  const internalFilename = getInput('internal-filename')
+  const comments = getInput('comments') || undefined
+  const internalFilename = getInput('internal-filename') || undefined
   const legalCopyright = getInput('legal-copyright') || `© 2017 Exivity`
-  const legalTrademarks1 = getInput('legal-trademarks1')
-  const legalTrademarks2 = getInput('legal-trademarks2')
-  const originalFilename = getInput('original-filename')
-  const icon = getInput('icon')
-  const requestedExecutionLevel = getInput(
-    'requested-execution-level'
-  ) as typeof executionLevels[number]
-  const applicationManifest = getInput('application-manifest')
+  const legalTrademarks1 = getInput('legal-trademarks1') || undefined
+  const legalTrademarks2 = getInput('legal-trademarks2') || undefined
+  const originalFilename = getInput('original-filename') || undefined
+  const icon = getInput('icon') || undefined
+  const requestedExecutionLevel =
+    (getInput('requested-execution-level') as typeof executionLevels[number]) ||
+    undefined
+  const applicationManifest = getInput('application-manifest') || undefined
 
   // Assertions
   if (

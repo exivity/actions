@@ -10077,20 +10077,20 @@ async function run() {
   const component = getRepository().component;
   const sha = getSha();
   const path = (0, import_core2.getInput)("path", { required: true });
-  const fileDescription = (0, import_core2.getInput)("file-description") || component;
-  const fileVersion = (0, import_core2.getInput)("file-version") || sha;
+  const fileDescription = (0, import_core2.getInput)("file-description") || `Exivity (${component} component)`;
+  const fileVersion = (0, import_core2.getInput)("file-version") || void 0;
   const productName = (0, import_core2.getInput)("product-name") || component;
   const productVersion = (0, import_core2.getInput)("product-version") || sha;
   const companyName = (0, import_core2.getInput)("company-name") || "Exivity";
-  const comments = (0, import_core2.getInput)("comments");
-  const internalFilename = (0, import_core2.getInput)("internal-filename");
+  const comments = (0, import_core2.getInput)("comments") || void 0;
+  const internalFilename = (0, import_core2.getInput)("internal-filename") || void 0;
   const legalCopyright = (0, import_core2.getInput)("legal-copyright") || `\xA9 2017 Exivity`;
-  const legalTrademarks1 = (0, import_core2.getInput)("legal-trademarks1");
-  const legalTrademarks2 = (0, import_core2.getInput)("legal-trademarks2");
-  const originalFilename = (0, import_core2.getInput)("original-filename");
-  const icon = (0, import_core2.getInput)("icon");
-  const requestedExecutionLevel = (0, import_core2.getInput)("requested-execution-level");
-  const applicationManifest = (0, import_core2.getInput)("application-manifest");
+  const legalTrademarks1 = (0, import_core2.getInput)("legal-trademarks1") || void 0;
+  const legalTrademarks2 = (0, import_core2.getInput)("legal-trademarks2") || void 0;
+  const originalFilename = (0, import_core2.getInput)("original-filename") || void 0;
+  const icon = (0, import_core2.getInput)("icon") || void 0;
+  const requestedExecutionLevel = (0, import_core2.getInput)("requested-execution-level") || void 0;
+  const applicationManifest = (0, import_core2.getInput)("application-manifest") || void 0;
   if (!comments && !companyName && !fileDescription && !internalFilename && !legalCopyright && !legalTrademarks1 && !legalTrademarks2 && !originalFilename && !productName && !fileVersion && !productVersion && !icon && !requestedExecutionLevel && !applicationManifest) {
     throw new Error("No properties set");
   }
