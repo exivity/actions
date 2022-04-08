@@ -10078,7 +10078,7 @@ async function run() {
   const sha = getSha();
   const path = (0, import_core2.getInput)("path", { required: true });
   const fileDescription = (0, import_core2.getInput)("file-description") || component;
-  const fileVersion = (0, import_core2.getInput)("file-version");
+  const fileVersion = (0, import_core2.getInput)("file-version") || sha;
   const productName = (0, import_core2.getInput)("product-name") || component;
   const productVersion = (0, import_core2.getInput)("product-version") || sha;
   const companyName = (0, import_core2.getInput)("company-name") || "Exivity";

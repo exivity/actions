@@ -17,7 +17,7 @@ async function run() {
   const path = getInput('path', { required: true })
 
   const fileDescription = getInput('file-description') || component
-  const fileVersion = getInput('file-version')
+  const fileVersion = getInput('file-version') || sha
   const productName = getInput('product-name') || component
   const productVersion = getInput('product-version') || sha
   const companyName = getInput('company-name') || 'Exivity'
