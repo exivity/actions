@@ -322,23 +322,23 @@ Edit resources of a Windows executable
 
 ## Inputs
 
-| name                        | required | default        | description                                                                                                          |
-| --------------------------- | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `path`                      | ✅       |                | The path to the file to sign, glob patterns allowed                                                                  |
-| `company-name`              |          | `"Exivity"`    | Company that produced the executable.                                                                                |
-| `product-name`              |          | `"Exivity"`    | Name of the product with which the file is distributed.                                                              |
-| `file-description`          |          | `"$repo:$sha"` | File description to be presented to users.                                                                           |
-| `comments`                  |          |                | Additional information that should be displayed for diagnostic purposes.                                             |
-| `internal-filename`         |          |                | Internal name of the file. Usually, this string should be the original filename, without the extension.              |
-| `legal-copyright`           |          |                | Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.           |
-| `legal-trademarks1`         |          |                | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
-| `legal-trademarks2`         |          |                | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
-| `original-filename`         |          |                | Original name of the file, not including a path.                                                                     |
-| `file-version`              |          |                | File's version to change to.                                                                                         |
-| `product-version`           |          |                | Product's version to change to.                                                                                      |
-| `icon`                      |          |                | Path to the icon file (.ico) to set as the exePath's default icon.                                                   |
-| `requested-execution-level` |          |                | Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator.         |
-| `application-manifest`      |          |                | String path to a local manifest file to use.                                                                         |
+| name                        | required | default                       | description                                                                                                          |
+| --------------------------- | -------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `path`                      | ✅       |                               | The path to the file to sign, glob patterns allowed                                                                  |
+| `file-description`          |          | `"Exivity ($repo component)"` | File description to be presented to users.                                                                           |
+| `file-version`              |          |                               | File's version to change to.                                                                                         |
+| `product-name`              |          | Current component             | Name of the product with which the file is distributed.                                                              |
+| `product-version`           |          | Current sha                   | Product's version to change to.                                                                                      |
+| `company-name`              |          | `"Exivity"`                   | Company that produced the executable.                                                                                |
+| `comments`                  |          |                               | Additional information that should be displayed for diagnostic purposes.                                             |
+| `internal-filename`         |          |                               | Internal name of the file. Usually, this string should be the original filename, without the extension.              |
+| `legal-copyright`           |          | `"© 2017 Exivity"`            | Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.           |
+| `legal-trademarks1`         |          |                               | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
+| `legal-trademarks2`         |          |                               | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
+| `original-filename`         |          |                               | Original name of the file, not including a path.                                                                     |
+| `icon`                      |          |                               | Path to the icon file (.ico) to set as the exePath's default icon.                                                   |
+| `requested-execution-level` |          |                               | Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator.         |
+| `application-manifest`      |          |                               | String path to a local manifest file to use.                                                                         |
 
 # `review`
 
