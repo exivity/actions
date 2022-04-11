@@ -3,6 +3,14 @@ import glob from 'glob-promise'
 import rcedit from 'rcedit'
 import { getRepository, getSha } from '../../lib/github'
 
+type RceditConfig = {
+  [key: string]: string
+}
+
+function removeEmpty(obj: RceditConfig) {
+  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != ''))
+}
+
 const executionLevels = [
   'asInvoker',
   'highestAvailable',
@@ -18,21 +26,21 @@ async function run() {
 
   const fileDescription =
     getInput('file-description') || `Exivity (${component} component)`
-  const fileVersion = getInput('file-version') || undefined
+  const fileVersion = getInput('file-version')
   const productName = getInput('product-name') || component
   const productVersion = getInput('product-version') || sha
   const companyName = getInput('company-name') || 'Exivity'
-  const comments = getInput('comments') || undefined
-  const internalFilename = getInput('internal-filename') || undefined
+  const comments = getInput('comments')
+  const internalFilename = getInput('internal-filename')
   const legalCopyright = getInput('legal-copyright') || `© 2017 Exivity`
-  const legalTrademarks1 = getInput('legal-trademarks1') || undefined
-  const legalTrademarks2 = getInput('legal-trademarks2') || undefined
-  const originalFilename = getInput('original-filename') || undefined
-  const icon = getInput('icon') || undefined
+  const legalTrademarks1 = getInput('legal-trademarks1')
+  const legalTrademarks2 = getInput('legal-trademarks2')
+  const originalFilename = getInput('original-filename')
+  const icon = getInput('icon')
   const requestedExecutionLevel =
     (getInput('requested-execution-level') as typeof executionLevels[number]) ||
     undefined
-  const applicationManifest = getInput('application-manifest') || undefined
+  const applicationManifest = getInput('application-manifest')
 
   // Assertions
   if (
@@ -67,7 +75,7 @@ async function run() {
 
   for (const absPath of absPaths) {
     await rcedit(absPath, {
-      'version-string': {
+      'version-string': removeEmpty({
         Comments: comments,
         CompanyName: companyName,
         FileDescription: fileDescription,
@@ -77,12 +85,14 @@ async function run() {
         LegalTrademarks2: legalTrademarks2,
         OriginalFilename: originalFilename,
         ProductName: productName,
-      },
-      'file-version': fileVersion,
-      'product-version': productVersion,
-      icon: icon,
-      'requested-execution-level': requestedExecutionLevel,
-      'application-manifest': applicationManifest,
+      }),
+      ...removeEmpty({
+        'file-version': fileVersion,
+        'product-version': productVersion,
+        icon: icon,
+        'requested-execution-level': requestedExecutionLevel,
+        'application-manifest': applicationManifest,
+      }),
     })
     debug(`processed ${absPath} with rcedit`)
   }
