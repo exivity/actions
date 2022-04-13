@@ -25,10 +25,10 @@ async function run() {
   const path = getInput('path', { required: true })
 
   const fileDescription =
-    getInput('file-description') || `Exivity (${component} component)`
+    getInput('file-description') || `Exivity component: ${component}@${sha}`
   const fileVersion = getInput('file-version')
-  const productName = getInput('product-name') || component
-  const productVersion = getInput('product-version') || sha
+  const productName = getInput('product-name') || 'Exivity'
+  const productVersion = getInput('product-version')
   const companyName = getInput('company-name') || 'Exivity'
   const comments = getInput('comments')
   const internalFilename = getInput('internal-filename')
