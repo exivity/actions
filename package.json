@@ -44,7 +44,7 @@
     "mime": "3.0.0",
     "minimatch": "5.0.1",
     "rcedit": "3.0.1",
-    "semver": "7.3.6",
+    "semver": "7.3.7",
     "zod": "3.14.4"
   },
   "devDependencies": {
