@@ -376,10 +376,10 @@ chalk@^2.4.1:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-"checkout@https://github.com/actions/checkout#v3.0.1":
+"checkout@https://github.com/actions/checkout#v3.0.2":
   version "2.0.2"
-  uid dcd71f646680f2efd8db4afa5ad64fdcba30e748
-  resolved "https://github.com/actions/checkout#dcd71f646680f2efd8db4afa5ad64fdcba30e748"
+  uid "2541b1294d2704b0964813337f33b291d3f8596b"
+  resolved "https://github.com/actions/checkout#2541b1294d2704b0964813337f33b291d3f8596b"
   dependencies:
     "@actions/core" "^1.2.6"
     "@actions/exec" "^1.0.1"
