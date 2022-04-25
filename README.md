@@ -1,11 +1,10 @@
 # @exivity/actions
 
-Public GitHub Actions used at Exivity for CI/CD. These probably don't make much
-sense outside the context of the Exivity development environment.
+**Common actions**
 
-_Available actions:_
+These were originally built for use with the Exivity CI/CD workflows, but can be
+applied outside of the context of the Exivity repositories.
 
-- [`accept`](#accept)
 - [`build-push-image`](#build-push-image)
 - [`commit-status`](#commit-status)
 - [`db`](#db)
@@ -24,37 +23,23 @@ _Available actions:_
 - [`sync-defaults`](#sync-defaults)
 - [`virustotal`](#virustotal)
 
-# `accept`
+**Exivity specific actions**
 
-Triggers a scaffold repository build using the `workflow_dispatch` event. Does
-not trigger for the `master` or `main` branch.
+These probably don't make much sense outside the context of the Exivity CI/CD
+workflows.
 
-If the current branch includes a Jira key (e.g. EXVT-1000), the scaffold build
-will try to resolve matching epic branches for other components.
+- [`accept`](#accept)
 
-See [.github repository](https://github.com/exivity/.github#accept) for example
-usage.
-
-## Example
-
-```yaml
-- uses: exivity/actions/accept@main
-  with:
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
-```
-
-## Inputs
-
-| name              | required | default        | description                                                                                                                                                                                                                                  |
-| ----------------- | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scaffold-branch` |          | `"develop"`    | The scaffold branch to build.                                                                                                                                                                                                                |
-| `gh-token`        |          | `github.token` | A GitHub token with access to the exivity/scaffold repository.                                                                                                                                                                               |
-| `dry-run`         |          | `false`        | If `true`, scaffold will not build or run any tests.                                                                                                                                                                                         |
-| `filter`          |          |                | If provided, only trigger acceptance tests if files which match this input are modified. Glob patterns allowed. Multiple entries eparated by newline. If provided, and changed files do not match, writes a successful status to the commit. |
+---
 
 # `build-push-image`
 
-Builds a container image and pushes it to a Docker registry
+Builds a container image and pushes it to a Docker registry. It uses the branch
+name as the image tag and attaches some simple _opencontainers_ image labels.
+The actions also writes a `metadata.json` file containing some basic information
+about the image: component name, version (semver tag or git sha) and timestamp.
+This file needs to be manually copied into the image in the Dockerfile if
+needed.
 
 ## Example
 
@@ -64,17 +49,19 @@ Builds a container image and pushes it to a Docker registry
 
 ## Inputs
 
-| name         | required | default           | description                                                                   |
-| ------------ | -------- | ----------------- | ----------------------------------------------------------------------------- |
-| `component`  |          | Current component | The component being containerized.                                            |
-| `dockerfile` |          | `"./Dockerfile"`  | Path to the Dockerfile                                                        |
-| `registry`   |          | `"ghcr.io"`       | Registry to use, e.g. `"ghcr.io"` (default) or `"docker.io"` (for Docker Hub) |
-| `user`       |          | `github.actor`    | Username for the Docker registry                                              |
-| `password`   |          | `github.token`    | Password for the Docker registry                                              |
+| name         | required | default          | description                                                                   |
+| ------------ | -------- | ---------------- | ----------------------------------------------------------------------------- |
+| `namespace`  |          | Repository owner | The namespace of the image repository.                                        |
+| `name`       |          | Repository name  | The name of the image repository.                                             |
+| `dockerfile` |          | `"./Dockerfile"` | Path to the Dockerfile                                                        |
+| `registry`   |          | `"ghcr.io"`      | Registry to use, e.g. `"ghcr.io"` (default) or `"docker.io"` (for Docker Hub) |
+| `user`       |          | `github.actor`   | Username for the Docker registry                                              |
+| `password`   |          | `github.token`   | Password for the Docker registry                                              |
 
 # `commit-status`
 
-Writes a [commit status](https://docs.github.com/en/rest/reference/commits#commit-statuses).
+Writes a
+[commit status](https://docs.github.com/en/rest/reference/commits#commit-statuses).
 
 ## Example
 
@@ -366,13 +353,15 @@ Reviews a PR.
 
 # `semantic-pull-request`
 
-Ensures your pull requests title follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
-spec.
+Ensures your pull requests title follow the
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) spec.
 
-See [.github repository](https://github.com/exivity/.github#semantic-pull-request)
+See
+[.github repository](https://github.com/exivity/.github#semantic-pull-request)
 for example usage.
 
-_Based on original work from [amannn/action-semantic-pull-request](https://github.com/amannn/action-semantic-pull-request)_
+_Based on original work from
+[amannn/action-semantic-pull-request](https://github.com/amannn/action-semantic-pull-request)_
 
 ## Example
 
@@ -444,10 +433,11 @@ Syncs the repo settings with org defaults. Override org settings in a local
 [probot/settings](https://github.com/probot/settings#usage) for all available
 options.
 
-See [.github repository](https://github.com/exivity/.github#sync-defaults)
-for example usage.
+See [.github repository](https://github.com/exivity/.github#sync-defaults) for
+example usage.
 
-_Based on original work from [probot/settings](https://github.com/probot/settings)_
+_Based on original work from
+[probot/settings](https://github.com/probot/settings)_
 
 ## Example
 
@@ -467,7 +457,8 @@ _Based on original work from [probot/settings](https://github.com/probot/setting
 
 Analyse artefacts with VirusTotal
 
-_Forked from: [crazy-max/ghaction-virustotal](https://github.com/crazy-max/ghaction-virustotal)_
+_Forked from:
+[crazy-max/ghaction-virustotal](https://github.com/crazy-max/ghaction-virustotal)_
 
 ## Example
 
@@ -509,7 +500,43 @@ jobs:
 | `virustotal-api-key` | ✅       |                | The VirusTotal API key                                                                              |
 | `gh-token`           |          | `github.token` | GitHub token used for writing commit status                                                         |
 
+---
+
+# `accept`
+
+Triggers a scaffold repository build using the `workflow_dispatch` event. Does
+not trigger for the `master` or `main` branch.
+
+If the current branch includes a Jira key (e.g. EXVT-1000), the scaffold build
+will try to resolve matching epic branches for other components.
+
+See [.github repository](https://github.com/exivity/.github#accept) for example
+usage.
+
+## Example
+
+```yaml
+- uses: exivity/actions/accept@main
+  with:
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name              | required | default        | description                                                                                                                                                                                                                                  |
+| ----------------- | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scaffold-branch` |          | `"develop"`    | The scaffold branch to build.                                                                                                                                                                                                                |
+| `gh-token`        |          | `github.token` | A GitHub token with access to the exivity/scaffold repository.                                                                                                                                                                               |
+| `dry-run`         |          | `false`        | If `true`, scaffold will not build or run any tests.                                                                                                                                                                                         |
+| `filter`          |          |                | If provided, only trigger acceptance tests if files which match this input are modified. Glob patterns allowed. Multiple entries eparated by newline. If provided, and changed files do not match, writes a successful status to the commit. |
+
+---
+
 # Development guide
 
 When committing code to this repository, make sure to have Node & Yarn installed
 since code needs to be compiled in a pre-commit hook.
+
+To make this easier, use the
+[devcontainer](https://code.visualstudio.com/docs/remote/containers)
+configuration included with this repo.

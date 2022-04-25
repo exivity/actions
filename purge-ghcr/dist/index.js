@@ -9946,11 +9946,11 @@ function table(key, value) {
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 function getRepository() {
-  const { owner, repo: component } = import_utils.context.repo;
-  if (!owner || !component) {
+  const { owner, repo } = import_utils.context.repo;
+  if (!owner || !repo) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component, fqn: `${owner}/${component}` };
+  return { owner, repo, fqn: `${owner}/${repo}` };
 }
 function getRef() {
   var _a, _b, _c;
@@ -9990,12 +9990,12 @@ function getEventData(eventName) {
 
 // lib/image.ts
 var import_semver = __toESM(require_semver2());
-function refToTag(ref) {
-  return ref.replace(/[^\w\w.-]/g, "-").substring(0, 127);
+function validTag(tag) {
+  return tag.replace(/^[\.-]+/, "").replace(/[^\w.-]/g, "-").substring(0, 127);
 }
 function getTags(ref = getRef()) {
   const tags = [ref];
-  return tags.map(refToTag);
+  return tags.map(validTag);
 }
 
 // purge-ghcr/src/index.ts

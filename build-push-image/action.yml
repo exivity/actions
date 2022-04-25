@@ -1,8 +1,14 @@
 name: build-push-image
 description: Builds and pushes a component image
 inputs:
+  owner:
+    description: The namespace of the image repository.
+    required: false
+  name:
+    description: The name of the image repository.
+    required: false
   component:
-    description: Component name to build the image for
+    description: The name of the image repository (deprecated).
     required: false
   dockerfile:
     description: Path to the Dockerfile, defaults to ./Dockerfile

@@ -12,10 +12,13 @@ inputs:
     required: false
     default: ${{ github.token }}
   state:
-    description: The commit status state, can be "error", "failure", "pending" or "success"
+    description:
+      The commit status state, can be "error", "failure", "pending" or "success"
     required: true
   context:
-    description: A string label to differentiate this status from the status of other systems
+    description:
+      A string label to differentiate this status from the status of other
+      systems
     required: false
   description:
     description: A short description of the status

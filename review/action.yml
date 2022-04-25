@@ -12,14 +12,20 @@ inputs:
     required: false
     default: ${{ github.token }}
   event:
-    description: 'What to do, defaults to APPROVE, other options are REQUEST_CHANGES, COMMENT or PENDING'
+    description:
+      'What to do, defaults to APPROVE, other options are REQUEST_CHANGES,
+      COMMENT or PENDING'
     default: 'APPROVE'
     required: false
   body:
-    description: 'The body of the review text, required when using REQUEST_CHANGES or COMMENT'
+    description:
+      'The body of the review text, required when using REQUEST_CHANGES or
+      COMMENT'
     required: false
   branch:
-    description: 'The head branch the pull request belongs to in order to get latest pull request, not needed if `pull` has been specified'
+    description:
+      'The head branch the pull request belongs to in order to get latest pull
+      request, not needed if `pull` has been specified'
     required: false
 runs:
   using: 'node16'

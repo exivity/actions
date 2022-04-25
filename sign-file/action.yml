@@ -5,7 +5,8 @@ inputs:
     description: The path to the file to sign, glob patterns allowed
     required: true
   certificate-base64:
-    description: The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string
+    description:
+      The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string
     required: true
   certificate-password:
     description: The password for the `.pfx` file

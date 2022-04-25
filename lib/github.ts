@@ -94,13 +94,26 @@ export async function getPr(
 }
 
 export function getRepository() {
-  const { owner, repo: component } = context.repo
+  const { owner, repo } = context.repo
 
-  if (!owner || !component) {
+  if (!owner || !repo) {
     throw new Error('The GitHub repository is missing')
   }
 
-  return { owner, component, fqn: `${owner}/${component}` }
+  return { owner, repo, fqn: `${owner}/${repo}` }
+}
+
+export function getOwnerInput(inputName = 'owner') {
+  return getInput(inputName) || getRepository().owner
+}
+
+export function getRepoInput(
+  inputName = 'repo',
+  fallbackInputName: string | undefined = 'component'
+) {
+  return fallbackInputName
+    ? getInput(inputName) || getInput(fallbackInputName) || getRepository().repo
+    : getInput(inputName) || getRepository().repo
 }
 
 export function getSha() {

@@ -6684,11 +6684,11 @@ var import_core5 = __toESM(require_core());
 var import_core = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 function getRepository() {
-  const { owner, repo: component } = import_utils.context.repo;
-  if (!owner || !component) {
+  const { owner, repo } = import_utils.context.repo;
+  if (!owner || !repo) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component, fqn: `${owner}/${component}` };
+  return { owner, repo, fqn: `${owner}/${repo}` };
 }
 function getToken(inputName = "gh-token") {
   const ghToken = (0, import_core.getInput)(inputName);

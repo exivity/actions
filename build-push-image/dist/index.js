@@ -9901,11 +9901,17 @@ function table(key, value) {
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 function getRepository() {
-  const { owner, repo: component } = import_utils.context.repo;
-  if (!owner || !component) {
+  const { owner, repo } = import_utils.context.repo;
+  if (!owner || !repo) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component, fqn: `${owner}/${component}` };
+  return { owner, repo, fqn: `${owner}/${repo}` };
+}
+function getOwnerInput(inputName = "owner") {
+  return (0, import_core2.getInput)(inputName) || getRepository().owner;
+}
+function getRepoInput(inputName = "repo", fallbackInputName = "component") {
+  return fallbackInputName ? (0, import_core2.getInput)(inputName) || (0, import_core2.getInput)(fallbackInputName) || getRepository().repo : (0, import_core2.getInput)(inputName) || getRepository().repo;
 }
 function getSha() {
   let sha = import_utils.context.sha;
@@ -9950,30 +9956,34 @@ function getEventData(eventName) {
 
 // lib/image.ts
 var import_semver = __toESM(require_semver2());
-function refToTag(ref) {
-  return ref.replace(/[^\w\w.-]/g, "-").substring(0, 127);
+function validTag(tag) {
+  return tag.replace(/^[\.-]+/, "").replace(/[^\w.-]/g, "-").substring(0, 127);
 }
 function getTags(ref = getRef()) {
   const tags = [ref];
-  return tags.map(refToTag);
+  return tags.map(validTag);
 }
 function getTagsFQN({ repository, tags }) {
   return tags.map((tag) => `${repository}:${tag}`);
 }
-function getLabels(component) {
-  const { fqn } = getRepository();
-  return {
-    "org.opencontainers.image.vendor": "Exivity",
-    "org.opencontainers.image.title": component,
-    "org.opencontainers.image.description": component,
-    "org.opencontainers.image.url": "https://exivity.com",
-    "org.opencontainers.image.documentation": "https://docs.exivity.com",
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+function getLabels(name) {
+  const { owner, fqn } = getRepository();
+  return __spreadValues({
+    "org.opencontainers.image.vendor": capitalizeFirstLetter(owner),
+    "org.opencontainers.image.title": name,
+    "org.opencontainers.image.description": name,
     "org.opencontainers.image.source": `https://github.com/${fqn}`,
     "org.opencontainers.image.created": new Date().toISOString(),
     "org.opencontainers.image.revision": getSha()
-  };
+  }, owner === "exivity" ? {
+    "org.opencontainers.image.url": "https://exivity.com",
+    "org.opencontainers.image.documentation": "https://docs.exivity.com"
+  } : {});
 }
-function getComponentVersion() {
+function getImageVersion() {
   const tag = getTag();
   const semver = (0, import_semver.parse)(tag);
   return ((semver == null ? void 0 : semver.version) ?? getSha()) || "unknown";
@@ -10020,10 +10030,10 @@ ${cmd}`);
 var import_core4 = __toESM(require_core());
 var import_fs = require("fs");
 var METADATA_FILENAME = "metadata.json";
-async function writeExivityMetadataFile(component) {
+async function writeMetadataFile(repo) {
   const metadata = {
-    component,
-    version: getComponentVersion(),
+    component: repo,
+    version: getImageVersion(),
     created: new Date().toISOString()
   };
   const contents = JSON.stringify(metadata, void 0, 2);
@@ -10034,15 +10044,16 @@ ${contents}`);
 
 // build-push-image/src/index.ts
 async function run() {
-  const component = (0, import_core5.getInput)("component") || getRepository().component;
+  const namespace = getOwnerInput("namespace");
+  const name = getRepoInput("name");
   const dockerfile = (0, import_core5.getInput)("dockerfile") || "./Dockerfile";
   const registry = (0, import_core5.getInput)("registry");
   const user = (0, import_core5.getInput)("user");
   const password = (0, import_core5.getInput)("password");
-  const repository = `${registry}/exivity/${component}`;
+  const repository = `${registry}/${namespace}/${name}`;
   const tags = getTags();
   const tagsFQN = getTagsFQN({ repository, tags });
-  const labels = getLabels(component);
+  const labels = getLabels(name);
   if (tags.length === 0) {
     (0, import_core5.warning)("No tags set, skipping build-push-image action");
     return;
@@ -10050,7 +10061,7 @@ async function run() {
   table("Repository", repository);
   table("Tags", tags.join(", "));
   table("Labels", JSON.stringify(labels, void 0, 2));
-  await writeExivityMetadataFile(component);
+  await writeMetadataFile(name);
   await dockerLogin({
     registry,
     user,
