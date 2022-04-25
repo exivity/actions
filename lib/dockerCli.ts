@@ -51,6 +51,18 @@ export async function dockerBuild({
   await exec(cmd)
 }
 
+export async function dockerRetag(repository, oldTag, newTag: string) {
+  info('Retagging image...')
+
+  const setTag = `docker tag ${repository} --tag "${newTag}"`
+  debug(`Executing command:\n${setTag}`)
+  await exec(setTag)
+
+  const removeTag = `docker rmi ${repository}:oldTag`
+  debug(`Executing command:\n${removeTag}`)
+  await exec(removeTag)
+}
+
 export async function dockerPush(repository: string) {
   info('Pushing image...')
 
