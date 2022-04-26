@@ -1,16 +1,18 @@
 name: commit-status
 description: Writes a commit status
 inputs:
+  owner:
+    description: The owner of the repo
+    required: false
+  repo:
+    description: The repo to write the commit status for
+    required: false
   component:
-    description: Component to write the commit status for, defaults to current
+    description: The repo to write the commit status for (deprecated)
     required: false
   sha:
     description: Sha of commit to write the status for, defaults to current
     required: false
-  gh-token:
-    description: A GitHub token with write access to the component
-    required: false
-    default: ${{ github.token }}
   state:
     description:
       The commit status state, can be "error", "failure", "pending" or "success"
@@ -26,6 +28,10 @@ inputs:
   target_url:
     description: The target URL to associate with this status
     required: false
+  gh-token:
+    description: A GitHub token with write access to the component
+    required: false
+    default: ${{ github.token }}
 runs:
   using: node16
   main: dist/index.js

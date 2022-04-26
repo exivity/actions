@@ -1,32 +1,38 @@
-name: 'Bot review'
-description: 'Reviews a PR'
+name: review
+description: Reviews a PR
 inputs:
+  owner:
+    description: The owner of the repo
+    required: false
+  repo:
+    description: The repo to review a PR for
+    required: false
   component:
-    description: 'The component to review a PR for, defaults to current'
+    description: The repo to review a PR for (deprecated)
     required: false
   pull:
-    description: 'PR number to review, defaults to latest of current branch'
+    description: PR number to review, defaults to latest of current branch
     required: false
-  gh-token:
-    description: 'A GitHub token from the PR reviewer'
-    required: false
-    default: ${{ github.token }}
   event:
     description:
-      'What to do, defaults to APPROVE, other options are REQUEST_CHANGES,
-      COMMENT or PENDING'
-    default: 'APPROVE'
+      What to do, defaults to APPROVE, other options are REQUEST_CHANGES,
+      COMMENT or PENDING
+    default: APPROVE
     required: false
   body:
     description:
-      'The body of the review text, required when using REQUEST_CHANGES or
-      COMMENT'
+      The body of the review text, required when using REQUEST_CHANGES or
+      COMMENT
     required: false
   branch:
     description:
-      'The head branch the pull request belongs to in order to get latest pull
-      request, not needed if `pull` has been specified'
+      The head branch the pull request belongs to in order to get latest pull
+      request, not needed if `pull` has been specified
     required: false
+  gh-token:
+    description: A GitHub token from the PR reviewer
+    required: false
+    default: ${{ github.token }}
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: node16
+  main: dist/index.js

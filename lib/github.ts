@@ -17,7 +17,8 @@ export type EventData<T extends EventName> = T extends WebhookEventName
 
 type Options = {
   octokit: ReturnType<typeof getOctokit>
-  component: string
+  owner: string
+  repo: string
   ref: string
   useFallback?: boolean
 }
@@ -27,21 +28,22 @@ export const DevelopBranches = ['develop']
 
 export async function getShaFromRef({
   octokit,
-  component,
+  owner,
+  repo,
   ref,
   useFallback = true,
 }: Options) {
   if (useFallback && ref === 'develop') {
     const availableBranches = (
       await octokit.rest.repos.listBranches({
-        owner: 'exivity',
-        repo: component,
+        owner,
+        repo,
       })
     ).data.map((branch) => branch.name)
     if (!availableBranches.includes('develop')) {
       const fallback = availableBranches.includes('main') ? 'main' : 'master'
       warning(
-        `Branch "develop" not available in repository "exivity/${component}", falling back to "${fallback}".`
+        `Branch "develop" not available in repository "${owner}/${repo}", falling back to "${fallback}".`
       )
       ref = fallback
     }
@@ -49,8 +51,8 @@ export async function getShaFromRef({
 
   const sha = (
     await octokit.rest.repos.getBranch({
-      owner: 'exivity',
-      repo: component,
+      owner,
+      repo,
       branch: ref,
     })
   ).data.commit.sha
@@ -60,16 +62,22 @@ export async function getShaFromRef({
   return sha
 }
 
-export async function getPrFromRef(
-  octokit: ReturnType<typeof getOctokit>,
-  repo: string,
+export async function getPrFromRef({
+  octokit,
+  owner,
+  repo,
+  ref,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
   ref: string
-) {
+}) {
   // Get a list of PRs for the current branch
   const { data } = await octokit.rest.pulls.list({
-    owner: 'exivity',
+    owner,
     repo,
-    head: `exivity:${ref}`,
+    head: `${owner}:${ref}`,
     sort: 'updated',
   })
 
@@ -79,14 +87,20 @@ export async function getPrFromRef(
   }
 }
 
-export async function getPr(
-  octokit: ReturnType<typeof getOctokit>,
-  repo: string,
+export async function getPr({
+  octokit,
+  owner,
+  repo,
+  number,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
   number: string | number
-) {
+}) {
   return (
     await octokit.rest.pulls.get({
-      owner: 'exivity',
+      owner,
       repo,
       pull_number: parseInt(String(number), 10),
     })
@@ -256,13 +270,21 @@ export async function getCommit(
   ).data
 }
 
-export async function review(
-  octokit: ReturnType<typeof getOctokit>,
-  repo: string,
-  pull_number: number,
-  event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT',
+export async function review({
+  octokit,
+  owner,
+  repo,
+  pull_number,
+  event,
+  body,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  pull_number: number
+  event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT'
   body?: string
-) {
+}) {
   info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
 
   const repository = getRepository().fqn
@@ -273,7 +295,7 @@ workflow in **${repository}**]\
 
   return (
     await octokit.rest.pulls.createReview({
-      owner: 'exivity',
+      owner,
       repo,
       pull_number,
       event,
@@ -282,22 +304,32 @@ workflow in **${repository}**]\
   ).data
 }
 
-export async function writeStatus(
-  octokit: ReturnType<typeof getOctokit>,
-  repo: string,
-  sha: string,
-  state: 'error' | 'failure' | 'pending' | 'success',
-  context: string,
-  description?: string,
+export async function writeStatus({
+  octokit,
+  owner,
+  repo,
+  sha,
+  state,
+  context,
+  description,
+  target_url,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  sha: string
+  state: 'error' | 'failure' | 'pending' | 'success'
+  context: string
+  description?: string
   target_url?: string
-) {
+}) {
   info(
     `Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`
   )
 
   return (
     await octokit.rest.repos.createCommitStatus({
-      owner: 'exivity',
+      owner,
       repo,
       sha: sha,
       state,

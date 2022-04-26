@@ -54,7 +54,7 @@ ${genericHelp}\n\n${typesHelp}`
 async function run() {
   // Inputs
   const token = getToken()
-  const component = getRepository().component
+  const { owner, repo } = getRepository()
   const eventName = getEventName(supportedEvents)
   const eventData = getEventData(eventName)
 
@@ -62,7 +62,12 @@ async function run() {
   const octokit = getOctokit(token)
 
   // Get latest PR data
-  const pr = await getPr(octokit, component, eventData.pull_request.number)
+  const pr = await getPr({
+    octokit,
+    owner,
+    repo,
+    number: eventData.pull_request.number,
+  })
 
   // Validate PR title
   if (!validateCommitMessage(pr.title)) {
@@ -80,8 +85,8 @@ async function run() {
   for await (const response of octokit.paginate.iterator(
     octokit.rest.pulls.listCommits,
     {
-      owner: 'exivity',
-      repo: component,
+      owner,
+      repo,
       pull_number: pr.number,
     }
   )) {

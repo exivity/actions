@@ -1,7 +1,7 @@
 {
   "name": "@exivity/actions",
   "version": "1.0.0",
-  "repository": "git@github.com:exivity/actions.git",
+  "repository": "https://github.com/exivity/actions",
   "author": "Joram van den Boezem <joram@vandenboezem.nl>",
   "license": "MIT",
   "scripts": {

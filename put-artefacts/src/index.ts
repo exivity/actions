@@ -23,17 +23,17 @@ async function run() {
 
   // From environment
   const sha = getSha()
-  const { component } = getRepository()
+  const { repo } = getRepository()
 
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
   if (zip) {
     // This will actually create a tarball instead of a zip archive 🤷‍♂️
-    path = await zipAll(path, component)
+    path = await zipAll(path, repo)
   }
 
   await uploadS3object({
-    component,
+    component: repo,
     sha,
     usePlatformPrefix,
     prefix,

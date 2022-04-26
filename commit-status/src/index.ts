@@ -1,6 +1,12 @@
 import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { getRepository, getSha, getToken, writeStatus } from '../../lib/github'
+import {
+  getOwnerInput,
+  getRepoInput,
+  getSha,
+  getToken,
+  writeStatus,
+} from '../../lib/github'
 
 const validStates = ['error', 'failure', 'pending', 'success'] as const
 
@@ -11,7 +17,8 @@ function isValidState(state: string): state is typeof validStates[number] {
 async function run() {
   // inputs
   const ghToken = getToken()
-  const repo = getInput('component') || getRepository().component
+  const owner = getOwnerInput()
+  const repo = getRepoInput()
   const sha = getInput('sha') || getSha()
   const state = getInput('state') || 'success'
   const context = getInput('context', { required: true })
@@ -27,7 +34,16 @@ async function run() {
   const octokit = getOctokit(ghToken)
 
   // Post a review to the GitHub API
-  await writeStatus(octokit, repo, sha, state, context, description, target_url)
+  await writeStatus({
+    octokit,
+    owner,
+    repo,
+    sha,
+    state,
+    context,
+    description,
+    target_url,
+  })
 }
 
 run().catch(setFailed)
