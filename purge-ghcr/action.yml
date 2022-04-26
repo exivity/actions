@@ -1,8 +1,14 @@
 name: purge-ghcr
 description: Delete a version of an image from ghcr.io from a deleted ref
 inputs:
+  org:
+    description: The org who owns the package
+    required: false
+  name:
+    description: The package name
+    required: false
   component:
-    description: Package name
+    description: The package name (deprecated)
     required: false
   gh-token:
     description: The GitHub token with appropriate scope

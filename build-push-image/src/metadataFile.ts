@@ -1,6 +1,6 @@
 import { info } from '@actions/core'
 import { promises as fs } from 'fs'
-import { getComponentVersion } from '../../lib/image'
+import { getImageVersion } from '../../lib/image'
 
 const METADATA_FILENAME = 'metadata.json'
 
@@ -9,10 +9,10 @@ const METADATA_FILENAME = 'metadata.json'
  * docker image on build. This requires the line `COPY ./metadata.json {target}`
  * to be present in the Dockerfile.
  */
-export async function writeExivityMetadataFile(component: string) {
+export async function writeMetadataFile(repo: string) {
   const metadata = {
-    component,
-    version: getComponentVersion(),
+    component: repo,
+    version: getImageVersion(),
     created: new Date().toISOString(),
   }
   const contents = JSON.stringify(metadata, undefined, 2)

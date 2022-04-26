@@ -27,7 +27,8 @@ async function run() {
   if (!sha) {
     sha = await getShaFromRef({
       octokit: getOctokit(ghToken),
-      component,
+      owner: 'exivity',
+      repo: component,
       ref: branch,
     })
   }

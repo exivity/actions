@@ -2,7 +2,8 @@ import { EventData, EventName } from '../../lib/github'
 
 export type SyncPluginOptions<T extends EventName> = {
   ghToken: string
-  component: string
+  owner: string
+  repo: string
   eventName: T
   eventData: EventData<T>
 }

@@ -1105,6 +1105,169 @@ var require_oidc_utils = __commonJS({
   }
 });
 
+// node_modules/@actions/core/lib/markdown-summary.js
+var require_markdown_summary = __commonJS({
+  "node_modules/@actions/core/lib/markdown-summary.js"(exports) {
+    "use strict";
+    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve2) {
+          resolve2(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve2, reject) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function step(result) {
+          result.done ? resolve2(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
+    var os_1 = require("os");
+    var fs_1 = require("fs");
+    var { access, appendFile, writeFile } = fs_1.promises;
+    exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
+    exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-markdown-summary";
+    var MarkdownSummary = class {
+      constructor() {
+        this._buffer = "";
+      }
+      filePath() {
+        return __awaiter(this, void 0, void 0, function* () {
+          if (this._filePath) {
+            return this._filePath;
+          }
+          const pathFromEnv = process.env[exports.SUMMARY_ENV_VAR];
+          if (!pathFromEnv) {
+            throw new Error(`Unable to find environment variable for $${exports.SUMMARY_ENV_VAR}. Check if your runtime environment supports markdown summaries.`);
+          }
+          try {
+            yield access(pathFromEnv, fs_1.constants.R_OK | fs_1.constants.W_OK);
+          } catch (_a) {
+            throw new Error(`Unable to access summary file: '${pathFromEnv}'. Check if the file has correct read/write permissions.`);
+          }
+          this._filePath = pathFromEnv;
+          return this._filePath;
+        });
+      }
+      wrap(tag, content, attrs = {}) {
+        const htmlAttrs = Object.entries(attrs).map(([key, value]) => ` ${key}="${value}"`).join("");
+        if (!content) {
+          return `<${tag}${htmlAttrs}>`;
+        }
+        return `<${tag}${htmlAttrs}>${content}</${tag}>`;
+      }
+      write(options) {
+        return __awaiter(this, void 0, void 0, function* () {
+          const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
+          const filePath = yield this.filePath();
+          const writeFunc = overwrite ? writeFile : appendFile;
+          yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
+          return this.emptyBuffer();
+        });
+      }
+      clear() {
+        return __awaiter(this, void 0, void 0, function* () {
+          return this.emptyBuffer().write({ overwrite: true });
+        });
+      }
+      stringify() {
+        return this._buffer;
+      }
+      isEmptyBuffer() {
+        return this._buffer.length === 0;
+      }
+      emptyBuffer() {
+        this._buffer = "";
+        return this;
+      }
+      addRaw(text, addEOL = false) {
+        this._buffer += text;
+        return addEOL ? this.addEOL() : this;
+      }
+      addEOL() {
+        return this.addRaw(os_1.EOL);
+      }
+      addCodeBlock(code, lang) {
+        const attrs = Object.assign({}, lang && { lang });
+        const element = this.wrap("pre", this.wrap("code", code), attrs);
+        return this.addRaw(element).addEOL();
+      }
+      addList(items, ordered = false) {
+        const tag = ordered ? "ol" : "ul";
+        const listItems = items.map((item) => this.wrap("li", item)).join("");
+        const element = this.wrap(tag, listItems);
+        return this.addRaw(element).addEOL();
+      }
+      addTable(rows) {
+        const tableBody = rows.map((row) => {
+          const cells = row.map((cell) => {
+            if (typeof cell === "string") {
+              return this.wrap("td", cell);
+            }
+            const { header, data, colspan, rowspan } = cell;
+            const tag = header ? "th" : "td";
+            const attrs = Object.assign(Object.assign({}, colspan && { colspan }), rowspan && { rowspan });
+            return this.wrap(tag, data, attrs);
+          }).join("");
+          return this.wrap("tr", cells);
+        }).join("");
+        const element = this.wrap("table", tableBody);
+        return this.addRaw(element).addEOL();
+      }
+      addDetails(label, content) {
+        const element = this.wrap("details", this.wrap("summary", label) + content);
+        return this.addRaw(element).addEOL();
+      }
+      addImage(src, alt, options) {
+        const { width, height } = options || {};
+        const attrs = Object.assign(Object.assign({}, width && { width }), height && { height });
+        const element = this.wrap("img", null, Object.assign({ src, alt }, attrs));
+        return this.addRaw(element).addEOL();
+      }
+      addHeading(text, level) {
+        const tag = `h${level}`;
+        const allowedTag = ["h1", "h2", "h3", "h4", "h5", "h6"].includes(tag) ? tag : "h1";
+        const element = this.wrap(allowedTag, text);
+        return this.addRaw(element).addEOL();
+      }
+      addSeparator() {
+        const element = this.wrap("hr", null);
+        return this.addRaw(element).addEOL();
+      }
+      addBreak() {
+        const element = this.wrap("br", null);
+        return this.addRaw(element).addEOL();
+      }
+      addQuote(text, cite) {
+        const attrs = Object.assign({}, cite && { cite });
+        const element = this.wrap("blockquote", text, attrs);
+        return this.addRaw(element).addEOL();
+      }
+      addLink(text, href) {
+        const element = this.wrap("a", text, { href });
+        return this.addRaw(element).addEOL();
+      }
+    };
+    exports.markdownSummary = new MarkdownSummary();
+  }
+});
+
 // node_modules/@actions/core/lib/core.js
 var require_core = __commonJS({
   "node_modules/@actions/core/lib/core.js"(exports) {
@@ -1305,6 +1468,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       });
     }
     exports.getIDToken = getIDToken;
+    var markdown_summary_1 = require_markdown_summary();
+    Object.defineProperty(exports, "markdownSummary", { enumerable: true, get: function() {
+      return markdown_summary_1.markdownSummary;
+    } });
   }
 });
 
@@ -5051,7 +5218,7 @@ var require_dist_node6 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var request = require_dist_node5();
     var universalUserAgent = require_dist_node();
-    var VERSION = "4.6.0";
+    var VERSION = "4.6.4";
     var GraphqlError = class extends Error {
       constructor(request2, response) {
         const message = response.data.errors[0].message;
@@ -5068,10 +5235,18 @@ var require_dist_node6 = __commonJS({
       }
     };
     var NON_VARIABLE_OPTIONS = ["method", "baseUrl", "url", "headers", "request", "query", "mediaType"];
+    var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
     var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
     function graphql(request2, query, options) {
-      if (typeof query === "string" && options && "query" in options) {
-        return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
+      if (options) {
+        if (typeof query === "string" && "query" in options) {
+          return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
+        }
+        for (const key in options) {
+          if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
+            continue;
+          return Promise.reject(new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`));
+        }
       }
       const parsedOptions = typeof query === "string" ? Object.assign({
         query
@@ -25109,6 +25284,52 @@ var require_core3 = __commonJS({
   }
 });
 
+// node_modules/@octokit/rest/node_modules/@octokit/auth-token/dist-node/index.js
+var require_dist_node16 = __commonJS({
+  "node_modules/@octokit/rest/node_modules/@octokit/auth-token/dist-node/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
+    var REGEX_IS_INSTALLATION = /^ghs_/;
+    var REGEX_IS_USER_TO_SERVER = /^ghu_/;
+    async function auth(token) {
+      const isApp = token.split(/\./).length === 3;
+      const isInstallation = REGEX_IS_INSTALLATION_LEGACY.test(token) || REGEX_IS_INSTALLATION.test(token);
+      const isUserToServer = REGEX_IS_USER_TO_SERVER.test(token);
+      const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
+      return {
+        type: "token",
+        token,
+        tokenType
+      };
+    }
+    function withAuthorizationPrefix(token) {
+      if (token.split(/\./).length === 3) {
+        return `bearer ${token}`;
+      }
+      return `token ${token}`;
+    }
+    async function hook(token, request, route, parameters) {
+      const endpoint = request.endpoint.merge(route, parameters);
+      endpoint.headers.authorization = withAuthorizationPrefix(token);
+      return request(endpoint);
+    }
+    var createTokenAuth = function createTokenAuth2(token) {
+      if (!token) {
+        throw new Error("[@octokit/auth-token] No token passed to createTokenAuth");
+      }
+      if (typeof token !== "string") {
+        throw new Error("[@octokit/auth-token] Token passed to createTokenAuth is not a string");
+      }
+      token = token.replace(/^(token|bearer) +/i, "");
+      return Object.assign(auth.bind(null, token), {
+        hook: hook.bind(null, token)
+      });
+    };
+    exports.createTokenAuth = createTokenAuth;
+  }
+});
+
 // node_modules/btoa-lite/btoa-node.js
 var require_btoa_node = __commonJS({
   "node_modules/btoa-lite/btoa-node.js"(exports, module2) {
@@ -25190,7 +25411,7 @@ var require_before_request = __commonJS({
 });
 
 // node_modules/@octokit/rest/node_modules/@octokit/request-error/dist-node/index.js
-var require_dist_node16 = __commonJS({
+var require_dist_node17 = __commonJS({
   "node_modules/@octokit/rest/node_modules/@octokit/request-error/dist-node/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -25233,7 +25454,7 @@ var require_dist_node16 = __commonJS({
 var require_request_error = __commonJS({
   "node_modules/@octokit/rest/plugins/authentication/request-error.js"(exports, module2) {
     module2.exports = authenticationRequestError;
-    var { RequestError } = require_dist_node16();
+    var { RequestError } = require_dist_node17();
     function authenticationRequestError(state, error, options) {
       if (!error.headers)
         throw error;
@@ -25300,7 +25521,7 @@ var require_validate = __commonJS({
 var require_authentication = __commonJS({
   "node_modules/@octokit/rest/plugins/authentication/index.js"(exports, module2) {
     module2.exports = authenticationPlugin;
-    var { createTokenAuth } = require_dist_node7();
+    var { createTokenAuth } = require_dist_node16();
     var { Deprecation } = require_dist_node3();
     var once = require_once();
     var beforeRequest = require_before_request();
@@ -25757,7 +25978,7 @@ var require_before_request2 = __commonJS({
 var require_request_error2 = __commonJS({
   "node_modules/@octokit/rest/plugins/authentication-deprecated/request-error.js"(exports, module2) {
     module2.exports = authenticationRequestError;
-    var { RequestError } = require_dist_node16();
+    var { RequestError } = require_dist_node17();
     function authenticationRequestError(state, error, options) {
       if (!error.headers)
         throw error;
@@ -25818,7 +26039,7 @@ var require_authentication_deprecated = __commonJS({
 });
 
 // node_modules/@octokit/rest/node_modules/@octokit/plugin-paginate-rest/dist-node/index.js
-var require_dist_node17 = __commonJS({
+var require_dist_node18 = __commonJS({
   "node_modules/@octokit/rest/node_modules/@octokit/plugin-paginate-rest/dist-node/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -25919,7 +26140,7 @@ var require_dist_node17 = __commonJS({
 var require_pagination = __commonJS({
   "node_modules/@octokit/rest/plugins/pagination/index.js"(exports, module2) {
     module2.exports = paginatePlugin;
-    var { paginateRest } = require_dist_node17();
+    var { paginateRest } = require_dist_node18();
     function paginatePlugin(octokit) {
       Object.assign(octokit, paginateRest(octokit));
     }
@@ -26560,7 +26781,7 @@ var require_validate2 = __commonJS({
   "node_modules/@octokit/rest/plugins/validate/validate.js"(exports, module2) {
     "use strict";
     module2.exports = validate;
-    var { RequestError } = require_dist_node16();
+    var { RequestError } = require_dist_node17();
     var get = require_lodash2();
     var set2 = require_lodash3();
     function validate(octokit, options) {
@@ -28987,11 +29208,16 @@ var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 var ReleaseBranches = ["master", "main"];
 var DevelopBranches = ["develop"];
-async function getPrFromRef(octokit, repo, ref) {
+async function getPrFromRef({
+  octokit,
+  owner,
+  repo,
+  ref
+}) {
   const { data } = await octokit.rest.pulls.list({
-    owner: "exivity",
+    owner,
     repo,
-    head: `exivity:${ref}`,
+    head: `${owner}:${ref}`,
     sort: "updated"
   });
   if (data.length > 0) {
@@ -28999,11 +29225,11 @@ async function getPrFromRef(octokit, repo, ref) {
   }
 }
 function getRepository() {
-  const { owner, repo: component } = import_utils.context.repo;
-  if (!owner || !component) {
+  const { owner, repo } = import_utils.context.repo;
+  if (!owner || !repo) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component, fqn: `${owner}/${component}` };
+  return { owner, repo, fqn: `${owner}/${repo}` };
 }
 function getSha() {
   let sha = import_utils.context.sha;
@@ -29084,22 +29310,38 @@ async function getCommit(octokit, repo, ref) {
     ref
   })).data;
 }
-async function review(octokit, repo, pull_number, event, body) {
+async function review({
+  octokit,
+  owner,
+  repo,
+  pull_number,
+  event,
+  body
+}) {
   (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
   const repository = getRepository().fqn;
   body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${getWorkflowName()}** workflow in **${repository}**](https://github.com/${repository}/actions/runs/${import_utils.context.runId})_`;
   return (await octokit.rest.pulls.createReview({
-    owner: "exivity",
+    owner,
     repo,
     pull_number,
     event,
     body
   })).data;
 }
-async function writeStatus(octokit, repo, sha, state, context4, description, target_url) {
+async function writeStatus({
+  octokit,
+  owner,
+  repo,
+  sha,
+  state,
+  context: context4,
+  description,
+  target_url
+}) {
   (0, import_core2.info)(`Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`);
   return (await octokit.rest.repos.createCommitStatus({
-    owner: "exivity",
+    owner,
     repo,
     sha,
     state,
@@ -29193,6 +29435,7 @@ function escape(value) {
 var coreCommand = __toESM(require_command2());
 var IsPost = !!process.env["STATE_isPost"];
 var RepositoryPath = process.env["STATE_repositoryPath"] || "";
+var PostSetSafeDirectory = process.env["STATE_setSafeDirectory"] === "true";
 var SshKeyPath = process.env["STATE_sshKeyPath"] || "";
 var SshKnownHostsPath = process.env["STATE_sshKnownHostsPath"] || "";
 function setRepositoryPath(repositoryPath) {
@@ -29203,6 +29446,9 @@ function setSshKeyPath(sshKeyPath) {
 }
 function setSshKnownHostsPath(sshKnownHostsPath) {
   coreCommand.issueCommand("save-state", { name: "sshKnownHostsPath" }, sshKnownHostsPath);
+}
+function setSafeDirectory() {
+  coreCommand.issueCommand("save-state", { name: "setSafeDirectory" }, "true");
 }
 if (!IsPost) {
   coreCommand.issueCommand("save-state", { name: "isPost" }, "true");
@@ -29259,7 +29505,11 @@ var GitAuthHelper = class {
     await this.configureSsh();
     await this.configureToken();
   }
-  async configureGlobalAuth() {
+  async configureTempGlobalConfig() {
+    var _a;
+    if (((_a = this.temporaryHomePath) == null ? void 0 : _a.length) > 0) {
+      return path.join(this.temporaryHomePath, ".gitconfig");
+    }
     const runnerTemp = process.env["RUNNER_TEMP"] || "";
     assert2.ok(runnerTemp, "RUNNER_TEMP is not defined");
     const uniqueId = (0, import_v4.default)();
@@ -29282,9 +29532,13 @@ var GitAuthHelper = class {
     } else {
       await fs2.promises.writeFile(newGitConfigPath, "");
     }
+    core.info(`Temporarily overriding HOME='${this.temporaryHomePath}' before making global git config changes`);
+    this.git.setEnvironmentVariable("HOME", this.temporaryHomePath);
+    return newGitConfigPath;
+  }
+  async configureGlobalAuth() {
+    const newGitConfigPath = await this.configureTempGlobalConfig();
     try {
-      core.info(`Temporarily overriding HOME='${this.temporaryHomePath}' before making global git config changes`);
-      this.git.setEnvironmentVariable("HOME", this.temporaryHomePath);
       await this.configureToken(newGitConfigPath, true);
       await this.git.tryConfigUnset(this.insteadOfKey, true);
       if (!this.settings.sshKey) {
@@ -29320,10 +29574,13 @@ var GitAuthHelper = class {
     await this.removeSsh();
     await this.removeToken();
   }
-  async removeGlobalAuth() {
-    core.debug(`Unsetting HOME override`);
-    this.git.removeEnvironmentVariable("HOME");
-    await io.rmRF(this.temporaryHomePath);
+  async removeGlobalConfig() {
+    var _a;
+    if (((_a = this.temporaryHomePath) == null ? void 0 : _a.length) > 0) {
+      core.debug(`Unsetting HOME override`);
+      this.git.removeEnvironmentVariable("HOME");
+      await io.rmRF(this.temporaryHomePath);
+    }
   }
   async configureSsh() {
     if (!this.settings.sshKey) {
@@ -30198,34 +30455,48 @@ async function getSource(settings) {
   core7.startGroup("Getting Git version info");
   const git = await getGitCommandManager(settings);
   core7.endGroup();
-  if (isExisting) {
-    await prepareExistingDirectory(git, settings.repositoryPath, repositoryUrl, settings.clean, settings.ref);
-  }
-  if (!git) {
-    core7.info(`The repository will be downloaded using the GitHub REST API`);
-    core7.info(`To create a local Git repository instead, add Git ${MinimumGitVersion} or higher to the PATH`);
-    if (settings.submodules) {
-      throw new Error(`Input 'submodules' not supported when falling back to download using the GitHub REST API. To create a local Git repository instead, add Git ${MinimumGitVersion} or higher to the PATH.`);
-    } else if (settings.sshKey) {
-      throw new Error(`Input 'ssh-key' not supported when falling back to download using the GitHub REST API. To create a local Git repository instead, add Git ${MinimumGitVersion} or higher to the PATH.`);
-    }
-    await downloadRepository(settings.authToken, settings.repositoryOwner, settings.repositoryName, settings.ref, settings.commit, settings.repositoryPath);
-    return;
-  }
-  setRepositoryPath(settings.repositoryPath);
-  if (!directoryExistsSync(path5.join(settings.repositoryPath, ".git"))) {
-    core7.startGroup("Initializing the repository");
-    await git.init();
-    await git.remoteAdd("origin", repositoryUrl);
-    core7.endGroup();
-  }
-  core7.startGroup("Disabling automatic garbage collection");
-  if (!await git.tryDisableAutomaticGarbageCollection()) {
-    core7.warning(`Unable to turn off git automatic garbage collection. The git fetch operation may trigger garbage collection and cause a delay.`);
-  }
-  core7.endGroup();
-  const authHelper = createAuthHelper(git, settings);
+  let authHelper = null;
   try {
+    if (git) {
+      authHelper = createAuthHelper(git, settings);
+      if (settings.setSafeDirectory) {
+        await authHelper.configureTempGlobalConfig();
+        core7.info(`Adding repository directory to the temporary git global config as a safe directory`);
+        await git.config("safe.directory", settings.repositoryPath, true, true).catch((error) => {
+          core7.info(`Failed to initialize safe directory with error: ${error}`);
+        });
+        setSafeDirectory();
+      }
+    }
+    if (isExisting) {
+      await prepareExistingDirectory(git, settings.repositoryPath, repositoryUrl, settings.clean, settings.ref);
+    }
+    if (!git) {
+      core7.info(`The repository will be downloaded using the GitHub REST API`);
+      core7.info(`To create a local Git repository instead, add Git ${MinimumGitVersion} or higher to the PATH`);
+      if (settings.submodules) {
+        throw new Error(`Input 'submodules' not supported when falling back to download using the GitHub REST API. To create a local Git repository instead, add Git ${MinimumGitVersion} or higher to the PATH.`);
+      } else if (settings.sshKey) {
+        throw new Error(`Input 'ssh-key' not supported when falling back to download using the GitHub REST API. To create a local Git repository instead, add Git ${MinimumGitVersion} or higher to the PATH.`);
+      }
+      await downloadRepository(settings.authToken, settings.repositoryOwner, settings.repositoryName, settings.ref, settings.commit, settings.repositoryPath);
+      return;
+    }
+    setRepositoryPath(settings.repositoryPath);
+    if (!directoryExistsSync(path5.join(settings.repositoryPath, ".git"))) {
+      core7.startGroup("Initializing the repository");
+      await git.init();
+      await git.remoteAdd("origin", repositoryUrl);
+      core7.endGroup();
+    }
+    core7.startGroup("Disabling automatic garbage collection");
+    if (!await git.tryDisableAutomaticGarbageCollection()) {
+      core7.warning(`Unable to turn off git automatic garbage collection. The git fetch operation may trigger garbage collection and cause a delay.`);
+    }
+    core7.endGroup();
+    if (!authHelper) {
+      authHelper = createAuthHelper(git, settings);
+    }
     core7.startGroup("Setting up auth");
     await authHelper.configureAuth();
     core7.endGroup();
@@ -30266,32 +30537,31 @@ async function getSource(settings) {
     await git.checkout(checkoutInfo.ref, checkoutInfo.startPoint);
     core7.endGroup();
     if (settings.submodules) {
-      try {
-        core7.startGroup("Setting up auth for fetching submodules");
-        await authHelper.configureGlobalAuth();
+      core7.startGroup("Setting up auth for fetching submodules");
+      await authHelper.configureGlobalAuth();
+      core7.endGroup();
+      core7.startGroup("Fetching submodules");
+      await git.submoduleSync(settings.nestedSubmodules);
+      await git.submoduleUpdate(settings.fetchDepth, settings.nestedSubmodules);
+      await git.submoduleForeach("git config --local gc.auto 0", settings.nestedSubmodules);
+      core7.endGroup();
+      if (settings.persistCredentials) {
+        core7.startGroup("Persisting credentials for submodules");
+        await authHelper.configureSubmoduleAuth();
         core7.endGroup();
-        core7.startGroup("Fetching submodules");
-        await git.submoduleSync(settings.nestedSubmodules);
-        await git.submoduleUpdate(settings.fetchDepth, settings.nestedSubmodules);
-        await git.submoduleForeach("git config --local gc.auto 0", settings.nestedSubmodules);
-        core7.endGroup();
-        if (settings.persistCredentials) {
-          core7.startGroup("Persisting credentials for submodules");
-          await authHelper.configureSubmoduleAuth();
-          core7.endGroup();
-        }
-      } finally {
-        await authHelper.removeGlobalAuth();
       }
     }
     const commitInfo = await git.log1();
     await git.log1("--format='%H'");
     await checkCommitInfo(settings.authToken, commitInfo, settings.repositoryOwner, settings.repositoryName, settings.ref, settings.commit);
   } finally {
-    if (!settings.persistCredentials) {
-      core7.startGroup("Removing auth");
-      await authHelper.removeAuth();
-      core7.endGroup();
+    if (authHelper) {
+      if (!settings.persistCredentials) {
+        core7.startGroup("Removing auth");
+        await authHelper.removeAuth();
+        core7.endGroup();
+      }
+      authHelper.removeGlobalConfig();
     }
   }
 }
@@ -30401,6 +30671,7 @@ async function getInputs() {
   result.sshStrict = (core9.getInput("ssh-strict") || "true").toUpperCase() === "TRUE";
   result.persistCredentials = (core9.getInput("persist-credentials") || "false").toUpperCase() === "TRUE";
   result.workflowOrganizationId = await getOrganizationId();
+  result.setSafeDirectory = (core9.getInput("set-safe-directory") || "true").toUpperCase() === "TRUE";
   return result;
 }
 
@@ -33170,7 +33441,7 @@ async function run() {
   const octokit = (0, import_github2.getOctokit)(ghToken);
   let ref = getRef();
   let sha = getSha();
-  const { component } = getRepository();
+  const component = getRepository().repo;
   const eventName = getEventName(supportedEvents);
   const eventData = getEventData(eventName);
   const scaffoldBranch = (0, import_core5.getInput)("scaffold-branch") || defaultScaffoldBranch;
@@ -33201,7 +33472,12 @@ async function run() {
     (0, import_core5.warning)(`[accept] Skipping: release branch "${ref}" is ignored`);
     return;
   }
-  const pr = await getPrFromRef(octokit, component, ref);
+  const pr = await getPrFromRef({
+    octokit,
+    owner: "exivity",
+    repo: component,
+    ref
+  });
   const pull_request = pr ? pr.number : void 0;
   const issue = detectIssueKey(ref);
   const shortSha = sha.substring(0, 7);
@@ -33217,8 +33493,23 @@ async function run() {
     const someFilesMatch = (commit.files || []).some((file) => filter.some((item) => (0, import_minimatch.default)(file.filename || file.previous_filename || "unknown", item)));
     if (!someFilesMatch) {
       (0, import_core5.warning)(`[accept] Skipping: no modified files match the filter option`);
-      await review(octokit, component, pull_request, "APPROVE", "Automatically approved because no modified files in this commit match the `filter` parameter of this action.");
-      await writeStatus(octokit, component, sha, "success", "scaffold", "Acceptance tests skipped");
+      await review({
+        octokit,
+        owner: "exivity",
+        repo: component,
+        pull_number: pull_request,
+        event: "APPROVE",
+        body: "Automatically approved because no modified files in this commit match the `filter` parameter of this action."
+      });
+      await writeStatus({
+        octokit,
+        owner: "exivity",
+        repo: component,
+        sha,
+        state: "success",
+        context: "scaffold",
+        description: "Acceptance tests skipped"
+      });
       return;
     }
   }

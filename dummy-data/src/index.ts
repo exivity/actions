@@ -78,7 +78,8 @@ async function installComponent(
 
   const sha = await getShaFromRef({
     octokit,
-    component,
+    owner: 'exivity',
+    repo: component,
     ref: 'master',
   })
 

@@ -36,7 +36,8 @@ async function run() {
   const octokit = getOctokit(ghToken)
   const sha = await getShaFromRef({
     octokit,
-    component: 'db',
+    owner: 'exivity',
+    repo: 'db',
     ref: branch,
   })
 

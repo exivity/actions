@@ -26,7 +26,7 @@ async function run() {
   // Inputs
   const message = getInput('message')
   const status = getInput('status')
-  const component = getRepository().component
+  const { owner, repo, fqn } = getRepository()
   const sha = getSha()
   const slackApiToken = getInput('slack-api-token', {
     required: true,
@@ -54,7 +54,7 @@ async function run() {
   const commitMessage = await getCommitMessage()
   const authorName = await getCommitAuthorName()
   const authorEmail = await getCommitAuthorEmail()
-  const pr = await getPrFromRef(octokit, component, ref)
+  const pr = await getPrFromRef({ octokit, owner, repo, ref })
 
   // Try to find Slack user based on commit author
   const user = await slack.findUserFuzzy([
@@ -105,16 +105,13 @@ user attributes "name", "display_name", "real_name" or "email".`
     ? [
         {
           type: 'mrkdwn',
-          text: `🙏 <https://github.com/exivity/${component}/pull/${pr.number}|#${pr.number}>`,
+          text: `🙏 <https://github.com/${fqn}/pull/${pr.number}|#${pr.number}>`,
         },
       ]
     : []
   const shaBlock = {
     type: 'mrkdwn',
-    text: `🔑 <https://github.com/exivity/${component}/commit/${sha}|${sha.substring(
-      0,
-      7
-    )}>`,
+    text: `🔑 <https://github.com/${fqn}/commit/${sha}|${sha.substring(0, 7)}>`,
   }
   const commitMessageBlock = {
     type: 'mrkdwn',
@@ -124,9 +121,9 @@ user attributes "name", "display_name", "real_name" or "email".`
     type: 'mrkdwn',
     text: `🧑‍💻 ${context.actor}` + (user ? ` <@${user.id}>` : ''),
   }
-  const componentBlock = {
+  const repoBlock = {
     type: 'mrkdwn',
-    text: `📂 ${component}`,
+    text: `📂 ${repo}`,
   }
   const refBlock = {
     type: 'mrkdwn',
@@ -134,7 +131,7 @@ user attributes "name", "display_name", "real_name" or "email".`
   }
   const runBlock = {
     type: 'mrkdwn',
-    text: `⚡ <https://github.com/exivity/${component}/actions/runs/${context.runId}|${context.workflow} / ${context.job} (${context.eventName})>`,
+    text: `⚡ <https://github.com/${fqn}/actions/runs/${context.runId}|${context.workflow} / ${context.job} (${context.eventName})>`,
   }
   const blocks: Blocks = [
     {
@@ -147,7 +144,7 @@ user attributes "name", "display_name", "real_name" or "email".`
     {
       type: 'context',
       elements: [
-        componentBlock,
+        repoBlock,
         refBlock,
         ...prBlock,
         shaBlock,

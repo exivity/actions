@@ -13,7 +13,7 @@ const supportedEvents = ['push', 'workflow_dispatch', 'schedule'] as const
 async function run() {
   // Inputs
   const token = getToken()
-  const component = getRepository().component
+  const { owner, repo } = getRepository()
   const eventName = getEventName(supportedEvents)
   const eventData = getEventData(eventName)
 
@@ -26,7 +26,8 @@ async function run() {
 
     await run({
       ghToken: token,
-      component,
+      owner,
+      repo,
       eventName,
       eventData,
     })

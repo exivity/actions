@@ -30,22 +30,23 @@ export const name = 'settings'
 
 export async function run<T extends EventName>({
   ghToken,
-  component,
+  owner,
+  repo: repo_name,
 }: SyncPluginOptions<T>) {
   const octokit = getOctokit(ghToken)
   const repo = {
-    owner: 'exivity',
-    repo: component,
+    owner,
+    repo: repo_name,
   }
 
   // Grab settings from .github/settings.yml
   let config: Config = {}
-  for (const repo of ['.github', component]) {
+  for (const repo of ['.github', repo_name]) {
     try {
       const settings = await octokit.rest.repos.getContent({
-        owner: 'exivity',
+        owner,
         repo,
-        path: '.github/settings.yml',
+        path: CONFIG_FILENAME,
       })
       if ('content' in settings.data) {
         const buffer = Buffer.from(settings.data.content, 'base64')
