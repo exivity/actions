@@ -245,7 +245,7 @@ Reviews a PR
 ```yaml
 - uses: exivity/actions/review@main
   with:
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+    gh-token: ${{ secrets.GITHUB_PAT }}
     body: Exivity bot approves everything!
 ```
 
@@ -354,7 +354,7 @@ _Based on original work from
 ```yaml
 - uses: exivity/actions/sync-defaults@main
   with:
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+    gh-token: ${{ secrets.GITHUB_PAT }}
 ```
 
 ## Inputs
