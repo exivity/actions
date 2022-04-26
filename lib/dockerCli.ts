@@ -48,8 +48,6 @@ export async function dockerBuild({ dockerfile, labels, tag }: BuildOptions) {
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd)
-
-  return
 }
 
 export async function dockerRetag(off, on: Image) {

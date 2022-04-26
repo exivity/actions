@@ -1,7 +1,6 @@
 import { getInput, setFailed, warning } from '@actions/core'
 import { getRepository } from '../../lib/github'
 import {
-  Image,
   dockerRetag,
   dockerLogin,
   dockerPush,
@@ -26,7 +25,21 @@ async function run() {
     password,
   })
 
+  // login to dockerhub too
+  if (process.env['DOCKER_HUB_USER'] && process.env['VIRUSTOTAL_API_KEY']) {
+    const dockerVars = {
+      registry: 'docker.io',
+      user: process.env['DOCKER_HUB_USER'],
+      password: process.env['VIRUSTOTAL_API_KEY'],
+    }
+    await dockerLogin(dockerVars)
+  } else {
+    throw new Error(`No valid credentials set in ENV for docker.io login`)
+  }
+
   const devImage = { registry, name: `exivity/${component}`, tag: oldTag }
+
+  // hardcoded because of our usecase
   const releaseImage = {
     registry: `docker.io`,
     name: `exivity/${component}`,
