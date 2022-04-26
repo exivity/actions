@@ -18,21 +18,32 @@ const executionLevels = [
 ] as const
 
 async function run() {
-  const component = getRepository().component
+  const { owner, repo } = getRepository()
   const sha = getSha()
 
   // Inputs
   const path = getInput('path', { required: true })
 
   const fileDescription =
-    getInput('file-description') || `Exivity component: ${component}@${sha}`
+    owner === 'exivity'
+      ? getInput('file-description') || `Exivity component: ${repo}@${sha}`
+      : getInput('file-description')
   const fileVersion = getInput('file-version')
-  const productName = getInput('product-name') || 'Exivity'
+  const productName =
+    owner === 'exivity'
+      ? getInput('product-name') || 'Exivity'
+      : getInput('product-name')
   const productVersion = getInput('product-version')
-  const companyName = getInput('company-name') || 'Exivity'
+  const companyName =
+    owner === 'exivity'
+      ? getInput('company-name') || 'Exivity'
+      : getInput('company-name')
   const comments = getInput('comments')
   const internalFilename = getInput('internal-filename')
-  const legalCopyright = getInput('legal-copyright') || `© 2017 Exivity`
+  const legalCopyright =
+    owner === 'exivity'
+      ? getInput('legal-copyright') || `© 2017 Exivity`
+      : getInput('legal-copyright')
   const legalTrademarks1 = getInput('legal-trademarks1')
   const legalTrademarks2 = getInput('legal-trademarks2')
   const originalFilename = getInput('original-filename')

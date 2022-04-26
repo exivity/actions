@@ -6,7 +6,9 @@ inputs:
     required: false
     default: analyse
   path:
-    description: The path to the file to analyse, glob patterns allowed. Required when `mode` is set to `analyse`.
+    description:
+      The path to the file to analyse, glob patterns allowed. Required when
+      `mode` is set to `analyse`.
   virustotal-api-key:
     description: The VirusTotal API key
     required: true

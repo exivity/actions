@@ -51,7 +51,7 @@ async function run() {
   const octokit = getOctokit(ghToken)
   let ref = getRef()
   let sha = getSha()
-  const { component } = getRepository()
+  const component = getRepository().repo
   const eventName = getEventName(supportedEvents)
   const eventData = getEventData(eventName)
   const scaffoldBranch = getInput('scaffold-branch') || defaultScaffoldBranch
@@ -102,7 +102,12 @@ async function run() {
     return
   }
 
-  const pr = await getPrFromRef(octokit, component, ref)
+  const pr = await getPrFromRef({
+    octokit,
+    owner: 'exivity',
+    repo: component,
+    ref,
+  })
   const pull_request = pr ? pr.number : undefined
   const issue = detectIssueKey(ref)
   const shortSha = sha.substring(0, 7)
@@ -143,21 +148,23 @@ async function run() {
       warning(`[accept] Skipping: no modified files match the filter option`)
 
       // Auto approve by submitting PR and writing commit status
-      await review(
+      await review({
         octokit,
-        component,
-        pull_request,
-        'APPROVE',
-        'Automatically approved because no modified files in this commit match the `filter` parameter of this action.'
-      )
-      await writeStatus(
+        owner: 'exivity',
+        repo: component,
+        pull_number: pull_request,
+        event: 'APPROVE',
+        body: 'Automatically approved because no modified files in this commit match the `filter` parameter of this action.',
+      })
+      await writeStatus({
         octokit,
-        component,
+        owner: 'exivity',
+        repo: component,
         sha,
-        'success',
-        'scaffold',
-        'Acceptance tests skipped'
-      )
+        state: 'success',
+        context: 'scaffold',
+        description: 'Acceptance tests skipped',
+      })
       return
     }
   }

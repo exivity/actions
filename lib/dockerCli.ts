@@ -81,6 +81,6 @@ export async function dockerPull(image: Image) {
   await exec(cmd)
 }
 
-function getImageFQN(image: Image) {
+export function getImageFQN(image: Image) {
   return `${image.registry}/${image.name}:${image.tag}`
 }

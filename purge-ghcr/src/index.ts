@@ -1,10 +1,11 @@
-import { getInput, info, setFailed } from '@actions/core'
+import { info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { table } from '../../lib/core'
 import {
   getEventData,
   getEventName,
-  getRepository,
+  getOwnerInput,
+  getRepoInput,
   getToken,
   isEvent,
 } from '../../lib/github'
@@ -12,7 +13,8 @@ import { branchToTag } from '../../lib/image'
 
 async function run() {
   // Inputs
-  const component = getInput('component') || getRepository().component
+  const org = getOwnerInput('org')
+  const name = getRepoInput('name')
   const ghToken = getToken()
 
   const eventName = getEventName(['delete', 'workflow_dispatch'])
@@ -26,7 +28,7 @@ async function run() {
     tag = branchToTag()
   }
 
-  table('Package name', component)
+  table('Package name', name)
   table('Tag to delete', tag)
 
   const octokit = getOctokit(ghToken)
@@ -34,9 +36,9 @@ async function run() {
   const versions = await octokit.paginate(
     octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg,
     {
-      org: 'exivity',
+      org,
       package_type: 'container',
-      package_name: component,
+      package_name: name,
       per_page: 100,
     }
   )
@@ -56,9 +58,9 @@ async function run() {
         )}" matches and will be deleted`
       )
       await octokit.rest.packages.deletePackageVersionForOrg({
-        org: 'exivity',
+        org,
         package_type: 'container',
-        package_name: component,
+        package_name: name,
         package_version_id: version.id,
       })
     } else {

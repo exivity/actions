@@ -5,7 +5,8 @@ inputs:
     description: The path to the file to sign, glob patterns allowed
     required: true
   comments:
-    description: Additional information that should be displayed for diagnostic purposes.
+    description:
+      Additional information that should be displayed for diagnostic purposes.
     required: false
   company-name:
     description: Company that produced the executable.
@@ -14,16 +15,24 @@ inputs:
     description: File description to be presented to users.
     required: false
   internal-filename:
-    description: Internal name of the file. Usually, this string should be the original filename, without the extension.
+    description:
+      Internal name of the file. Usually, this string should be the original
+      filename, without the extension.
     required: false
   legal-copyright:
-    description: Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.
+    description:
+      Copyright notices that apply, including the full text of all notices,
+      legal symbols, copyright dates, etc.
     required: false
   legal-trademarks1:
-    description: Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc.
+    description:
+      Trademarks and registered trademarks, including the full text of all
+      notices, legal symbols, trademark numbers, etc.
     required: false
   legal-trademarks2:
-    description: Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc.
+    description:
+      Trademarks and registered trademarks, including the full text of all
+      notices, legal symbols, trademark numbers, etc.
     required: false
   original-filename:
     description: Original name of the file, not including a path.
@@ -38,10 +47,13 @@ inputs:
     description: Product's version to change to.
     required: false
   icon:
-    description: Path to the icon file (.ico) to set as the exePath's default icon.
+    description:
+      Path to the icon file (.ico) to set as the exePath's default icon.
     required: false
   requested-execution-level:
-    description: Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator.
+    description:
+      Requested execution level to change to, must be either asInvoker,
+      highestAvailable, or requireAdministrator.
     required: false
   application-manifest:
     description: String path to a local manifest file to use.

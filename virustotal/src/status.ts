@@ -24,16 +24,17 @@ export async function getPendingVirusTotalStatuses(
   for (const ref of refs) {
     info(`Checking all statuses for ${ref}`)
     try {
-      const component = getRepository().component
+      const { owner, repo } = getRepository()
       const sha = await getShaFromRef({
         octokit,
-        component,
+        owner,
+        repo,
         ref,
         useFallback: false,
       })
       const { data } = await octokit.rest.repos.listCommitStatusesForRef({
-        owner: 'exivity',
-        repo: component,
+        owner,
+        repo,
         ref: sha,
       })
       debug(`Total statuses: ${data.length}`)
@@ -79,21 +80,25 @@ export async function writeStatus(
   result: AnalysisResult,
   sha?: string
 ) {
-  return writeStatusGitHub(
+  const { owner, repo } = getRepository()
+  return writeStatusGitHub({
     octokit,
-    getRepository().component,
-    sha ?? getSha(),
-    result.status === 'pending'
-      ? 'pending'
-      : result.flagged === 0
-      ? 'success'
-      : 'failure',
-    `virustotal (${result.filename})`,
-    result.status === 'completed'
-      ? result.flagged
-        ? `Detected as malicious or suspicious by ${result.flagged} security vendors`
-        : 'No security vendors flagged this file as malicious'
-      : undefined,
-    filehashToGuiUrl(result.filehash)
-  )
+    owner,
+    repo,
+    sha: sha ?? getSha(),
+    state:
+      result.status === 'pending'
+        ? 'pending'
+        : result.flagged === 0
+        ? 'success'
+        : 'failure',
+    context: `virustotal (${result.filename})`,
+    description:
+      result.status === 'completed'
+        ? result.flagged
+          ? `Detected as malicious or suspicious by ${result.flagged} security vendors`
+          : 'No security vendors flagged this file as malicious'
+        : undefined,
+    target_url: filehashToGuiUrl(result.filehash),
+  })
 }

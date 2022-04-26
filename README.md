@@ -1,20 +1,16 @@
 # @exivity/actions
 
-Public GitHub Actions used at Exivity for CI/CD. These probably don't make much
-sense outside the context of the Exivity development environment.
+**Common actions**
 
-_Available actions:_
+These were originally built for use with the Exivity CI/CD workflows, but can be
+applied outside of the context of the Exivity repositories.
 
-- [`accept`](#accept)
 - [`build-push-image`](#build-push-image)
 - [`commit-status`](#commit-status)
-- [`db`](#db)
-- [`get-artefacts`](#get-artefacts)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
 - [`process-binary`](#process-binary)
 - [`purge-ghcr`](#purge-ghcr)
-- [`put-artefacts`](#put-artefacts)
 - [`rabbitmq`](#rabbitmq)
 - [`rcedit`](#rcedit)
 - [`review`](#review)
@@ -24,37 +20,26 @@ _Available actions:_
 - [`sync-defaults`](#sync-defaults)
 - [`virustotal`](#virustotal)
 
-# `accept`
+**Exivity specific actions**
 
-Triggers a scaffold repository build using the `workflow_dispatch` event. Does
-not trigger for the `master` or `main` branch.
+These probably don't make much sense outside the context of the Exivity CI/CD
+workflows.
 
-If the current branch includes a Jira key (e.g. EXVT-1000), the scaffold build
-will try to resolve matching epic branches for other components.
+- [`accept`](#accept)
+- [`db`](#db)
+- [`get-artefacts`](#get-artefacts)
+- [`put-artefacts`](#put-artefacts)
 
-See [.github repository](https://github.com/exivity/.github#accept) for example
-usage.
-
-## Example
-
-```yaml
-- uses: exivity/actions/accept@main
-  with:
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
-```
-
-## Inputs
-
-| name              | required | default        | description                                                                                                                                                                                                                                  |
-| ----------------- | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scaffold-branch` |          | `"develop"`    | The scaffold branch to build.                                                                                                                                                                                                                |
-| `gh-token`        |          | `github.token` | A GitHub token with access to the exivity/scaffold repository.                                                                                                                                                                               |
-| `dry-run`         |          | `false`        | If `true`, scaffold will not build or run any tests.                                                                                                                                                                                         |
-| `filter`          |          |                | If provided, only trigger acceptance tests if files which match this input are modified. Glob patterns allowed. Multiple entries eparated by newline. If provided, and changed files do not match, writes a successful status to the commit. |
+---
 
 # `build-push-image`
 
-Builds a container image and pushes it to a Docker registry
+Builds a container image and pushes it to a Docker registry. It uses the branch
+name as the image tag and attaches some simple _opencontainers_ image labels.
+The actions also writes a `metadata.json` file containing some basic information
+about the image: component name, version (semver tag or git sha) and timestamp.
+This file needs to be manually copied into the image in the Dockerfile if
+needed.
 
 ## Example
 
@@ -64,17 +49,19 @@ Builds a container image and pushes it to a Docker registry
 
 ## Inputs
 
-| name         | required | default           | description                                                                   |
-| ------------ | -------- | ----------------- | ----------------------------------------------------------------------------- |
-| `component`  |          | Current component | The component being containerized.                                            |
-| `dockerfile` |          | `"./Dockerfile"`  | Path to the Dockerfile                                                        |
-| `registry`   |          | `"ghcr.io"`       | Registry to use, e.g. `"ghcr.io"` (default) or `"docker.io"` (for Docker Hub) |
-| `user`       |          | `github.actor`    | Username for the Docker registry                                              |
-| `password`   |          | `github.token`    | Password for the Docker registry                                              |
+| name         | required | default          | description                                                                   |
+| ------------ | -------- | ---------------- | ----------------------------------------------------------------------------- |
+| `namespace`  |          | Repository owner | The namespace of the image repository                                         |
+| `name`       |          | Repository name  | The name of the image repository                                              |
+| `dockerfile` |          | `"./Dockerfile"` | Path to the Dockerfile                                                        |
+| `registry`   |          | `"ghcr.io"`      | Registry to use, e.g. `"ghcr.io"` (default) or `"docker.io"` (for Docker Hub) |
+| `user`       |          | `github.actor`   | Username for the Docker registry                                              |
+| `password`   |          | `github.token`   | Password for the Docker registry                                              |
 
 # `commit-status`
 
-Writes a [commit status](https://docs.github.com/en/rest/reference/commits#commit-statuses).
+Writes a
+[commit status](https://docs.github.com/en/rest/reference/commits#commit-statuses).
 
 ## Example
 
@@ -86,78 +73,16 @@ Writes a [commit status](https://docs.github.com/en/rest/reference/commits#commi
 
 ## Inputs
 
-| name          | required | default           | description                                                                         |
-| ------------- | -------- | ----------------- | ----------------------------------------------------------------------------------- |
-| `component`   |          | Current component | Component to write the commit status for.                                           |
-| `sha`         |          | Current sha       | Sha of commit to write the status for.                                              |
-| `gh-token`    |          | `github.token`    | A GitHub token with write access to the component.                                  |
-| `state`       |          | `"success"`       | The commit status state, can be `"error"`, `"failure"`, `"pending"` or `"success"`. |
-| `context`     | ✅       |                   | A string label to differentiate this status from the status of other systems.       |
-| `description` |          |                   | A short description of the status.                                                  |
-| `target_url`  |          |                   | The target URL to associate with this status.                                       |
-
-# `db`
-
-Runs a PostgreSQL docker container, create a new database, pulls in the `db`
-repository migrations and runs them.
-
-## Example
-
-```yaml
-- uses: exivity/actions/db@main
-  with:
-    branch: some-feature-branch
-    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
-```
-
-## Inputs
-
-| name                    | required | default                                                                          | description                                                                                                                                                                                           |
-| ----------------------- | -------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `branch`                |          | `"main"` or `"master"` when it matches the current branch, `"develop"` otherwise | The db repository branch to use.                                                                                                                                                                      |
-| `db-name`               |          | `"exdb-test"`                                                                    | The db name to create.                                                                                                                                                                                |
-| `mode`                  |          | `"host"`                                                                         | Whether to run PostgreSQL as a Docker container or start the server installed on the host. Either `"host"` or `"docker"`.                                                                             |
-| `version`               |          | `"14.0"`                                                                         | The PostgreSQL version to use. Only affects Docker mode (host mode always uses default version). Make sure to use a string type to avoid truncation. Available versions: `"14.0"`, `"13.0"`, `"12.3"` |
-| `aws-access-key-id`     | ✅       |                                                                                  | The AWS access key ID                                                                                                                                                                                 |
-| `aws-secret-access-key` | ✅       |                                                                                  | The AWS secret access key                                                                                                                                                                             |
-| `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
-| `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
-
-# `get-artefacts`
-
-Download artefacts for the provided component. It will use the S3 _exivity_
-bucket in the _eu-central-1_ region. Artefacts are downloaded with the
-_build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
-
-## Example
-
-```yaml
-- uses: exivity/actions/get-artefacts@main
-  with:
-    component: db
-    branch: master
-    path: db-artefacts
-    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
-```
-
-## Inputs
-
-| name                    | required | default                                                                                         | description                                                                                      |
-| ----------------------- | -------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `component`             | ✅       |                                                                                                 | Component to download artefacts for                                                              |
-| `sha`                   |          |                                                                                                 | Use specific artefacts sha                                                                       |
-| `branch`                |          | `"main"` or `"master"` when it matches the current branch, `"develop"` otherwise (if available) | If no sha is provided, resolve sha from branch name                                              |
-| `use-platform-prefix`   |          | `false`                                                                                         | If `true`, uses `windows` or `linux` prefix depending on current os.                             |
-| `prefix`                |          |                                                                                                 | If specified, download artefacts from this prefix (appended after platform prefix if specified). |
-| `path`                  |          | `"../{component}/build"`                                                                        | Put artefacts in this path                                                                       |
-| `auto-unzip`            |          | `true`                                                                                          | Automatically unzip artefact files                                                               |
-| `aws-access-key-id`     | ✅       |                                                                                                 | The AWS access key ID                                                                            |
-| `aws-secret-access-key` | ✅       |                                                                                                 | The AWS secret access key                                                                        |
-| `gh-token`              |          | `github.token`                                                                                  | A GitHub token with access to the exivity/{component} repository.                                |
+| name          | required | default          | description                                                                        |
+| ------------- | -------- | ---------------- | ---------------------------------------------------------------------------------- |
+| `owner`       |          | Repository owner | The owner of the repo                                                              |
+| `repo`        |          | Repository name  | The repo to write the commit status for                                            |
+| `sha`         |          | Current sha      | Sha of commit to write the status for                                              |
+| `state`       |          | `"success"`      | The commit status state, can be `"error"`, `"failure"`, `"pending"` or `"success"` |
+| `context`     | ✅       |                  | A string label to differentiate this status from the status of other systems       |
+| `description` |          |                  | A short description of the status                                                  |
+| `target_url`  |          |                  | The target URL to associate with this status                                       |
+| `gh-token`    |          | `github.token`   | A GitHub token with write access to the component                                  |
 
 # `init-ssh`
 
@@ -182,9 +107,9 @@ key contents
 
 ## Inputs
 
-| name          | required | default | description               |
-| ------------- | -------- | ------- | ------------------------- |
-| `private-key` | ✅       |         | The full SSH private key. |
+| name          | required | default | description              |
+| ------------- | -------- | ------- | ------------------------ |
+| `private-key` | ✅       |         | The full SSH private key |
 
 # `postgres`
 
@@ -196,16 +121,15 @@ Starts a PostgreSQL server
 - uses: exivity/actions/postgres@main
   with:
     mode: docker
-    version: 12.3
 ```
 
 ## Inputs
 
 | name       | required | default      | description                                                                                                                                                                                           |
 | ---------- | -------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mode`     |          | `"host"`     | Whether to run PostgreSQL as a Docker container or start the server installed on the host. Either `"docker"` or `"host"`.                                                                             |
+| `mode`     |          | `"host"`     | Whether to run PostgreSQL as a Docker container or start the server installed on the host. Either `"docker"` or `"host"`                                                                              |
 | `version`  |          | `"14.0"`     | The PostgreSQL version to use. Only affects Docker mode (host mode always uses default version). Make sure to use a string type to avoid truncation. Available versions: `"14.0"`, `"13.0"`, `"12.3"` |
-| `password` |          | `"postgres"` | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
+| `password` |          | `"postgres"` | The password for the default `postgres` user in de database, currently only works with host mode                                                                                                      |
 
 # `process-binary`
 
@@ -251,42 +175,16 @@ jobs:
     steps:
       - uses: exivity/actions/purge-ghcr@main
         with:
-          gh-token: ${{ secrets.GH_BOT_TOKEN }}
+          gh-token: ${{ secrets.GITHUB_PAT }}
 ```
 
 ## Inputs
 
-| name        | required | default           | description                                                                                                            |
-| ----------- | -------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `component` |          | Current component | The component to delete packages for.                                                                                  |
-| `gh-token`  |          | `github.token`    | The GitHub token with admin permissions in the organization and admin permissions to the container you want to delete. |
-
-# `put-artefacts`
-
-Uploads artefacts in the provided directory. It will use the S3 _exivity_ bucket
-in the _eu-central-1_ region. Artefacts are uploaded to the
-_build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
-
-## Example
-
-```yaml
-- uses: exivity/actions/put-artefacts@main
-  with:
-    path: artefacts
-    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-```
-
-## Inputs
-
-| name                    | required | default   | description                                                                                    |
-| ----------------------- | -------- | --------- | ---------------------------------------------------------------------------------------------- |
-| `use-platform-prefix`   |          | `false`   | If `true`, uses `windows` or `linux` prefix depending on current os.                           |
-| `prefix`                |          |           | If specified, upload artefacts with this prefix (appended after platform prefix if specified). |
-| `path`                  |          | `"build"` | Upload artefacts from this path.                                                               |
-| `zip`                   |          | `false`   | Zip artefact files before uploading as `{component_name}.tar.gz`                               |
-| `aws-access-key-id`     | ✅       |           | The AWS access key ID                                                                          |
-| `aws-secret-access-key` | ✅       |           | The AWS secret access key                                                                      |
+| name       | required | default          | description                                                                                                           |
+| ---------- | -------- | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `org`      |          | Repository owner | The org who owns the package                                                                                          |
+| `name`     |          | Repository name  | The package name                                                                                                      |
+| `gh-token` |          | `github.token`   | The GitHub token with admin permissions in the organization and admin permissions to the container you want to delete |
 
 # `rabbitmq`
 
@@ -296,15 +194,13 @@ Starts a RabbitMQ server in a Docker container.
 
 ```yaml
 - uses: exivity/actions/rabbitmq@main
-  with:
-    version: 3.8.6
 ```
 
 ## Inputs
 
-| name      | required | default   | description                                                          |
-| --------- | -------- | --------- | -------------------------------------------------------------------- |
-| `version` |          | `"3.8.6"` | The RabbitMQ version to use. Currently, only `"3.8.6"` is supported. |
+| name      | required | default   | description                                                         |
+| --------- | -------- | --------- | ------------------------------------------------------------------- |
+| `version` |          | `"3.8.6"` | The RabbitMQ version to use. Currently, only `"3.8.6"` is supported |
 
 # `rcedit`
 
@@ -325,54 +221,57 @@ Edit resources of a Windows executable
 | name                        | required | default                           | description                                                                                                          |
 | --------------------------- | -------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `path`                      | ✅       |                                   | The path to the file to sign, glob patterns allowed                                                                  |
-| `file-description`          |          | `"Exivity component: $repo@$sha"` | File description to be presented to users.                                                                           |
-| `file-version`              |          |                                   | File's version to change to.                                                                                         |
-| `product-name`              |          | `"Exivity"`                       | Name of the product with which the file is distributed.                                                              |
-| `product-version`           |          |                                   | Product's version to change to.                                                                                      |
-| `company-name`              |          | `"Exivity"`                       | Company that produced the executable.                                                                                |
-| `comments`                  |          |                                   | Additional information that should be displayed for diagnostic purposes.                                             |
-| `internal-filename`         |          |                                   | Internal name of the file. Usually, this string should be the original filename, without the extension.              |
+| `file-description`          |          | `"Exivity component: $repo@$sha"` | File description to be presented to users                                                                            |
+| `file-version`              |          |                                   | File's version to change to                                                                                          |
+| `product-name`              |          | `"Exivity"`                       | Name of the product with which the file is distributed                                                               |
+| `product-version`           |          |                                   | Product's version to change to                                                                                       |
+| `company-name`              |          | `"Exivity"`                       | Company that produced the executable                                                                                 |
+| `comments`                  |          |                                   | Additional information that should be displayed for diagnostic purposes                                              |
+| `internal-filename`         |          |                                   | Internal name of the file. Usually, this string should be the original filename, without the extension               |
 | `legal-copyright`           |          | `"© 2017 Exivity"`                | Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.           |
 | `legal-trademarks1`         |          |                                   | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
 | `legal-trademarks2`         |          |                                   | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
-| `original-filename`         |          |                                   | Original name of the file, not including a path.                                                                     |
-| `icon`                      |          |                                   | Path to the icon file (.ico) to set as the exePath's default icon.                                                   |
-| `requested-execution-level` |          |                                   | Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator.         |
-| `application-manifest`      |          |                                   | String path to a local manifest file to use.                                                                         |
+| `original-filename`         |          |                                   | Original name of the file, not including a path                                                                      |
+| `icon`                      |          |                                   | Path to the icon file (.ico) to set as the exePath's default icon                                                    |
+| `requested-execution-level` |          |                                   | Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator          |
+| `application-manifest`      |          |                                   | String path to a local manifest file to use                                                                          |
 
 # `review`
 
-Reviews a PR.
+Reviews a PR
 
 ## Example
 
 ```yaml
 - uses: exivity/actions/review@main
   with:
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+    gh-token: ${{ secrets.GITHUB_PAT }}
     body: Exivity bot approves everything!
 ```
 
 ## Inputs
 
-| name        | required | default                               | description                                                                                                               |
-| ----------- | -------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `component` |          | Current component                     | The component to review a PR for.                                                                                         |
-| `pull`      |          | Latest pull request of current branch | PR number to review.                                                                                                      |
-| `gh-token`  |          | `github.token`                        | A GitHub token from the PR reviewer.                                                                                      |
-| `event`     |          | `"APPROVE"`                           | Choose from `"APPROVE"`, `"REQUEST_CHANGES"`, `"COMMENT"` or `"PENDING"`.                                                 |
-| `body`      | Maybe    |                                       | The body of the review text, required when using `"REQUEST_CHANGES"` or `"COMMENT"`.                                      |
-| `branch`    |          | Current branch                        | The head branch the pull request belongs to in order to get latest pull request, not needed if `pull` has been specified. |
+| name       | required | default                               | description                                                                                                              |
+| ---------- | -------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `owner`    |          | Repository owner                      | The owner of the repo                                                                                                    |
+| `repo`     |          | Repository name                       | The repo to review a PR for                                                                                              |
+| `pull`     |          | Latest pull request of current branch | PR number to review                                                                                                      |
+| `event`    |          | `"APPROVE"`                           | Choose from `"APPROVE"`, `"REQUEST_CHANGES"`, `"COMMENT"` or `"PENDING"`                                                 |
+| `body`     | Maybe    |                                       | The body of the review text, required when using `"REQUEST_CHANGES"` or `"COMMENT"`                                      |
+| `branch`   |          | Current branch                        | The head branch the pull request belongs to in order to get latest pull request, not needed if `pull` has been specified |
+| `gh-token` |          | `github.token`                        | A GitHub token from the PR reviewer                                                                                      |
 
 # `semantic-pull-request`
 
-Ensures your pull requests title follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
-spec.
+Ensures your pull requests title follow the
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) spec.
 
-See [.github repository](https://github.com/exivity/.github#semantic-pull-request)
+See
+[.github repository](https://github.com/exivity/.github#semantic-pull-request)
 for example usage.
 
-_Based on original work from [amannn/action-semantic-pull-request](https://github.com/amannn/action-semantic-pull-request)_
+_Based on original work from
+[amannn/action-semantic-pull-request](https://github.com/amannn/action-semantic-pull-request)_
 
 ## Example
 
@@ -444,17 +343,18 @@ Syncs the repo settings with org defaults. Override org settings in a local
 [probot/settings](https://github.com/probot/settings#usage) for all available
 options.
 
-See [.github repository](https://github.com/exivity/.github#sync-defaults)
-for example usage.
+See [.github repository](https://github.com/exivity/.github#sync-defaults) for
+example usage.
 
-_Based on original work from [probot/settings](https://github.com/probot/settings)_
+_Based on original work from
+[probot/settings](https://github.com/probot/settings)_
 
 ## Example
 
 ```yaml
 - uses: exivity/actions/sync-defaults@main
   with:
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+    gh-token: ${{ secrets.GITHUB_PAT }}
 ```
 
 ## Inputs
@@ -467,7 +367,8 @@ _Based on original work from [probot/settings](https://github.com/probot/setting
 
 Analyse artefacts with VirusTotal
 
-_Forked from: [crazy-max/ghaction-virustotal](https://github.com/crazy-max/ghaction-virustotal)_
+_Forked from:
+[crazy-max/ghaction-virustotal](https://github.com/crazy-max/ghaction-virustotal)_
 
 ## Example
 
@@ -509,7 +410,133 @@ jobs:
 | `virustotal-api-key` | ✅       |                | The VirusTotal API key                                                                              |
 | `gh-token`           |          | `github.token` | GitHub token used for writing commit status                                                         |
 
+---
+
+# `accept`
+
+Triggers a scaffold repository build using the `workflow_dispatch` event. Does
+not trigger for the `master` or `main` branch.
+
+If the current branch includes a Jira key (e.g. EXVT-1000), the scaffold build
+will try to resolve matching epic branches for other components.
+
+See [.github repository](https://github.com/exivity/.github#accept) for example
+usage.
+
+## Example
+
+```yaml
+- uses: exivity/actions/accept@main
+  with:
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name              | required | default        | description                                                                                                                                                                                                                                  |
+| ----------------- | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scaffold-branch` |          | `"develop"`    | The scaffold branch to build.                                                                                                                                                                                                                |
+| `gh-token`        |          | `github.token` | A GitHub token with access to the exivity/scaffold repository.                                                                                                                                                                               |
+| `dry-run`         |          | `false`        | If `true`, scaffold will not build or run any tests.                                                                                                                                                                                         |
+| `filter`          |          |                | If provided, only trigger acceptance tests if files which match this input are modified. Glob patterns allowed. Multiple entries eparated by newline. If provided, and changed files do not match, writes a successful status to the commit. |
+
+# `db`
+
+Runs a PostgreSQL docker container, create a new database, pulls in the `db`
+repository migrations and runs them.
+
+## Example
+
+```yaml
+- uses: exivity/actions/db@main
+  with:
+    branch: some-feature-branch
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name                    | required | default                                                                          | description                                                                                                                                                                                           |
+| ----------------------- | -------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `branch`                |          | `"main"` or `"master"` when it matches the current branch, `"develop"` otherwise | The db repository branch to use.                                                                                                                                                                      |
+| `db-name`               |          | `"exdb-test"`                                                                    | The db name to create.                                                                                                                                                                                |
+| `mode`                  |          | `"host"`                                                                         | Whether to run PostgreSQL as a Docker container or start the server installed on the host. Either `"host"` or `"docker"`.                                                                             |
+| `version`               |          | `"14.0"`                                                                         | The PostgreSQL version to use. Only affects Docker mode (host mode always uses default version). Make sure to use a string type to avoid truncation. Available versions: `"14.0"`, `"13.0"`, `"12.3"` |
+| `aws-access-key-id`     | ✅       |                                                                                  | The AWS access key ID                                                                                                                                                                                 |
+| `aws-secret-access-key` | ✅       |                                                                                  | The AWS secret access key                                                                                                                                                                             |
+| `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
+| `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
+
+# `get-artefacts`
+
+Download artefacts for the provided component. It will use the S3 _exivity_
+bucket in the _eu-central-1_ region. Artefacts are downloaded with the
+_build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
+
+## Example
+
+```yaml
+- uses: exivity/actions/get-artefacts@main
+  with:
+    component: db
+    branch: master
+    path: db-artefacts
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name                    | required | default                                                                                         | description                                                                                      |
+| ----------------------- | -------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `component`             | ✅       |                                                                                                 | Component to download artefacts for                                                              |
+| `sha`                   |          |                                                                                                 | Use specific artefacts sha                                                                       |
+| `branch`                |          | `"main"` or `"master"` when it matches the current branch, `"develop"` otherwise (if available) | If no sha is provided, resolve sha from branch name                                              |
+| `use-platform-prefix`   |          | `false`                                                                                         | If `true`, uses `windows` or `linux` prefix depending on current os.                             |
+| `prefix`                |          |                                                                                                 | If specified, download artefacts from this prefix (appended after platform prefix if specified). |
+| `path`                  |          | `"../{component}/build"`                                                                        | Put artefacts in this path                                                                       |
+| `auto-unzip`            |          | `true`                                                                                          | Automatically unzip artefact files                                                               |
+| `aws-access-key-id`     | ✅       |                                                                                                 | The AWS access key ID                                                                            |
+| `aws-secret-access-key` | ✅       |                                                                                                 | The AWS secret access key                                                                        |
+| `gh-token`              |          | `github.token`                                                                                  | A GitHub token with access to the exivity/{component} repository.                                |
+
+# `put-artefacts`
+
+Uploads artefacts in the provided directory. It will use the S3 _exivity_ bucket
+in the _eu-central-1_ region. Artefacts are uploaded to the
+_build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
+
+## Example
+
+```yaml
+- uses: exivity/actions/put-artefacts@main
+  with:
+    path: artefacts
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+
+## Inputs
+
+| name                    | required | default   | description                                                                                    |
+| ----------------------- | -------- | --------- | ---------------------------------------------------------------------------------------------- |
+| `use-platform-prefix`   |          | `false`   | If `true`, uses `windows` or `linux` prefix depending on current os.                           |
+| `prefix`                |          |           | If specified, upload artefacts with this prefix (appended after platform prefix if specified). |
+| `path`                  |          | `"build"` | Upload artefacts from this path.                                                               |
+| `zip`                   |          | `false`   | Zip artefact files before uploading as `{component_name}.tar.gz`                               |
+| `aws-access-key-id`     | ✅       |           | The AWS access key ID                                                                          |
+| `aws-secret-access-key` | ✅       |           | The AWS secret access key                                                                      |
+
+---
+
 # Development guide
 
 When committing code to this repository, make sure to have Node & Yarn installed
 since code needs to be compiled in a pre-commit hook.
+
+To make this easier, use the
+[devcontainer](https://code.visualstudio.com/docs/remote/containers)
+configuration included with this repo.

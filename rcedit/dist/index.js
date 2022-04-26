@@ -1117,6 +1117,169 @@ var require_oidc_utils = __commonJS({
   }
 });
 
+// node_modules/@actions/core/lib/markdown-summary.js
+var require_markdown_summary = __commonJS({
+  "node_modules/@actions/core/lib/markdown-summary.js"(exports) {
+    "use strict";
+    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
+    var os_1 = require("os");
+    var fs_1 = require("fs");
+    var { access, appendFile, writeFile } = fs_1.promises;
+    exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
+    exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-markdown-summary";
+    var MarkdownSummary = class {
+      constructor() {
+        this._buffer = "";
+      }
+      filePath() {
+        return __awaiter(this, void 0, void 0, function* () {
+          if (this._filePath) {
+            return this._filePath;
+          }
+          const pathFromEnv = process.env[exports.SUMMARY_ENV_VAR];
+          if (!pathFromEnv) {
+            throw new Error(`Unable to find environment variable for $${exports.SUMMARY_ENV_VAR}. Check if your runtime environment supports markdown summaries.`);
+          }
+          try {
+            yield access(pathFromEnv, fs_1.constants.R_OK | fs_1.constants.W_OK);
+          } catch (_a) {
+            throw new Error(`Unable to access summary file: '${pathFromEnv}'. Check if the file has correct read/write permissions.`);
+          }
+          this._filePath = pathFromEnv;
+          return this._filePath;
+        });
+      }
+      wrap(tag, content, attrs = {}) {
+        const htmlAttrs = Object.entries(attrs).map(([key, value]) => ` ${key}="${value}"`).join("");
+        if (!content) {
+          return `<${tag}${htmlAttrs}>`;
+        }
+        return `<${tag}${htmlAttrs}>${content}</${tag}>`;
+      }
+      write(options) {
+        return __awaiter(this, void 0, void 0, function* () {
+          const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
+          const filePath = yield this.filePath();
+          const writeFunc = overwrite ? writeFile : appendFile;
+          yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
+          return this.emptyBuffer();
+        });
+      }
+      clear() {
+        return __awaiter(this, void 0, void 0, function* () {
+          return this.emptyBuffer().write({ overwrite: true });
+        });
+      }
+      stringify() {
+        return this._buffer;
+      }
+      isEmptyBuffer() {
+        return this._buffer.length === 0;
+      }
+      emptyBuffer() {
+        this._buffer = "";
+        return this;
+      }
+      addRaw(text, addEOL = false) {
+        this._buffer += text;
+        return addEOL ? this.addEOL() : this;
+      }
+      addEOL() {
+        return this.addRaw(os_1.EOL);
+      }
+      addCodeBlock(code, lang) {
+        const attrs = Object.assign({}, lang && { lang });
+        const element = this.wrap("pre", this.wrap("code", code), attrs);
+        return this.addRaw(element).addEOL();
+      }
+      addList(items, ordered = false) {
+        const tag = ordered ? "ol" : "ul";
+        const listItems = items.map((item) => this.wrap("li", item)).join("");
+        const element = this.wrap(tag, listItems);
+        return this.addRaw(element).addEOL();
+      }
+      addTable(rows) {
+        const tableBody = rows.map((row) => {
+          const cells = row.map((cell) => {
+            if (typeof cell === "string") {
+              return this.wrap("td", cell);
+            }
+            const { header, data, colspan, rowspan } = cell;
+            const tag = header ? "th" : "td";
+            const attrs = Object.assign(Object.assign({}, colspan && { colspan }), rowspan && { rowspan });
+            return this.wrap(tag, data, attrs);
+          }).join("");
+          return this.wrap("tr", cells);
+        }).join("");
+        const element = this.wrap("table", tableBody);
+        return this.addRaw(element).addEOL();
+      }
+      addDetails(label, content) {
+        const element = this.wrap("details", this.wrap("summary", label) + content);
+        return this.addRaw(element).addEOL();
+      }
+      addImage(src, alt, options) {
+        const { width, height } = options || {};
+        const attrs = Object.assign(Object.assign({}, width && { width }), height && { height });
+        const element = this.wrap("img", null, Object.assign({ src, alt }, attrs));
+        return this.addRaw(element).addEOL();
+      }
+      addHeading(text, level) {
+        const tag = `h${level}`;
+        const allowedTag = ["h1", "h2", "h3", "h4", "h5", "h6"].includes(tag) ? tag : "h1";
+        const element = this.wrap(allowedTag, text);
+        return this.addRaw(element).addEOL();
+      }
+      addSeparator() {
+        const element = this.wrap("hr", null);
+        return this.addRaw(element).addEOL();
+      }
+      addBreak() {
+        const element = this.wrap("br", null);
+        return this.addRaw(element).addEOL();
+      }
+      addQuote(text, cite) {
+        const attrs = Object.assign({}, cite && { cite });
+        const element = this.wrap("blockquote", text, attrs);
+        return this.addRaw(element).addEOL();
+      }
+      addLink(text, href) {
+        const element = this.wrap("a", text, { href });
+        return this.addRaw(element).addEOL();
+      }
+    };
+    exports.markdownSummary = new MarkdownSummary();
+  }
+});
+
 // node_modules/@actions/core/lib/core.js
 var require_core = __commonJS({
   "node_modules/@actions/core/lib/core.js"(exports) {
@@ -1317,6 +1480,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       });
     }
     exports.getIDToken = getIDToken;
+    var markdown_summary_1 = require_markdown_summary();
+    Object.defineProperty(exports, "markdownSummary", { enumerable: true, get: function() {
+      return markdown_summary_1.markdownSummary;
+    } });
   }
 });
 
@@ -8316,7 +8483,7 @@ var require_dist_node6 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var request = require_dist_node5();
     var universalUserAgent = require_dist_node();
-    var VERSION = "4.6.0";
+    var VERSION = "4.6.4";
     var GraphqlError = class extends Error {
       constructor(request2, response) {
         const message = response.data.errors[0].message;
@@ -8333,10 +8500,18 @@ var require_dist_node6 = __commonJS({
       }
     };
     var NON_VARIABLE_OPTIONS = ["method", "baseUrl", "url", "headers", "request", "query", "mediaType"];
+    var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
     var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
     function graphql(request2, query, options) {
-      if (typeof query === "string" && options && "query" in options) {
-        return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
+      if (options) {
+        if (typeof query === "string" && "query" in options) {
+          return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
+        }
+        for (const key in options) {
+          if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
+            continue;
+          return Promise.reject(new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`));
+        }
       }
       const parsedOptions = typeof query === "string" ? Object.assign({
         query
@@ -9800,11 +9975,11 @@ var import_rcedit = __toESM(require_rcedit());
 var import_core = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 function getRepository() {
-  const { owner, repo: component } = import_utils.context.repo;
-  if (!owner || !component) {
+  const { owner, repo } = import_utils.context.repo;
+  if (!owner || !repo) {
     throw new Error("The GitHub repository is missing");
   }
-  return { owner, component, fqn: `${owner}/${component}` };
+  return { owner, repo, fqn: `${owner}/${repo}` };
 }
 function getSha() {
   let sha = import_utils.context.sha;
@@ -9845,17 +10020,17 @@ var executionLevels = [
   "requireAdministrator"
 ];
 async function run() {
-  const component = getRepository().component;
+  const { owner, repo } = getRepository();
   const sha = getSha();
   const path = (0, import_core2.getInput)("path", { required: true });
-  const fileDescription = (0, import_core2.getInput)("file-description") || `Exivity component: ${component}@${sha}`;
+  const fileDescription = owner === "exivity" ? (0, import_core2.getInput)("file-description") || `Exivity component: ${repo}@${sha}` : (0, import_core2.getInput)("file-description");
   const fileVersion = (0, import_core2.getInput)("file-version");
-  const productName = (0, import_core2.getInput)("product-name") || "Exivity";
+  const productName = owner === "exivity" ? (0, import_core2.getInput)("product-name") || "Exivity" : (0, import_core2.getInput)("product-name");
   const productVersion = (0, import_core2.getInput)("product-version");
-  const companyName = (0, import_core2.getInput)("company-name") || "Exivity";
+  const companyName = owner === "exivity" ? (0, import_core2.getInput)("company-name") || "Exivity" : (0, import_core2.getInput)("company-name");
   const comments = (0, import_core2.getInput)("comments");
   const internalFilename = (0, import_core2.getInput)("internal-filename");
-  const legalCopyright = (0, import_core2.getInput)("legal-copyright") || `\xA9 2017 Exivity`;
+  const legalCopyright = owner === "exivity" ? (0, import_core2.getInput)("legal-copyright") || `\xA9 2017 Exivity` : (0, import_core2.getInput)("legal-copyright");
   const legalTrademarks1 = (0, import_core2.getInput)("legal-trademarks1");
   const legalTrademarks2 = (0, import_core2.getInput)("legal-trademarks2");
   const originalFilename = (0, import_core2.getInput)("original-filename");

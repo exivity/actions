@@ -1,22 +1,34 @@
-import { getInput, setFailed, warning } from '@actions/core'
-import { getRepository } from '../../lib/github'
-import { getLabels, branchToTag } from '../../lib/image'
-import { dockerBuild, dockerLogin, dockerPush } from '../../lib/dockerCli'
-import { writeExivityMetadataFile } from './metadataFile'
+import { getInput, setFailed } from '@actions/core'
+import { table } from '../../lib/core'
+import {
+  dockerBuild,
+  dockerLogin,
+  dockerPush,
+  getImageFQN,
+} from '../../lib/dockerCli'
+import { getOwnerInput, getRepoInput } from '../../lib/github'
+import { branchToTag, getLabels } from '../../lib/image'
+import { writeMetadataFile } from './metadataFile'
 
 async function run() {
   // Inputs
-  const component = getInput('component') || getRepository().component
+  const namespace = getOwnerInput('namespace')
+  const name = getRepoInput('name')
   const dockerfile = getInput('dockerfile')
   const registry = getInput('registry')
   const user = getInput('user')
   const password = getInput('password')
 
   // Get all relevant metadata for the image
-  const labels = getLabels(component)
+  const labels = getLabels(name)
   const tag = branchToTag()
+  const image = { registry, name: `${namespace}/${name}`, tag }
 
-  await writeExivityMetadataFile(component)
+  table('Repository', getImageFQN(image))
+  table('Tag', tag)
+  table('Labels', JSON.stringify(labels, undefined, 2))
+
+  await writeMetadataFile(name)
 
   await dockerLogin({
     registry,
@@ -24,15 +36,13 @@ async function run() {
     password,
   })
 
-  const buildImage = { registry, name: `exivity/${component}`, tag }
-
   await dockerBuild({
     dockerfile,
     labels,
-    image: buildImage,
+    image,
   })
 
-  await dockerPush(buildImage)
+  await dockerPush(image)
 }
 
 run().catch(setFailed)

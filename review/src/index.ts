@@ -1,9 +1,10 @@
 import { getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import {
+  getOwnerInput,
   getPrFromRef,
   getRef,
-  getRepository,
+  getRepoInput,
   getToken,
   review,
 } from '../../lib/github'
@@ -15,16 +16,13 @@ function isValidEvent(event: string): event is typeof validEvents[number] {
 }
 
 async function run() {
-  // defaults
-  const { owner, component } = getRepository()
-  const default_branch = getRef()
-
   // inputs
   const ghToken = getToken()
   const pull_request = parseInt(getInput('pull'), 10)
-  const targetRepo = getInput('component') || component
+  const owner = getOwnerInput()
+  const repo = getRepoInput()
   const event = getInput('event')
-  const branch = getInput('branch') || default_branch
+  const ref = getInput('branch') || getRef()
   const body = getInput('body')
 
   // Assertions
@@ -37,7 +35,7 @@ async function run() {
 
   // Get PR number to use
   const pull_number = isNaN(pull_request)
-    ? (await getPrFromRef(octokit, targetRepo, branch))?.number
+    ? (await getPrFromRef({ octokit, owner, repo, ref }))?.number
     : pull_request
 
   if (!pull_number) {
@@ -46,7 +44,7 @@ async function run() {
   }
 
   // Post a review to the GitHub API
-  await review(octokit, targetRepo, pull_number, event, body)
+  await review({ octokit, owner, repo, pull_number, event, body })
 }
 
 run().catch(setFailed)
