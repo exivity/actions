@@ -30,6 +30,12 @@ type BuildOptions = {
   tagsFQN: string[]
 }
 
+export type Image = {
+  registry: string
+  name: string
+  tag: string
+}
+
 export async function dockerBuild({
   dockerfile,
   labels,
@@ -51,14 +57,17 @@ export async function dockerBuild({
   await exec(cmd)
 }
 
-export async function dockerRetag(repository, oldTag, newTag: string) {
+export async function dockerRetag(off, on: Image) {
   info('Retagging image...')
 
-  const setTag = `docker tag ${repository} --tag "${newTag}"`
+  const offFQN = getImageFQN(off)
+  const onFQN = getImageFQN(on)
+
+  const setTag = `docker tag ${offFQN} "${onFQN}"`
   debug(`Executing command:\n${setTag}`)
   await exec(setTag)
 
-  const removeTag = `docker rmi ${repository}:oldTag`
+  const removeTag = `docker rmi ${offFQN}`
   debug(`Executing command:\n${removeTag}`)
   await exec(removeTag)
 }
@@ -70,4 +79,26 @@ export async function dockerPush(repository: string) {
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd)
+}
+
+export async function dockerPush2(image: Image) {
+  info('Pushing image...')
+
+  const cmd = `docker push ${getImageFQN(image)}`
+  debug(`Executing command:\n${cmd}`)
+
+  await exec(cmd)
+}
+
+export async function dockerPull(image: Image) {
+  info('Pulling image...')
+
+  const cmd = `docker pull ${getImageFQN(image)}`
+  debug(`Executing command:\n${cmd}`)
+
+  await exec(cmd)
+}
+
+function getImageFQN(image: Image) {
+  return `${image.registry}/${image.name}:${image.tag}`
 }

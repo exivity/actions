@@ -1,8 +1,6 @@
 import { getInput, setFailed, warning } from '@actions/core'
-import { table } from '../../lib/core'
 import { getRepository } from '../../lib/github'
-import { getLabels, getTags, getTagsFQN } from '../../lib/image'
-import { dockerRetag, dockerLogin, dockerPush } from '../../lib/dockerCli'
+import { Image, dockerRetag, dockerLogin, dockerPush2, dockerPull } from '../../lib/dockerCli'
 
 async function run() {
   // Inputs
@@ -22,14 +20,14 @@ async function run() {
     password,
   })
 
-  // always retag to dockerhub, so registry is set
-  await dockerRetag(
-    `exivity/${component}`,
-    oldTag,
-    newTag,
-  )
+  const devImage = { registry, name: `exivity/${component}`, tag: oldTag }
+  const releaseImage = { registry: `docker.io`, name: `exivity/${component}`, tag: newTag }
 
-  await dockerPush(repository)
+  await dockerPull(devImage)
+
+  await dockerRetag(devImage, releaseImage)
+
+  await dockerPush2(releaseImage)
 }
 
 run().catch(setFailed)
