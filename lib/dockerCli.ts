@@ -27,7 +27,7 @@ export async function dockerLogin({ registry, user, password }: LoginOptions) {
 type BuildOptions = {
   dockerfile: string
   labels: { [key: string]: string }
-  tagsFQN: string[]
+  tag: string
 }
 
 export type Image = {
@@ -36,11 +36,7 @@ export type Image = {
   tag: string
 }
 
-export async function dockerBuild({
-  dockerfile,
-  labels,
-  tagsFQN,
-}: BuildOptions) {
+export async function dockerBuild({ dockerfile, labels, tag }: BuildOptions) {
   info('Building image...')
 
   // Concat list of labels
@@ -48,13 +44,12 @@ export async function dockerBuild({
     .map(([key, value]) => `--label "${key}=${value}"`)
     .join(' ')
 
-  // Concat list of tags
-  const tagOptions = tagsFQN.map((tag) => `--tag "${tag}"`).join(' ')
-
-  const cmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`
+  const cmd = `docker build -f ${dockerfile} ${tag} ${labelOptions} .`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd)
+
+  return
 }
 
 export async function dockerRetag(off, on: Image) {
@@ -72,16 +67,7 @@ export async function dockerRetag(off, on: Image) {
   await exec(removeTag)
 }
 
-export async function dockerPush(repository: string) {
-  info('Pushing image...')
-
-  const cmd = `docker push ${repository} --all-tags`
-  debug(`Executing command:\n${cmd}`)
-
-  await exec(cmd)
-}
-
-export async function dockerPush2(image: Image) {
+export async function dockerPush(image: Image) {
   info('Pushing image...')
 
   const cmd = `docker push ${getImageFQN(image)}`

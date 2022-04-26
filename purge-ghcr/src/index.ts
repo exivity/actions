@@ -8,7 +8,7 @@ import {
   getToken,
   isEvent,
 } from '../../lib/github'
-import { getTags } from '../../lib/image'
+import { branchToTag } from '../../lib/image'
 
 async function run() {
   // Inputs
@@ -18,16 +18,16 @@ async function run() {
   const eventName = getEventName(['delete', 'workflow_dispatch'])
   const eventData = getEventData<typeof eventName>()
 
-  let tags: string[]
+  let tag: string
 
   if (isEvent(eventName, 'workflow_dispatch', eventData)) {
-    tags = [eventData.inputs?.tag as string]
+    tag = eventData.inputs?.tag as string
   } else {
-    tags = getTags(eventData.ref)
+    tag = branchToTag()
   }
 
   table('Package name', component)
-  table('Tags to delete', tags.join(','))
+  table('Tag to delete', tag)
 
   const octokit = getOctokit(ghToken)
 
@@ -45,11 +45,9 @@ async function run() {
 
   // Look for versions with matching tags
   for (const version of versions) {
-    const tagOverlap = tags.filter((tag) =>
-      version.metadata?.container?.tags?.includes(tag)
-    )
+    const tagOverlap = version.metadata?.container?.tags?.includes(tag)
 
-    if (tagOverlap.length > 0) {
+    if (tagOverlap) {
       info(
         `🗑️ Package version ${
           version.id

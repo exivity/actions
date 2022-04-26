@@ -1,7 +1,7 @@
 import { getInput, setFailed, warning } from '@actions/core'
 import { table } from '../../lib/core'
 import { getRepository } from '../../lib/github'
-import { getLabels, getTags, getTagsFQN } from '../../lib/image'
+import { getLabels, branchToTag } from '../../lib/image'
 import { dockerBuild, dockerLogin, dockerPush } from '../../lib/dockerCli'
 import { writeExivityMetadataFile } from './metadataFile'
 
@@ -14,18 +14,14 @@ async function run() {
   const password = getInput('password')
 
   // Get all relevant metadata for the image
-  const repository = `${registry}/exivity/${component}`
-  const tags = getTags()
-  const tagsFQN = getTagsFQN({ repository, tags })
   const labels = getLabels(component)
+  const tag = branchToTag()
 
-  if (tags.length === 0) {
-    warning('No tags set, skipping build-push-image action')
+  if (tag === '') {
+    warning('No tag set, skipping build-push-image action')
     return
   }
 
-  table('Repository', repository)
-  table('Tags', tags.join(', '))
   table('Labels', JSON.stringify(labels, undefined, 2))
 
   await writeExivityMetadataFile(component)
@@ -39,10 +35,12 @@ async function run() {
   await dockerBuild({
     dockerfile,
     labels,
-    tagsFQN,
+    tag,
   })
 
-  await dockerPush(repository)
+  const builtImage = { registry, name: `exivity/${component}`, tag }
+
+  await dockerPush(builtImage)
 }
 
 run().catch(setFailed)

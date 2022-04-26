@@ -8,31 +8,8 @@ import { getRef, getRepository, getSha, getTag } from './github'
  * characters.
  * See https://docs.docker.com/engine/reference/commandline/tag/
  */
-export function refToTag(ref: string) {
+export function branchToTag(ref = getRef()) {
   return ref.replace(/[^\w\w.-]/g, '-').substring(0, 127)
-}
-
-/**
- * Returns a list of plain image tags to use.
- */
-export function getTags(ref = getRef()) {
-  // We use the the ref name (branch or tag name).
-  const tags = [ref]
-
-  // Clean up the refs so they can be used as tags.
-  return tags.map(refToTag)
-}
-
-type GetTagsFQNOptions = {
-  repository: string
-  tags: string[]
-}
-
-/**
- * Returns an array of FQN image tags (e.g. `registry/exivity/component:tag`)
- */
-export function getTagsFQN({ repository, tags }: GetTagsFQNOptions) {
-  return tags.map((tag: string) => `${repository}:${tag}`)
 }
 
 export function getLabels(component: string) {

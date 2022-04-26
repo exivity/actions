@@ -1,6 +1,12 @@
 import { getInput, setFailed, warning } from '@actions/core'
 import { getRepository } from '../../lib/github'
-import { Image, dockerRetag, dockerLogin, dockerPush2, dockerPull } from '../../lib/dockerCli'
+import {
+  Image,
+  dockerRetag,
+  dockerLogin,
+  dockerPush,
+  dockerPull,
+} from '../../lib/dockerCli'
 
 async function run() {
   // Inputs
@@ -21,13 +27,17 @@ async function run() {
   })
 
   const devImage = { registry, name: `exivity/${component}`, tag: oldTag }
-  const releaseImage = { registry: `docker.io`, name: `exivity/${component}`, tag: newTag }
+  const releaseImage = {
+    registry: `docker.io`,
+    name: `exivity/${component}`,
+    tag: newTag,
+  }
 
   await dockerPull(devImage)
 
   await dockerRetag(devImage, releaseImage)
 
-  await dockerPush2(releaseImage)
+  await dockerPush(releaseImage)
 }
 
 run().catch(setFailed)
