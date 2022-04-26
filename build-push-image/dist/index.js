@@ -9991,7 +9991,7 @@ ${cmd}`);
 async function dockerBuild({ dockerfile, labels, tag }) {
   (0, import_core3.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
-  const cmd = `docker build -f ${dockerfile} ${tag} ${labelOptions} .`;
+  const cmd = `docker build -f ${dockerfile} -t ${tag} ${labelOptions} .`;
   (0, import_core3.debug)(`Executing command:
 ${cmd}`);
   await (0, import_exec2.exec)(cmd);

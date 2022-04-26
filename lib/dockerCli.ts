@@ -44,7 +44,7 @@ export async function dockerBuild({ dockerfile, labels, tag }: BuildOptions) {
     .map(([key, value]) => `--label "${key}=${value}"`)
     .join(' ')
 
-  const cmd = `docker build -f ${dockerfile} ${tag} ${labelOptions} .`
+  const cmd = `docker build -f ${dockerfile} -t ${tag} ${labelOptions} .`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd)
