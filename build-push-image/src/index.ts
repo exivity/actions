@@ -22,7 +22,7 @@ async function run() {
   // Get all relevant metadata for the image
   const labels = getLabels(name)
   const tag = branchToTag()
-  const image = { registry, name: `${namespace}/${name}`, tag }
+  const image = { registry, namespace, name, tag }
 
   table('Repository', getImageFQN(image))
   table('Tag', tag)

@@ -6268,7 +6268,7 @@ var require_dist_node6 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var request = require_dist_node5();
     var universalUserAgent = require_dist_node();
-    var VERSION = "4.6.4";
+    var VERSION = "4.6.0";
     var GraphqlError = class extends Error {
       constructor(request2, response) {
         const message = response.data.errors[0].message;
@@ -6285,18 +6285,10 @@ var require_dist_node6 = __commonJS({
       }
     };
     var NON_VARIABLE_OPTIONS = ["method", "baseUrl", "url", "headers", "request", "query", "mediaType"];
-    var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
     var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
     function graphql(request2, query, options) {
-      if (options) {
-        if (typeof query === "string" && "query" in options) {
-          return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
-        }
-        for (const key in options) {
-          if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
-            continue;
-          return Promise.reject(new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`));
-        }
+      if (typeof query === "string" && options && "query" in options) {
+        return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
       }
       const parsedOptions = typeof query === "string" ? Object.assign({
         query
@@ -10104,7 +10096,7 @@ ${cmd}`);
   await (0, import_exec2.exec)(cmd);
 }
 function getImageFQN(image) {
-  return `${image.registry}/${image.name}:${image.tag}`;
+  return `${image.registry}/${image.namespace}/${image.name}:${image.tag}`;
 }
 
 // lib/github.ts
@@ -10221,7 +10213,7 @@ async function run() {
   const password = (0, import_core5.getInput)("password");
   const labels = getLabels(name);
   const tag = branchToTag();
-  const image = { registry, name: `${namespace}/${name}`, tag };
+  const image = { registry, namespace, name, tag };
   table("Repository", getImageFQN(image));
   table("Tag", tag);
   table("Labels", JSON.stringify(labels, void 0, 2));

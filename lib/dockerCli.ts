@@ -32,6 +32,7 @@ type BuildOptions = {
 
 export type Image = {
   registry: string
+  namespace: string
   name: string
   tag: string
 }
@@ -82,5 +83,5 @@ export async function dockerPull(image: Image) {
 }
 
 export function getImageFQN(image: Image) {
-  return `${image.registry}/${image.name}:${image.tag}`
+  return `${image.registry}/${image.namespace}/${image.name}:${image.tag}`
 }

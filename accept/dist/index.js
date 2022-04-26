@@ -5218,7 +5218,7 @@ var require_dist_node6 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var request = require_dist_node5();
     var universalUserAgent = require_dist_node();
-    var VERSION = "4.6.4";
+    var VERSION = "4.6.0";
     var GraphqlError = class extends Error {
       constructor(request2, response) {
         const message = response.data.errors[0].message;
@@ -5235,18 +5235,10 @@ var require_dist_node6 = __commonJS({
       }
     };
     var NON_VARIABLE_OPTIONS = ["method", "baseUrl", "url", "headers", "request", "query", "mediaType"];
-    var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
     var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
     function graphql(request2, query, options) {
-      if (options) {
-        if (typeof query === "string" && "query" in options) {
-          return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
-        }
-        for (const key in options) {
-          if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
-            continue;
-          return Promise.reject(new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`));
-        }
+      if (typeof query === "string" && options && "query" in options) {
+        return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
       }
       const parsedOptions = typeof query === "string" ? Object.assign({
         query
@@ -25284,52 +25276,6 @@ var require_core3 = __commonJS({
   }
 });
 
-// node_modules/@octokit/rest/node_modules/@octokit/auth-token/dist-node/index.js
-var require_dist_node16 = __commonJS({
-  "node_modules/@octokit/rest/node_modules/@octokit/auth-token/dist-node/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
-    var REGEX_IS_INSTALLATION = /^ghs_/;
-    var REGEX_IS_USER_TO_SERVER = /^ghu_/;
-    async function auth(token) {
-      const isApp = token.split(/\./).length === 3;
-      const isInstallation = REGEX_IS_INSTALLATION_LEGACY.test(token) || REGEX_IS_INSTALLATION.test(token);
-      const isUserToServer = REGEX_IS_USER_TO_SERVER.test(token);
-      const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
-      return {
-        type: "token",
-        token,
-        tokenType
-      };
-    }
-    function withAuthorizationPrefix(token) {
-      if (token.split(/\./).length === 3) {
-        return `bearer ${token}`;
-      }
-      return `token ${token}`;
-    }
-    async function hook(token, request, route, parameters) {
-      const endpoint = request.endpoint.merge(route, parameters);
-      endpoint.headers.authorization = withAuthorizationPrefix(token);
-      return request(endpoint);
-    }
-    var createTokenAuth = function createTokenAuth2(token) {
-      if (!token) {
-        throw new Error("[@octokit/auth-token] No token passed to createTokenAuth");
-      }
-      if (typeof token !== "string") {
-        throw new Error("[@octokit/auth-token] Token passed to createTokenAuth is not a string");
-      }
-      token = token.replace(/^(token|bearer) +/i, "");
-      return Object.assign(auth.bind(null, token), {
-        hook: hook.bind(null, token)
-      });
-    };
-    exports.createTokenAuth = createTokenAuth;
-  }
-});
-
 // node_modules/btoa-lite/btoa-node.js
 var require_btoa_node = __commonJS({
   "node_modules/btoa-lite/btoa-node.js"(exports, module2) {
@@ -25411,7 +25357,7 @@ var require_before_request = __commonJS({
 });
 
 // node_modules/@octokit/rest/node_modules/@octokit/request-error/dist-node/index.js
-var require_dist_node17 = __commonJS({
+var require_dist_node16 = __commonJS({
   "node_modules/@octokit/rest/node_modules/@octokit/request-error/dist-node/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -25454,7 +25400,7 @@ var require_dist_node17 = __commonJS({
 var require_request_error = __commonJS({
   "node_modules/@octokit/rest/plugins/authentication/request-error.js"(exports, module2) {
     module2.exports = authenticationRequestError;
-    var { RequestError } = require_dist_node17();
+    var { RequestError } = require_dist_node16();
     function authenticationRequestError(state, error, options) {
       if (!error.headers)
         throw error;
@@ -25521,7 +25467,7 @@ var require_validate = __commonJS({
 var require_authentication = __commonJS({
   "node_modules/@octokit/rest/plugins/authentication/index.js"(exports, module2) {
     module2.exports = authenticationPlugin;
-    var { createTokenAuth } = require_dist_node16();
+    var { createTokenAuth } = require_dist_node7();
     var { Deprecation } = require_dist_node3();
     var once = require_once();
     var beforeRequest = require_before_request();
@@ -25978,7 +25924,7 @@ var require_before_request2 = __commonJS({
 var require_request_error2 = __commonJS({
   "node_modules/@octokit/rest/plugins/authentication-deprecated/request-error.js"(exports, module2) {
     module2.exports = authenticationRequestError;
-    var { RequestError } = require_dist_node17();
+    var { RequestError } = require_dist_node16();
     function authenticationRequestError(state, error, options) {
       if (!error.headers)
         throw error;
@@ -26039,7 +25985,7 @@ var require_authentication_deprecated = __commonJS({
 });
 
 // node_modules/@octokit/rest/node_modules/@octokit/plugin-paginate-rest/dist-node/index.js
-var require_dist_node18 = __commonJS({
+var require_dist_node17 = __commonJS({
   "node_modules/@octokit/rest/node_modules/@octokit/plugin-paginate-rest/dist-node/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -26140,7 +26086,7 @@ var require_dist_node18 = __commonJS({
 var require_pagination = __commonJS({
   "node_modules/@octokit/rest/plugins/pagination/index.js"(exports, module2) {
     module2.exports = paginatePlugin;
-    var { paginateRest } = require_dist_node18();
+    var { paginateRest } = require_dist_node17();
     function paginatePlugin(octokit) {
       Object.assign(octokit, paginateRest(octokit));
     }
@@ -26781,7 +26727,7 @@ var require_validate2 = __commonJS({
   "node_modules/@octokit/rest/plugins/validate/validate.js"(exports, module2) {
     "use strict";
     module2.exports = validate;
-    var { RequestError } = require_dist_node17();
+    var { RequestError } = require_dist_node16();
     var get = require_lodash2();
     var set2 = require_lodash3();
     function validate(octokit, options) {
