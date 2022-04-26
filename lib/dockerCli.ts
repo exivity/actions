@@ -27,7 +27,7 @@ export async function dockerLogin({ registry, user, password }: LoginOptions) {
 type BuildOptions = {
   dockerfile: string
   labels: { [key: string]: string }
-  tag: string
+  image: Image
 }
 
 export type Image = {
@@ -36,7 +36,7 @@ export type Image = {
   tag: string
 }
 
-export async function dockerBuild({ dockerfile, labels, tag }: BuildOptions) {
+export async function dockerBuild({ dockerfile, labels, image }: BuildOptions) {
   info('Building image...')
 
   // Concat list of labels
@@ -44,13 +44,15 @@ export async function dockerBuild({ dockerfile, labels, tag }: BuildOptions) {
     .map(([key, value]) => `--label "${key}=${value}"`)
     .join(' ')
 
-  const cmd = `docker build -f ${dockerfile} -t ${tag} ${labelOptions} .`
+  const cmd = `docker build -f ${dockerfile} -t ${getImageFQN(
+    image
+  )} ${labelOptions} .`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd)
 }
 
-export async function dockerRetag(off, on: Image) {
+export async function dockerAddTag(off, on: Image) {
   info('Retagging image...')
 
   const offFQN = getImageFQN(off)
@@ -59,10 +61,6 @@ export async function dockerRetag(off, on: Image) {
   const setTag = `docker tag ${offFQN} "${onFQN}"`
   debug(`Executing command:\n${setTag}`)
   await exec(setTag)
-
-  const removeTag = `docker rmi ${offFQN}`
-  debug(`Executing command:\n${removeTag}`)
-  await exec(removeTag)
 }
 
 export async function dockerPush(image: Image) {

@@ -24,15 +24,15 @@ async function run() {
     password,
   })
 
+  const buildImage = { registry, name: `exivity/${component}`, tag }
+
   await dockerBuild({
     dockerfile,
     labels,
-    tag,
+    image: buildImage,
   })
 
-  const builtImage = { registry, name: `exivity/${component}`, tag }
-
-  await dockerPush(builtImage)
+  await dockerPush(buildImage)
 }
 
 run().catch(setFailed)

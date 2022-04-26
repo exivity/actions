@@ -9981,10 +9981,10 @@ ${cmd}`);
     })
   });
 }
-async function dockerBuild({ dockerfile, labels, tag }) {
+async function dockerBuild({ dockerfile, labels, image }) {
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
-  const cmd = `docker build -f ${dockerfile} -t ${tag} ${labelOptions} .`;
+  const cmd = `docker build -f ${dockerfile} -t ${getImageFQN(image)} ${labelOptions} .`;
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
   await (0, import_exec.exec)(cmd);
@@ -10031,13 +10031,13 @@ async function run() {
     user,
     password
   });
+  const buildImage = { registry, name: `exivity/${component}`, tag };
   await dockerBuild({
     dockerfile,
     labels,
-    tag
+    image: buildImage
   });
-  const builtImage = { registry, name: `exivity/${component}`, tag };
-  await dockerPush(builtImage);
+  await dockerPush(buildImage);
 }
 run().catch(import_core4.setFailed);
 /*!

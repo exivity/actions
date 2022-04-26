@@ -1,7 +1,7 @@
 import { getInput, setFailed, warning } from '@actions/core'
 import { getRepository } from '../../lib/github'
 import {
-  dockerRetag,
+  dockerAddTag,
   dockerLogin,
   dockerPush,
   dockerPull,
@@ -48,7 +48,7 @@ async function run() {
 
   await dockerPull(devImage)
 
-  await dockerRetag(devImage, releaseImage)
+  await dockerAddTag(devImage, releaseImage)
 
   await dockerPush(releaseImage)
 }
