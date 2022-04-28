@@ -9,14 +9,13 @@ import { getOwnerInput, getRepoInput } from '../../lib/github'
 
 async function run() {
   // Inputs
-  const namespace = getOwnerInput('namespace')
-  const name = getRepoInput('name')
+  const namespace = getInput('namespace') || getOwnerInput('namespace')
+  const name = getInput('name') || getRepoInput('name')
   const registry = getInput('registry')
   const user = getInput('user')
   const password = getInput('password')
 
   // Get all relevant metadata for the image
-  const repository = `${registry}/namespace/${name}`
   const newTag = getInput('newTag')
   const oldTag = getInput('oldTag')
 

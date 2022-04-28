@@ -7808,12 +7808,11 @@ function getRepoInput(inputName = "repo", fallbackInputName = "component") {
 
 // docker-retag-image/src/index.ts
 async function run() {
-  const namespace = getOwnerInput("namespace");
-  const name = getRepoInput("name");
+  const namespace = (0, import_core3.getInput)("namespace") || getOwnerInput("namespace");
+  const name = (0, import_core3.getInput)("name") || getRepoInput("name");
   const registry = (0, import_core3.getInput)("registry");
   const user = (0, import_core3.getInput)("user");
   const password = (0, import_core3.getInput)("password");
-  const repository = `${registry}/namespace/${name}`;
   const newTag = (0, import_core3.getInput)("newTag");
   const oldTag = (0, import_core3.getInput)("oldTag");
   await dockerLogin({
