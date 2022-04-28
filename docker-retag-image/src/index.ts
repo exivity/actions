@@ -27,11 +27,11 @@ async function run() {
   })
 
   // login to dockerhub too
-  if (process.env['DOCKER_HUB_USER'] && process.env['VIRUSTOTAL_API_KEY']) {
+  if (process.env['DOCKER_HUB_USER'] && process.env['DOCKER_HUB_TOKEN']) {
     const dockerVars = {
       registry: 'docker.io',
       user: process.env['DOCKER_HUB_USER'],
-      password: process.env['VIRUSTOTAL_API_KEY'],
+      password: process.env['DOCKER_HUB_TOKEN'],
     }
     await dockerLogin(dockerVars)
   } else {
