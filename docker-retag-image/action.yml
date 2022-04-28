@@ -20,6 +20,12 @@ inputs:
   newTag:
     description: Tag to add when retagging
     required: true
+  name:
+    description: Image name
+    required: false
+  namespace:
+    description: Image namespace
+    required: false
 runs:
   using: node16
   main: dist/index.js
