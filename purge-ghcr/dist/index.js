@@ -5218,7 +5218,7 @@ var require_dist_node6 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var request = require_dist_node5();
     var universalUserAgent = require_dist_node();
-    var VERSION = "4.6.4";
+    var VERSION = "4.6.0";
     var GraphqlError = class extends Error {
       constructor(request2, response) {
         const message = response.data.errors[0].message;
@@ -5235,18 +5235,10 @@ var require_dist_node6 = __commonJS({
       }
     };
     var NON_VARIABLE_OPTIONS = ["method", "baseUrl", "url", "headers", "request", "query", "mediaType"];
-    var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
     var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
     function graphql(request2, query, options) {
-      if (options) {
-        if (typeof query === "string" && "query" in options) {
-          return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
-        }
-        for (const key in options) {
-          if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
-            continue;
-          return Promise.reject(new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`));
-        }
+      if (typeof query === "string" && options && "query" in options) {
+        return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
       }
       const parsedOptions = typeof query === "string" ? Object.assign({
         query
@@ -10174,27 +10166,26 @@ var import_semver = __toESM(require_semver2());
 function validTag(tag) {
   return tag.replace(/^[\.-]+/, "").replace(/[^\w.-]/g, "-").substring(0, 127);
 }
-function getTags(ref = getRef()) {
-  const tags = [ref];
-  return tags.map(validTag);
+function branchToTag(ref = getRef()) {
+  return validTag(ref);
 }
 
 // purge-ghcr/src/index.ts
 async function run() {
-  var _a, _b, _c, _d, _e, _f, _g;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
   const org = getOwnerInput("org");
   const name = getRepoInput("name");
   const ghToken = getToken();
   const eventName = getEventName(["delete", "workflow_dispatch"]);
   const eventData = getEventData();
-  let tags;
+  let tag;
   if (isEvent(eventName, "workflow_dispatch", eventData)) {
-    tags = [(_a = eventData.inputs) == null ? void 0 : _a.tag];
+    tag = (_a = eventData.inputs) == null ? void 0 : _a.tag;
   } else {
-    tags = getTags(eventData.ref);
+    tag = branchToTag();
   }
   table("Package name", name);
-  table("Tags to delete", tags.join(","));
+  table("Tag to delete", tag);
   const octokit = (0, import_github2.getOctokit)(ghToken);
   const versions = await octokit.paginate(octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg, {
     org,
@@ -10204,12 +10195,9 @@ async function run() {
   });
   (0, import_core3.info)(`Got ${versions.length} package versions, matching with tags...`);
   for (const version of versions) {
-    const tagOverlap = tags.filter((tag) => {
-      var _a2, _b2, _c2;
-      return (_c2 = (_b2 = (_a2 = version.metadata) == null ? void 0 : _a2.container) == null ? void 0 : _b2.tags) == null ? void 0 : _c2.includes(tag);
-    });
-    if (tagOverlap.length > 0) {
-      (0, import_core3.info)(`\u{1F5D1}\uFE0F Package version ${version.id} tagged with "${(_d = (_c = (_b = version.metadata) == null ? void 0 : _b.container) == null ? void 0 : _c.tags) == null ? void 0 : _d.join('","')}" matches and will be deleted`);
+    const tagOverlap = (_d = (_c = (_b = version.metadata) == null ? void 0 : _b.container) == null ? void 0 : _c.tags) == null ? void 0 : _d.includes(tag);
+    if (tagOverlap) {
+      (0, import_core3.info)(`\u{1F5D1}\uFE0F Package version ${version.id} tagged with "${(_g = (_f = (_e = version.metadata) == null ? void 0 : _e.container) == null ? void 0 : _f.tags) == null ? void 0 : _g.join('","')}" matches and will be deleted`);
       await octokit.rest.packages.deletePackageVersionForOrg({
         org,
         package_type: "container",
@@ -10217,7 +10205,7 @@ async function run() {
         package_version_id: version.id
       });
     } else {
-      (0, import_core3.info)(`\u2139\uFE0F Package version ${version.id} tagged with "${(_g = (_f = (_e = version.metadata) == null ? void 0 : _e.container) == null ? void 0 : _f.tags) == null ? void 0 : _g.join('","')}" doesn't match any of the tags to delete`);
+      (0, import_core3.info)(`\u2139\uFE0F Package version ${version.id} tagged with "${(_j = (_i = (_h = version.metadata) == null ? void 0 : _h.container) == null ? void 0 : _i.tags) == null ? void 0 : _j.join('","')}" doesn't match any of the tags to delete`);
     }
   }
 }

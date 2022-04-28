@@ -1,32 +1,31 @@
-import { getInput, setFailed, warning } from '@actions/core'
+import { getInput, setFailed } from '@actions/core'
 import { table } from '../../lib/core'
+import {
+  dockerBuild,
+  dockerLogin,
+  dockerPush,
+  getImageFQN,
+} from '../../lib/dockerCli'
 import { getOwnerInput, getRepoInput } from '../../lib/github'
-import { getLabels, getTags, getTagsFQN } from '../../lib/image'
-import { dockerBuild, dockerLogin, dockerPush } from './dockerCli'
+import { branchToTag, getLabels } from '../../lib/image'
 import { writeMetadataFile } from './metadataFile'
 
 async function run() {
   // Inputs
   const namespace = getOwnerInput('namespace')
   const name = getRepoInput('name')
-  const dockerfile = getInput('dockerfile') || './Dockerfile'
+  const dockerfile = getInput('dockerfile')
   const registry = getInput('registry')
   const user = getInput('user')
   const password = getInput('password')
 
   // Get all relevant metadata for the image
-  const repository = `${registry}/${namespace}/${name}`
-  const tags = getTags()
-  const tagsFQN = getTagsFQN({ repository, tags })
   const labels = getLabels(name)
+  const tag = branchToTag()
+  const image = { registry, namespace, name, tag }
 
-  if (tags.length === 0) {
-    warning('No tags set, skipping build-push-image action')
-    return
-  }
-
-  table('Repository', repository)
-  table('Tags', tags.join(', '))
+  table('Repository', getImageFQN(image))
+  table('Tag', tag)
   table('Labels', JSON.stringify(labels, undefined, 2))
 
   await writeMetadataFile(name)
@@ -40,10 +39,10 @@ async function run() {
   await dockerBuild({
     dockerfile,
     labels,
-    tagsFQN,
+    image,
   })
 
-  await dockerPush(repository)
+  await dockerPush(image)
 }
 
 run().catch(setFailed)

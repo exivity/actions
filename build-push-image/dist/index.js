@@ -1421,10 +1421,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning3(message, properties = {}) {
+    function warning2(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning3;
+    exports.warning = warning2;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -6268,7 +6268,7 @@ var require_dist_node6 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var request = require_dist_node5();
     var universalUserAgent = require_dist_node();
-    var VERSION = "4.6.4";
+    var VERSION = "4.6.0";
     var GraphqlError = class extends Error {
       constructor(request2, response) {
         const message = response.data.errors[0].message;
@@ -6285,18 +6285,10 @@ var require_dist_node6 = __commonJS({
       }
     };
     var NON_VARIABLE_OPTIONS = ["method", "baseUrl", "url", "headers", "request", "query", "mediaType"];
-    var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
     var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
     function graphql(request2, query, options) {
-      if (options) {
-        if (typeof query === "string" && "query" in options) {
-          return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
-        }
-        for (const key in options) {
-          if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
-            continue;
-          return Promise.reject(new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`));
-        }
+      if (typeof query === "string" && options && "query" in options) {
+        return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
       }
       const parsedOptions = typeof query === "string" ? Object.assign({
         query
@@ -10072,8 +10064,43 @@ function table(key, value) {
   (0, import_core.info)(`${key.padEnd(15)}: ${value}`);
 }
 
-// lib/github.ts
+// lib/dockerCli.ts
 var import_core2 = __toESM(require_core());
+var import_exec2 = __toESM(require_exec());
+async function dockerLogin({ registry, user, password }) {
+  (0, import_core2.info)(`Logging in to Docker registry "${registry}"...`);
+  const cmd = 'bash -c "echo $REGISTRY_PASSWORD | docker login $REGISTRY -u $REGISTRY_USER --password-stdin"';
+  (0, import_core2.debug)(`Executing command:
+${cmd}`);
+  await (0, import_exec2.exec)(cmd, void 0, {
+    env: __spreadProps(__spreadValues({}, process.env), {
+      REGISTRY: registry,
+      REGISTRY_USER: user,
+      REGISTRY_PASSWORD: password
+    })
+  });
+}
+async function dockerBuild({ dockerfile, labels, image }) {
+  (0, import_core2.info)("Building image...");
+  const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
+  const cmd = `docker build -f ${dockerfile} -t ${getImageFQN(image)} ${labelOptions} .`;
+  (0, import_core2.debug)(`Executing command:
+${cmd}`);
+  await (0, import_exec2.exec)(cmd);
+}
+async function dockerPush(image) {
+  (0, import_core2.info)("Pushing image...");
+  const cmd = `docker push ${getImageFQN(image)}`;
+  (0, import_core2.debug)(`Executing command:
+${cmd}`);
+  await (0, import_exec2.exec)(cmd);
+}
+function getImageFQN(image) {
+  return `${image.registry}/${image.namespace}/${image.name}:${image.tag}`;
+}
+
+// lib/github.ts
+var import_core3 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 function getRepository() {
   const { owner, repo } = import_utils.context.repo;
@@ -10083,10 +10110,10 @@ function getRepository() {
   return { owner, repo, fqn: `${owner}/${repo}` };
 }
 function getOwnerInput(inputName = "owner") {
-  return (0, import_core2.getInput)(inputName) || getRepository().owner;
+  return (0, import_core3.getInput)(inputName) || getRepository().owner;
 }
 function getRepoInput(inputName = "repo", fallbackInputName = "component") {
-  return fallbackInputName ? (0, import_core2.getInput)(inputName) || (0, import_core2.getInput)(fallbackInputName) || getRepository().repo : (0, import_core2.getInput)(inputName) || getRepository().repo;
+  return fallbackInputName ? (0, import_core3.getInput)(inputName) || (0, import_core3.getInput)(fallbackInputName) || getRepository().repo : (0, import_core3.getInput)(inputName) || getRepository().repo;
 }
 function getSha() {
   let sha = import_utils.context.sha;
@@ -10134,12 +10161,8 @@ var import_semver = __toESM(require_semver2());
 function validTag(tag) {
   return tag.replace(/^[\.-]+/, "").replace(/[^\w.-]/g, "-").substring(0, 127);
 }
-function getTags(ref = getRef()) {
-  const tags = [ref];
-  return tags.map(validTag);
-}
-function getTagsFQN({ repository, tags }) {
-  return tags.map((tag) => `${repository}:${tag}`);
+function branchToTag(ref = getRef()) {
+  return validTag(ref);
 }
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -10164,43 +10187,6 @@ function getImageVersion() {
   return ((semver == null ? void 0 : semver.version) ?? getSha()) || "unknown";
 }
 
-// build-push-image/src/dockerCli.ts
-var import_core3 = __toESM(require_core());
-var import_exec2 = __toESM(require_exec());
-async function dockerLogin({ registry, user, password }) {
-  (0, import_core3.info)(`Logging in to Docker registry "${registry}"...`);
-  const cmd = 'bash -c "echo $REGISTRY_PASSWORD | docker login $REGISTRY -u $REGISTRY_USER --password-stdin"';
-  (0, import_core3.debug)(`Executing command:
-${cmd}`);
-  await (0, import_exec2.exec)(cmd, void 0, {
-    env: __spreadProps(__spreadValues({}, process.env), {
-      REGISTRY: registry,
-      REGISTRY_USER: user,
-      REGISTRY_PASSWORD: password
-    })
-  });
-}
-async function dockerBuild({
-  dockerfile,
-  labels,
-  tagsFQN
-}) {
-  (0, import_core3.info)("Building image...");
-  const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
-  const tagOptions = tagsFQN.map((tag) => `--tag "${tag}"`).join(" ");
-  const cmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`;
-  (0, import_core3.debug)(`Executing command:
-${cmd}`);
-  await (0, import_exec2.exec)(cmd);
-}
-async function dockerPush(repository) {
-  (0, import_core3.info)("Pushing image...");
-  const cmd = `docker push ${repository} --all-tags`;
-  (0, import_core3.debug)(`Executing command:
-${cmd}`);
-  await (0, import_exec2.exec)(cmd);
-}
-
 // build-push-image/src/metadataFile.ts
 var import_core4 = __toESM(require_core());
 var import_fs = require("fs");
@@ -10221,20 +10207,15 @@ ${contents}`);
 async function run() {
   const namespace = getOwnerInput("namespace");
   const name = getRepoInput("name");
-  const dockerfile = (0, import_core5.getInput)("dockerfile") || "./Dockerfile";
+  const dockerfile = (0, import_core5.getInput)("dockerfile");
   const registry = (0, import_core5.getInput)("registry");
   const user = (0, import_core5.getInput)("user");
   const password = (0, import_core5.getInput)("password");
-  const repository = `${registry}/${namespace}/${name}`;
-  const tags = getTags();
-  const tagsFQN = getTagsFQN({ repository, tags });
   const labels = getLabels(name);
-  if (tags.length === 0) {
-    (0, import_core5.warning)("No tags set, skipping build-push-image action");
-    return;
-  }
-  table("Repository", repository);
-  table("Tags", tags.join(", "));
+  const tag = branchToTag();
+  const image = { registry, namespace, name, tag };
+  table("Repository", getImageFQN(image));
+  table("Tag", tag);
   table("Labels", JSON.stringify(labels, void 0, 2));
   await writeMetadataFile(name);
   await dockerLogin({
@@ -10245,9 +10226,9 @@ async function run() {
   await dockerBuild({
     dockerfile,
     labels,
-    tagsFQN
+    image
   });
-  await dockerPush(repository);
+  await dockerPush(image);
 }
 run().catch(import_core5.setFailed);
 /*!
