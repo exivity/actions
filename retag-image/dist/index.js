@@ -1421,10 +1421,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning3(message, properties = {}) {
+    function warning2(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning3;
+    exports.warning = warning2;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -7743,7 +7743,7 @@ var require_utils4 = __commonJS({
   }
 });
 
-// docker-retag-image/src/index.ts
+// retag-image/src/index.ts
 var import_core3 = __toESM(require_core());
 
 // lib/dockerCli.ts
@@ -7806,40 +7806,45 @@ function getRepoInput(inputName = "repo", fallbackInputName = "component") {
   return fallbackInputName ? (0, import_core2.getInput)(inputName) || (0, import_core2.getInput)(fallbackInputName) || getRepository().repo : (0, import_core2.getInput)(inputName) || getRepository().repo;
 }
 
-// docker-retag-image/src/index.ts
+// retag-image/src/index.ts
 async function run() {
-  const namespace = (0, import_core3.getInput)("namespace") || getOwnerInput("namespace");
-  const name = (0, import_core3.getInput)("name") || getRepoInput("name");
-  const registry = (0, import_core3.getInput)("registry");
-  const user = (0, import_core3.getInput)("user");
-  const password = (0, import_core3.getInput)("password");
-  const newTag = (0, import_core3.getInput)("newTag");
-  const oldTag = (0, import_core3.getInput)("oldTag");
+  const sourceRegistry = (0, import_core3.getInput)("source-registry");
+  const sourceNamespace = getOwnerInput("source-namespace");
+  const sourceName = getRepoInput("source-name");
+  const sourceTag = (0, import_core3.getInput)("source-tag");
+  const sourceUser = (0, import_core3.getInput)("source-user");
+  const sourcePassword = (0, import_core3.getInput)("source-password");
+  const targetRegistry = (0, import_core3.getInput)("target-registry");
+  const targetNamespace = getOwnerInput("target-namespace");
+  const targetName = getRepoInput("target-name");
+  const targetTag = (0, import_core3.getInput)("target-tag");
+  const targetUser = (0, import_core3.getInput)("target-user");
+  const targetPassword = (0, import_core3.getInput)("target-password");
   await dockerLogin({
-    registry,
-    user,
-    password
+    registry: sourceRegistry,
+    user: sourceUser,
+    password: sourcePassword
   });
-  if (process.env["DOCKER_HUB_USER"] && process.env["DOCKER_HUB_TOKEN"]) {
-    const dockerVars = {
-      registry: "docker.io",
-      user: process.env["DOCKER_HUB_USER"],
-      password: process.env["DOCKER_HUB_TOKEN"]
-    };
-    await dockerLogin(dockerVars);
-  } else {
-    throw new Error(`No valid credentials set in ENV for docker.io login`);
-  }
-  const devImage = { registry, namespace, name, tag: oldTag };
-  const releaseImage = {
-    registry: `docker.io`,
-    namespace,
-    name,
-    tag: newTag
+  await dockerLogin({
+    registry: targetRegistry,
+    user: targetUser,
+    password: targetPassword
+  });
+  const sourceImage = {
+    registry: sourceRegistry,
+    namespace: sourceNamespace,
+    name: sourceName,
+    tag: sourceTag
   };
-  await dockerPull(devImage);
-  await dockerAddTag(devImage, releaseImage);
-  await dockerPush(releaseImage);
+  const targetImage = {
+    registry: targetRegistry,
+    namespace: targetNamespace,
+    name: targetName,
+    tag: targetTag
+  };
+  await dockerPull(sourceImage);
+  await dockerAddTag(sourceImage, targetImage);
+  await dockerPush(targetImage);
 }
 run().catch(import_core3.setFailed);
 /*!
