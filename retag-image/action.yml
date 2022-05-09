@@ -1,0 +1,48 @@
+name: retag-image
+description: pulls, tags, and pushes a component image
+inputs:
+  # source inputs
+  source-registry:
+    description: Source image registry
+    required: true
+    default: ghcr.io
+  source-namespace:
+    description: Source image namespace
+    required: false
+  source-name:
+    description: Source image name
+    required: false
+  source-tag:
+    description: Source image tag
+    required: true
+  source-user:
+    description: Username for source registry
+    required: true
+    default: ${{ github.actor }}
+  source-password:
+    description: Password for source registry
+    required: true
+    default: ${{ github.token }}
+  # target inputs
+  target-registry:
+    description: Target image registry
+    required: true
+    default: docker.io
+  target-namespace:
+    description: Target image namespace
+    required: false
+  target-name:
+    description: Target image name
+    required: false
+  target-tag:
+    description: Target image tag
+    required: true
+  target-user:
+    description: Username for target registry
+    required: true
+  target-password:
+    description: Password for target registry
+    required: true
+runs:
+  using: node16
+  main: dist/index.js

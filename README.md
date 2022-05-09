@@ -13,6 +13,7 @@ applied outside of the context of the Exivity repositories.
 - [`purge-ghcr`](#purge-ghcr)
 - [`rabbitmq`](#rabbitmq)
 - [`rcedit`](#rcedit)
+- [`retag-image`](#retag-image)
 - [`review`](#review)
 - [`semantic-pull-request`](#semantic-pull-request)
 - [`sign-file`](#sign-file)
@@ -235,6 +236,38 @@ Edit resources of a Windows executable
 | `icon`                      |          |                                   | Path to the icon file (.ico) to set as the exePath's default icon                                                    |
 | `requested-execution-level` |          |                                   | Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator          |
 | `application-manifest`      |          |                                   | String path to a local manifest file to use                                                                          |
+
+# `retag-image`
+
+Pulls, tags, then pushes an image.
+
+## Example
+
+```
+- uses: exivity/actions/docker-retag-image@main
+  with:
+    source-tag: main
+    target-tag: release
+    target-user: ${{ secrets.DOCKER_HUB_USER }}
+    target-password: ${{ secrets.DOCKER_HUB_TOKEN }}
+```
+
+## Params
+
+| name             | required | default             | description                  |
+| ---------------- | :------: | ------------------- | ---------------------------- |
+| source-registry  |          | ghcr.io             | Source image registry to use |
+| source-namespace |          | <repo-owner>        | Source image namespace       |
+| source-name      |          | <repo-name>         | Source image name            |
+| source-tag       |    x     |                     | Source image tag             |
+| source-user      |    x     | ${{ github.actor }} | Username for source registry |
+| source-password  |    x     | ${{ github.token }} | Password for source registry |
+| target-registry  |          | docker.io           | Target image registry to use |
+| target-namespace |          | <repo-owner>        | Target image namespace       |
+| target-name      |          | <repo-name>         | Target image name            |
+| target-tag       |    x     |                     | Target image tag             |
+| target-user      |    x     |                     | Username for target registry |
+| target-password  |    x     |                     | Password for target registry |
 
 # `review`
 
