@@ -1,0 +1,10 @@
+name: refresh-release-branch
+description: Refreshed a release branch
+inputs:
+  gh-token:
+    description: GitHub token with read access to the repository
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: node16
+  main: dist/index.js
