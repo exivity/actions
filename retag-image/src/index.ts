@@ -10,16 +10,16 @@ import { getOwnerInput, getRepoInput } from '../../lib/github'
 async function run() {
   // Source Inputs
   const sourceRegistry = getInput('source-registry')
-  const sourceNamespace = getOwnerInput('namespace')
-  const sourceName = getRepoInput('name')
+  const sourceNamespace = getOwnerInput('source-namespace')
+  const sourceName = getRepoInput('source-name')
   const sourceTag = getInput('source-tag')
   const sourceUser = getInput('source-user')
   const sourcePassword = getInput('source-password')
 
   // Target Inputs
   const targetRegistry = getInput('target-registry')
-  const targetNamespace = getOwnerInput('namespace')
-  const targetName = getRepoInput('name')
+  const targetNamespace = getOwnerInput('target-namespace')
+  const targetName = getRepoInput('target-name')
   const targetTag = getInput('target-tag')
   const targetUser = getInput('target-user')
   const targetPassword = getInput('target-password')
