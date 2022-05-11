@@ -682,12 +682,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info3 = this._prepareRequest(verb, parsedUrl, headers);
+        let info2 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info3, data);
+          response = await this.requestRaw(info2, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -697,7 +697,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info3, data);
+              return authenticationHandler.handleAuthentication(this, info2, data);
             } else {
               return response;
             }
@@ -720,8 +720,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info3 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info3, data);
+            info2 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info2, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -741,7 +741,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info3, data) {
+      requestRaw(info2, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -749,13 +749,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info3, data, callbackForResult);
+          this.requestRawWithCallback(info2, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info3, data, onResult) {
+      requestRawWithCallback(info2, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info3.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info2.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -764,7 +764,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info3.httpModule.request(info3.options, (msg) => {
+        let req = info2.httpModule.request(info2.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -775,7 +775,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info3.options.path), null);
+          handleResult(new Error("Request timeout: " + info2.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -797,27 +797,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info3 = {};
-        info3.parsedUrl = requestUrl;
-        const usingSsl = info3.parsedUrl.protocol === "https:";
-        info3.httpModule = usingSsl ? https : http;
+        const info2 = {};
+        info2.parsedUrl = requestUrl;
+        const usingSsl = info2.parsedUrl.protocol === "https:";
+        info2.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info3.options = {};
-        info3.options.host = info3.parsedUrl.hostname;
-        info3.options.port = info3.parsedUrl.port ? parseInt(info3.parsedUrl.port) : defaultPort;
-        info3.options.path = (info3.parsedUrl.pathname || "") + (info3.parsedUrl.search || "");
-        info3.options.method = method;
-        info3.options.headers = this._mergeHeaders(headers);
+        info2.options = {};
+        info2.options.host = info2.parsedUrl.hostname;
+        info2.options.port = info2.parsedUrl.port ? parseInt(info2.parsedUrl.port) : defaultPort;
+        info2.options.path = (info2.parsedUrl.pathname || "") + (info2.parsedUrl.search || "");
+        info2.options.method = method;
+        info2.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info3.options.headers["user-agent"] = this.userAgent;
+          info2.options.headers["user-agent"] = this.userAgent;
         }
-        info3.options.agent = this._getAgent(info3.parsedUrl);
+        info2.options.agent = this._getAgent(info2.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info3.options);
+            handler.prepareRequest(info2.options);
           });
         }
-        return info3;
+        return info2;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -1105,9 +1105,9 @@ var require_oidc_utils = __commonJS({
   }
 });
 
-// node_modules/@actions/core/lib/markdown-summary.js
-var require_markdown_summary = __commonJS({
-  "node_modules/@actions/core/lib/markdown-summary.js"(exports) {
+// node_modules/@actions/core/lib/summary.js
+var require_summary = __commonJS({
+  "node_modules/@actions/core/lib/summary.js"(exports) {
     "use strict";
     var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
@@ -1137,13 +1137,13 @@ var require_markdown_summary = __commonJS({
       });
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
+    exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
     var os_1 = require("os");
     var fs_1 = require("fs");
     var { access, appendFile, writeFile } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
-    exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-markdown-summary";
-    var MarkdownSummary = class {
+    exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
+    var Summary = class {
       constructor() {
         this._buffer = "";
       }
@@ -1154,7 +1154,7 @@ var require_markdown_summary = __commonJS({
           }
           const pathFromEnv = process.env[exports.SUMMARY_ENV_VAR];
           if (!pathFromEnv) {
-            throw new Error(`Unable to find environment variable for $${exports.SUMMARY_ENV_VAR}. Check if your runtime environment supports markdown summaries.`);
+            throw new Error(`Unable to find environment variable for $${exports.SUMMARY_ENV_VAR}. Check if your runtime environment supports job summaries.`);
           }
           try {
             yield access(pathFromEnv, fs_1.constants.R_OK | fs_1.constants.W_OK);
@@ -1264,7 +1264,9 @@ var require_markdown_summary = __commonJS({
         return this.addRaw(element).addEOL();
       }
     };
-    exports.markdownSummary = new MarkdownSummary();
+    var _summary = new Summary();
+    exports.markdownSummary = _summary;
+    exports.summary = _summary;
   }
 });
 
@@ -1367,7 +1369,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
     exports.addPath = addPath;
-    function getInput2(name, options) {
+    function getInput3(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -1377,16 +1379,16 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports.getInput = getInput2;
+    exports.getInput = getInput3;
     function getMultilineInput(name, options) {
-      const inputs = getInput2(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput3(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
     exports.getMultilineInput = getMultilineInput;
     function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput2(name, options);
+      const val = getInput3(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -1421,18 +1423,18 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning3(message, properties = {}) {
+    function warning2(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning3;
+    exports.warning = warning2;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info3(message) {
+    function info2(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info3;
+    exports.info = info2;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -1468,9 +1470,13 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       });
     }
     exports.getIDToken = getIDToken;
-    var markdown_summary_1 = require_markdown_summary();
+    var summary_1 = require_summary();
+    Object.defineProperty(exports, "summary", { enumerable: true, get: function() {
+      return summary_1.summary;
+    } });
+    var summary_2 = require_summary();
     Object.defineProperty(exports, "markdownSummary", { enumerable: true, get: function() {
-      return markdown_summary_1.markdownSummary;
+      return summary_2.markdownSummary;
     } });
   }
 });
@@ -6745,32 +6751,13 @@ var require_github = __commonJS({
   }
 });
 
-// refresh-release-branch/src/index.ts
+// release/src/index.ts
 var import_core2 = __toESM(require_core());
 var import_github = __toESM(require_github());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
-async function getPr({
-  octokit,
-  owner,
-  repo,
-  number
-}) {
-  return (await octokit.rest.pulls.get({
-    owner,
-    repo,
-    pull_number: parseInt(String(number), 10)
-  })).data;
-}
-function getRepository() {
-  const { owner, repo } = import_utils.context.repo;
-  if (!owner || !repo) {
-    throw new Error("The GitHub repository is missing");
-  }
-  return { owner, repo, fqn: `${owner}/${repo}` };
-}
 function getToken(inputName = "gh-token") {
   const ghToken = (0, import_core.getInput)(inputName);
   if (!ghToken) {
@@ -6778,138 +6765,40 @@ function getToken(inputName = "gh-token") {
   }
   return ghToken;
 }
-function getEventName(supportedEvents2) {
-  const eventName = import_utils.context.eventName;
-  if (!eventName) {
-    throw new Error("The GitHub event name is missing");
-  }
-  if (supportedEvents2 && !supportedEvents2.includes(eventName)) {
-    throw new Error(`The event ${eventName} is not supported by this action`);
-  }
-  return eventName;
-}
-function getEventData(eventName) {
-  const payload = import_utils.context.payload;
-  if (Object.keys(payload).length === 0) {
-    throw new Error("The GitHub event payload is missing");
-  }
-  return payload;
+
+// release/src/ping.ts
+function ping(octokit) {
 }
 
-// refresh-release-branch/src/types.ts
-var types = {
-  feat: {
-    description: "A new feature",
-    title: "Features"
-  },
-  fix: {
-    description: "A bug fix",
-    title: "Bug Fixes"
-  },
-  docs: {
-    description: "Documentation only changes",
-    title: "Documentation"
-  },
-  style: {
-    description: "Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)",
-    title: "Styles"
-  },
-  refactor: {
-    description: "A code change that neither fixes a bug nor adds a feature",
-    title: "Code Refactoring"
-  },
-  perf: {
-    description: "A code change that improves performance",
-    title: "Performance Improvements"
-  },
-  test: {
-    description: "Adding missing tests or correcting existing tests",
-    title: "Tests"
-  },
-  build: {
-    description: "Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)",
-    title: "Builds"
-  },
-  ci: {
-    description: "Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)",
-    title: "Continuous Integrations"
-  },
-  chore: {
-    description: "Other changes that don't modify src or test files",
-    title: "Chores"
-  },
-  revert: {
-    description: "Reverts a previous commit",
-    title: "Reverts"
-  }
-};
-
-// refresh-release-branch/src/index.ts
-var supportedEvents = ["pull_request"];
-function validateCommitMessage(message) {
-  const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/);
-  const availableTypes = Object.keys(types);
-  const genericHelp = "See https://www.conventionalcommits.org/en/v1.0.0/ for more details.";
-  const typesHelp = `Available types:
-- ${availableTypes.join("\n- ")}`;
-  if (!matches) {
-    (0, import_core2.warning)(`Commit message can't be matched to the conventional commit pattern. See https://www.conventionalcommits.org/en/v1.0.0/ for more details.`);
-    return false;
-  }
-  const [, type, , , description] = matches;
-  if (!type) {
-    (0, import_core2.warning)(`No release type found.${genericHelp}`);
-    return false;
-  }
-  if (!description) {
-    (0, import_core2.warning)(`No description found.${genericHelp}`);
-    return false;
-  }
-  if (!availableTypes.includes(type)) {
-    (0, import_core2.warning)(`No release type found or not a valid release type. Add a prefix to indicate what kind of release this pull request corresponds to. ${genericHelp}
-
-${typesHelp}`);
-    return false;
-  }
-  return true;
+// release/src/prepare.ts
+function prepare(octokit) {
 }
+
+// release/src/release.ts
+function release(octokit) {
+}
+
+// release/src/index.ts
+var ModePing = "ping";
+var ModePrepare = "prepare";
+var ModeRelease = "check";
 async function run() {
-  const token = getToken();
-  const { owner, repo } = getRepository();
-  const eventName = getEventName(supportedEvents);
-  const eventData = getEventData(eventName);
-  const octokit = (0, import_github.getOctokit)(token);
-  const pr = await getPr({
-    octokit,
-    owner,
-    repo,
-    number: eventData.pull_request.number
-  });
-  if (!validateCommitMessage(pr.title)) {
-    throw new Error(`PR title "${pr.title}" is not semantic, see above for more details.`);
-  }
-  const commits = [];
-  let nonMergeCommits = [];
-  for await (const response of octokit.paginate.iterator(octokit.rest.pulls.listCommits, {
-    owner,
-    repo,
-    pull_number: pr.number
-  })) {
-    commits.push(...response.data);
-    nonMergeCommits = commits.filter((commit) => commit.parents.length < 2);
-    if (nonMergeCommits.length >= 2)
+  const mode = (0, import_core2.getInput)("mode");
+  const ghToken = getToken();
+  const octokit = (0, import_github.getOctokit)(ghToken);
+  switch (mode) {
+    case ModePing:
+      ping(octokit);
       break;
+    case ModePrepare:
+      prepare(octokit);
+      break;
+    case ModeRelease:
+      release(octokit);
+      break;
+    default:
+      throw new Error(`Unknown mode "${mode}"`);
   }
-  if (nonMergeCommits.length === 1) {
-    const commitTitle = nonMergeCommits[0].commit.message.split("\n")[0];
-    if (!validateCommitMessage(commitTitle)) {
-      throw new Error(`Pull request has only one commit and it's not semantic; this may lead to a non-semantic commit in the base branch (see https://github.community/t/how-to-change-the-default-squash-merge-commit-message/1155). Amend the commit message to match the pull request title, or add another commit.`);
-    }
-    if (commitTitle !== pr.title) {
-      throw new Error(`The pull request has only one (non-merge) commit and in this case Github will use it as the default commit message when merging. The pull request title doesn't match the commit though ("${pr.title}" vs. "${commitTitle}"). Please update the pull request title accordingly to avoid surprises.`);
-    }
-  }
-  (0, import_core2.info)("\u{1F389} Congratulation! Your pull request is semantic.");
 }
 run().catch(import_core2.setFailed);
 /*!

@@ -1,0 +1,40 @@
+name: virustotal
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/release.yml'
+      - 'release/**'
+
+jobs:
+  test-ping:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./release
+        with:
+          mode: ping
+  test-prepare:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./release
+        with:
+          mode: prepare
+  test-release:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./release
+        with:
+          mode: release

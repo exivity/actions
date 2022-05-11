@@ -1,6 +1,10 @@
-name: refresh-release-branch
-description: Refreshed a release branch
+name: release
+description: Release related actions
 inputs:
+  mode:
+    description: Ping, prepare or release
+    required: false
+    default: ping
   gh-token:
     description: GitHub token with read access to the repository
     required: false
