@@ -1,10 +1,11 @@
-name: virustotal
+name: release
 
 on:
   workflow_dispatch:
   push:
     paths:
       - '.github/workflows/release.yml'
+      - 'lib/github.ts'
       - 'release/**'
 
 jobs:
