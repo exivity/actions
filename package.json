@@ -42,7 +42,7 @@
     "glob-promise": "4.2.2",
     "js-yaml": "4.1.0",
     "mime": "3.0.0",
-    "minimatch": "5.0.1",
+    "minimatch": "5.1.0",
     "rcedit": "3.0.1",
     "semver": "7.3.7",
     "zod": "3.16.0"
