@@ -45,7 +45,7 @@
     "minimatch": "5.1.0",
     "rcedit": "3.0.1",
     "semver": "7.3.7",
-    "zod": "3.16.0"
+    "zod": "3.17.2"
   },
   "devDependencies": {
     "@octokit/webhooks": "9.24.0",
