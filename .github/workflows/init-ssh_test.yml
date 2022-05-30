@@ -1,13 +1,13 @@
-name: init-ssh
+name: init-ssh_test
 
 on:
   push:
     paths:
-      - '.github/workflows/init-ssh.yml'
+      - '.github/workflows/init-ssh_test.yml'
       - 'init-ssh/**'
 
 jobs:
-  test:
+  init-ssh_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
