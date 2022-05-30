@@ -1,0 +1,17 @@
+name: accept_test
+
+on:
+  push:
+    paths:
+      - '.github/workflows/accept_test.yml'
+      - 'accept/**'
+      - 'lib/github.ts'
+
+jobs:
+  accept_test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: echo 'Hello world!'
