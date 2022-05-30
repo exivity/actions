@@ -6,12 +6,35 @@ on:
       - '.github/workflows/accept-test.yml'
       - 'accept/**'
       - 'lib/github.ts'
+      - 'lib/core.ts'
+  pull_request:
+    types: [review_requested]
+  workflow_run:
+    workflows: ['accept-test']
+    types: [completed]
 
 jobs:
-  accept-test:
+  accept/test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - run: echo 'Hello world!'
+      - uses: actions/checkout@v3
+      - uses: ./accept
+        with:
+          dry-run: true
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
+
+  accept/test-filter:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./accept
+        with:
+          filter: non_existing_folder/**
+          dry-run: true
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}

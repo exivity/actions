@@ -1,0 +1,17 @@
+name: accept-fixture
+
+on:
+  push:
+    paths:
+      - '.github/workflows/accept-fixture.yml'
+      - 'accept/**'
+      - 'lib/github.ts'
+
+jobs:
+  accept/fixture:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: echo 'Hello world!'

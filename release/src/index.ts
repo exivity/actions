@@ -7,7 +7,7 @@ import { release } from './release'
 
 const ModePing = 'ping'
 const ModePrepare = 'prepare'
-const ModeRelease = 'check'
+const ModeRelease = 'release'
 
 async function run() {
   // Inputs

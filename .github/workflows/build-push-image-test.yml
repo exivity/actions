@@ -1,4 +1,4 @@
-name: build-push-image
+name: build-push-image-test
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
       - 'lib/image.ts'
 
 jobs:
-  test:
+  build-push-image/test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
