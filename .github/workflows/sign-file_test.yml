@@ -1,13 +1,13 @@
-name: sign-file
+name: sign-file_test
 
 on:
   push:
     paths:
-      - '.github/workflows/sign-file.yml'
+      - '.github/workflows/sign-file_test.yml'
       - 'sign-file/**'
 
 jobs:
-  test:
+  sign-file_test:
     strategy:
       matrix:
         os: [windows-latest]

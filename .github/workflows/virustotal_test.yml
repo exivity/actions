@@ -1,13 +1,13 @@
-name: virustotal
+name: virustotal_test
 
 on:
   push:
     paths:
-      - '.github/workflows/virustotal.yml'
+      - '.github/workflows/virustotal_test.yml'
       - 'virustotal/**'
 
 jobs:
-  test:
+  virustotal_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

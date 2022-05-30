@@ -1,16 +1,16 @@
-name: get-artefacts
+name: get-artefacts_test
 
 on:
   push:
     paths:
-      - '.github/workflows/get-artefacts.yml'
+      - '.github/workflows/get-artefacts_test.yml'
       - 'lib/core*'
       - 'lib/github.ts'
       - 'lib/s3*'
       - 'get-artefacts/**'
 
 jobs:
-  test:
+  get-artefacts_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

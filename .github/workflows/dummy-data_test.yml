@@ -1,9 +1,9 @@
-name: dummy-data
+name: dummy-data_test
 
 on:
   push:
     paths:
-      - '.github/workflows/dummy-data.yml'
+      - '.github/workflows/dummy-data_test.yml'
       - 'dummy-data/**'
       - 'lib/github.ts'
 
@@ -12,7 +12,7 @@ env:
   EXIVITY_PROGRAM_PATH: ${{ github.workspace }}/exivity/program
 
 jobs:
-  test:
+  dummy-data_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
