@@ -1,14 +1,14 @@
-name: review
+name: review_test
 
 on:
   push:
     paths:
-      - '.github/workflows/review.yml'
+      - '.github/workflows/review_test.yml'
       - 'review/**'
       - 'lib/github.ts'
 
 jobs:
-  test:
+  review_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

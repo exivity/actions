@@ -1,9 +1,9 @@
-name: process-binary
+name: process-binary_test
 
 on:
   push:
     paths:
-      - '.github/workflows/process-binary.yml'
+      - '.github/workflows/process-binary_test.yml'
       - 'process-binary/**'
 
 env:
@@ -55,7 +55,7 @@ env:
   CERTIFICATE_PASSWORD: test
 
 jobs:
-  test:
+  process-binary_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

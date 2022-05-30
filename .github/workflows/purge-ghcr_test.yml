@@ -1,4 +1,4 @@
-name: purge-ghcr
+name: purge-ghcr_test
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
   delete:
 
 jobs:
-  test:
+  purge-ghcr_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

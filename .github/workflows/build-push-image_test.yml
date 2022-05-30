@@ -1,16 +1,16 @@
-name: build-push-image
+name: build-push-image_test
 
 on:
   push:
     paths:
-      - '.github/workflows/build-push-image.yml'
+      - '.github/workflows/build-push-image_test.yml'
       - 'build-push-image/**'
       - 'lib/core.ts'
       - 'lib/github.ts'
       - 'lib/image.ts'
 
 jobs:
-  test:
+  build-push-image_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
