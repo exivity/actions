@@ -53,7 +53,7 @@ export async function dockerBuild({ dockerfile, labels, image }: BuildOptions) {
   await exec(cmd)
 }
 
-export async function dockerAddTag(off, on: Image) {
+export async function dockerAddTag(off: Image, on: Image) {
   info('Retagging image...')
 
   const offFQN = getImageFQN(off)

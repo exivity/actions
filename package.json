@@ -19,6 +19,7 @@
     "build:put-artefacts": "yarn esbuild:generic put-artefacts/src/index.ts --outfile=put-artefacts/dist/index.js",
     "build:rabbitmq": "yarn esbuild:generic rabbitmq/src/index.ts --outfile=rabbitmq/dist/index.js",
     "build:rcedit": "yarn esbuild:generic rcedit/src/index.ts --outfile=rcedit/dist/index.js && cp node_modules/rcedit/bin/rcedit-x64.exe rcedit/bin",
+    "build:retag-image": "yarn esbuild:generic retag-image/src/index.ts --outfile=retag-image/dist/index.js",
     "build:review": "yarn esbuild:generic review/src/index.ts --outfile=review/dist/index.js",
     "build:semantic-pull-request": "yarn esbuild:generic semantic-pull-request/src/index.ts --outfile=semantic-pull-request/dist/index.js",
     "build:sign-file": "yarn esbuild:generic sign-file/src/index.ts --outfile=sign-file/dist/index.js",
