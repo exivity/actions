@@ -1,14 +1,14 @@
-name: rabbitmq
+name: rabbitmq_test
 
 on:
   push:
     paths:
-      - '.github/workflows/rabbitmq.yml'
+      - '.github/workflows/rabbitmq_test.yml'
       - 'lib/docker*'
       - 'rabbitmq/**'
 
 jobs:
-  test:
+  rabbitmq_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

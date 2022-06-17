@@ -1,15 +1,15 @@
-name: postgres
+name: postgres_test
 
 on:
   push:
     paths:
-      - '.github/workflows/postgres.yml'
+      - '.github/workflows/postgres_test.yml'
       - 'lib/postgres*'
       - 'lib/docker*'
       - 'postgres/**'
 
 jobs:
-  test:
+  postgres_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

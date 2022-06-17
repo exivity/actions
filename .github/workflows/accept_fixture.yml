@@ -1,14 +1,14 @@
-name: accept-fixture
+name: accept_fixture
 
 on:
   push:
     paths:
-      - '.github/workflows/accept-fixture.yml'
+      - '.github/workflows/accept_fixture.yml'
       - 'accept/**'
       - 'lib/github.ts'
 
 jobs:
-  accept/fixture:
+  accept_fixture:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

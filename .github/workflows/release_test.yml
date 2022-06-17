@@ -1,15 +1,15 @@
-name: release
+name: release_test
 
 on:
   workflow_dispatch:
   push:
     paths:
-      - '.github/workflows/release.yml'
+      - '.github/workflows/release_test.yml'
       - 'lib/github.ts'
       - 'release/**'
 
 jobs:
-  test-ping:
+  release_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

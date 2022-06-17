@@ -7,12 +7,14 @@ applied outside of the context of the Exivity repositories.
 
 - [`build-push-image`](#build-push-image)
 - [`commit-status`](#commit-status)
+- [`enable-automerge`](#enable-automerge)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
 - [`process-binary`](#process-binary)
 - [`purge-ghcr`](#purge-ghcr)
 - [`rabbitmq`](#rabbitmq)
 - [`rcedit`](#rcedit)
+- [`retag-image`](#retag-image)
 - [`review`](#review)
 - [`semantic-pull-request`](#semantic-pull-request)
 - [`sign-file`](#sign-file)
@@ -84,6 +86,27 @@ Writes a
 | `description` |          |                  | A short description of the status                                                  |
 | `target_url`  |          |                  | The target URL to associate with this status                                       |
 | `gh-token`    |          | `github.token`   | A GitHub token with write access to the component                                  |
+
+# `enable-automerge`
+
+Enable GitHub automerge for the current PR.
+
+_Based on original work from
+[alexwilson/enable-github-automerge-action](https://github.com/alexwilson/enable-github-automerge-action)_
+
+## Example
+
+```yaml
+- uses: exivity/actions/enable-automerge@main
+  if: ${{ github.actor == 'dependabot[bot]' }}
+```
+
+## Inputs
+
+| name           | required | default              | description                                                                                                            |
+| -------------- | -------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `merge-method` |          | Default merge method | Merge method to use. Leave empty to use repository's default merge method. One of `"MERGE"`, `"SQUASH"` or `"REBASE"`. |
+| `gh-token`     |          | `github.token`       | GitHub token with write access to the repository                                                                       |
 
 # `init-ssh`
 
@@ -236,6 +259,38 @@ Edit resources of a Windows executable
 | `icon`                      |          |                                   | Path to the icon file (.ico) to set as the exePath's default icon                                                    |
 | `requested-execution-level` |          |                                   | Requested execution level to change to, must be either asInvoker, highestAvailable, or requireAdministrator          |
 | `application-manifest`      |          |                                   | String path to a local manifest file to use                                                                          |
+
+# `retag-image`
+
+Pulls, tags, then pushes an image.
+
+## Example
+
+```
+- uses: exivity/actions/retag-image@main
+  with:
+    source-tag: main
+    target-tag: release
+    target-user: ${{ secrets.DOCKER_HUB_USER }}
+    target-password: ${{ secrets.DOCKER_HUB_TOKEN }}
+```
+
+## Params
+
+| name               | required | default             | description                   |
+| ------------------ | :------: | ------------------- | ----------------------------- |
+| `source-registry`  |          | `ghcr.io`           | Source docker registry to use |
+| `source-namespace` |          | <repo-owner>        | Source image namespace        |
+| `source-name`      |          | <repo-name>         | Source image name             |
+| `source-tag`       |    x     |                     | Source image tag              |
+| `source-user`      |          | ${{ github.actor }} | Username for source registry  |
+| `source-password`  |          | ${{ github.token }} | Password for source registry  |
+| `target-registry`  |          | `docker.io`         | Target docker registry to use |
+| `target-namespace` |          | <repo-owner>        | Target image namespace        |
+| `target-name`      |          | <repo-name>         | Target image name             |
+| `target-tag`       |    x     |                     | Target image tag              |
+| `target-user`      |    x     |                     | Username for target registry  |
+| `target-password`  |    x     |                     | Password for target registry  |
 
 # `review`
 

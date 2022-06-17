@@ -1,9 +1,9 @@
-name: accept-test
+name: accept_test
 
 on:
   push:
     paths:
-      - '.github/workflows/accept-test.yml'
+      - '.github/workflows/accept_test.yml'
       - 'accept/**'
       - 'lib/github.ts'
       - 'lib/core.ts'
@@ -14,7 +14,7 @@ on:
     types: [completed]
 
 jobs:
-  accept/test:
+  accept_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

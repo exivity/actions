@@ -1,9 +1,9 @@
-name: db
+name: db_test
 
 on:
   push:
     paths:
-      - '.github/workflows/db.yml'
+      - '.github/workflows/db_test.yml'
       - 'lib/postgres*'
       - 'lib/docker*'
       - 'lib/github*'
@@ -11,7 +11,7 @@ on:
       - 'db/**'
 
 jobs:
-  test:
+  db_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

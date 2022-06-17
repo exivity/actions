@@ -27,14 +27,17 @@ export async function dockerLogin({ registry, user, password }: LoginOptions) {
 type BuildOptions = {
   dockerfile: string
   labels: { [key: string]: string }
-  tagsFQN: string[]
+  image: Image
 }
 
-export async function dockerBuild({
-  dockerfile,
-  labels,
-  tagsFQN,
-}: BuildOptions) {
+export type Image = {
+  registry: string
+  namespace: string
+  name: string
+  tag: string
+}
+
+export async function dockerBuild({ dockerfile, labels, image }: BuildOptions) {
   info('Building image...')
 
   // Concat list of labels
@@ -42,20 +45,43 @@ export async function dockerBuild({
     .map(([key, value]) => `--label "${key}=${value}"`)
     .join(' ')
 
-  // Concat list of tags
-  const tagOptions = tagsFQN.map((tag) => `--tag "${tag}"`).join(' ')
-
-  const cmd = `docker build -f ${dockerfile} ${tagOptions} ${labelOptions} .`
+  const cmd = `docker build -f ${dockerfile} -t ${getImageFQN(
+    image
+  )} ${labelOptions} .`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd)
 }
 
-export async function dockerPush(repository: string) {
+export async function dockerAddTag(off: Image, on: Image) {
+  info('Retagging image...')
+
+  const offFQN = getImageFQN(off)
+  const onFQN = getImageFQN(on)
+
+  const setTag = `docker tag ${offFQN} "${onFQN}"`
+  debug(`Executing command:\n${setTag}`)
+  await exec(setTag)
+}
+
+export async function dockerPush(image: Image) {
   info('Pushing image...')
 
-  const cmd = `docker push ${repository} --all-tags`
+  const cmd = `docker push ${getImageFQN(image)}`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd)
+}
+
+export async function dockerPull(image: Image) {
+  info('Pulling image...')
+
+  const cmd = `docker pull ${getImageFQN(image)}`
+  debug(`Executing command:\n${cmd}`)
+
+  await exec(cmd)
+}
+
+export function getImageFQN(image: Image) {
+  return `${image.registry}/${image.namespace}/${image.name}:${image.tag}`
 }

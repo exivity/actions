@@ -1,10 +1,10 @@
-name: sync-defaults
+name: sync-defaults_test
 
 on:
   push:
     paths:
       - '.github/settings.yml'
-      - '.github/workflows/sync-defaults.yml'
+      - '.github/workflows/sync-defaults_test.yml'
       - 'sync-defaults/**'
       - 'lib/github.ts'
   workflow_dispatch:
@@ -12,13 +12,13 @@ on:
     - cron: '30 3 * * *'
 
 jobs:
-  test:
+  sync-defaults_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./sync-defaults
         with:
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
