@@ -32,14 +32,14 @@
     "postpublish": "pinst --enable"
   },
   "dependencies": {
-    "@actions/core": "1.8.2",
+    "@actions/core": "1.9.0",
     "@actions/exec": "1.1.1",
     "@actions/github": "5.0.3",
     "@actions/http-client": "2.0.1",
     "checkout": "https://github.com/actions/checkout#v3.0.2",
     "deepmerge": "^4.2.2",
     "form-data": "4.0.0",
-    "glob": "7.2.3",
+    "glob": "8.0.3",
     "glob-promise": "4.2.2",
     "js-yaml": "4.1.0",
     "mime": "3.0.0",
@@ -56,12 +56,12 @@
     "@types/mime": "2.0.3",
     "@types/minimatch": "3.0.5",
     "@types/node": "18.0.0",
-    "@types/semver": "7.3.9",
+    "@types/semver": "7.3.10",
     "@types/uuid": "8.3.4",
-    "esbuild": "0.14.42",
+    "esbuild": "0.14.45",
     "husky": "8.0.1",
     "npm-run-all": "4.1.5",
-    "prettier": "2.6.2",
+    "prettier": "2.7.1",
     "typescript": "4.7.3"
   }
 }
