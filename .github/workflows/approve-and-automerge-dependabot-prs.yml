@@ -1,12 +1,12 @@
-name: approve-and-automerge
+name: approve-and-automerge-dependabot-prs
 
 on: pull_request
 
 jobs:
-  approve-and-automerge:
+  approve-and-automerge-dependabot-prs:
     runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v3
       - uses: ./review
-        if: ${{ github.actor == 'dependabot[bot]' }}
       - uses: ./enable-automerge
