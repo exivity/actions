@@ -527,6 +527,8 @@ repository migrations and runs them.
 
 # `release`
 
+Action to help with releasing Exivity.
+
 ## Example
 
 ```yaml
@@ -552,7 +554,7 @@ repository migrations and runs them.
 
 | name       | required | default        | description                                                   |
 | ---------- | -------- | -------------- | ------------------------------------------------------------- |
-| `mode`     |          | ping           | One of                                                        |
+| `mode`     |          | `"ping"`       | One of `"ping"`, `"prepare"` or `"release"`                   |
 | `gh-token` |          | `github.token` | A GitHub token with access to the exivity/exivity repository. |
 
 # `get-artefacts`
