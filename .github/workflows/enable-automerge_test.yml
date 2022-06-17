@@ -1,0 +1,17 @@
+name: enable-automerge_test
+
+on:
+  push:
+    paths:
+      - '.github/workflows/enable-automerge_test.yml'
+      - 'enable-automerge/**'
+      - 'lib/github.ts'
+
+jobs:
+  enable-automerge_test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: ./enable-automerge

@@ -12,6 +12,7 @@
     "build:commit-status": "yarn esbuild:generic commit-status/src/index.ts --outfile=commit-status/dist/index.js",
     "build:db": "yarn esbuild:generic db/src/index.ts --outfile=db/dist/index.js",
     "build:dummy-data": "yarn esbuild:generic dummy-data/src/index.ts --outfile=dummy-data/dist/index.js",
+    "build:enable-automerge": "yarn esbuild:generic enable-automerge/src/index.ts --outfile=enable-automerge/dist/index.js",
     "build:get-artefacts": "yarn esbuild:generic get-artefacts/src/index.ts --outfile=get-artefacts/dist/index.js",
     "build:init-ssh": "yarn esbuild:generic init-ssh/src/index.ts --outfile=init-ssh/dist/index.js",
     "build:postgres": "yarn esbuild:generic postgres/src/index.ts --outfile=postgres/dist/index.js",
