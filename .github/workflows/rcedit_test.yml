@@ -1,13 +1,13 @@
-name: rcedit
+name: rcedit_test
 
 on:
   push:
     paths:
-      - '.github/workflows/rcedit.yml'
+      - '.github/workflows/rcedit_test.yml'
       - 'rcedit/**'
 
 jobs:
-  test:
+  rcedit_test:
     strategy:
       matrix:
         os: [windows-latest]

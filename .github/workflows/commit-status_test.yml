@@ -1,23 +1,21 @@
-name: slack
+name: commit-status_test
 
 on:
   push:
     paths:
-      - '.github/workflows/slack.yml'
-      - 'lib/git.ts'
+      - '.github/workflows/commit-status_test.yml'
+      - 'commit-status/**'
       - 'lib/github.ts'
-      - 'slack/**'
 
 jobs:
-  test:
+  commit-status_test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - uses: ./slack
+      - uses: ./commit-status
         with:
-          status: ${{ job.status }}
-          slack-api-token: ${{ secrets.SLACK_BOT_TOKEN }}
           gh-token: ${{ secrets.GITHUB_TOKEN }}
+          context: auto-success
