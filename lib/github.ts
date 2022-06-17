@@ -339,3 +339,36 @@ export async function writeStatus({
     })
   ).data
 }
+
+export async function dispatchWorkflow({
+  octokit,
+  owner,
+  repo,
+  workflow_id,
+  ref,
+  inputs,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  workflow_id: number
+  ref: string
+  inputs: { [key: string]: string }
+}) {
+  info(
+    `Calling GitHub API to dispatch workflow ${workflow_id} of repo ${owner}:${repo}`
+  )
+
+  // Create workflow-dispatch event
+  // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+  return await octokit.request(
+    'POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches',
+    {
+      owner,
+      repo,
+      workflow_id,
+      ref,
+      inputs,
+    }
+  )
+}

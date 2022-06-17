@@ -30,6 +30,7 @@ workflows.
 - [`accept`](#accept)
 - [`db`](#db)
 - [`get-artefacts`](#get-artefacts)
+- [`release`](#release)
 - [`put-artefacts`](#put-artefacts)
 
 ---
@@ -523,6 +524,36 @@ repository migrations and runs them.
 | `aws-secret-access-key` | ✅       |                                                                                  | The AWS secret access key                                                                                                                                                                             |
 | `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
+
+# `release`
+
+## Example
+
+```yaml
+- uses: exivity/actions/release@main
+  with:
+    mode: ping
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+```yaml
+- uses: exivity/actions/release@main
+  with:
+    mode: prepare
+```
+
+```yaml
+- uses: exivity/actions/release@main
+  with:
+    mode: release
+```
+
+## Inputs
+
+| name       | required | default        | description                                                   |
+| ---------- | -------- | -------------- | ------------------------------------------------------------- |
+| `mode`     |          | ping           | One of                                                        |
+| `gh-token` |          | `github.token` | A GitHub token with access to the exivity/exivity repository. |
 
 # `get-artefacts`
 
