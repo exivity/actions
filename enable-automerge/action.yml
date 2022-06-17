@@ -1,0 +1,13 @@
+name: enable-automerge
+description: Enable GitHub automerge for the current PR
+inputs:
+  merge-method:
+    description: Merge method to use
+    required: false
+  gh-token:
+    description: GitHub token with write access to the repository
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: node16
+  main: dist/index.js

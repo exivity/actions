@@ -7,6 +7,7 @@ applied outside of the context of the Exivity repositories.
 
 - [`build-push-image`](#build-push-image)
 - [`commit-status`](#commit-status)
+- [`enable-automerge`](#enable-automerge)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
 - [`process-binary`](#process-binary)
@@ -84,6 +85,27 @@ Writes a
 | `description` |          |                  | A short description of the status                                                  |
 | `target_url`  |          |                  | The target URL to associate with this status                                       |
 | `gh-token`    |          | `github.token`   | A GitHub token with write access to the component                                  |
+
+# `enable-automerge`
+
+Enable GitHub automerge for the current PR.
+
+_Based on original work from
+[alexwilson/enable-github-automerge-action](https://github.com/alexwilson/enable-github-automerge-action)_
+
+## Example
+
+```yaml
+- uses: exivity/actions/enable-automerge@main
+  if: ${{ github.actor == 'dependabot[bot]' }}
+```
+
+## Inputs
+
+| name           | required | default              | description                                                                                                            |
+| -------------- | -------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `merge-method` |          | Default merge method | Merge method to use. Leave empty to use repository's default merge method. One of `"MERGE"`, `"SQUASH"` or `"REBASE"`. |
+| `gh-token`     |          | `github.token`       | GitHub token with write access to the repository                                                                       |
 
 # `init-ssh`
 
