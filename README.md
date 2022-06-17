@@ -244,7 +244,7 @@ Pulls, tags, then pushes an image.
 ## Example
 
 ```
-- uses: exivity/actions/docker-retag-image@main
+- uses: exivity/actions/retag-image@main
   with:
     source-tag: main
     target-tag: release
