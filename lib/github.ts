@@ -2,6 +2,7 @@ import { getInput, info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { context } from '@actions/github/lib/utils'
 import { EventPayloadMap, WebhookEventName } from '@octokit/webhooks-types'
+import { debug } from 'console'
 
 export type ScheduleEvent = {
   schedule: string
@@ -150,18 +151,49 @@ export function getSha() {
   return sha
 }
 
+/**
+ * See: https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+ *
+ * The branch or tag ref that triggered the workflow run. For workflows
+ * triggered by push, this is the branch or tag ref that was pushed. For
+ * workflows triggered by pull_request, this is the pull request merge branch.
+ * For workflows triggered by release, this is the release tag created. For
+ * other triggers, this is the branch or tag ref that triggered the workflow
+ * run. This is only set if a branch or tag is available for the event type.
+ * The ref given is fully-formed, meaning that for branches the format is
+ * refs/heads/<branch_name>, for pull requests it is
+ * refs/pull/<pr_number>/merge, and for tags it is refs/tags/<tag_name>. For
+ * example, refs/heads/feature-branch-1.
+ */
 export function getRef() {
-  // HEAD_REF not available from `context`
-  const ref =
-    process.env['GITHUB_HEAD_REF'] || context.ref?.slice(0, 10) == 'refs/tags/'
-      ? context.ref?.slice(10) // slice 'refs/tags/'
-      : context.ref?.slice(11) // slice 'refs/heads/'
+  const ref = context.ref
 
-  if (!ref) {
-    throw new Error('The GitHub ref is missing')
+  // Tag
+  if (ref && ref.startsWith('refs/tags/')) {
+    debug(`Ref taken from refs/tags: ${ref.slice(10)}`)
+    return ref.slice(10) // slice 'refs/tags/'
   }
 
-  return ref
+  // Branch
+  if (ref && ref.startsWith('refs/heads/')) {
+    debug(`Ref taken from refs/heads: ${ref.slice(11)}`)
+    return ref.slice(11) // slice 'refs/heads/'
+  }
+
+  // Pull request with HEAD_REF set (not available from `context`)
+  if (ref && ref.startsWith('refs/pull/') && process.env['GITHUB_HEAD_REF']) {
+    debug(`Ref taken from GITHUB_HEAD_REF: ${process.env['GITHUB_HEAD_REF']}`)
+    return process.env['GITHUB_HEAD_REF']
+  }
+
+  // Pull request with HEAD_REF unset
+  if (ref && ref.startsWith('refs/pull/')) {
+    throw new Error(
+      'Workflow triggered by pull request, but GITHUB_HEAD_REF is missing'
+    )
+  }
+
+  throw new Error('The git ref could not be determined')
 }
 
 export function getTag() {

@@ -349,7 +349,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug("making CONNECT request");
+      debug2("making CONNECT request");
       var connectReq = self.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -369,7 +369,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug2("tunneling socket could not be established, statusCode=%d", res.statusCode);
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -378,7 +378,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug("got illegal response body from proxy");
+          debug2("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -386,13 +386,13 @@ var require_tunnel = __commonJS({
           self.removeSocket(placeholder);
           return;
         }
-        debug("tunneling connection has established");
+        debug2("tunneling connection has established");
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug2("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
@@ -450,9 +450,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug;
+    var debug2;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug = function() {
+      debug2 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -462,10 +462,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug = function() {
+      debug2 = function() {
       };
     }
-    exports.debug = debug;
+    exports.debug = debug2;
   }
 });
 
@@ -1583,10 +1583,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug(message) {
+    function debug2(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug;
+    exports.debug = debug2;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -6936,6 +6936,7 @@ var import_github = __toESM(require_github());
 // lib/github.ts
 var import_core = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
+var import_console = require("console");
 async function getPrFromRef({
   octokit,
   owner,
@@ -6966,12 +6967,23 @@ function getRepoInput(inputName = "repo", fallbackInputName = "component") {
   return fallbackInputName ? (0, import_core.getInput)(inputName) || (0, import_core.getInput)(fallbackInputName) || getRepository().repo : (0, import_core.getInput)(inputName) || getRepository().repo;
 }
 function getRef() {
-  var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : (_c = import_utils.context.ref) == null ? void 0 : _c.slice(11);
-  if (!ref) {
-    throw new Error("The GitHub ref is missing");
+  const ref = import_utils.context.ref;
+  if (ref && ref.startsWith("refs/tags/")) {
+    (0, import_console.debug)(`Ref taken from refs/tags: ${ref.slice(10)}`);
+    return ref.slice(10);
   }
-  return ref;
+  if (ref && ref.startsWith("refs/heads/")) {
+    (0, import_console.debug)(`Ref taken from refs/heads: ${ref.slice(11)}`);
+    return ref.slice(11);
+  }
+  if (ref && ref.startsWith("refs/pull/") && process.env["GITHUB_HEAD_REF"]) {
+    (0, import_console.debug)(`Ref taken from GITHUB_HEAD_REF: ${process.env["GITHUB_HEAD_REF"]}`);
+    return process.env["GITHUB_HEAD_REF"];
+  }
+  if (ref && ref.startsWith("refs/pull/")) {
+    throw new Error("Workflow triggered by pull request, but GITHUB_HEAD_REF is missing");
+  }
+  throw new Error("The git ref could not be determined");
 }
 function getToken(inputName = "gh-token") {
   const ghToken = (0, import_core.getInput)(inputName);
