@@ -3,8 +3,8 @@ import { exec } from '@actions/exec'
 import { promises as fs } from 'fs'
 import { join as pathJoin } from 'path'
 
-const TRUE_VALUES = [true, 'true', 'TRUE']
-const FALSE_VALUES = [false, 'false', 'FALSE']
+const TRUE_VALUES = [true, 'true', 'TRUE', 'True']
+const FALSE_VALUES = [false, 'false', 'FALSE', 'False']
 
 export function getBooleanInput(name: string, defaultValue: boolean) {
   let inputValue = getInput(name) || defaultValue

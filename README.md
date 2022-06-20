@@ -638,6 +638,7 @@ release tag in the release repository, plus new tags in all released components.
 | name       | required | default        | description                                                   |
 | ---------- | -------- | -------------- | ------------------------------------------------------------- |
 | `mode`     |          | `"ping"`       | One of `"ping"`, `"prepare"` or `"release"`                   |
+| `dry-run`  |          | `false`        | If `true`, running this action will have no side-effects.     |
 | `gh-token` |          | `github.token` | A GitHub token with access to the exivity/exivity repository. |
 
 # `put-artefacts`

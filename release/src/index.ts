@@ -1,5 +1,6 @@
 import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { getBooleanInput } from '../../lib/core'
 import { getToken } from '../../lib/github'
 import { ping } from './ping'
 import { prepare } from './prepare'
@@ -12,27 +13,27 @@ const ModeRelease = 'release'
 async function run() {
   // Inputs
   const mode = getInput('mode')
+  const dryRun = getBooleanInput('dry-run', false)
   const ghToken = getToken()
 
   // Libs
   const octokit = getOctokit(ghToken)
 
-  switch (mode) {
-    case ModePing:
-      await ping(octokit)
-      break
+  // Action
+  const fn =
+    mode === ModePing
+      ? ping
+      : mode === ModePrepare
+      ? prepare
+      : mode === ModeRelease
+      ? release
+      : null
 
-    case ModePrepare:
-      await prepare(octokit)
-      break
-
-    case ModeRelease:
-      await release(octokit)
-      break
-
-    default:
-      throw new Error(`Unknown mode "${mode}"`)
+  if (fn === null) {
+    throw new Error(`Unknown mode "${mode}"`)
   }
+
+  await fn({ octokit, dryRun })
 }
 
 run().catch(setFailed)

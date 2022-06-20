@@ -7988,8 +7988,8 @@ var import_core = __toESM(require_core());
 var import_exec = __toESM(require_exec());
 var import_fs = require("fs");
 var import_path = require("path");
-var TRUE_VALUES = [true, "true", "TRUE"];
-var FALSE_VALUES = [false, "false", "FALSE"];
+var TRUE_VALUES = [true, "true", "TRUE", "True"];
+var FALSE_VALUES = [false, "false", "FALSE", "False"];
 function getBooleanInput(name, defaultValue) {
   let inputValue = (0, import_core.getInput)(name) || defaultValue;
   if (TRUE_VALUES.includes(inputValue)) {

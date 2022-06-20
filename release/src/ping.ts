@@ -1,4 +1,5 @@
 import { getOctokit } from '@actions/github'
+import { info } from 'console'
 import { dispatchWorkflow } from '../../lib/github'
 
 // id for exivity/exivity/.github/workflows/prepare.yaml
@@ -7,7 +8,20 @@ const prepareWorkflowId = 25900217
 
 const defaultExivityRepoBranch = 'main'
 
-export async function ping(octokit: ReturnType<typeof getOctokit>) {
+export async function ping({
+  octokit,
+  dryRun,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  dryRun: boolean
+}) {
+  if (dryRun) {
+    info(
+      `Would have dispatched workflow ${prepareWorkflowId} of exivity/exivity#main`
+    )
+    return
+  }
+
   return dispatchWorkflow({
     octokit,
     owner: 'exivity',

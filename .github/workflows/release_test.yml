@@ -9,7 +9,7 @@ on:
       - 'release/**'
 
 jobs:
-  release_test:
+  release_ping-test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -19,23 +19,28 @@ jobs:
       - uses: ./release
         with:
           mode: ping
-  test-prepare:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+          # @todo change to true
+          dry-run: false
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
+
+  release_prepare-test:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: ./release
         with:
           mode: prepare
-  test-release:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+          # @todo change to true
+          dry-run: false
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
+
+  release_release-test:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: ./release
         with:
           mode: release
+          # @todo change to true
+          dry-run: false
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}

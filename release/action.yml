@@ -5,6 +5,9 @@ inputs:
     description: Ping, prepare or release
     required: false
     default: ping
+  dry-run:
+    description: If `true`, running this action will have no side-effects.
+    required: false
   gh-token:
     description: A GitHub token with access to the exivity/exivity repository.
     required: false
