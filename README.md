@@ -110,14 +110,14 @@ GET https://api.github.com/repos/{owner}/{repo}/actions/workflows
 
 ## Inputs
 
-| name       | required | default          | description                                                          |
-| ---------- | -------- | ---------------- | -------------------------------------------------------------------- |
-| `owner`    |          | Repository owner | The owner of the target repo                                         |
-| `repo`     |          | Repository name  | The target repo to dispatch the workflow in                          |
-| `ref`      |          | Current ref      | The ref to dispatch the workflow on                                  |
-| `workflow` | ✅       |                  | The workflow (by ID or filename) to dispatch                         |
-| `inputs`   |          |                  | The inputs encoded as JSON string (of type `Record<string, string>`) |
-| `gh-token` |          | `github.token`   | A GitHub token with write access to the target repository            |
+| name       | required | default          | description                                                                               |
+| ---------- | -------- | ---------------- | ----------------------------------------------------------------------------------------- |
+| `owner`    |          | Repository owner | The owner of the target repo                                                              |
+| `repo`     |          | Repository name  | The target repo to dispatch the workflow in                                               |
+| `ref`      |          | Current ref      | The ref to dispatch the workflow on                                                       |
+| `workflow` | ✅       |                  | The workflow (by ID or filename) to dispatch                                              |
+| `inputs`   |          |                  | The inputs encoded as JSON string (of type `Record<string, string>`)                      |
+| `gh-token` | ✅       |                  | A GitHub PAT with write access to the target repository. The default token can't be used. |
 
 # `enable-automerge`
 
