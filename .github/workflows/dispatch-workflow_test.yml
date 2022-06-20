@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/dispatch-workflow_test.yml'
+      - '.github/workflows/hello-world_fixture.yml'
       - 'dispatch-workflow/**'
       - 'lib/core.ts'
       - 'lib/github.ts'

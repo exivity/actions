@@ -13,4 +13,7 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - run: echo 'Hello world!'
+      - run: |
+          echo "Hello World!\n$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
