@@ -14,4 +14,4 @@ jobs:
       - uses: ./review
       - uses: ./enable-automerge
         with:
-          gh-token: ${{ env.DEPENDABOT_APP_TOKEN }}
+          gh-token: ${{ secrets.DEPENDABOT_APP_TOKEN }}
