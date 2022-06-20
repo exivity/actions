@@ -8030,7 +8030,7 @@ ${JSON.stringify(inputs, void 0, 2)}`);
 
 // release/src/ping.ts
 var import_console = require("console");
-var prepareWorkflowId = 25900217;
+var prepareWorkflowId = "prepare.yml";
 var defaultExivityRepoBranch = "main";
 async function ping({
   octokit,

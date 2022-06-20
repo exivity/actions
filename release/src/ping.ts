@@ -2,9 +2,7 @@ import { getOctokit } from '@actions/github'
 import { info } from 'console'
 import { dispatchWorkflow } from '../../lib/github'
 
-// id for exivity/exivity/.github/workflows/prepare.yaml
-// obtain with GET https://api.github.com/repos/exivity/exivity/actions/workflows
-const prepareWorkflowId = 25900217
+const prepareWorkflowId = 'prepare.yml'
 
 const defaultExivityRepoBranch = 'main'
 
