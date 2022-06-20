@@ -2,10 +2,10 @@ name: approve-and-automerge-dependabot-prs
 
 on: pull_request
 
-# permissions:
-#   pull-requests: write
+permissions:
+  pull-requests: write
 
-permissions: write-all
+# permissions: write-all
 
 jobs:
   approve-and-automerge-dependabot-prs:
