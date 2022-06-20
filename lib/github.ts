@@ -351,16 +351,20 @@ export async function dispatchWorkflow({
   octokit: ReturnType<typeof getOctokit>
   owner: string
   repo: string
-  workflow_id: number
+  workflow_id: number | string
   ref: string
-  inputs: { [key: string]: string }
+  inputs?: { [key: string]: string }
 }) {
   info(
-    `Calling GitHub API to dispatch workflow ${workflow_id} of repo ${owner}:${repo}`
+    `Calling GitHub API to dispatch workflow ${workflow_id} of repo ${owner}:${repo} with inputs:\n${JSON.stringify(
+      inputs,
+      undefined,
+      2
+    )}`
   )
 
   // Create workflow-dispatch event
-  // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+  // See: https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event
   return await octokit.request(
     'POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches',
     {

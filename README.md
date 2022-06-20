@@ -87,6 +87,38 @@ Writes a
 | `target_url`  |          |                  | The target URL to associate with this status                                       |
 | `gh-token`    |          | `github.token`   | A GitHub token with write access to the component                                  |
 
+# `dispatch-workflow`
+
+Triggers another workflow run. The target workflow must
+[define the `on: workflow_dispatch` trigger](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch).
+
+The workflow should either be defined by ID or workflow filename. Look up the ID
+of a workflow by calling the GitHub API at:
+
+```
+GET https://api.github.com/repos/{owner}/{repo}/actions/workflows
+```
+
+## Example
+
+```yaml
+- uses: exivity/actions/dispatch-workflow@main
+  with:
+    workflow:
+    gh-token: ${{ secrets.GITHUB_PAT }}
+```
+
+## Inputs
+
+| name       | required | default          | description                                                          |
+| ---------- | -------- | ---------------- | -------------------------------------------------------------------- |
+| `owner`    |          | Repository owner | The owner of the target repo                                         |
+| `repo`     |          | Repository name  | The target repo to dispatch the workflow in                          |
+| `ref`      |          | Current ref      | The ref to dispatch the workflow on                                  |
+| `workflow` | ✅       |                  | The workflow (by ID or filename) to dispatch                         |
+| `inputs`   |          |                  | The inputs encoded as JSON string (of type `Record<string, string>`) |
+| `gh-token` |          | `github.token`   | A GitHub token with write access to the target repository            |
+
 # `enable-automerge`
 
 Enable GitHub automerge for the current PR.
@@ -266,7 +298,7 @@ Pulls, tags, then pushes an image.
 
 ## Example
 
-```
+```yaml
 - uses: exivity/actions/retag-image@main
   with:
     source-tag: main
@@ -278,19 +310,19 @@ Pulls, tags, then pushes an image.
 ## Params
 
 | name               | required | default             | description                   |
-| ------------------ | :------: | ------------------- | ----------------------------- |
+| ------------------ | -------- | ------------------- | ----------------------------- |
 | `source-registry`  |          | `ghcr.io`           | Source docker registry to use |
 | `source-namespace` |          | <repo-owner>        | Source image namespace        |
 | `source-name`      |          | <repo-name>         | Source image name             |
-| `source-tag`       |    x     |                     | Source image tag              |
+| `source-tag`       | ✅       |                     | Source image tag              |
 | `source-user`      |          | ${{ github.actor }} | Username for source registry  |
 | `source-password`  |          | ${{ github.token }} | Password for source registry  |
 | `target-registry`  |          | `docker.io`         | Target docker registry to use |
 | `target-namespace` |          | <repo-owner>        | Target image namespace        |
 | `target-name`      |          | <repo-name>         | Target image name             |
-| `target-tag`       |    x     |                     | Target image tag              |
-| `target-user`      |    x     |                     | Username for target registry  |
-| `target-password`  |    x     |                     | Password for target registry  |
+| `target-tag`       | ✅       |                     | Target image tag              |
+| `target-user`      | ✅       |                     | Username for target registry  |
+| `target-password`  | ✅       |                     | Password for target registry  |
 
 # `review`
 
@@ -527,7 +559,23 @@ repository migrations and runs them.
 
 # `release`
 
-Action to help with releasing Exivity.
+Action to help releasing Exivity.
+
+This action controls a _release_ repository which is used to release Exivity.
+Whenever a change occurs in one of the components which is ready to be release,
+a pull request is updated in the release repository which contains the upcoming
+version increase inferred from all pending changes and updates to the
+CHANGELOG.md. Merging this pull request will release a new version of Exivity.
+
+The `ping` mode is supposed to be used by components, whenever they push to
+their production branch. It will trigger a `prepare` workflow containing the
+release action in `prepare` mode in the release repository.
+
+The `prepare` mode is to be used in the release repository. It will pull in
+pending changes in all components, update the upcoming version and CHANGELOG.md.
+
+The `release` mode is to be used in the release repository. It will write a new
+release tag in the release repository, plus new tags in all released components.
 
 ## Example
 

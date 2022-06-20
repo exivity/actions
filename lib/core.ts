@@ -52,3 +52,13 @@ export function shortCircuit<T, R>(
 export function table(key: string, value: string) {
   info(`${key.padEnd(15)}: ${value}`)
 }
+
+export function isObject(
+  value: unknown
+): value is { [key: string | number | symbol]: unknown } {
+  return !!(
+    value &&
+    typeof value === 'object' &&
+    value.constructor === {}.constructor
+  )
+}

@@ -33,7 +33,7 @@ async function run() {
   // Initialize GH client
   const octokit = getOctokit(ghToken)
 
-  // Post a review to the GitHub API
+  // Write commit status
   await writeStatus({
     octokit,
     owner,

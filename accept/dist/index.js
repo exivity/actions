@@ -768,12 +768,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info11 = this._prepareRequest(verb, parsedUrl, headers);
+          let info10 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info11, data);
+            response = yield this.requestRaw(info10, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -783,7 +783,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info11, data);
+                return authenticationHandler.handleAuthentication(this, info10, data);
               } else {
                 return response;
               }
@@ -806,8 +806,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info11 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info11, data);
+              info10 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info10, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -828,7 +828,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info11, data) {
+      requestRaw(info10, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve2, reject) => {
             function callbackForResult(err, res) {
@@ -840,16 +840,16 @@ var require_lib = __commonJS({
                 resolve2(res);
               }
             }
-            this.requestRawWithCallback(info11, data, callbackForResult);
+            this.requestRawWithCallback(info10, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info11, data, onResult) {
+      requestRawWithCallback(info10, data, onResult) {
         if (typeof data === "string") {
-          if (!info11.options.headers) {
-            info11.options.headers = {};
+          if (!info10.options.headers) {
+            info10.options.headers = {};
           }
-          info11.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info10.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -858,7 +858,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info11.httpModule.request(info11.options, (msg) => {
+        const req = info10.httpModule.request(info10.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -870,7 +870,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info11.options.path}`));
+          handleResult(new Error(`Request timeout: ${info10.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -892,27 +892,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info11 = {};
-        info11.parsedUrl = requestUrl;
-        const usingSsl = info11.parsedUrl.protocol === "https:";
-        info11.httpModule = usingSsl ? https : http;
+        const info10 = {};
+        info10.parsedUrl = requestUrl;
+        const usingSsl = info10.parsedUrl.protocol === "https:";
+        info10.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info11.options = {};
-        info11.options.host = info11.parsedUrl.hostname;
-        info11.options.port = info11.parsedUrl.port ? parseInt(info11.parsedUrl.port) : defaultPort;
-        info11.options.path = (info11.parsedUrl.pathname || "") + (info11.parsedUrl.search || "");
-        info11.options.method = method;
-        info11.options.headers = this._mergeHeaders(headers);
+        info10.options = {};
+        info10.options.host = info10.parsedUrl.hostname;
+        info10.options.port = info10.parsedUrl.port ? parseInt(info10.parsedUrl.port) : defaultPort;
+        info10.options.path = (info10.parsedUrl.pathname || "") + (info10.parsedUrl.search || "");
+        info10.options.method = method;
+        info10.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info11.options.headers["user-agent"] = this.userAgent;
+          info10.options.headers["user-agent"] = this.userAgent;
         }
-        info11.options.agent = this._getAgent(info11.parsedUrl);
+        info10.options.agent = this._getAgent(info10.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info11.options);
+            handler.prepareRequest(info10.options);
           }
         }
-        return info11;
+        return info10;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1616,10 +1616,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info11(message) {
+    function info10(message) {
       process.stdout.write(message + os2.EOL);
     }
-    exports.info = info11;
+    exports.info = info10;
     function startGroup4(name) {
       command_1.issue("group", name);
     }
@@ -9252,12 +9252,12 @@ var require_lib4 = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info11 = this._prepareRequest(verb, parsedUrl, headers);
+          let info10 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info11, data);
+            response = yield this.requestRaw(info10, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -9267,7 +9267,7 @@ var require_lib4 = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info11, data);
+                return authenticationHandler.handleAuthentication(this, info10, data);
               } else {
                 return response;
               }
@@ -9290,8 +9290,8 @@ var require_lib4 = __commonJS({
                   }
                 }
               }
-              info11 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info11, data);
+              info10 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info10, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -9312,7 +9312,7 @@ var require_lib4 = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info11, data) {
+      requestRaw(info10, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve2, reject) => {
             function callbackForResult(err, res) {
@@ -9324,16 +9324,16 @@ var require_lib4 = __commonJS({
                 resolve2(res);
               }
             }
-            this.requestRawWithCallback(info11, data, callbackForResult);
+            this.requestRawWithCallback(info10, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info11, data, onResult) {
+      requestRawWithCallback(info10, data, onResult) {
         if (typeof data === "string") {
-          if (!info11.options.headers) {
-            info11.options.headers = {};
+          if (!info10.options.headers) {
+            info10.options.headers = {};
           }
-          info11.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info10.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -9342,7 +9342,7 @@ var require_lib4 = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info11.httpModule.request(info11.options, (msg) => {
+        const req = info10.httpModule.request(info10.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -9354,7 +9354,7 @@ var require_lib4 = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info11.options.path}`));
+          handleResult(new Error(`Request timeout: ${info10.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -9376,27 +9376,27 @@ var require_lib4 = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info11 = {};
-        info11.parsedUrl = requestUrl;
-        const usingSsl = info11.parsedUrl.protocol === "https:";
-        info11.httpModule = usingSsl ? https : http;
+        const info10 = {};
+        info10.parsedUrl = requestUrl;
+        const usingSsl = info10.parsedUrl.protocol === "https:";
+        info10.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info11.options = {};
-        info11.options.host = info11.parsedUrl.hostname;
-        info11.options.port = info11.parsedUrl.port ? parseInt(info11.parsedUrl.port) : defaultPort;
-        info11.options.path = (info11.parsedUrl.pathname || "") + (info11.parsedUrl.search || "");
-        info11.options.method = method;
-        info11.options.headers = this._mergeHeaders(headers);
+        info10.options = {};
+        info10.options.host = info10.parsedUrl.hostname;
+        info10.options.port = info10.parsedUrl.port ? parseInt(info10.parsedUrl.port) : defaultPort;
+        info10.options.path = (info10.parsedUrl.pathname || "") + (info10.parsedUrl.search || "");
+        info10.options.method = method;
+        info10.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info11.options.headers["user-agent"] = this.userAgent;
+          info10.options.headers["user-agent"] = this.userAgent;
         }
-        info11.options.agent = this._getAgent(info11.parsedUrl);
+        info10.options.agent = this._getAgent(info10.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info11.options);
+            handler.prepareRequest(info10.options);
           }
         }
-        return info11;
+        return info10;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -10050,10 +10050,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info11(message) {
+    function info10(message) {
       process.stdout.write(message + os2.EOL);
     }
-    exports.info = info11;
+    exports.info = info10;
     function startGroup4(name) {
       command_1.issue("group", name);
     }
@@ -23830,10 +23830,10 @@ var require_which = __commonJS({
         cb = opt;
         opt = {};
       }
-      var info11 = getPathInfo(cmd, opt);
-      var pathEnv = info11.env;
-      var pathExt = info11.ext;
-      var pathExtExe = info11.extExe;
+      var info10 = getPathInfo(cmd, opt);
+      var pathEnv = info10.env;
+      var pathExt = info10.ext;
+      var pathExtExe = info10.extExe;
       var found = [];
       (function F(i, l) {
         if (i === l) {
@@ -23868,10 +23868,10 @@ var require_which = __commonJS({
     }
     function whichSync(cmd, opt) {
       opt = opt || {};
-      var info11 = getPathInfo(cmd, opt);
-      var pathEnv = info11.env;
-      var pathExt = info11.ext;
-      var pathExtExe = info11.extExe;
+      var info10 = getPathInfo(cmd, opt);
+      var pathEnv = info10.env;
+      var pathExt = info10.ext;
+      var pathExtExe = info10.extExe;
       var found = [];
       for (var i = 0, l = pathEnv.length; i < l; i++) {
         var pathPart = pathEnv[i];
@@ -28606,12 +28606,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info11 = this._prepareRequest(verb, parsedUrl, headers);
+        let info10 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info11, data);
+          response = await this.requestRaw(info10, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -28621,7 +28621,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info11, data);
+              return authenticationHandler.handleAuthentication(this, info10, data);
             } else {
               return response;
             }
@@ -28644,8 +28644,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info11 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info11, data);
+            info10 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info10, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -28665,7 +28665,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info11, data) {
+      requestRaw(info10, data) {
         return new Promise((resolve2, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -28673,13 +28673,13 @@ var require_http_client = __commonJS({
             }
             resolve2(res);
           };
-          this.requestRawWithCallback(info11, data, callbackForResult);
+          this.requestRawWithCallback(info10, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info11, data, onResult) {
+      requestRawWithCallback(info10, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info11.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info10.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -28688,7 +28688,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info11.httpModule.request(info11.options, (msg) => {
+        let req = info10.httpModule.request(info10.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -28699,7 +28699,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info11.options.path), null);
+          handleResult(new Error("Request timeout: " + info10.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -28721,27 +28721,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info11 = {};
-        info11.parsedUrl = requestUrl;
-        const usingSsl = info11.parsedUrl.protocol === "https:";
-        info11.httpModule = usingSsl ? https : http;
+        const info10 = {};
+        info10.parsedUrl = requestUrl;
+        const usingSsl = info10.parsedUrl.protocol === "https:";
+        info10.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info11.options = {};
-        info11.options.host = info11.parsedUrl.hostname;
-        info11.options.port = info11.parsedUrl.port ? parseInt(info11.parsedUrl.port) : defaultPort;
-        info11.options.path = (info11.parsedUrl.pathname || "") + (info11.parsedUrl.search || "");
-        info11.options.method = method;
-        info11.options.headers = this._mergeHeaders(headers);
+        info10.options = {};
+        info10.options.host = info10.parsedUrl.hostname;
+        info10.options.port = info10.parsedUrl.port ? parseInt(info10.parsedUrl.port) : defaultPort;
+        info10.options.path = (info10.parsedUrl.pathname || "") + (info10.parsedUrl.search || "");
+        info10.options.method = method;
+        info10.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info11.options.headers["user-agent"] = this.userAgent;
+          info10.options.headers["user-agent"] = this.userAgent;
         }
-        info11.options.agent = this._getAgent(info11.parsedUrl);
+        info10.options.agent = this._getAgent(info10.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info11.options);
+            handler.prepareRequest(info10.options);
           });
         }
-        return info11;
+        return info10;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -29482,12 +29482,12 @@ var require_lib5 = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info11 = this._prepareRequest(verb, parsedUrl, headers);
+          let info10 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info11, data);
+            response = yield this.requestRaw(info10, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -29497,7 +29497,7 @@ var require_lib5 = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info11, data);
+                return authenticationHandler.handleAuthentication(this, info10, data);
               } else {
                 return response;
               }
@@ -29520,8 +29520,8 @@ var require_lib5 = __commonJS({
                   }
                 }
               }
-              info11 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info11, data);
+              info10 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info10, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -29542,7 +29542,7 @@ var require_lib5 = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info11, data) {
+      requestRaw(info10, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve2, reject) => {
             function callbackForResult(err, res) {
@@ -29554,16 +29554,16 @@ var require_lib5 = __commonJS({
                 resolve2(res);
               }
             }
-            this.requestRawWithCallback(info11, data, callbackForResult);
+            this.requestRawWithCallback(info10, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info11, data, onResult) {
+      requestRawWithCallback(info10, data, onResult) {
         if (typeof data === "string") {
-          if (!info11.options.headers) {
-            info11.options.headers = {};
+          if (!info10.options.headers) {
+            info10.options.headers = {};
           }
-          info11.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info10.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -29572,7 +29572,7 @@ var require_lib5 = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info11.httpModule.request(info11.options, (msg) => {
+        const req = info10.httpModule.request(info10.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -29584,7 +29584,7 @@ var require_lib5 = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info11.options.path}`));
+          handleResult(new Error(`Request timeout: ${info10.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -29606,27 +29606,27 @@ var require_lib5 = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info11 = {};
-        info11.parsedUrl = requestUrl;
-        const usingSsl = info11.parsedUrl.protocol === "https:";
-        info11.httpModule = usingSsl ? https : http;
+        const info10 = {};
+        info10.parsedUrl = requestUrl;
+        const usingSsl = info10.parsedUrl.protocol === "https:";
+        info10.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info11.options = {};
-        info11.options.host = info11.parsedUrl.hostname;
-        info11.options.port = info11.parsedUrl.port ? parseInt(info11.parsedUrl.port) : defaultPort;
-        info11.options.path = (info11.parsedUrl.pathname || "") + (info11.parsedUrl.search || "");
-        info11.options.method = method;
-        info11.options.headers = this._mergeHeaders(headers);
+        info10.options = {};
+        info10.options.host = info10.parsedUrl.hostname;
+        info10.options.port = info10.parsedUrl.port ? parseInt(info10.parsedUrl.port) : defaultPort;
+        info10.options.path = (info10.parsedUrl.pathname || "") + (info10.parsedUrl.search || "");
+        info10.options.method = method;
+        info10.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info11.options.headers["user-agent"] = this.userAgent;
+          info10.options.headers["user-agent"] = this.userAgent;
         }
-        info11.options.agent = this._getAgent(info11.parsedUrl);
+        info10.options.agent = this._getAgent(info10.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info11.options);
+            handler.prepareRequest(info10.options);
           }
         }
-        return info11;
+        return info10;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -30280,10 +30280,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info11(message) {
+    function info10(message) {
       process.stdout.write(message + os2.EOL);
     }
-    exports.info = info11;
+    exports.info = info10;
     function startGroup4(name) {
       command_1.issue("group", name);
     }
@@ -31844,12 +31844,12 @@ var require_http_client2 = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info11 = this._prepareRequest(verb, parsedUrl, headers);
+        let info10 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info11, data);
+          response = await this.requestRaw(info10, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -31859,7 +31859,7 @@ var require_http_client2 = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info11, data);
+              return authenticationHandler.handleAuthentication(this, info10, data);
             } else {
               return response;
             }
@@ -31882,8 +31882,8 @@ var require_http_client2 = __commonJS({
                 }
               }
             }
-            info11 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info11, data);
+            info10 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info10, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -31903,7 +31903,7 @@ var require_http_client2 = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info11, data) {
+      requestRaw(info10, data) {
         return new Promise((resolve2, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -31911,13 +31911,13 @@ var require_http_client2 = __commonJS({
             }
             resolve2(res);
           };
-          this.requestRawWithCallback(info11, data, callbackForResult);
+          this.requestRawWithCallback(info10, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info11, data, onResult) {
+      requestRawWithCallback(info10, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info11.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info10.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -31926,7 +31926,7 @@ var require_http_client2 = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info11.httpModule.request(info11.options, (msg) => {
+        let req = info10.httpModule.request(info10.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -31937,7 +31937,7 @@ var require_http_client2 = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info11.options.path), null);
+          handleResult(new Error("Request timeout: " + info10.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -31959,27 +31959,27 @@ var require_http_client2 = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info11 = {};
-        info11.parsedUrl = requestUrl;
-        const usingSsl = info11.parsedUrl.protocol === "https:";
-        info11.httpModule = usingSsl ? https : http;
+        const info10 = {};
+        info10.parsedUrl = requestUrl;
+        const usingSsl = info10.parsedUrl.protocol === "https:";
+        info10.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info11.options = {};
-        info11.options.host = info11.parsedUrl.hostname;
-        info11.options.port = info11.parsedUrl.port ? parseInt(info11.parsedUrl.port) : defaultPort;
-        info11.options.path = (info11.parsedUrl.pathname || "") + (info11.parsedUrl.search || "");
-        info11.options.method = method;
-        info11.options.headers = this._mergeHeaders(headers);
+        info10.options = {};
+        info10.options.host = info10.parsedUrl.hostname;
+        info10.options.port = info10.parsedUrl.port ? parseInt(info10.parsedUrl.port) : defaultPort;
+        info10.options.path = (info10.parsedUrl.pathname || "") + (info10.parsedUrl.search || "");
+        info10.options.method = method;
+        info10.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info11.options.headers["user-agent"] = this.userAgent;
+          info10.options.headers["user-agent"] = this.userAgent;
         }
-        info11.options.agent = this._getAgent(info11.parsedUrl);
+        info10.options.agent = this._getAgent(info10.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info11.options);
+            handler.prepareRequest(info10.options);
           });
         }
-        return info11;
+        return info10;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -32771,8 +32771,8 @@ var require_tool_cache = __commonJS({
 });
 
 // accept/src/index.ts
-var import_core5 = __toESM(require_core());
-var import_github2 = __toESM(require_github());
+var import_core4 = __toESM(require_core());
+var import_github3 = __toESM(require_github());
 var import_minimatch = __toESM(require_minimatch());
 
 // lib/core.ts
@@ -32940,6 +32940,24 @@ async function writeStatus({
     description,
     target_url
   })).data;
+}
+async function dispatchWorkflow({
+  octokit,
+  owner,
+  repo,
+  workflow_id,
+  ref,
+  inputs
+}) {
+  (0, import_core2.info)(`Calling GitHub API to dispatch workflow ${workflow_id} of repo ${owner}:${repo} with inputs:
+${JSON.stringify(inputs, void 0, 2)}`);
+  return await octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
+    owner,
+    repo,
+    workflow_id,
+    ref,
+    inputs
+  });
 }
 
 // accept/src/checks.ts
@@ -36994,7 +37012,6 @@ function includesBotRequest(eventData) {
 }
 
 // accept/src/dispatch.ts
-var import_core4 = __toESM(require_core());
 async function dispatch({
   octokit,
   scaffoldWorkflowId: scaffoldWorkflowId2,
@@ -37008,9 +37025,8 @@ async function dispatch({
   const inputs = __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues({}, component ? { custom_component_name: component } : {}), sha ? { custom_component_sha: sha } : {}), issue ? { issue } : {}), pull_request ? { pull_request: pull_request.toString(10) } : {}), {
     dry_run: dryRun ? "1" : "0"
   });
-  (0, import_core4.info)(`Trigger scaffold build on "${scaffoldBranch}" branch`);
-  (0, import_core4.info)(`Inputs: ${JSON.stringify(inputs)}`);
-  await octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
+  await dispatchWorkflow({
+    octokit,
     owner: "exivity",
     repo: "scaffold",
     workflow_id: scaffoldWorkflowId2,
@@ -37029,19 +37045,19 @@ function detectIssueKey(input) {
 }
 async function run() {
   const ghToken = getToken();
-  const octokit = (0, import_github2.getOctokit)(ghToken);
+  const octokit = (0, import_github3.getOctokit)(ghToken);
   let ref = getRef();
   let sha = getSha();
   const component = getRepository().repo;
   const eventName = getEventName(supportedEvents);
   const eventData = getEventData(eventName);
-  const scaffoldBranch = (0, import_core5.getInput)("scaffold-branch") || defaultScaffoldBranch;
-  const filter = (0, import_core5.getMultilineInput)("filter");
+  const scaffoldBranch = (0, import_core4.getInput)("scaffold-branch") || defaultScaffoldBranch;
+  const filter = (0, import_core4.getMultilineInput)("filter");
   const dryRun = getBooleanInput("dry-run", false);
   table("Event", eventName);
   if (isEvent(eventName, "workflow_run", eventData)) {
     if (eventData["action"] !== "completed") {
-      (0, import_core5.warning)('[accept] Skipping: only the "workflow_run.completed" event is supported');
+      (0, import_core4.warning)('[accept] Skipping: only the "workflow_run.completed" event is supported');
       return;
     }
     ref = eventData["workflow_run"]["head_branch"];
@@ -37049,18 +37065,18 @@ async function run() {
   }
   if (isEvent(eventName, "pull_request", eventData)) {
     if (eventData["action"] !== "review_requested") {
-      (0, import_core5.warning)('[accept] Skipping: only the "pull_request.review_requested" event is supported');
+      (0, import_core4.warning)('[accept] Skipping: only the "pull_request.review_requested" event is supported');
       return;
     }
     if (!includesBotRequest(eventData)) {
-      (0, import_core5.warning)("[accept] Skipping: exivity-bot not requested for review");
+      (0, import_core4.warning)("[accept] Skipping: exivity-bot not requested for review");
       return;
     }
     ref = eventData["pull_request"]["head"]["ref"];
     sha = eventData["pull_request"]["head"]["sha"];
   }
   if (isReleaseBranch(ref)) {
-    (0, import_core5.warning)(`[accept] Skipping: release branch "${ref}" is ignored`);
+    (0, import_core4.warning)(`[accept] Skipping: release branch "${ref}" is ignored`);
     return;
   }
   const pr = await getPrFromRef({
@@ -37076,14 +37092,14 @@ async function run() {
   table("Sha", `${shortSha} https://github.com/exivity/${component}/commit/${sha}`);
   table("Pull request", pull_request ? `${pull_request} https://github.com/exivity/${component}/pull/${pull_request}` : "None");
   table("Jira issue", issue ? `${issue} https://exivity.atlassian.net/browse/${issue}` : "None");
-  (0, import_core5.startGroup)("Debug");
-  (0, import_core5.info)(JSON.stringify({ eventData, pr }, void 0, 2));
-  (0, import_core5.endGroup)();
+  (0, import_core4.startGroup)("Debug");
+  (0, import_core4.info)(JSON.stringify({ eventData, pr }, void 0, 2));
+  (0, import_core4.endGroup)();
   if (pull_request && filter.length > 0) {
     const commit = await getCommit(octokit, component, ref);
     const someFilesMatch = (commit.files || []).some((file) => filter.some((item) => (0, import_minimatch.default)(file.filename || file.previous_filename || "unknown", item)));
     if (!someFilesMatch) {
-      (0, import_core5.warning)(`[accept] Skipping: no modified files match the filter option`);
+      (0, import_core4.warning)(`[accept] Skipping: no modified files match the filter option`);
       await review({
         octokit,
         owner: "exivity",
@@ -37105,28 +37121,28 @@ async function run() {
     }
   }
   if (!isDevelopBranch(ref) && !pull_request) {
-    (0, import_core5.warning)("[accept] Skipping: non-develop branch without pull request");
+    (0, import_core4.warning)("[accept] Skipping: non-develop branch without pull request");
     return;
   }
   if (eventName === "pull_request") {
-    (0, import_core5.info)("Checking if workflow constraint is satisfied...");
+    (0, import_core4.info)("Checking if workflow constraint is satisfied...");
     if (!await isWorkflowDependencyDone(octokit, ghToken, sha, component)) {
-      (0, import_core5.warning)(`[accept] Skipping: workflow constraint not satisfied`);
+      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
       return;
     }
   }
   if (isEvent(eventName, "workflow_run", eventData)) {
     if (eventData["workflow_run"]["conclusion"] !== "success") {
-      (0, import_core5.warning)(`[accept] Skipping: workflow constraint not satisfied`);
+      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
       return;
     }
     if (pr && !isBotReviewRequested(pr)) {
-      (0, import_core5.warning)("[accept] Skipping: exivity-bot not requested for review");
+      (0, import_core4.warning)("[accept] Skipping: exivity-bot not requested for review");
       return;
     }
   }
   if (isDevelopBranch(ref)) {
-    (0, import_core5.info)("On a development branch, dispatching plain run");
+    (0, import_core4.info)("On a development branch, dispatching plain run");
     await dispatch({
       octokit,
       scaffoldWorkflowId,
@@ -37146,7 +37162,7 @@ async function run() {
     });
   }
 }
-run().catch(import_core5.setFailed);
+run().catch(import_core4.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

@@ -1,0 +1,21 @@
+name: dispatch-workflow_test
+
+on:
+  push:
+    paths:
+      - '.github/workflows/dispatch-workflow_test.yml'
+      - 'dispatch-workflow/**'
+      - 'lib/core.ts'
+      - 'lib/github.ts'
+
+jobs:
+  commit-status_test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./dispatch-workflow
+        with:
+          workflow: hello-world_fixture

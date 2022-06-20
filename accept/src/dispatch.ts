@@ -1,5 +1,5 @@
-import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { dispatchWorkflow } from '../../lib/github'
 
 type DispatchParams = {
   octokit: ReturnType<typeof getOctokit>
@@ -30,19 +30,12 @@ export async function dispatch({
     dry_run: dryRun ? '1' : '0',
   }
 
-  info(`Trigger scaffold build on "${scaffoldBranch}" branch`)
-  info(`Inputs: ${JSON.stringify(inputs)}`)
-
-  // Create workflow-dispatch event
-  // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
-  await octokit.request(
-    'POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches',
-    {
-      owner: 'exivity',
-      repo: 'scaffold',
-      workflow_id: scaffoldWorkflowId,
-      ref: scaffoldBranch,
-      inputs,
-    }
-  )
+  await dispatchWorkflow({
+    octokit,
+    owner: 'exivity',
+    repo: 'scaffold',
+    workflow_id: scaffoldWorkflowId,
+    ref: scaffoldBranch,
+    inputs,
+  })
 }

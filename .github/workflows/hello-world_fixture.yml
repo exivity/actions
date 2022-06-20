@@ -1,0 +1,16 @@
+name: hello-world_fixture
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'accept/**'
+
+jobs:
+  hello-world_fixture:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: echo 'Hello world!'

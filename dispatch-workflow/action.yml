@@ -1,0 +1,25 @@
+name: dispatch-workflow
+description: Triggers another workflow run
+inputs:
+  owner:
+    description: The owner of the target repo
+    required: false
+  repo:
+    description: The target repo to dispatch the workflow in
+    required: false
+  ref:
+    description: The ref to dispatch the workflow on
+    required: false
+  workflow:
+    description: The workflow (by ID or filename) to dispatch
+    required: true
+  inputs:
+    description: The inputs encoded as JSON string
+    required: false
+  gh-token:
+    description: A GitHub token with write access to the target repo
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: node16
+  main: dist/index.js
