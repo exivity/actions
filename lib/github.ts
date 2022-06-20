@@ -356,7 +356,7 @@ export async function dispatchWorkflow({
   inputs?: { [key: string]: string }
 }) {
   info(
-    `Calling GitHub API to dispatch workflow ${workflow_id} of repo ${owner}:${repo} with inputs:\n${JSON.stringify(
+    `Calling GitHub API to dispatch workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:\n${JSON.stringify(
       inputs,
       undefined,
       2

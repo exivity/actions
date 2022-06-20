@@ -8029,7 +8029,7 @@ async function dispatchWorkflow({
   ref,
   inputs
 }) {
-  (0, import_core2.info)(`Calling GitHub API to dispatch workflow ${workflow_id} of repo ${owner}:${repo} with inputs:
+  (0, import_core2.info)(`Calling GitHub API to dispatch workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:
 ${JSON.stringify(inputs, void 0, 2)}`);
   return await octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
     owner,
