@@ -7,6 +7,7 @@ applied outside of the context of the Exivity repositories.
 
 - [`build-push-image`](#build-push-image)
 - [`commit-status`](#commit-status)
+- [`dispatch-workflow`](#dispatch-workflow)
 - [`enable-automerge`](#enable-automerge)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
@@ -557,6 +558,40 @@ repository migrations and runs them.
 | `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
 
+# `get-artefacts`
+
+Download artefacts for the provided component. It will use the S3 _exivity_
+bucket in the _eu-central-1_ region. Artefacts are downloaded with the
+_build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
+
+## Example
+
+```yaml
+- uses: exivity/actions/get-artefacts@main
+  with:
+    component: db
+    branch: master
+    path: db-artefacts
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name                    | required | default                                                                                         | description                                                                                      |
+| ----------------------- | -------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `component`             | ✅       |                                                                                                 | Component to download artefacts for                                                              |
+| `sha`                   |          |                                                                                                 | Use specific artefacts sha                                                                       |
+| `branch`                |          | `"main"` or `"master"` when it matches the current branch, `"develop"` otherwise (if available) | If no sha is provided, resolve sha from branch name                                              |
+| `use-platform-prefix`   |          | `false`                                                                                         | If `true`, uses `windows` or `linux` prefix depending on current os.                             |
+| `prefix`                |          |                                                                                                 | If specified, download artefacts from this prefix (appended after platform prefix if specified). |
+| `path`                  |          | `"../{component}/build"`                                                                        | Put artefacts in this path                                                                       |
+| `auto-unzip`            |          | `true`                                                                                          | Automatically unzip artefact files                                                               |
+| `aws-access-key-id`     | ✅       |                                                                                                 | The AWS access key ID                                                                            |
+| `aws-secret-access-key` | ✅       |                                                                                                 | The AWS secret access key                                                                        |
+| `gh-token`              |          | `github.token`                                                                                  | A GitHub token with access to the exivity/{component} repository.                                |
+
 # `release`
 
 Action to help releasing Exivity.
@@ -604,40 +639,6 @@ release tag in the release repository, plus new tags in all released components.
 | ---------- | -------- | -------------- | ------------------------------------------------------------- |
 | `mode`     |          | `"ping"`       | One of `"ping"`, `"prepare"` or `"release"`                   |
 | `gh-token` |          | `github.token` | A GitHub token with access to the exivity/exivity repository. |
-
-# `get-artefacts`
-
-Download artefacts for the provided component. It will use the S3 _exivity_
-bucket in the _eu-central-1_ region. Artefacts are downloaded with the
-_build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
-
-## Example
-
-```yaml
-- uses: exivity/actions/get-artefacts@main
-  with:
-    component: db
-    branch: master
-    path: db-artefacts
-    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
-```
-
-## Inputs
-
-| name                    | required | default                                                                                         | description                                                                                      |
-| ----------------------- | -------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `component`             | ✅       |                                                                                                 | Component to download artefacts for                                                              |
-| `sha`                   |          |                                                                                                 | Use specific artefacts sha                                                                       |
-| `branch`                |          | `"main"` or `"master"` when it matches the current branch, `"develop"` otherwise (if available) | If no sha is provided, resolve sha from branch name                                              |
-| `use-platform-prefix`   |          | `false`                                                                                         | If `true`, uses `windows` or `linux` prefix depending on current os.                             |
-| `prefix`                |          |                                                                                                 | If specified, download artefacts from this prefix (appended after platform prefix if specified). |
-| `path`                  |          | `"../{component}/build"`                                                                        | Put artefacts in this path                                                                       |
-| `auto-unzip`            |          | `true`                                                                                          | Automatically unzip artefact files                                                               |
-| `aws-access-key-id`     | ✅       |                                                                                                 | The AWS access key ID                                                                            |
-| `aws-secret-access-key` | ✅       |                                                                                                 | The AWS secret access key                                                                        |
-| `gh-token`              |          | `github.token`                                                                                  | A GitHub token with access to the exivity/{component} repository.                                |
 
 # `put-artefacts`
 

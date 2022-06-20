@@ -1,27 +1,10 @@
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -9804,15 +9787,17 @@ var previewHeaders = {
 var Branches = class extends GitHubSettingsPlugin {
   async sync() {
     return Promise.all(this.config.filter((branch) => branch.protection !== void 0).map((branch) => {
-      const commonParams = __spreadProps(__spreadValues({}, this.repo), { branch: branch.name });
+      const commonParams = { ...this.repo, branch: branch.name };
       if (this.isEmpty(branch.protection)) {
         this.logRemove(`Removing branch protection for "${branch.name}"`);
         return this.github.rest.repos.deleteBranchProtection(commonParams);
       } else {
         this.logUpdate(`Updating branch protection for "${branch.name}"`);
-        const updateParams = __spreadProps(__spreadValues(__spreadValues({}, commonParams), branch.protection), {
+        const updateParams = {
+          ...commonParams,
+          ...branch.protection,
           headers: previewHeaders
-        });
+        };
         return this.github.rest.repos.updateBranchProtection(updateParams);
       }
     }));
@@ -9902,13 +9887,14 @@ var Collaborators = class extends Diffable {
   }
   add(attrs) {
     this.logUpdate(`Adding collaborator "${attrs.username}"`);
-    return this.github.rest.repos.addCollaborator(__spreadValues(__spreadValues({}, attrs), this.repo));
+    return this.github.rest.repos.addCollaborator({ ...attrs, ...this.repo });
   }
   remove(existing) {
     this.logRemove(`Removing collaborator "${existing.username}"`);
-    return this.github.rest.repos.removeCollaborator(__spreadValues({
-      username: existing.username
-    }, this.repo));
+    return this.github.rest.repos.removeCollaborator({
+      username: existing.username,
+      ...this.repo
+    });
   }
 };
 
@@ -9952,7 +9938,7 @@ var Labels = class extends Diffable {
     return this.github.rest.issues.deleteLabel(this.wrapAttrs({ name: existing.name }));
   }
   wrapAttrs(attrs) {
-    return __spreadProps(__spreadValues(__spreadValues({}, attrs), this.repo), { headers: previewHeaders2 });
+    return { ...attrs, ...this.repo, headers: previewHeaders2 };
   }
 };
 
@@ -9968,10 +9954,11 @@ var Milestones = class extends Diffable {
     }
   }
   find() {
-    const options = this.github.rest.issues.listMilestones.endpoint.merge(__spreadValues({
+    const options = this.github.rest.issues.listMilestones.endpoint.merge({
       per_page: 100,
-      state: "all"
-    }, this.repo));
+      state: "all",
+      ...this.repo
+    });
     return this.github.paginate(options);
   }
   comparator(existing, attrs) {
@@ -9982,19 +9969,22 @@ var Milestones = class extends Diffable {
   }
   update(existing, attrs) {
     this.logUpdate(`Updating milestone "${attrs.title}"`);
-    return this.github.rest.issues.updateMilestone(__spreadValues(__spreadValues({
-      milestone_number: existing.number
-    }, attrs), this.repo));
+    return this.github.rest.issues.updateMilestone({
+      milestone_number: existing.number,
+      ...attrs,
+      ...this.repo
+    });
   }
   add(attrs) {
     this.logUpdate(`Adding milestone "${attrs.title}"`);
-    return this.github.rest.issues.createMilestone(__spreadValues(__spreadValues({}, attrs), this.repo));
+    return this.github.rest.issues.createMilestone({ ...attrs, ...this.repo });
   }
   remove(existing) {
     this.logUpdate(`Removing milestone "${existing.title}"`);
-    return this.github.rest.issues.deleteMilestone(__spreadValues({
-      milestone_number: existing.number
-    }, this.repo));
+    return this.github.rest.issues.deleteMilestone({
+      milestone_number: existing.number,
+      ...this.repo
+    });
   }
 };
 
@@ -10037,9 +10027,11 @@ function enableVulnerabilityAlerts({
 }
 var Repository = class extends GitHubSettingsPlugin {
   init() {
-    this.settings = __spreadValues(__spreadValues({
-      mediaType: { previews: ["baptiste"] }
-    }, this.config), this.repo);
+    this.settings = {
+      mediaType: { previews: ["baptiste"] },
+      ...this.config,
+      ...this.repo
+    };
     this.topics = this.config.topics;
     delete this.config.topics;
     this.enableVulnerabilityAlerts = this.config.enable_vulnerability_alerts;
@@ -10065,12 +10057,14 @@ var Repository = class extends GitHubSettingsPlugin {
         }
       });
     }
-    await enableVulnerabilityAlerts(__spreadValues({
-      enabled: this.enableVulnerabilityAlerts
-    }, this));
-    await enableAutomatedSecurityFixes(__spreadValues({
-      enabled: this.enableAutomatedSecurityFixes
-    }, this));
+    await enableVulnerabilityAlerts({
+      enabled: this.enableVulnerabilityAlerts,
+      ...this
+    });
+    await enableAutomatedSecurityFixes({
+      enabled: this.enableAutomatedSecurityFixes,
+      ...this
+    });
   }
 };
 

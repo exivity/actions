@@ -1,3 +1,3 @@
 import { getOctokit } from '@actions/github'
 
-export function release(octokit: ReturnType<typeof getOctokit>) {}
+export async function release(octokit: ReturnType<typeof getOctokit>) {}

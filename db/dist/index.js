@@ -1,27 +1,10 @@
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -8020,11 +8003,12 @@ async function startDocker({ defaultVersion: defaultVersion2, image: image2, por
   (0, import_core.info)(`About to start a Docker container from ${image2}:${version}`);
   await (0, import_exec.exec)(`bash docker-start.sh ${portsArg}`, void 0, {
     cwd: import_path.default.resolve(__dirname, "..", "..", "lib"),
-    env: __spreadProps(__spreadValues({}, process.env), {
+    env: {
+      ...process.env,
       NAME: sluggify(image2),
       IMAGE: image2,
       TAG: version
-    })
+    }
   });
 }
 
@@ -8082,10 +8066,11 @@ async function startPostgres(password = "postgres") {
   const script = (0, import_os.platform)() === "win32" ? "postgres-start-windows.sh" : "postgres-start-linux.sh";
   await (0, import_exec2.exec)(`bash ${script}`, void 0, {
     cwd: import_path2.default.resolve(__dirname, "..", "..", "lib"),
-    env: __spreadProps(__spreadValues({}, process.env), {
+    env: {
+      ...process.env,
       ATTRIBUTES: "SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN",
       PASSWORD: password
-    })
+    }
   });
 }
 
@@ -8116,10 +8101,11 @@ async function downloadS3object({
   const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
   (0, import_core3.info)(`About to execute ${cmd}`);
   await (0, import_exec3.exec)(cmd, void 0, {
-    env: __spreadProps(__spreadValues({}, process.env), {
+    env: {
+      ...process.env,
       AWS_ACCESS_KEY_ID: awsKeyId,
       AWS_SECRET_ACCESS_KEY: awsSecretKey
-    })
+    }
   });
 }
 function getAWSCredentials() {
@@ -8174,13 +8160,14 @@ async function run() {
   const migrateBin = (0, import_os3.platform)() === "win32" ? "migrate.exe" : "migrate";
   await (0, import_exec4.exec)("bash init-db.sh", void 0, {
     cwd: import_path4.default.resolve(__dirname, ".."),
-    env: __spreadProps(__spreadValues({}, process.env), {
+    env: {
+      ...process.env,
       MODE: mode,
       BASE_DIR: import_path4.default.join(workspacePath, dbDirectory),
       DB_NAME: dbName,
       MIGRATE_BIN: migrateBin,
       DB_PASSWORD: password
-    })
+    }
   });
 }
 run().catch(import_core4.setFailed);

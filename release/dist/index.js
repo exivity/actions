@@ -6931,7 +6931,7 @@ var require_github = __commonJS({
 
 // release/src/index.ts
 var import_core2 = __toESM(require_core());
-var import_github = __toESM(require_github());
+var import_github2 = __toESM(require_github());
 
 // lib/github.ts
 var import_core = __toESM(require_core());
@@ -6943,17 +6943,44 @@ function getToken(inputName = "gh-token") {
   }
   return ghToken;
 }
+async function dispatchWorkflow({
+  octokit,
+  owner,
+  repo,
+  workflow_id,
+  ref,
+  inputs
+}) {
+  (0, import_core.info)(`Calling GitHub API to dispatch workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:
+${JSON.stringify(inputs, void 0, 2)}`);
+  return await octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
+    owner,
+    repo,
+    workflow_id,
+    ref,
+    inputs
+  });
+}
 
 // release/src/ping.ts
-function ping(octokit) {
+var prepareWorkflowId = 25900217;
+var defaultExivityRepoBranch = "main";
+async function ping(octokit) {
+  return dispatchWorkflow({
+    octokit,
+    owner: "exivity",
+    repo: "exivity",
+    ref: defaultExivityRepoBranch,
+    workflow_id: prepareWorkflowId
+  });
 }
 
 // release/src/prepare.ts
-function prepare(octokit) {
+async function prepare(octokit) {
 }
 
 // release/src/release.ts
-function release(octokit) {
+async function release(octokit) {
 }
 
 // release/src/index.ts
@@ -6963,16 +6990,16 @@ var ModeRelease = "release";
 async function run() {
   const mode = (0, import_core2.getInput)("mode");
   const ghToken = getToken();
-  const octokit = (0, import_github.getOctokit)(ghToken);
+  const octokit = (0, import_github2.getOctokit)(ghToken);
   switch (mode) {
     case ModePing:
-      ping(octokit);
+      await ping(octokit);
       break;
     case ModePrepare:
-      prepare(octokit);
+      await prepare(octokit);
       break;
     case ModeRelease:
-      release(octokit);
+      await release(octokit);
       break;
     default:
       throw new Error(`Unknown mode "${mode}"`);

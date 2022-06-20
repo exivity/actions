@@ -1,27 +1,10 @@
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -10282,11 +10265,12 @@ async function dockerLogin({ registry, user, password }) {
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
   await (0, import_exec2.exec)(cmd, void 0, {
-    env: __spreadProps(__spreadValues({}, process.env), {
+    env: {
+      ...process.env,
       REGISTRY: registry,
       REGISTRY_USER: user,
       REGISTRY_PASSWORD: password
-    })
+    }
   });
 }
 async function dockerBuild({ dockerfile, labels, image }) {
@@ -10390,17 +10374,18 @@ function capitalizeFirstLetter(string) {
 }
 function getLabels(name) {
   const { owner, fqn } = getRepository();
-  return __spreadValues({
+  return {
     "org.opencontainers.image.vendor": capitalizeFirstLetter(owner),
     "org.opencontainers.image.title": name,
     "org.opencontainers.image.description": name,
     "org.opencontainers.image.source": `https://github.com/${fqn}`,
     "org.opencontainers.image.created": new Date().toISOString(),
-    "org.opencontainers.image.revision": getSha()
-  }, owner === "exivity" ? {
-    "org.opencontainers.image.url": "https://exivity.com",
-    "org.opencontainers.image.documentation": "https://docs.exivity.com"
-  } : {});
+    "org.opencontainers.image.revision": getSha(),
+    ...owner === "exivity" ? {
+      "org.opencontainers.image.url": "https://exivity.com",
+      "org.opencontainers.image.documentation": "https://docs.exivity.com"
+    } : {}
+  };
 }
 function getImageVersion() {
   const tag = getTag();

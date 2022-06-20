@@ -1,39 +1,10 @@
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-var __objRest = (source, exclude) => {
-  var target = {};
-  for (var prop in source)
-    if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
-      target[prop] = source[prop];
-  if (source != null && __getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(source)) {
-      if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
-        target[prop] = source[prop];
-    }
-  return target;
-};
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -4561,7 +4532,7 @@ ${stderr}`.trim(), stdout, stderr);
       if (!options) {
         options = {};
       }
-      const _a = options, { logger, updateErrorCallback } = _a, spawnOptions = __objRest(_a, ["logger", "updateErrorCallback"]);
+      const { logger, updateErrorCallback, ...spawnOptions } = options;
       if (logger)
         logger(`Executing command ${stringifyCommand(cmd, args)}`);
       return new Promise((resolve, reject) => {
@@ -4728,7 +4699,7 @@ var require_wrapper = __commonJS({
     exports.wrapperCommandExists = wrapperCommandExists;
     async function spawnWrapper(cmd, args, options) {
       options !== null && options !== void 0 ? options : options = {};
-      const _a = options, { wrapperCommand, wrapperInstructions } = _a, crossSpawnOptions = __objRest(_a, ["wrapperCommand", "wrapperInstructions"]);
+      const { wrapperCommand, wrapperInstructions, ...crossSpawnOptions } = options;
       if (wrapperCommand) {
         if (!await wrapperCommandExists(wrapperCommand)) {
           throw new WrapperError(wrapperCommand, wrapperInstructions);
@@ -4743,7 +4714,7 @@ var require_wrapper = __commonJS({
       let exeOptions = options;
       if (!canRunWindowsExeNatively()) {
         const wrapperCommand = wrapperFunction(options === null || options === void 0 ? void 0 : options.wrapperCommand);
-        exeOptions = options ? __spreadProps(__spreadValues({}, options), { wrapperCommand }) : { wrapperCommand };
+        exeOptions = options ? { ...options, wrapperCommand } : { wrapperCommand };
       }
       return spawnWrapper(cmd, args, exeOptions);
     }
@@ -4956,7 +4927,7 @@ var require_rcedit = __commonJS({
         }
       }
       const spawnOptions = {
-        env: __spreadValues({}, process.env)
+        env: { ...process.env }
       };
       if (!canRunWindowsExeNatively()) {
         spawnOptions.env.WINEDEBUG = "-all";
@@ -10196,7 +10167,7 @@ async function run() {
   const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
   (0, import_core2.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
   for (const absPath of absPaths) {
-    await (0, import_rcedit.default)(absPath, __spreadValues({
+    await (0, import_rcedit.default)(absPath, {
       "version-string": removeEmpty({
         Comments: comments,
         CompanyName: companyName,
@@ -10207,14 +10178,15 @@ async function run() {
         LegalTrademarks2: legalTrademarks2,
         OriginalFilename: originalFilename,
         ProductName: productName
+      }),
+      ...removeEmpty({
+        "file-version": fileVersion,
+        "product-version": productVersion,
+        icon,
+        "requested-execution-level": requestedExecutionLevel,
+        "application-manifest": applicationManifest
       })
-    }, removeEmpty({
-      "file-version": fileVersion,
-      "product-version": productVersion,
-      icon,
-      "requested-execution-level": requestedExecutionLevel,
-      "application-manifest": applicationManifest
-    })));
+    });
     (0, import_core2.debug)(`processed ${absPath} with rcedit`);
   }
 }

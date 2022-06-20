@@ -19,15 +19,15 @@ async function run() {
 
   switch (mode) {
     case ModePing:
-      ping(octokit)
+      await ping(octokit)
       break
 
     case ModePrepare:
-      prepare(octokit)
+      await prepare(octokit)
       break
 
     case ModeRelease:
-      release(octokit)
+      await release(octokit)
       break
 
     default:

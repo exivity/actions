@@ -1,27 +1,10 @@
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -28783,12 +28766,13 @@ var require_http_client = __commonJS({
           const agentOptions = {
             maxSockets,
             keepAlive: this._keepAlive,
-            proxy: __spreadProps(__spreadValues({}, (proxyUrl.username || proxyUrl.password) && {
-              proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`
-            }), {
+            proxy: {
+              ...(proxyUrl.username || proxyUrl.password) && {
+                proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`
+              },
               host: proxyUrl.hostname,
               port: proxyUrl.port
-            })
+            }
           };
           let tunnelAgent;
           const overHttps = proxyUrl.protocol === "https:";
@@ -32021,12 +32005,13 @@ var require_http_client2 = __commonJS({
           const agentOptions = {
             maxSockets,
             keepAlive: this._keepAlive,
-            proxy: __spreadProps(__spreadValues({}, (proxyUrl.username || proxyUrl.password) && {
-              proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`
-            }), {
+            proxy: {
+              ...(proxyUrl.username || proxyUrl.password) && {
+                proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`
+              },
               host: proxyUrl.hostname,
               port: proxyUrl.port
-            })
+            }
           };
           let tunnelAgent;
           const overHttps = proxyUrl.protocol === "https:";
@@ -37034,9 +37019,13 @@ async function dispatch({
   issue,
   dryRun = false
 }) {
-  const inputs = __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues({}, component ? { custom_component_name: component } : {}), sha ? { custom_component_sha: sha } : {}), issue ? { issue } : {}), pull_request ? { pull_request: pull_request.toString(10) } : {}), {
+  const inputs = {
+    ...component ? { custom_component_name: component } : {},
+    ...sha ? { custom_component_sha: sha } : {},
+    ...issue ? { issue } : {},
+    ...pull_request ? { pull_request: pull_request.toString(10) } : {},
     dry_run: dryRun ? "1" : "0"
-  });
+  };
   await dispatchWorkflow({
     octokit,
     owner: "exivity",
