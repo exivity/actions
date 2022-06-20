@@ -2,8 +2,10 @@ name: approve-and-automerge-dependabot-prs
 
 on: pull_request
 
-permissions:
-  pull-requests: write
+# permissions:
+#   pull-requests: write
+
+permissions: write-all
 
 jobs:
   approve-and-automerge-dependabot-prs:
@@ -13,5 +15,5 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./review
       - uses: ./enable-automerge
-        with:
-          gh-token: ${{ secrets.DEPENDABOT_APP_TOKEN }}
+        # with:
+        #   gh-token: ${{ secrets.GH_BOT_TOKEN }}
