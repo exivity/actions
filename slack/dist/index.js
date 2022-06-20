@@ -349,7 +349,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug2("making CONNECT request");
+      debug3("making CONNECT request");
       var connectReq = self.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -369,7 +369,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug2("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug3("tunneling socket could not be established, statusCode=%d", res.statusCode);
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -378,7 +378,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug2("got illegal response body from proxy");
+          debug3("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -386,13 +386,13 @@ var require_tunnel = __commonJS({
           self.removeSocket(placeholder);
           return;
         }
-        debug2("tunneling connection has established");
+        debug3("tunneling connection has established");
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug2("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug3("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
@@ -450,9 +450,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug2;
+    var debug3;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug2 = function() {
+      debug3 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -462,10 +462,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug2 = function() {
+      debug3 = function() {
       };
     }
-    exports.debug = debug2;
+    exports.debug = debug3;
   }
 });
 
@@ -1583,10 +1583,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug2(message) {
+    function debug3(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug2;
+    exports.debug = debug3;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -7982,7 +7982,7 @@ var require_exec = __commonJS({
 // slack/src/index.ts
 var import_core3 = __toESM(require_core());
 var import_github = __toESM(require_github());
-var import_console = require("console");
+var import_console2 = require("console");
 
 // lib/git.ts
 var import_exec = __toESM(require_exec());
@@ -8002,6 +8002,7 @@ async function getCommitAuthorEmail() {
 // lib/github.ts
 var import_core = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
+var import_console = require("console");
 async function getPrFromRef({
   octokit,
   owner,
@@ -8037,12 +8038,23 @@ function getSha() {
   return sha;
 }
 function getRef() {
-  var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : (_c = import_utils.context.ref) == null ? void 0 : _c.slice(11);
-  if (!ref) {
-    throw new Error("The GitHub ref is missing");
+  const ref = import_utils.context.ref;
+  if (ref && ref.startsWith("refs/tags/")) {
+    (0, import_console.debug)(`Ref taken from refs/tags: ${ref.slice(10)}`);
+    return ref.slice(10);
   }
-  return ref;
+  if (ref && ref.startsWith("refs/heads/")) {
+    (0, import_console.debug)(`Ref taken from refs/heads: ${ref.slice(11)}`);
+    return ref.slice(11);
+  }
+  if (ref && ref.startsWith("refs/pull/") && process.env["GITHUB_HEAD_REF"]) {
+    (0, import_console.debug)(`Ref taken from GITHUB_HEAD_REF: ${process.env["GITHUB_HEAD_REF"]}`);
+    return process.env["GITHUB_HEAD_REF"];
+  }
+  if (ref && ref.startsWith("refs/pull/")) {
+    throw new Error("Workflow triggered by pull request, but GITHUB_HEAD_REF is missing");
+  }
+  throw new Error("The git ref could not be determined");
 }
 function getToken(inputName = "gh-token") {
   const ghToken = (0, import_core.getInput)(inputName);
@@ -8215,16 +8227,16 @@ async function run() {
   }
   if (!channel) {
     (0, import_core3.warning)(`Please set the "channel" input or make sure this action can match the author of the commit triggering this workflow to a Slack user (tried with "${authorName}", "${authorEmail}" and "${import_github.context.action}").`);
-    (0, import_console.info)(`This action will try to match the author of the commit using the Slack user attributes "name", "display_name", "real_name" or "email".`);
+    (0, import_console2.info)(`This action will try to match the author of the commit using the Slack user attributes "name", "display_name", "real_name" or "email".`);
     if (fallbackChannel) {
-      (0, import_console.info)(`Using fallback channel "${fallbackChannel}"`);
+      (0, import_console2.info)(`Using fallback channel "${fallbackChannel}"`);
       channel = await slack.resolveChannelId(fallbackChannel);
     }
   }
   if (!channel) {
     throw new Error(`Could not find a channel to send the message to`);
   }
-  (0, import_console.info)(`Sending message to ${channel}`);
+  (0, import_console2.info)(`Sending message to ${channel}`);
   const statusText = status === "success" ? "\u2705 *Build successful*\n\n" : status === "failure" ? "\u{1F6A8} *Build failed*\n\n" : status === "cancelled" ? "\u{1F6AB} *Build cancelled*\n\n" : "";
   const prBlock = pr ? [
     {

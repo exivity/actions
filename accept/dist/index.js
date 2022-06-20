@@ -366,7 +366,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug7("making CONNECT request");
+      debug8("making CONNECT request");
       var connectReq = self2.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -386,7 +386,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug7("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug8("tunneling socket could not be established, statusCode=%d", res.statusCode);
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -395,7 +395,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug7("got illegal response body from proxy");
+          debug8("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -403,13 +403,13 @@ var require_tunnel = __commonJS({
           self2.removeSocket(placeholder);
           return;
         }
-        debug7("tunneling connection has established");
+        debug8("tunneling connection has established");
         self2.sockets[self2.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug7("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug8("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
@@ -467,9 +467,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug7;
+    var debug8;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug7 = function() {
+      debug8 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -479,10 +479,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug7 = function() {
+      debug8 = function() {
       };
     }
-    exports.debug = debug7;
+    exports.debug = debug8;
   }
 });
 
@@ -1600,10 +1600,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug7(message) {
+    function debug8(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug7;
+    exports.debug = debug8;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -10034,10 +10034,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug7(message) {
+    function debug8(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug7;
+    exports.debug = debug8;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -24042,15 +24042,15 @@ var require_readShebang = __commonJS({
 var require_semver = __commonJS({
   "node_modules/cross-spawn/node_modules/semver/semver.js"(exports, module2) {
     exports = module2.exports = SemVer;
-    var debug7;
+    var debug8;
     if (typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG)) {
-      debug7 = function() {
+      debug8 = function() {
         var args = Array.prototype.slice.call(arguments, 0);
         args.unshift("SEMVER");
         console.log.apply(console, args);
       };
     } else {
-      debug7 = function() {
+      debug8 = function() {
       };
     }
     exports.SEMVER_SPEC_VERSION = "2.0.0";
@@ -24139,7 +24139,7 @@ var require_semver = __commonJS({
     var STAR = R++;
     src[STAR] = "(<|>)?=?\\s*\\*";
     for (i = 0; i < R; i++) {
-      debug7(i, src[i]);
+      debug8(i, src[i]);
       if (!re[i]) {
         re[i] = new RegExp(src[i]);
       }
@@ -24205,7 +24205,7 @@ var require_semver = __commonJS({
       if (!(this instanceof SemVer)) {
         return new SemVer(version, options);
       }
-      debug7("SemVer", version, options);
+      debug8("SemVer", version, options);
       this.options = options;
       this.loose = !!options.loose;
       var m = version.trim().match(options.loose ? re[LOOSE] : re[FULL]);
@@ -24252,7 +24252,7 @@ var require_semver = __commonJS({
       return this.version;
     };
     SemVer.prototype.compare = function(other) {
-      debug7("SemVer.compare", this.version, this.options, other);
+      debug8("SemVer.compare", this.version, this.options, other);
       if (!(other instanceof SemVer)) {
         other = new SemVer(other, this.options);
       }
@@ -24279,7 +24279,7 @@ var require_semver = __commonJS({
       do {
         var a = this.prerelease[i2];
         var b = other.prerelease[i2];
-        debug7("prerelease compare", i2, a, b);
+        debug8("prerelease compare", i2, a, b);
         if (a === void 0 && b === void 0) {
           return 0;
         } else if (b === void 0) {
@@ -24532,7 +24532,7 @@ var require_semver = __commonJS({
       if (!(this instanceof Comparator)) {
         return new Comparator(comp, options);
       }
-      debug7("comparator", comp, options);
+      debug8("comparator", comp, options);
       this.options = options;
       this.loose = !!options.loose;
       this.parse(comp);
@@ -24541,7 +24541,7 @@ var require_semver = __commonJS({
       } else {
         this.value = this.operator + this.semver.version;
       }
-      debug7("comp", this);
+      debug8("comp", this);
     }
     var ANY = {};
     Comparator.prototype.parse = function(comp) {
@@ -24564,7 +24564,7 @@ var require_semver = __commonJS({
       return this.value;
     };
     Comparator.prototype.test = function(version) {
-      debug7("Comparator.test", version, this.options.loose);
+      debug8("Comparator.test", version, this.options.loose);
       if (this.semver === ANY) {
         return true;
       }
@@ -24648,9 +24648,9 @@ var require_semver = __commonJS({
       range = range.trim();
       var hr = loose ? re[HYPHENRANGELOOSE] : re[HYPHENRANGE];
       range = range.replace(hr, hyphenReplace);
-      debug7("hyphen replace", range);
+      debug8("hyphen replace", range);
       range = range.replace(re[COMPARATORTRIM], comparatorTrimReplace);
-      debug7("comparator trim", range, re[COMPARATORTRIM]);
+      debug8("comparator trim", range, re[COMPARATORTRIM]);
       range = range.replace(re[TILDETRIM], tildeTrimReplace);
       range = range.replace(re[CARETTRIM], caretTrimReplace);
       range = range.split(/\s+/).join(" ");
@@ -24691,15 +24691,15 @@ var require_semver = __commonJS({
       });
     }
     function parseComparator(comp, options) {
-      debug7("comp", comp, options);
+      debug8("comp", comp, options);
       comp = replaceCarets(comp, options);
-      debug7("caret", comp);
+      debug8("caret", comp);
       comp = replaceTildes(comp, options);
-      debug7("tildes", comp);
+      debug8("tildes", comp);
       comp = replaceXRanges(comp, options);
-      debug7("xrange", comp);
+      debug8("xrange", comp);
       comp = replaceStars(comp, options);
-      debug7("stars", comp);
+      debug8("stars", comp);
       return comp;
     }
     function isX(id) {
@@ -24713,7 +24713,7 @@ var require_semver = __commonJS({
     function replaceTilde(comp, options) {
       var r = options.loose ? re[TILDELOOSE] : re[TILDE];
       return comp.replace(r, function(_, M, m, p, pr) {
-        debug7("tilde", comp, _, M, m, p, pr);
+        debug8("tilde", comp, _, M, m, p, pr);
         var ret;
         if (isX(M)) {
           ret = "";
@@ -24722,12 +24722,12 @@ var require_semver = __commonJS({
         } else if (isX(p)) {
           ret = ">=" + M + "." + m + ".0 <" + M + "." + (+m + 1) + ".0";
         } else if (pr) {
-          debug7("replaceTilde pr", pr);
+          debug8("replaceTilde pr", pr);
           ret = ">=" + M + "." + m + "." + p + "-" + pr + " <" + M + "." + (+m + 1) + ".0";
         } else {
           ret = ">=" + M + "." + m + "." + p + " <" + M + "." + (+m + 1) + ".0";
         }
-        debug7("tilde return", ret);
+        debug8("tilde return", ret);
         return ret;
       });
     }
@@ -24737,10 +24737,10 @@ var require_semver = __commonJS({
       }).join(" ");
     }
     function replaceCaret(comp, options) {
-      debug7("caret", comp, options);
+      debug8("caret", comp, options);
       var r = options.loose ? re[CARETLOOSE] : re[CARET];
       return comp.replace(r, function(_, M, m, p, pr) {
-        debug7("caret", comp, _, M, m, p, pr);
+        debug8("caret", comp, _, M, m, p, pr);
         var ret;
         if (isX(M)) {
           ret = "";
@@ -24753,7 +24753,7 @@ var require_semver = __commonJS({
             ret = ">=" + M + "." + m + ".0 <" + (+M + 1) + ".0.0";
           }
         } else if (pr) {
-          debug7("replaceCaret pr", pr);
+          debug8("replaceCaret pr", pr);
           if (M === "0") {
             if (m === "0") {
               ret = ">=" + M + "." + m + "." + p + "-" + pr + " <" + M + "." + m + "." + (+p + 1);
@@ -24764,7 +24764,7 @@ var require_semver = __commonJS({
             ret = ">=" + M + "." + m + "." + p + "-" + pr + " <" + (+M + 1) + ".0.0";
           }
         } else {
-          debug7("no pr");
+          debug8("no pr");
           if (M === "0") {
             if (m === "0") {
               ret = ">=" + M + "." + m + "." + p + " <" + M + "." + m + "." + (+p + 1);
@@ -24775,12 +24775,12 @@ var require_semver = __commonJS({
             ret = ">=" + M + "." + m + "." + p + " <" + (+M + 1) + ".0.0";
           }
         }
-        debug7("caret return", ret);
+        debug8("caret return", ret);
         return ret;
       });
     }
     function replaceXRanges(comp, options) {
-      debug7("replaceXRanges", comp, options);
+      debug8("replaceXRanges", comp, options);
       return comp.split(/\s+/).map(function(comp2) {
         return replaceXRange(comp2, options);
       }).join(" ");
@@ -24789,7 +24789,7 @@ var require_semver = __commonJS({
       comp = comp.trim();
       var r = options.loose ? re[XRANGELOOSE] : re[XRANGE];
       return comp.replace(r, function(ret, gtlt, M, m, p, pr) {
-        debug7("xRange", comp, ret, gtlt, M, m, p, pr);
+        debug8("xRange", comp, ret, gtlt, M, m, p, pr);
         var xM = isX(M);
         var xm = xM || isX(m);
         var xp = xm || isX(p);
@@ -24832,12 +24832,12 @@ var require_semver = __commonJS({
         } else if (xp) {
           ret = ">=" + M + "." + m + ".0 <" + M + "." + (+m + 1) + ".0";
         }
-        debug7("xRange return", ret);
+        debug8("xRange return", ret);
         return ret;
       });
     }
     function replaceStars(comp, options) {
-      debug7("replaceStars", comp, options);
+      debug8("replaceStars", comp, options);
       return comp.trim().replace(re[STAR], "");
     }
     function hyphenReplace($0, from, fM, fm, fp, fpr, fb, to, tM, tm, tp, tpr, tb) {
@@ -24885,7 +24885,7 @@ var require_semver = __commonJS({
       }
       if (version.prerelease.length && !options.includePrerelease) {
         for (i2 = 0; i2 < set2.length; i2++) {
-          debug7(set2[i2].semver);
+          debug8(set2[i2].semver);
           if (set2[i2].semver === ANY) {
             continue;
           }
@@ -30264,10 +30264,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug7(message) {
+    function debug8(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug7;
+    exports.debug = debug8;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -30334,15 +30334,15 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
 var require_semver2 = __commonJS({
   "node_modules/@actions/tool-cache/node_modules/semver/semver.js"(exports, module2) {
     exports = module2.exports = SemVer;
-    var debug7;
+    var debug8;
     if (typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG)) {
-      debug7 = function() {
+      debug8 = function() {
         var args = Array.prototype.slice.call(arguments, 0);
         args.unshift("SEMVER");
         console.log.apply(console, args);
       };
     } else {
-      debug7 = function() {
+      debug8 = function() {
       };
     }
     exports.SEMVER_SPEC_VERSION = "2.0.0";
@@ -30439,7 +30439,7 @@ var require_semver2 = __commonJS({
     tok("STAR");
     src[t.STAR] = "(<|>)?=?\\s*\\*";
     for (i = 0; i < R; i++) {
-      debug7(i, src[i]);
+      debug8(i, src[i]);
       if (!re[i]) {
         re[i] = new RegExp(src[i]);
       }
@@ -30505,7 +30505,7 @@ var require_semver2 = __commonJS({
       if (!(this instanceof SemVer)) {
         return new SemVer(version, options);
       }
-      debug7("SemVer", version, options);
+      debug8("SemVer", version, options);
       this.options = options;
       this.loose = !!options.loose;
       var m = version.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
@@ -30552,7 +30552,7 @@ var require_semver2 = __commonJS({
       return this.version;
     };
     SemVer.prototype.compare = function(other) {
-      debug7("SemVer.compare", this.version, this.options, other);
+      debug8("SemVer.compare", this.version, this.options, other);
       if (!(other instanceof SemVer)) {
         other = new SemVer(other, this.options);
       }
@@ -30579,7 +30579,7 @@ var require_semver2 = __commonJS({
       do {
         var a = this.prerelease[i2];
         var b = other.prerelease[i2];
-        debug7("prerelease compare", i2, a, b);
+        debug8("prerelease compare", i2, a, b);
         if (a === void 0 && b === void 0) {
           return 0;
         } else if (b === void 0) {
@@ -30601,7 +30601,7 @@ var require_semver2 = __commonJS({
       do {
         var a = this.build[i2];
         var b = other.build[i2];
-        debug7("prerelease compare", i2, a, b);
+        debug8("prerelease compare", i2, a, b);
         if (a === void 0 && b === void 0) {
           return 0;
         } else if (b === void 0) {
@@ -30860,7 +30860,7 @@ var require_semver2 = __commonJS({
       if (!(this instanceof Comparator)) {
         return new Comparator(comp, options);
       }
-      debug7("comparator", comp, options);
+      debug8("comparator", comp, options);
       this.options = options;
       this.loose = !!options.loose;
       this.parse(comp);
@@ -30869,7 +30869,7 @@ var require_semver2 = __commonJS({
       } else {
         this.value = this.operator + this.semver.version;
       }
-      debug7("comp", this);
+      debug8("comp", this);
     }
     var ANY = {};
     Comparator.prototype.parse = function(comp) {
@@ -30892,7 +30892,7 @@ var require_semver2 = __commonJS({
       return this.value;
     };
     Comparator.prototype.test = function(version) {
-      debug7("Comparator.test", version, this.options.loose);
+      debug8("Comparator.test", version, this.options.loose);
       if (this.semver === ANY || version === ANY) {
         return true;
       }
@@ -30986,9 +30986,9 @@ var require_semver2 = __commonJS({
       range = range.trim();
       var hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
       range = range.replace(hr, hyphenReplace);
-      debug7("hyphen replace", range);
+      debug8("hyphen replace", range);
       range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
-      debug7("comparator trim", range, re[t.COMPARATORTRIM]);
+      debug8("comparator trim", range, re[t.COMPARATORTRIM]);
       range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
       range = range.replace(re[t.CARETTRIM], caretTrimReplace);
       range = range.split(/\s+/).join(" ");
@@ -31041,15 +31041,15 @@ var require_semver2 = __commonJS({
       });
     }
     function parseComparator(comp, options) {
-      debug7("comp", comp, options);
+      debug8("comp", comp, options);
       comp = replaceCarets(comp, options);
-      debug7("caret", comp);
+      debug8("caret", comp);
       comp = replaceTildes(comp, options);
-      debug7("tildes", comp);
+      debug8("tildes", comp);
       comp = replaceXRanges(comp, options);
-      debug7("xrange", comp);
+      debug8("xrange", comp);
       comp = replaceStars(comp, options);
-      debug7("stars", comp);
+      debug8("stars", comp);
       return comp;
     }
     function isX(id) {
@@ -31063,7 +31063,7 @@ var require_semver2 = __commonJS({
     function replaceTilde(comp, options) {
       var r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
       return comp.replace(r, function(_, M, m, p, pr) {
-        debug7("tilde", comp, _, M, m, p, pr);
+        debug8("tilde", comp, _, M, m, p, pr);
         var ret;
         if (isX(M)) {
           ret = "";
@@ -31072,12 +31072,12 @@ var require_semver2 = __commonJS({
         } else if (isX(p)) {
           ret = ">=" + M + "." + m + ".0 <" + M + "." + (+m + 1) + ".0";
         } else if (pr) {
-          debug7("replaceTilde pr", pr);
+          debug8("replaceTilde pr", pr);
           ret = ">=" + M + "." + m + "." + p + "-" + pr + " <" + M + "." + (+m + 1) + ".0";
         } else {
           ret = ">=" + M + "." + m + "." + p + " <" + M + "." + (+m + 1) + ".0";
         }
-        debug7("tilde return", ret);
+        debug8("tilde return", ret);
         return ret;
       });
     }
@@ -31087,10 +31087,10 @@ var require_semver2 = __commonJS({
       }).join(" ");
     }
     function replaceCaret(comp, options) {
-      debug7("caret", comp, options);
+      debug8("caret", comp, options);
       var r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
       return comp.replace(r, function(_, M, m, p, pr) {
-        debug7("caret", comp, _, M, m, p, pr);
+        debug8("caret", comp, _, M, m, p, pr);
         var ret;
         if (isX(M)) {
           ret = "";
@@ -31103,7 +31103,7 @@ var require_semver2 = __commonJS({
             ret = ">=" + M + "." + m + ".0 <" + (+M + 1) + ".0.0";
           }
         } else if (pr) {
-          debug7("replaceCaret pr", pr);
+          debug8("replaceCaret pr", pr);
           if (M === "0") {
             if (m === "0") {
               ret = ">=" + M + "." + m + "." + p + "-" + pr + " <" + M + "." + m + "." + (+p + 1);
@@ -31114,7 +31114,7 @@ var require_semver2 = __commonJS({
             ret = ">=" + M + "." + m + "." + p + "-" + pr + " <" + (+M + 1) + ".0.0";
           }
         } else {
-          debug7("no pr");
+          debug8("no pr");
           if (M === "0") {
             if (m === "0") {
               ret = ">=" + M + "." + m + "." + p + " <" + M + "." + m + "." + (+p + 1);
@@ -31125,12 +31125,12 @@ var require_semver2 = __commonJS({
             ret = ">=" + M + "." + m + "." + p + " <" + (+M + 1) + ".0.0";
           }
         }
-        debug7("caret return", ret);
+        debug8("caret return", ret);
         return ret;
       });
     }
     function replaceXRanges(comp, options) {
-      debug7("replaceXRanges", comp, options);
+      debug8("replaceXRanges", comp, options);
       return comp.split(/\s+/).map(function(comp2) {
         return replaceXRange(comp2, options);
       }).join(" ");
@@ -31139,7 +31139,7 @@ var require_semver2 = __commonJS({
       comp = comp.trim();
       var r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
       return comp.replace(r, function(ret, gtlt, M, m, p, pr) {
-        debug7("xRange", comp, ret, gtlt, M, m, p, pr);
+        debug8("xRange", comp, ret, gtlt, M, m, p, pr);
         var xM = isX(M);
         var xm = xM || isX(m);
         var xp = xm || isX(p);
@@ -31183,12 +31183,12 @@ var require_semver2 = __commonJS({
         } else if (xp) {
           ret = ">=" + M + "." + m + ".0" + pr + " <" + M + "." + (+m + 1) + ".0" + pr;
         }
-        debug7("xRange return", ret);
+        debug8("xRange return", ret);
         return ret;
       });
     }
     function replaceStars(comp, options) {
-      debug7("replaceStars", comp, options);
+      debug8("replaceStars", comp, options);
       return comp.trim().replace(re[t.STAR], "");
     }
     function hyphenReplace($0, from, fM, fm, fp, fpr, fb, to, tM, tm, tp, tpr, tb) {
@@ -31240,7 +31240,7 @@ var require_semver2 = __commonJS({
       }
       if (version.prerelease.length && !options.includePrerelease) {
         for (i2 = 0; i2 < set2.length; i2++) {
-          debug7(set2[i2].semver);
+          debug8(set2[i2].semver);
           if (set2[i2].semver === ANY) {
             continue;
           }
@@ -32797,6 +32797,7 @@ function table(key, value) {
 // lib/github.ts
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
+var import_console = require("console");
 var ReleaseBranches = ["master", "main"];
 var DevelopBranches = ["develop"];
 async function getPrFromRef({
@@ -32834,12 +32835,23 @@ function getSha() {
   return sha;
 }
 function getRef() {
-  var _a, _b, _c;
-  const ref = process.env["GITHUB_HEAD_REF"] || ((_a = import_utils.context.ref) == null ? void 0 : _a.slice(0, 10)) == "refs/tags/" ? (_b = import_utils.context.ref) == null ? void 0 : _b.slice(10) : (_c = import_utils.context.ref) == null ? void 0 : _c.slice(11);
-  if (!ref) {
-    throw new Error("The GitHub ref is missing");
+  const ref = import_utils.context.ref;
+  if (ref && ref.startsWith("refs/tags/")) {
+    (0, import_console.debug)(`Ref taken from refs/tags: ${ref.slice(10)}`);
+    return ref.slice(10);
   }
-  return ref;
+  if (ref && ref.startsWith("refs/heads/")) {
+    (0, import_console.debug)(`Ref taken from refs/heads: ${ref.slice(11)}`);
+    return ref.slice(11);
+  }
+  if (ref && ref.startsWith("refs/pull/") && process.env["GITHUB_HEAD_REF"]) {
+    (0, import_console.debug)(`Ref taken from GITHUB_HEAD_REF: ${process.env["GITHUB_HEAD_REF"]}`);
+    return process.env["GITHUB_HEAD_REF"];
+  }
+  if (ref && ref.startsWith("refs/pull/")) {
+    throw new Error("Workflow triggered by pull request, but GITHUB_HEAD_REF is missing");
+  }
+  throw new Error("The git ref could not be determined");
 }
 function getWorkspacePath() {
   const workspacePath = process.env["GITHUB_WORKSPACE"];
