@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - '.github/workflows/release_test.yml'
+      - 'lib/git.ts'
       - 'lib/github.ts'
       - 'release/**'
 

@@ -11,8 +11,9 @@ export async function prepare({
   dryRun: boolean
 }) {
   // Get latest version of current repository
+
   // Iterate over repositories
-  for (const repository in repositories) {
+  for (const repository of repositories) {
     info(`Reading commits since last release in exivity/${repository}...`)
   }
 }

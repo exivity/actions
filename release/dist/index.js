@@ -8069,7 +8069,7 @@ async function prepare({
   repositories,
   dryRun
 }) {
-  for (const repository in repositories) {
+  for (const repository of repositories) {
     (0, import_console2.info)(`Reading commits since last release in exivity/${repository}...`);
   }
 }

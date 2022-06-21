@@ -15,3 +15,7 @@ export async function getCommitAuthorName() {
 export async function getCommitAuthorEmail() {
   return execGit('git log -1 --pretty=format:"%ae"')
 }
+
+export async function getAllTags() {
+  return execGit('git tag')
+}
