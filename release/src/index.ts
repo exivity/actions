@@ -11,33 +11,38 @@ const ModePrepare = 'prepare'
 const ModeRelease = 'release'
 
 async function run() {
-  // Inputs
+  // Input
   const mode = getInput('mode')
   const repositories = getJSONInput<string[]>('repositories')
   const dryRun = getBooleanInput('dry-run', false)
   const ghToken = getToken()
 
-  // Libs
+  // Init deps
   const octokit = getOctokit(ghToken)
-
-  // Assertions
 
   switch (mode) {
     case ModePing:
+      // Act
       await ping({ octokit, dryRun })
       break
 
     case ModePrepare:
+      // Assert
       if (typeof repositories === 'undefined') {
         throw new Error('repositories is required when mode is prepare')
       }
+
+      // Act
       await prepare({ octokit, repositories, dryRun })
       break
 
     case ModeRelease:
+      // Assert
       if (typeof repositories === 'undefined') {
-        throw new Error('repositories is required when mode is prepare')
+        throw new Error('repositories is required when mode is release')
       }
+
+      // Act
       await release({ octokit, dryRun })
       break
 

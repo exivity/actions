@@ -27,6 +27,7 @@
   "remoteUser": "node",
 
   "features": {
+    "docker-from-docker": "latest",
     "git": "latest"
   }
 }

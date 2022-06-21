@@ -26,7 +26,7 @@ jobs:
           dry-run: true
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
 
-  accept/test-filter:
+  accept_filter-test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
