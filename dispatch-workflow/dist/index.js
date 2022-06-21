@@ -7986,6 +7986,19 @@ var import_github = __toESM(require_github());
 // lib/core.ts
 var import_core = __toESM(require_core());
 var import_exec = __toESM(require_exec());
+function getJSONInput(name, defaultValue) {
+  const inputValueAsString = (0, import_core.getInput)(name);
+  if (inputValueAsString.trim() === "") {
+    return defaultValue;
+  }
+  let inputValue;
+  try {
+    inputValue = JSON.parse(inputValueAsString);
+  } catch (error) {
+    throw new Error(`Can't parse input value "${inputValueAsString}" as JSON`);
+  }
+  return inputValue;
+}
 function isObject(value) {
   return !!(value && typeof value === "object" && value.constructor === {}.constructor);
 }
@@ -8073,9 +8086,8 @@ async function run() {
   const repo = getRepoInput();
   const ref = (0, import_core3.getInput)("ref") || getRef();
   const workflow_id = (0, import_core3.getInput)("workflow", { required: true });
-  let inputs = (0, import_core3.getInput)("inputs") || void 0;
+  const inputs = getJSONInput("inputs");
   if (typeof inputs !== "undefined") {
-    inputs = JSON.parse(inputs);
     if (!isValidInputs(inputs))
       throw new Error("inputs input must be an object of type `Record<string, string>` encoded as JSON string");
   }

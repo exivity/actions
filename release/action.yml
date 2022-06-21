@@ -5,6 +5,9 @@ inputs:
     description: Ping, prepare or release
     required: false
     default: ping
+  repositories:
+    description: Iterate over repositories for detecting changes and releasing
+    required: false
   dry-run:
     description: If `true`, running this action will have no side-effects.
     required: false

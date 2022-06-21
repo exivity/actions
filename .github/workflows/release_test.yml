@@ -27,17 +27,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: read repositories.json
+        id: repositories
+        run: |
+          echo 'REPOSITORIES<<EOF' >> $GITHUB_ENV
+          cat fixtures/release/repositories.json >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
       - uses: ./release
         with:
           mode: prepare
           # @todo change to true
           dry-run: false
+          repositories: ${{ env.REPOSITORIES }}
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
 
   release_release-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: ./release
         with:
           mode: release

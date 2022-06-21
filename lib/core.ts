@@ -6,6 +6,23 @@ import { join as pathJoin } from 'path'
 const TRUE_VALUES = [true, 'true', 'TRUE', 'True']
 const FALSE_VALUES = [false, 'false', 'FALSE', 'False']
 
+export function getJSONInput<T = any>(name: string, defaultValue?: T) {
+  const inputValueAsString = getInput(name)
+
+  if (inputValueAsString.trim() === '') {
+    return defaultValue
+  }
+
+  let inputValue: T
+  try {
+    inputValue = JSON.parse(inputValueAsString)
+  } catch (error: unknown) {
+    throw new Error(`Can't parse input value "${inputValueAsString}" as JSON`)
+  }
+
+  return inputValue
+}
+
 export function getBooleanInput(name: string, defaultValue: boolean) {
   let inputValue = getInput(name) || defaultValue
 

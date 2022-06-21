@@ -1,6 +1,6 @@
 import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { isObject } from '../../lib/core'
+import { getJSONInput, isObject } from '../../lib/core'
 import {
   dispatchWorkflow,
   getOwnerInput,
@@ -34,12 +34,10 @@ async function run() {
   const repo = getRepoInput()
   const ref = getInput('ref') || getRef()
   const workflow_id = getInput('workflow', { required: true })
-  let inputs = getInput('inputs') || undefined
+  const inputs = getJSONInput('inputs')
 
   // Assertions
   if (typeof inputs !== 'undefined') {
-    inputs = JSON.parse(inputs)
-
     if (!isValidInputs(inputs))
       throw new Error(
         'inputs input must be an object of type `Record<string, string>` encoded as JSON string'

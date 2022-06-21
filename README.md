@@ -612,7 +612,16 @@ pending changes in all components, update the upcoming version and CHANGELOG.md.
 The `release` mode is to be used in the release repository. It will write a new
 release tag in the release repository, plus new tags in all released components.
 
-## Example
+**⚠️ Important** Make sure to checkout the entire git history in `prepare` and
+`release` mode by using the checkout actions like this:
+
+```yaml
+- uses: actions/checkout@v3
+  with:
+    fetch-depth: 0
+```
+
+## Examples
 
 ```yaml
 - uses: exivity/actions/release@main
@@ -625,21 +634,24 @@ release tag in the release repository, plus new tags in all released components.
 - uses: exivity/actions/release@main
   with:
     mode: prepare
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
 
 ```yaml
 - uses: exivity/actions/release@main
   with:
     mode: release
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
 ```
 
 ## Inputs
 
-| name       | required | default        | description                                                   |
-| ---------- | -------- | -------------- | ------------------------------------------------------------- |
-| `mode`     |          | `"ping"`       | One of `"ping"`, `"prepare"` or `"release"`                   |
-| `dry-run`  |          | `false`        | If `true`, running this action will have no side-effects.     |
-| `gh-token` |          | `github.token` | A GitHub token with access to the exivity/exivity repository. |
+| name           | required | default        | description                                                                                                                                                             |
+| -------------- | -------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mode`         |          | `"ping"`       | One of `"ping"`, `"prepare"` or `"release"`                                                                                                                             |
+| `repositories` | Maybe    |                | Iterate over repositories for detecting changes and releasing. Must be a JSON string containing an array of strings. Required when `mode` is `"prepare"` or `"release"` |
+| `dry-run`      |          | `false`        | If `true`, running this action will have no side-effects.                                                                                                               |
+| `gh-token`     |          | `github.token` | A GitHub token with write access to all exivity repositories.                                                                                                           |
 
 # `put-artefacts`
 
