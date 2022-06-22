@@ -63,6 +63,10 @@ export async function gitHasChanges() {
   return (await execGit('git status --porcelain')).length > 0
 }
 
-export async function gitReset(branch: string, hard = false) {
-  return execGit('git reset', [hard ? '--hard' : '', branch])
+export async function gitGetLatestCommitInBranch(branch: string) {
+  return execGit(`git log -n 1 ${branch} --pretty=format:"%H"`)
+}
+
+export async function gitHardReset(commit: string) {
+  return execGit(`git reset --hard ${commit}`)
 }

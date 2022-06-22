@@ -10,9 +10,10 @@ import {
   gitAdd,
   gitCommit,
   gitFetch,
+  gitGetLatestCommitInBranch,
+  gitHardReset,
   gitHasChanges,
   gitPush,
-  gitReset,
   gitSetAuthor,
   gitSwitchBranch,
 } from '../../lib/git'
@@ -411,8 +412,11 @@ export async function prepare({
     info('Detected uncommitted changes, aborting')
   } else {
     await gitFetch('origin', DEFAULT_REPOSITORY_RELEASE_BRANCH)
+    const latestReleasedCommit = await gitGetLatestCommitInBranch(
+      DEFAULT_REPOSITORY_RELEASE_BRANCH
+    )
     await gitSwitchBranch(UPCOMING_RELEASE_BRANCH)
-    await gitReset(DEFAULT_REPOSITORY_RELEASE_BRANCH, true)
+    await gitHardReset(latestReleasedCommit)
   }
 
   // Write lockfile

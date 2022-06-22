@@ -10533,8 +10533,11 @@ async function gitPush(force = false) {
 async function gitHasChanges() {
   return (await execGit("git status --porcelain")).length > 0;
 }
-async function gitReset(branch, hard = false) {
-  return execGit("git reset", [hard ? "--hard" : "", branch]);
+async function gitGetLatestCommitInBranch(branch) {
+  return execGit(`git log -n 1 ${branch} --pretty=format:"%H"`);
+}
+async function gitHardReset(commit) {
+  return execGit(`git reset --hard ${commit}`);
 }
 
 // release/src/prepare.ts
@@ -10789,8 +10792,9 @@ async function prepare({
     (0, import_console2.info)("Detected uncommitted changes, aborting");
   } else {
     await gitFetch("origin", DEFAULT_REPOSITORY_RELEASE_BRANCH);
+    const latestReleasedCommit = await gitGetLatestCommitInBranch(DEFAULT_REPOSITORY_RELEASE_BRANCH);
     await gitSwitchBranch(UPCOMING_RELEASE_BRANCH);
-    await gitReset(DEFAULT_REPOSITORY_RELEASE_BRANCH, true);
+    await gitHardReset(latestReleasedCommit);
   }
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing lockfile`);
