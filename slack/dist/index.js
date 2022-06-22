@@ -10298,7 +10298,7 @@ var import_console2 = require("console");
 // lib/git.ts
 var import_exec = __toESM(require_exec());
 var import_semver = __toESM(require_semver2());
-async function execGit(command, args, silent = true) {
+async function execGit(command, args, silent = false) {
   return (await (0, import_exec.getExecOutput)(command, args, { silent })).stdout;
 }
 async function getCommitMessage() {
