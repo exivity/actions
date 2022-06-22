@@ -125,12 +125,12 @@ async function getCommitsSince({
 
 async function createOrUpdatePullRequest({
   octokit,
-  upcomingVersion,
+  title,
   prTemplate,
   changelogContents,
 }: {
   octokit: ReturnType<typeof getOctokit>
-  upcomingVersion: string
+  title: string
   prTemplate: string
   changelogContents: string[]
 }) {
@@ -140,7 +140,6 @@ async function createOrUpdatePullRequest({
     repo: getRepository().repo,
     ref: UPCOMING_RELEASE_BRANCH,
   })
-  const title = `chore: new release ${upcomingVersion}`
   const body = prTemplate.replace(
     '<!-- CHANGELOG_CONTENTS -->',
     changelogContents.join('\n')
@@ -441,12 +440,13 @@ export async function prepare({
   }
 
   // Commit and push changes
+  const title = `chore: release ${upcomingVersion}`
   if (dryRun) {
     info(`Dry run, not committing and pushing changes`)
   } else {
     await gitAdd()
     await gitSetAuthor('Exivity bot', 'bot@exivity.com')
-    await gitCommit(`chore: release ${upcomingVersion}`)
+    await gitCommit(title)
     await gitPush(true)
     info(`Written changes to branch: ${UPCOMING_RELEASE_BRANCH}`)
   }
@@ -457,7 +457,7 @@ export async function prepare({
   } else {
     const pr = await createOrUpdatePullRequest({
       octokit,
-      upcomingVersion,
+      title,
       prTemplate,
       changelogContents,
     })
