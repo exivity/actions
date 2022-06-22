@@ -120,16 +120,20 @@ async function getCommitsSince({
 async function createPullRequest({
   octokit,
   pendingVersion,
+  prTemplate,
+  changelogContents,
 }: {
   octokit: ReturnType<typeof getOctokit>
   pendingVersion: string
+  prTemplate: string
+  changelogContents: string[]
 }) {
   return (
     await octokit.rest.pulls.create({
       owner: 'exivity',
       repo: getRepository().repo,
       title: `chore: new release ${pendingVersion}`,
-      body: 'Merging this pull request will create a new Exivity release.',
+      body: [prTemplate, ...changelogContents].join('\n'),
       head: PENDING_RELEASE_BRANCH,
       base: DEFAULT_REPOSITORY_RELEASE_BRANCH,
     })
@@ -215,15 +219,7 @@ function buildChangelogItems(changelogItems: ChangelogItem[]) {
 }
 
 function buildChangelogHeader(version: string) {
-  const date = new Date()
-  return [
-    `## ${version}`,
-    '',
-    `Released on ${date.getFullYear()}-${
-      date.getMonth() + 1
-    }-${date.getDate()}`,
-    '',
-  ]
+  return [`## ${version}`, '']
 }
 
 function buildChangelog(version: string, changelogItems: ChangelogItem[]) {
@@ -260,11 +256,13 @@ function byType(a: ChangelogItem, b: ChangelogItem) {
 
 export async function prepare({
   octokit,
-  repositories,
+  repositoriesJsonPath,
+  prTemplatePath,
   dryRun,
 }: {
   octokit: ReturnType<typeof getOctokit>
-  repositories: Repositories
+  repositoriesJsonPath: string
+  prTemplatePath: string
   dryRun: boolean
 }) {
   // Initial variables
@@ -273,6 +271,22 @@ export async function prepare({
   let pendingVersion: string | null
   const pendingCommits: Commit[] = []
   const pendingLockfile: Lockfile = { version: '', repositories: {} }
+
+  let repositories: Repositories
+  try {
+    repositories = JSON.parse(await readFile(repositoriesJsonPath, 'utf8'))
+  } catch (error: unknown) {
+    throw new Error(
+      `Can't read "${repositoriesJsonPath}" or it's not valid JSON`
+    )
+  }
+
+  let prTemplate: string
+  try {
+    prTemplate = await readFile(prTemplatePath, 'utf8')
+  } catch (error: unknown) {
+    throw new Error(`Can't read "${prTemplatePath}"`)
+  }
 
   // Get latest version of current repository
   const latestVersion = await getLatestVersion()
@@ -363,7 +377,10 @@ export async function prepare({
   if (dryRun) {
     info(`Dry run, not writing lockfile`)
   } else {
-    await writeFile(LOCKFILE_PATH, JSON.stringify(pendingLockfile, null, 2))
+    await writeFile(
+      LOCKFILE_PATH,
+      JSON.stringify(pendingLockfile, null, 2) + '\n'
+    )
     info(`Written lockfile to: ${LOCKFILE_PATH}`)
   }
 
@@ -371,7 +388,7 @@ export async function prepare({
   const currentContents = existsSync(CHANGELOG_PATH)
     ? await readFile(CHANGELOG_PATH, 'utf8')
     : '# Changelog\n\n'
-  const newContents = buildChangelog(pendingVersion, changelog)
+  const changelogContents = buildChangelog(pendingVersion, changelog)
   if (dryRun) {
     info(`Dry run, not writing changelog`)
   } else {
@@ -379,7 +396,7 @@ export async function prepare({
       CHANGELOG_PATH,
       currentContents.replace(
         '# Changelog\n\n',
-        `# Changelog\n\n${newContents.join('\n')}\n\n`
+        `# Changelog\n\n${changelogContents.join('\n')}\n\n`
       )
     )
     info(`Written changelog to: ${CHANGELOG_PATH}`)
@@ -401,7 +418,12 @@ export async function prepare({
   if (dryRun) {
     info(`Dry run, not creating pull request`)
   } else {
-    const pr = await createPullRequest({ octokit, pendingVersion })
+    const pr = await createPullRequest({
+      octokit,
+      pendingVersion,
+      prTemplate,
+      changelogContents,
+    })
     info(`Opened pull request #${pr.number}`)
     info(pr.issue_url)
   }

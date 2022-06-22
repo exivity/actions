@@ -32,21 +32,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: read repositories.json
-        id: repositories
-        run: |
-          echo 'REPOSITORIES<<EOF' >> $GITHUB_ENV
-          cat fixtures/release/repositories.json >> $GITHUB_ENV
-          echo '' >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
-      - name: inspect repositories
-        run: echo $REPOSITORIES
       - uses: ./release
         with:
           mode: prepare
           # @todo change to true
           dry-run: false
-          repositories: ${{ env.REPOSITORIES }}
+          repositories: fixtures/release/repositories.json
+          pr-template: fixtures/release/NEW_RELEASE_PR_TEMPLATE.md
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
       - name: inspect lockfile
         run: cat exivity.lock

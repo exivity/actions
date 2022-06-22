@@ -1,6 +1,6 @@
 import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { getBooleanInput, getJSONInput } from '../../lib/core'
+import { getBooleanInput } from '../../lib/core'
 import { getToken } from '../../lib/github'
 import { ping } from './ping'
 import { prepare } from './prepare'
@@ -21,7 +21,8 @@ export const DEFAULT_REPOSITORY_RELEASE_BRANCH = 'main'
 async function run() {
   // Input
   const mode = getInput('mode')
-  const repositories = getJSONInput<Repositories>('repositories')
+  const repositoriesJsonPath = getInput('repositories')
+  const prTemplatePath = getInput('pr-template')
   const dryRun = getBooleanInput('dry-run', false)
   const ghToken = getToken()
 
@@ -35,21 +36,11 @@ async function run() {
       break
 
     case ModePrepare:
-      // Assert
-      if (typeof repositories === 'undefined') {
-        throw new Error('repositories is required when mode is prepare')
-      }
-
       // Act
-      await prepare({ octokit, repositories, dryRun })
+      await prepare({ octokit, repositoriesJsonPath, prTemplatePath, dryRun })
       break
 
     case ModeRelease:
-      // Assert
-      if (typeof repositories === 'undefined') {
-        throw new Error('repositories is required when mode is release')
-      }
-
       // Act
       await release({ octokit, dryRun })
       break

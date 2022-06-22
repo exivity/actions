@@ -10309,19 +10309,6 @@ var import_core = __toESM(require_core());
 var import_exec = __toESM(require_exec());
 var TRUE_VALUES = [true, "true", "TRUE", "True"];
 var FALSE_VALUES = [false, "false", "FALSE", "False"];
-function getJSONInput(name, defaultValue) {
-  const inputValueAsString = (0, import_core.getInput)(name);
-  if (inputValueAsString.trim() === "") {
-    return defaultValue;
-  }
-  let inputValue;
-  try {
-    inputValue = JSON.parse(inputValueAsString);
-  } catch (error) {
-    throw new Error(`Can't parse input value "${inputValueAsString}" as JSON`);
-  }
-  return inputValue;
-}
 function getBooleanInput(name, defaultValue) {
   let inputValue = (0, import_core.getInput)(name) || defaultValue;
   if (TRUE_VALUES.includes(inputValue)) {
@@ -10578,13 +10565,15 @@ async function getCommitsSince({
 }
 async function createPullRequest({
   octokit,
-  pendingVersion
+  pendingVersion,
+  prTemplate,
+  changelogContents
 }) {
   return (await octokit.rest.pulls.create({
     owner: "exivity",
     repo: getRepository().repo,
     title: `chore: new release ${pendingVersion}`,
-    body: "Merging this pull request will create a new Exivity release.",
+    body: [prTemplate, ...changelogContents].join("\n"),
     head: PENDING_RELEASE_BRANCH,
     base: DEFAULT_REPOSITORY_RELEASE_BRANCH
   })).data;
@@ -10644,13 +10633,7 @@ function buildChangelogItems(changelogItems) {
   ];
 }
 function buildChangelogHeader(version) {
-  const date = new Date();
-  return [
-    `## ${version}`,
-    "",
-    `Released on ${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
-    ""
-  ];
+  return [`## ${version}`, ""];
 }
 function buildChangelog(version, changelogItems) {
   return [
@@ -10681,7 +10664,8 @@ function byType(a, b) {
 }
 async function prepare({
   octokit,
-  repositories,
+  repositoriesJsonPath,
+  prTemplatePath,
   dryRun
 }) {
   let changelog = [];
@@ -10689,6 +10673,18 @@ async function prepare({
   let pendingVersion;
   const pendingCommits = [];
   const pendingLockfile = { version: "", repositories: {} };
+  let repositories;
+  try {
+    repositories = JSON.parse(await (0, import_promises.readFile)(repositoriesJsonPath, "utf8"));
+  } catch (error) {
+    throw new Error(`Can't read "${repositoriesJsonPath}" or it's not valid JSON`);
+  }
+  let prTemplate;
+  try {
+    prTemplate = await (0, import_promises.readFile)(prTemplatePath, "utf8");
+  } catch (error) {
+    throw new Error(`Can't read "${prTemplatePath}"`);
+  }
   const latestVersion = await getLatestVersion();
   (0, import_console2.info)(`Iterating repositories`);
   for (const [repository, repositoryOptions] of Object.entries(repositories)) {
@@ -10743,17 +10739,17 @@ async function prepare({
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing lockfile`);
   } else {
-    await (0, import_promises.writeFile)(LOCKFILE_PATH, JSON.stringify(pendingLockfile, null, 2));
+    await (0, import_promises.writeFile)(LOCKFILE_PATH, JSON.stringify(pendingLockfile, null, 2) + "\n");
     (0, import_console2.info)(`Written lockfile to: ${LOCKFILE_PATH}`);
   }
   const currentContents = (0, import_fs.existsSync)(CHANGELOG_PATH) ? await (0, import_promises.readFile)(CHANGELOG_PATH, "utf8") : "# Changelog\n\n";
-  const newContents = buildChangelog(pendingVersion, changelog);
+  const changelogContents = buildChangelog(pendingVersion, changelog);
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing changelog`);
   } else {
     await (0, import_promises.writeFile)(CHANGELOG_PATH, currentContents.replace("# Changelog\n\n", `# Changelog
 
-${newContents.join("\n")}
+${changelogContents.join("\n")}
 
 `));
     (0, import_console2.info)(`Written changelog to: ${CHANGELOG_PATH}`);
@@ -10771,7 +10767,12 @@ ${newContents.join("\n")}
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not creating pull request`);
   } else {
-    const pr = await createPullRequest({ octokit, pendingVersion });
+    const pr = await createPullRequest({
+      octokit,
+      pendingVersion,
+      prTemplate,
+      changelogContents
+    });
     (0, import_console2.info)(`Opened pull request #${pr.number}`);
     (0, import_console2.info)(pr.issue_url);
   }
@@ -10791,7 +10792,8 @@ var ModeRelease = "release";
 var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
 async function run() {
   const mode = (0, import_core4.getInput)("mode");
-  const repositories = getJSONInput("repositories");
+  const repositoriesJsonPath = (0, import_core4.getInput)("repositories");
+  const prTemplatePath = (0, import_core4.getInput)("pr-template");
   const dryRun = getBooleanInput("dry-run", false);
   const ghToken = getToken();
   const octokit = (0, import_github3.getOctokit)(ghToken);
@@ -10800,15 +10802,9 @@ async function run() {
       await ping({ octokit, dryRun });
       break;
     case ModePrepare:
-      if (typeof repositories === "undefined") {
-        throw new Error("repositories is required when mode is prepare");
-      }
-      await prepare({ octokit, repositories, dryRun });
+      await prepare({ octokit, repositoriesJsonPath, prTemplatePath, dryRun });
       break;
     case ModeRelease:
-      if (typeof repositories === "undefined") {
-        throw new Error("repositories is required when mode is release");
-      }
       await release({ octokit, dryRun });
       break;
     default:

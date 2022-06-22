@@ -6,8 +6,13 @@ inputs:
     required: false
     default: ping
   repositories:
-    description: Iterate over repositories for detecting changes and releasing
+    description: Location of repositories.json
     required: false
+    default: repositories.json
+  pr-template:
+    description: Location of NEW_RELEASE_PR_TEMPLATE.md
+    required: false
+    default: NEW_RELEASE_PR_TEMPLATE.md
   dry-run:
     description: If `true`, running this action will have no side-effects.
     required: false

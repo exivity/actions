@@ -607,7 +607,8 @@ their production branch. It will trigger a `prepare` workflow containing the
 release action in `prepare` mode in the release repository.
 
 The `prepare` mode is to be used in the release repository. It will pull in
-pending changes in all components, update the upcoming version and CHANGELOG.md.
+pending changes in all components, update the upcoming version and CHANGELOG.md
+and open a pull request with these changes.
 
 The `release` mode is to be used in the release repository. It will write a new
 release tag in the release repository, plus new tags in all released components.
@@ -646,15 +647,15 @@ release tag in the release repository, plus new tags in all released components.
 
 ## Inputs
 
-| name           | required | default        | description                                                                                                                                              |
-| -------------- | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mode`         |          | `"ping"`       | One of `"ping"`, `"prepare"` or `"release"`                                                                                                              |
-| `repositories` | Maybe    |                | Iterate over repositories for detecting changes and releasing. Must be a JSON string. See type below. Required when `mode` is `"prepare"` or `"release"` |
-| `dry-run`      |          | `false`        | If `true`, running this action will have no side-effects.                                                                                                |
-| `gh-token`     |          | `github.token` | A GitHub token with write access to all exivity repositories.                                                                                            |
+| name           | required | default                        | description                                                   |
+| -------------- | -------- | ------------------------------ | ------------------------------------------------------------- |
+| `mode`         |          | `"ping"`                       | One of `"ping"`, `"prepare"` or `"release"`                   |
+| `repositories` |          | `"repositories.json"`          | Location of repositories.json.                                |
+| `pr-template`  |          | `"NEW_RELEASE_PR_TEMPLATE.md"` | Location of NEW_RELEASE_PR_TEMPLATE.md.                       |
+| `dry-run`      |          | `false`                        | If `true`, running this action will have no side-effects.     |
+| `gh-token`     |          | `github.token`                 | A GitHub token with write access to all exivity repositories. |
 
-The `repositories` input must be a JSON string containing an object with this
-type:
+The `repositories.json` file must contain an object with this type:
 
 ```ts
 type Repositories = {
@@ -666,6 +667,9 @@ type Repositories = {
 
 Where `repository` is the repository name (without `"exivity/"`). If
 `releaseBranch` is not set, `"main"` is used.
+
+The `NEW_RELEASE_PR_TEMPLATE.md` file will be used when opening a new pull
+request in the prepare step.
 
 # `put-artefacts`
 
