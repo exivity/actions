@@ -10510,7 +10510,7 @@ async function getLatestSemverTag() {
   const semvers = await getAllSemverTags();
   return import_semver.default.rsort(semvers)[0];
 }
-async function gitCreateBranch(branch) {
+async function gitSwitchBranch(branch) {
   return execGit("git checkout -b", [branch]);
 }
 async function gitAdd() {
@@ -10523,11 +10523,21 @@ async function gitSetAuthor(name, email) {
 async function gitCommit(message) {
   return execGit("git commit --no-verify --message", [message]);
 }
+async function gitPush(force = false) {
+  await execGit("git config --global push.default current");
+  return execGit("git push --set-upstream", [force ? "--force" : ""]);
+}
+async function gitHasChanges() {
+  return (await execGit("git status --porcelain")).length > 0;
+}
+async function gitReset(branch, hard = false) {
+  return execGit("git reset", [hard ? "--hard" : "", branch]);
+}
 
 // release/src/prepare.ts
 var LOCKFILE_PATH = "exivity.lock";
 var CHANGELOG_PATH = "CHANGELOG.md";
-var PENDING_RELEASE_BRANCH = "chore/pending-release";
+var UPCOMING_RELEASE_BRANCH = "chore/upcoming-release";
 async function getLatestVersion() {
   const repo = getRepository();
   const latestVersionTag = await getLatestSemverTag();
@@ -10577,7 +10587,7 @@ async function getCommitsSince({
 }
 async function createOrUpdatePullRequest({
   octokit,
-  pendingVersion,
+  upcomingVersion,
   prTemplate,
   changelogContents
 }) {
@@ -10585,9 +10595,9 @@ async function createOrUpdatePullRequest({
     octokit,
     owner: "exivity",
     repo: getRepository().repo,
-    ref: PENDING_RELEASE_BRANCH
+    ref: UPCOMING_RELEASE_BRANCH
   });
-  const title = `chore: new release ${pendingVersion}`;
+  const title = `chore: new release ${upcomingVersion}`;
   const body = prTemplate.replace("<!-- CHANGELOG_CONTENTS -->", changelogContents.join("\n"));
   if (existingPullRequest) {
     const pr = await octokit.rest.pulls.update({
@@ -10605,7 +10615,7 @@ async function createOrUpdatePullRequest({
       repo: getRepository().repo,
       title,
       body,
-      head: PENDING_RELEASE_BRANCH,
+      head: UPCOMING_RELEASE_BRANCH,
       base: DEFAULT_REPOSITORY_RELEASE_BRANCH
     });
     (0, import_console2.info)(`Opened pull request #${pr.data.number}`);
@@ -10703,10 +10713,10 @@ async function prepare({
   dryRun
 }) {
   let changelog = [];
-  let pendingVersionIncrement = "patch";
-  let pendingVersion;
+  let upcomingVersionIncrement = "patch";
+  let upcomingVersion;
   const pendingCommits = [];
-  const pendingLockfile = { version: "", repositories: {} };
+  const lockfile = { version: "", repositories: {} };
   let repositories;
   try {
     repositories = JSON.parse(await (0, import_promises.readFile)(repositoriesJsonPath, "utf8"));
@@ -10734,7 +10744,7 @@ async function prepare({
       branch: repositoryOptions.releaseBranch || DEFAULT_REPOSITORY_RELEASE_BRANCH,
       since: latestVersionCommit
     });
-    pendingLockfile.repositories[repository] = repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha;
+    lockfile.repositories[repository] = repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha;
     repoCommits.forEach((repoCommit) => {
       const commit = { ...repoCommit, repository };
       pendingCommits.push(commit);
@@ -10755,29 +10765,37 @@ async function prepare({
   let incrementDescription;
   if (changelog.some((item) => item.breaking)) {
     incrementDescription = "major: breaking change detected";
-    pendingVersionIncrement = "major";
+    upcomingVersionIncrement = "major";
   } else if (changelog.some((item) => item.type === "feat")) {
     incrementDescription = "minor: new feature detected";
-    pendingVersionIncrement = "minor";
+    upcomingVersionIncrement = "minor";
   } else {
     incrementDescription = "patch: only fixes and/or chores detected";
   }
-  pendingVersion = import_semver2.default.inc(latestVersion, pendingVersionIncrement);
-  if (pendingVersion === null) {
-    throw new Error(`Could not calculate new version (incremeting ${latestVersion} to ${pendingVersionIncrement})`);
+  upcomingVersion = import_semver2.default.inc(latestVersion, upcomingVersionIncrement);
+  if (upcomingVersion === null) {
+    throw new Error(`Could not calculate new version (incremeting ${latestVersion} to ${upcomingVersionIncrement})`);
   } else {
-    pendingVersion = `v${pendingVersion}`;
+    upcomingVersion = `v${upcomingVersion}`;
   }
-  (0, import_console2.info)(`Version increment (${incrementDescription}): ${latestVersion} -> ${pendingVersion}`);
-  pendingLockfile.version = pendingVersion;
+  (0, import_console2.info)(`Version increment (${incrementDescription}): ${latestVersion} -> ${upcomingVersion}`);
+  lockfile.version = upcomingVersion;
+  if (dryRun) {
+    (0, import_console2.info)(`Dry run, not switching branches`);
+  } else if (await gitHasChanges()) {
+    (0, import_console2.info)("Detected uncommitted changes, aborting");
+  } else {
+    await gitSwitchBranch(UPCOMING_RELEASE_BRANCH);
+    await gitReset(DEFAULT_REPOSITORY_RELEASE_BRANCH, true);
+  }
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing lockfile`);
   } else {
-    await (0, import_promises.writeFile)(LOCKFILE_PATH, JSON.stringify(pendingLockfile, null, 2) + "\n");
+    await (0, import_promises.writeFile)(LOCKFILE_PATH, JSON.stringify(lockfile, null, 2) + "\n");
     (0, import_console2.info)(`Written lockfile to: ${LOCKFILE_PATH}`);
   }
   const currentContents = (0, import_fs.existsSync)(CHANGELOG_PATH) ? await (0, import_promises.readFile)(CHANGELOG_PATH, "utf8") : "# Changelog\n\n";
-  const changelogContents = buildChangelog(pendingVersion, changelog);
+  const changelogContents = buildChangelog(upcomingVersion, changelog);
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing changelog`);
   } else {
@@ -10789,20 +10807,20 @@ ${changelogContents.join("\n")}
     (0, import_console2.info)(`Written changelog to: ${CHANGELOG_PATH}`);
   }
   if (dryRun) {
-    (0, import_console2.info)(`Dry run, not pushing changes`);
+    (0, import_console2.info)(`Dry run, not committing and pushing changes`);
   } else {
-    await gitCreateBranch(PENDING_RELEASE_BRANCH);
     await gitAdd();
     await gitSetAuthor("Exivity bot", "bot@exivity.com");
-    await gitCommit(`chore: new release ${pendingVersion}`);
-    (0, import_console2.info)(`Written changes to branch: ${PENDING_RELEASE_BRANCH}`);
+    await gitCommit(`chore: release ${upcomingVersion}`);
+    await gitPush(true);
+    (0, import_console2.info)(`Written changes to branch: ${UPCOMING_RELEASE_BRANCH}`);
   }
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not creating pull request`);
   } else {
     const pr = await createOrUpdatePullRequest({
       octokit,
-      pendingVersion,
+      upcomingVersion,
       prTemplate,
       changelogContents
     });

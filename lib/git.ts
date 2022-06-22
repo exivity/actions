@@ -32,7 +32,7 @@ export async function getLatestSemverTag() {
   return semver.rsort(semvers)[0]
 }
 
-export async function gitCreateBranch(branch: string) {
+export async function gitSwitchBranch(branch: string) {
   return execGit('git checkout -b', [branch])
 }
 
@@ -53,4 +53,12 @@ export async function gitPush(force = false) {
   // This will infer the origin my_branch part, thus you can do `git push -u`
   await execGit('git config --global push.default current')
   return execGit('git push --set-upstream', [force ? '--force' : ''])
+}
+
+export async function gitHasChanges() {
+  return (await execGit('git status --porcelain')).length > 0
+}
+
+export async function gitReset(branch: string, hard = false) {
+  return execGit('git reset', [hard ? '--hard' : '', branch])
 }

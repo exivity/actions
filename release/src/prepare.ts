@@ -9,8 +9,11 @@ import {
   getLatestSemverTag,
   gitAdd,
   gitCommit,
-  gitCreateBranch,
+  gitHasChanges,
+  gitPush,
+  gitReset,
   gitSetAuthor,
+  gitSwitchBranch,
 } from '../../lib/git'
 import {
   getCommit,
@@ -48,7 +51,7 @@ type Lockfile = {
 
 const LOCKFILE_PATH = 'exivity.lock'
 const CHANGELOG_PATH = 'CHANGELOG.md'
-const PENDING_RELEASE_BRANCH = 'chore/pending-release'
+const UPCOMING_RELEASE_BRANCH = 'chore/upcoming-release'
 
 async function getLatestVersion() {
   const repo = getRepository()
@@ -123,12 +126,12 @@ async function getCommitsSince({
 
 async function createOrUpdatePullRequest({
   octokit,
-  pendingVersion,
+  upcomingVersion,
   prTemplate,
   changelogContents,
 }: {
   octokit: ReturnType<typeof getOctokit>
-  pendingVersion: string
+  upcomingVersion: string
   prTemplate: string
   changelogContents: string[]
 }) {
@@ -136,9 +139,9 @@ async function createOrUpdatePullRequest({
     octokit,
     owner: 'exivity',
     repo: getRepository().repo,
-    ref: PENDING_RELEASE_BRANCH,
+    ref: UPCOMING_RELEASE_BRANCH,
   })
-  const title = `chore: new release ${pendingVersion}`
+  const title = `chore: new release ${upcomingVersion}`
   const body = prTemplate.replace(
     '<!-- CHANGELOG_CONTENTS -->',
     changelogContents.join('\n')
@@ -159,7 +162,7 @@ async function createOrUpdatePullRequest({
       repo: getRepository().repo,
       title,
       body,
-      head: PENDING_RELEASE_BRANCH,
+      head: UPCOMING_RELEASE_BRANCH,
       base: DEFAULT_REPOSITORY_RELEASE_BRANCH,
     })
     info(`Opened pull request #${pr.data.number}`)
@@ -294,10 +297,10 @@ export async function prepare({
 }) {
   // Initial variables
   let changelog: ChangelogItem[] = []
-  let pendingVersionIncrement: VersionIncrement = 'patch'
-  let pendingVersion: string | null
+  let upcomingVersionIncrement: VersionIncrement = 'patch'
+  let upcomingVersion: string | null
   const pendingCommits: Commit[] = []
-  const pendingLockfile: Lockfile = { version: '', repositories: {} }
+  const lockfile: Lockfile = { version: '', repositories: {} }
 
   let repositories: Repositories
   try {
@@ -340,7 +343,7 @@ export async function prepare({
 
     // Record first commit in lockfile, or use latest version commit in case
     // there are no pending repo commits
-    pendingLockfile.repositories[repository] =
+    lockfile.repositories[repository] =
       repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha
 
     repoCommits.forEach((repoCommit) => {
@@ -374,40 +377,47 @@ export async function prepare({
     info(`- [${item.repository}] ${item.type}: ${item.title} (${item.sha})`)
   })
 
-  // Infer pending version increment
+  // Infer upcoming version increment
   let incrementDescription: string
   if (changelog.some((item) => item.breaking)) {
     incrementDescription = 'major: breaking change detected'
-    pendingVersionIncrement = 'major'
+    upcomingVersionIncrement = 'major'
   } else if (changelog.some((item) => item.type === 'feat')) {
     incrementDescription = 'minor: new feature detected'
-    pendingVersionIncrement = 'minor'
+    upcomingVersionIncrement = 'minor'
   } else {
     incrementDescription = 'patch: only fixes and/or chores detected'
   }
 
-  // Record pending version in lockfile
-  pendingVersion = semver.inc(latestVersion, pendingVersionIncrement)
-  if (pendingVersion === null) {
+  // Record upcoming version in lockfile
+  upcomingVersion = semver.inc(latestVersion, upcomingVersionIncrement)
+  if (upcomingVersion === null) {
     throw new Error(
-      `Could not calculate new version (incremeting ${latestVersion} to ${pendingVersionIncrement})`
+      `Could not calculate new version (incremeting ${latestVersion} to ${upcomingVersionIncrement})`
     )
   } else {
-    pendingVersion = `v${pendingVersion}`
+    upcomingVersion = `v${upcomingVersion}`
   }
   info(
-    `Version increment (${incrementDescription}): ${latestVersion} -> ${pendingVersion}`
+    `Version increment (${incrementDescription}): ${latestVersion} -> ${upcomingVersion}`
   )
-  pendingLockfile.version = pendingVersion
+  lockfile.version = upcomingVersion
+
+  // Switch to upcoming release branch and reset state to current release branch
+  if (dryRun) {
+    info(`Dry run, not switching branches`)
+  } else if (await gitHasChanges()) {
+    info('Detected uncommitted changes, aborting')
+  } else {
+    await gitSwitchBranch(UPCOMING_RELEASE_BRANCH)
+    await gitReset(DEFAULT_REPOSITORY_RELEASE_BRANCH, true)
+  }
 
   // Write lockfile
   if (dryRun) {
     info(`Dry run, not writing lockfile`)
   } else {
-    await writeFile(
-      LOCKFILE_PATH,
-      JSON.stringify(pendingLockfile, null, 2) + '\n'
-    )
+    await writeFile(LOCKFILE_PATH, JSON.stringify(lockfile, null, 2) + '\n')
     info(`Written lockfile to: ${LOCKFILE_PATH}`)
   }
 
@@ -415,7 +425,7 @@ export async function prepare({
   const currentContents = existsSync(CHANGELOG_PATH)
     ? await readFile(CHANGELOG_PATH, 'utf8')
     : '# Changelog\n\n'
-  const changelogContents = buildChangelog(pendingVersion, changelog)
+  const changelogContents = buildChangelog(upcomingVersion, changelog)
   if (dryRun) {
     info(`Dry run, not writing changelog`)
   } else {
@@ -429,25 +439,24 @@ export async function prepare({
     info(`Written changelog to: ${CHANGELOG_PATH}`)
   }
 
-  // Checkout pending release branch
+  // Commit and push changes
   if (dryRun) {
-    info(`Dry run, not pushing changes`)
+    info(`Dry run, not committing and pushing changes`)
   } else {
-    await gitCreateBranch(PENDING_RELEASE_BRANCH)
     await gitAdd()
     await gitSetAuthor('Exivity bot', 'bot@exivity.com')
-    await gitCommit(`chore: new release ${pendingVersion}`)
-    // await gitPush(true)
-    info(`Written changes to branch: ${PENDING_RELEASE_BRANCH}`)
+    await gitCommit(`chore: release ${upcomingVersion}`)
+    await gitPush(true)
+    info(`Written changes to branch: ${UPCOMING_RELEASE_BRANCH}`)
   }
 
-  // Create pull request
+  // Create or update pull request
   if (dryRun) {
     info(`Dry run, not creating pull request`)
   } else {
     const pr = await createOrUpdatePullRequest({
       octokit,
-      pendingVersion,
+      upcomingVersion,
       prTemplate,
       changelogContents,
     })
