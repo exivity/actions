@@ -13,7 +13,7 @@ actions:
 - A release tag is written on the merge commit from this pull request in
   `exivity/exivity`
 - A release tag is written on all component repositories on the commits defined
-  in the `exivity.lcok` file.
+  in the `exivity.lock` file.
 - Detected Jira issues in the release will be transitioned to 'Released' and
   their 'Fix version' will be set accordingly
 - A new `exivity/scaffold` release will be triggered
