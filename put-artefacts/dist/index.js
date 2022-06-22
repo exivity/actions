@@ -1,27 +1,10 @@
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -7960,8 +7943,8 @@ var import_path2 = require("path");
 // lib/core.ts
 var import_core = __toESM(require_core());
 var import_exec = __toESM(require_exec());
-var TRUE_VALUES = [true, "true", "TRUE"];
-var FALSE_VALUES = [false, "false", "FALSE"];
+var TRUE_VALUES = [true, "true", "TRUE", "True"];
+var FALSE_VALUES = [false, "false", "FALSE", "False"];
 function getBooleanInput(name, defaultValue) {
   let inputValue = (0, import_core.getInput)(name) || defaultValue;
   if (TRUE_VALUES.includes(inputValue)) {
@@ -8061,10 +8044,11 @@ async function uploadS3object({
     isDirectory ? `"${dest}"` : `"${dest}/${(0, import_path.basename)(path)}"`
   ].filter((item) => item).join(" ");
   await (0, import_exec2.exec)(cmd, void 0, {
-    env: __spreadProps(__spreadValues({}, process.env), {
+    env: {
+      ...process.env,
       AWS_ACCESS_KEY_ID: awsKeyId,
       AWS_SECRET_ACCESS_KEY: awsSecretKey
-    })
+    }
   });
 }
 function getAWSCredentials() {

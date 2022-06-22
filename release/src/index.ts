@@ -1,5 +1,6 @@
 import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { getBooleanInput } from '../../lib/core'
 import { getToken } from '../../lib/github'
 import { ping } from './ping'
 import { prepare } from './prepare'
@@ -9,25 +10,39 @@ const ModePing = 'ping'
 const ModePrepare = 'prepare'
 const ModeRelease = 'release'
 
+export type Repositories = {
+  [repository: string]: {
+    releaseBranch?: string
+  }
+}
+
+export const DEFAULT_REPOSITORY_RELEASE_BRANCH = 'main'
+
 async function run() {
-  // Inputs
+  // Input
   const mode = getInput('mode')
+  const repositoriesJsonPath = getInput('repositories')
+  const prTemplatePath = getInput('pr-template')
+  const dryRun = getBooleanInput('dry-run', false)
   const ghToken = getToken()
 
-  // Libs
+  // Init deps
   const octokit = getOctokit(ghToken)
 
   switch (mode) {
     case ModePing:
-      ping(octokit)
+      // Act
+      await ping({ octokit, dryRun })
       break
 
     case ModePrepare:
-      prepare(octokit)
+      // Act
+      await prepare({ octokit, repositoriesJsonPath, prTemplatePath, dryRun })
       break
 
     case ModeRelease:
-      release(octokit)
+      // Act
+      await release({ octokit, dryRun })
       break
 
     default:

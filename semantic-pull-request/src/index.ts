@@ -1,5 +1,6 @@
-import { info, setFailed, warning } from '@actions/core'
+import { info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { isSemanticCommitMessage } from '../../lib/conventionalCommits'
 import {
   getEventData,
   getEventName,
@@ -7,49 +8,8 @@ import {
   getRepository,
   getToken,
 } from '../../lib/github'
-import { types } from './types'
 
 const supportedEvents = ['pull_request'] as const
-
-function validateCommitMessage(message: string) {
-  const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/)
-  const availableTypes = Object.keys(types)
-
-  const genericHelp =
-    'See https://www.conventionalcommits.org/en/v1.0.0/ for more details.'
-  const typesHelp = `Available types:\n- ${availableTypes.join('\n- ')}`
-
-  if (!matches) {
-    warning(
-      `Commit message can't be matched to the conventional commit pattern. See https://www.conventionalcommits.org/en/v1.0.0/ for more details.`
-    )
-    return false
-  }
-
-  const [, type, , , description] = matches
-
-  if (!type) {
-    warning(`No release type found.${genericHelp}`)
-    return false
-  }
-
-  if (!description) {
-    warning(`No description found.${genericHelp}`)
-    return false
-  }
-
-  if (!availableTypes.includes(type)) {
-    warning(
-      `\
-No release type found or not a valid release type. \
-Add a prefix to indicate what kind of release this pull request corresponds to. \
-${genericHelp}\n\n${typesHelp}`
-    )
-    return false
-  }
-
-  return true
-}
 
 async function run() {
   // Inputs
@@ -70,7 +30,7 @@ async function run() {
   })
 
   // Validate PR title
-  if (!validateCommitMessage(pr.title)) {
+  if (!isSemanticCommitMessage(pr.title)) {
     throw new Error(
       `PR title "${pr.title}" is not semantic, see above for more details.`
     )
@@ -107,7 +67,7 @@ async function run() {
   // commit, we need to validate the commit title.
   if (nonMergeCommits.length === 1) {
     const commitTitle = nonMergeCommits[0].commit.message.split('\n')[0]
-    if (!validateCommitMessage(commitTitle)) {
+    if (!isSemanticCommitMessage(commitTitle)) {
       throw new Error(
         `Pull request has only one commit and it's not semantic; this may lead to a non-semantic commit in the base branch (see https://github.community/t/how-to-change-the-default-squash-merge-commit-message/1155). Amend the commit message to match the pull request title, or add another commit.`
       )

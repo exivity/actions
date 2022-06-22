@@ -288,18 +288,48 @@ export function isDevelopBranch(ref?: string) {
   return DevelopBranches.includes(ref)
 }
 
-export async function getCommit(
-  octokit: ReturnType<typeof getOctokit>,
-  repo: string,
+export async function getCommit({
+  octokit,
+  owner,
+  repo,
+  ref,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
   ref: string
-) {
+}) {
   return (
     await octokit.rest.repos.getCommit({
-      owner: 'exivity',
+      owner,
       repo,
       ref,
     })
   ).data
+}
+
+export async function getCommits({
+  octokit,
+  owner,
+  repo,
+  sha,
+  since,
+  until,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  sha?: string
+  since?: string
+  until?: string
+}) {
+  return await octokit.paginate(octokit.rest.repos.listCommits, {
+    owner,
+    repo,
+    sha,
+    since,
+    until,
+  })
 }
 
 export async function review({
@@ -383,16 +413,20 @@ export async function dispatchWorkflow({
   octokit: ReturnType<typeof getOctokit>
   owner: string
   repo: string
-  workflow_id: number
+  workflow_id: number | string
   ref: string
-  inputs: { [key: string]: string }
+  inputs?: { [key: string]: string }
 }) {
   info(
-    `Calling GitHub API to dispatch workflow ${workflow_id} of repo ${owner}:${repo}`
+    `Calling GitHub API to dispatch workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:\n${JSON.stringify(
+      inputs,
+      undefined,
+      2
+    )}`
   )
 
   // Create workflow-dispatch event
-  // See https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
+  // See: https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event
   return await octokit.request(
     'POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches',
     {

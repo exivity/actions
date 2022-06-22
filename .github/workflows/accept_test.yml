@@ -10,7 +10,7 @@ on:
   pull_request:
     types: [review_requested]
   workflow_run:
-    workflows: ['accept-test']
+    workflows: ['hello-world_fixture']
     types: [completed]
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
           dry-run: true
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
 
-  accept/test-filter:
+  accept_filter-test:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

@@ -7,6 +7,7 @@ applied outside of the context of the Exivity repositories.
 
 - [`build-push-image`](#build-push-image)
 - [`commit-status`](#commit-status)
+- [`dispatch-workflow`](#dispatch-workflow)
 - [`enable-automerge`](#enable-automerge)
 - [`init-ssh`](#init-ssh)
 - [`postgres`](#postgres)
@@ -86,6 +87,38 @@ Writes a
 | `description` |          |                  | A short description of the status                                                  |
 | `target_url`  |          |                  | The target URL to associate with this status                                       |
 | `gh-token`    |          | `github.token`   | A GitHub token with write access to the component                                  |
+
+# `dispatch-workflow`
+
+Triggers another workflow run. The target workflow must
+[define the `on: workflow_dispatch` trigger](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch).
+
+The workflow should either be defined by ID or workflow filename. Look up the ID
+of a workflow by calling the GitHub API at:
+
+```
+GET https://api.github.com/repos/{owner}/{repo}/actions/workflows
+```
+
+## Example
+
+```yaml
+- uses: exivity/actions/dispatch-workflow@main
+  with:
+    workflow:
+    gh-token: ${{ secrets.GITHUB_PAT }}
+```
+
+## Inputs
+
+| name       | required | default          | description                                                                               |
+| ---------- | -------- | ---------------- | ----------------------------------------------------------------------------------------- |
+| `owner`    |          | Repository owner | The owner of the target repo                                                              |
+| `repo`     |          | Repository name  | The target repo to dispatch the workflow in                                               |
+| `ref`      |          | Current ref      | The ref to dispatch the workflow on                                                       |
+| `workflow` | ✅       |                  | The workflow (by ID or filename) to dispatch                                              |
+| `inputs`   |          |                  | The inputs encoded as JSON string (of type `Record<string, string>`)                      |
+| `gh-token` | ✅       |                  | A GitHub PAT with write access to the target repository. The default token can't be used. |
 
 # `enable-automerge`
 
@@ -266,7 +299,7 @@ Pulls, tags, then pushes an image.
 
 ## Example
 
-```
+```yaml
 - uses: exivity/actions/retag-image@main
   with:
     source-tag: main
@@ -278,19 +311,19 @@ Pulls, tags, then pushes an image.
 ## Params
 
 | name               | required | default             | description                   |
-| ------------------ | :------: | ------------------- | ----------------------------- |
+| ------------------ | -------- | ------------------- | ----------------------------- |
 | `source-registry`  |          | `ghcr.io`           | Source docker registry to use |
 | `source-namespace` |          | <repo-owner>        | Source image namespace        |
 | `source-name`      |          | <repo-name>         | Source image name             |
-| `source-tag`       |    x     |                     | Source image tag              |
+| `source-tag`       | ✅       |                     | Source image tag              |
 | `source-user`      |          | ${{ github.actor }} | Username for source registry  |
 | `source-password`  |          | ${{ github.token }} | Password for source registry  |
 | `target-registry`  |          | `docker.io`         | Target docker registry to use |
 | `target-namespace` |          | <repo-owner>        | Target image namespace        |
 | `target-name`      |          | <repo-name>         | Target image name             |
-| `target-tag`       |    x     |                     | Target image tag              |
-| `target-user`      |    x     |                     | Username for target registry  |
-| `target-password`  |    x     |                     | Password for target registry  |
+| `target-tag`       | ✅       |                     | Target image tag              |
+| `target-user`      | ✅       |                     | Username for target registry  |
+| `target-password`  | ✅       |                     | Password for target registry  |
 
 # `review`
 
@@ -525,36 +558,6 @@ repository migrations and runs them.
 | `gh-token`              |          | `github.token`                                                                   | A GitHub token with access to the exivity/db repository.                                                                                                                                              |
 | `password`              |          | `"postgres"`                                                                     | The password for the postgres user in de database, currently only works with host mode.                                                                                                               |
 
-# `release`
-
-## Example
-
-```yaml
-- uses: exivity/actions/release@main
-  with:
-    mode: ping
-    gh-token: ${{ secrets.GH_BOT_TOKEN }}
-```
-
-```yaml
-- uses: exivity/actions/release@main
-  with:
-    mode: prepare
-```
-
-```yaml
-- uses: exivity/actions/release@main
-  with:
-    mode: release
-```
-
-## Inputs
-
-| name       | required | default        | description                                                   |
-| ---------- | -------- | -------------- | ------------------------------------------------------------- |
-| `mode`     |          | ping           | One of                                                        |
-| `gh-token` |          | `github.token` | A GitHub token with access to the exivity/exivity repository. |
-
 # `get-artefacts`
 
 Download artefacts for the provided component. It will use the S3 _exivity_
@@ -588,6 +591,85 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 | `aws-access-key-id`     | ✅       |                                                                                                 | The AWS access key ID                                                                            |
 | `aws-secret-access-key` | ✅       |                                                                                                 | The AWS secret access key                                                                        |
 | `gh-token`              |          | `github.token`                                                                                  | A GitHub token with access to the exivity/{component} repository.                                |
+
+# `release`
+
+Action to help releasing Exivity.
+
+This action controls a _release_ repository which is used to release Exivity.
+Whenever a change occurs in one of the components which is ready to be release,
+a pull request is updated in the release repository which contains the upcoming
+version increase inferred from all pending changes and updates to the
+CHANGELOG.md. Merging this pull request will release a new version of Exivity.
+
+The `ping` mode is supposed to be used by components, whenever they push to
+their production branch. It will trigger a `prepare` workflow containing the
+release action in `prepare` mode in the release repository.
+
+The `prepare` mode is to be used in the release repository. It will pull in
+pending changes in all components, update the upcoming version and CHANGELOG.md
+and open a pull request with these changes.
+
+The `release` mode is to be used in the release repository. It will write a new
+release tag in the release repository, plus new tags in all released components.
+
+**⚠️ Important** Make sure to checkout the entire git history in `prepare` and
+`release` mode by using the checkout actions like this:
+
+```yaml
+- uses: actions/checkout@v3
+  with:
+    fetch-depth: 0
+```
+
+## Examples
+
+```yaml
+- uses: exivity/actions/release@main
+  with:
+    mode: ping
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+```yaml
+- uses: exivity/actions/release@main
+  with:
+    mode: prepare
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+```yaml
+- uses: exivity/actions/release@main
+  with:
+    mode: release
+    gh-token: ${{ secrets.GH_BOT_TOKEN }}
+```
+
+## Inputs
+
+| name           | required | default                        | description                                                   |
+| -------------- | -------- | ------------------------------ | ------------------------------------------------------------- |
+| `mode`         |          | `"ping"`                       | One of `"ping"`, `"prepare"` or `"release"`                   |
+| `repositories` |          | `"repositories.json"`          | Location of repositories.json.                                |
+| `pr-template`  |          | `"NEW_RELEASE_PR_TEMPLATE.md"` | Location of NEW_RELEASE_PR_TEMPLATE.md.                       |
+| `dry-run`      |          | `false`                        | If `true`, running this action will have no side-effects.     |
+| `gh-token`     |          | `github.token`                 | A GitHub token with write access to all exivity repositories. |
+
+The `repositories.json` file must contain an object with this type:
+
+```ts
+type Repositories = {
+  [repository: string]: {
+    releaseBranch?: string
+  }
+}
+```
+
+Where `repository` is the repository name (without `"exivity/"`). If
+`releaseBranch` is not set, `"main"` is used.
+
+The `NEW_RELEASE_PR_TEMPLATE.md` file will be used when opening a new pull
+request in the prepare step.
 
 # `put-artefacts`
 

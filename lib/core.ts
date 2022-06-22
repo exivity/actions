@@ -3,8 +3,25 @@ import { exec } from '@actions/exec'
 import { promises as fs } from 'fs'
 import { join as pathJoin } from 'path'
 
-const TRUE_VALUES = [true, 'true', 'TRUE']
-const FALSE_VALUES = [false, 'false', 'FALSE']
+const TRUE_VALUES = [true, 'true', 'TRUE', 'True']
+const FALSE_VALUES = [false, 'false', 'FALSE', 'False']
+
+export function getJSONInput<T = any>(name: string, defaultValue?: T) {
+  const inputValueAsString = getInput(name)
+
+  if (inputValueAsString.trim() === '') {
+    return defaultValue
+  }
+
+  let inputValue: T
+  try {
+    inputValue = JSON.parse(inputValueAsString)
+  } catch (error: unknown) {
+    throw new Error(`Can't parse input value "${inputValueAsString}" as JSON`)
+  }
+
+  return inputValue
+}
 
 export function getBooleanInput(name: string, defaultValue: boolean) {
   let inputValue = getInput(name) || defaultValue
@@ -51,4 +68,14 @@ export function shortCircuit<T, R>(
 
 export function table(key: string, value: string) {
   info(`${key.padEnd(15)}: ${value}`)
+}
+
+export function isObject(
+  value: unknown
+): value is { [key: string | number | symbol]: unknown } {
+  return !!(
+    value &&
+    typeof value === 'object' &&
+    value.constructor === {}.constructor
+  )
 }

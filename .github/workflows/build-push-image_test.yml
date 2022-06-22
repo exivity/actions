@@ -17,4 +17,4 @@ jobs:
       - uses: ./build-push-image
         with:
           component: actions-test
-          dockerfile: fixtures/Dockerfile
+          dockerfile: fixtures/hello/Dockerfile

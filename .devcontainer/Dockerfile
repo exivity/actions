@@ -19,3 +19,5 @@ RUN su node -c "rustup target add x86_64-pc-windows-gnu"
 
 # [Optional] Uncomment if you want to install more global node packages
 # RUN su node -c "npm install -g <your-package-list -here>"
+
+RUN curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin

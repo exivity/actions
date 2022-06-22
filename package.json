@@ -11,6 +11,7 @@
     "build:build-push-image": "yarn esbuild:generic build-push-image/src/index.ts --outfile=build-push-image/dist/index.js",
     "build:commit-status": "yarn esbuild:generic commit-status/src/index.ts --outfile=commit-status/dist/index.js",
     "build:db": "yarn esbuild:generic db/src/index.ts --outfile=db/dist/index.js",
+    "build:dispatch-workflow": "yarn esbuild:generic dispatch-workflow/src/index.ts --outfile=dispatch-workflow/dist/index.js",
     "build:dummy-data": "yarn esbuild:generic dummy-data/src/index.ts --outfile=dummy-data/dist/index.js",
     "build:enable-automerge": "yarn esbuild:generic enable-automerge/src/index.ts --outfile=enable-automerge/dist/index.js",
     "build:get-artefacts": "yarn esbuild:generic get-artefacts/src/index.ts --outfile=get-artefacts/dist/index.js",

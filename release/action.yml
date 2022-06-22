@@ -5,8 +5,19 @@ inputs:
     description: Ping, prepare or release
     required: false
     default: ping
+  repositories:
+    description: Location of repositories.json
+    required: false
+    default: repositories.json
+  pr-template:
+    description: Location of NEW_RELEASE_PR_TEMPLATE.md
+    required: false
+    default: NEW_RELEASE_PR_TEMPLATE.md
+  dry-run:
+    description: If `true`, running this action will have no side-effects.
+    required: false
   gh-token:
-    description: GitHub token with read access to the repository
+    description: A GitHub token with access to the exivity/exivity repository.
     required: false
     default: ${{ github.token }}
 runs:
