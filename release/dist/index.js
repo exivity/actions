@@ -10496,7 +10496,7 @@ function parseCommitMessage(message) {
 var import_exec2 = __toESM(require_exec());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
-async function execGit(command, args, silent = false) {
+async function execGit(command, args, silent = true) {
   return (await (0, import_exec2.getExecOutput)(command, args, { silent })).stdout;
 }
 async function getAllTags() {
