@@ -10,10 +10,18 @@ const ModePing = 'ping'
 const ModePrepare = 'prepare'
 const ModeRelease = 'release'
 
+export type Repositories = {
+  [repository: string]: {
+    releaseBranch?: string
+  }
+}
+
+export const DEFAULT_RELEASE_BRANCH = 'main'
+
 async function run() {
   // Input
   const mode = getInput('mode')
-  const repositories = getJSONInput<string[]>('repositories')
+  const repositories = getJSONInput<Repositories>('repositories')
   const dryRun = getBooleanInput('dry-run', false)
   const ghToken = getToken()
 

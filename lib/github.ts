@@ -288,18 +288,48 @@ export function isDevelopBranch(ref?: string) {
   return DevelopBranches.includes(ref)
 }
 
-export async function getCommit(
-  octokit: ReturnType<typeof getOctokit>,
-  repo: string,
+export async function getCommit({
+  octokit,
+  owner,
+  repo,
+  ref,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
   ref: string
-) {
+}) {
   return (
     await octokit.rest.repos.getCommit({
-      owner: 'exivity',
+      owner,
       repo,
       ref,
     })
   ).data
+}
+
+export async function getCommits({
+  octokit,
+  owner,
+  repo,
+  sha,
+  since,
+  until,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  sha?: string
+  since?: string
+  until?: string
+}) {
+  return await octokit.paginate(octokit.rest.repos.listCommits, {
+    owner,
+    repo,
+    sha,
+    since,
+    until,
+  })
 }
 
 export async function review({

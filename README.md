@@ -646,12 +646,26 @@ release tag in the release repository, plus new tags in all released components.
 
 ## Inputs
 
-| name           | required | default        | description                                                                                                                                                             |
-| -------------- | -------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mode`         |          | `"ping"`       | One of `"ping"`, `"prepare"` or `"release"`                                                                                                                             |
-| `repositories` | Maybe    |                | Iterate over repositories for detecting changes and releasing. Must be a JSON string containing an array of strings. Required when `mode` is `"prepare"` or `"release"` |
-| `dry-run`      |          | `false`        | If `true`, running this action will have no side-effects.                                                                                                               |
-| `gh-token`     |          | `github.token` | A GitHub token with write access to all exivity repositories.                                                                                                           |
+| name           | required | default        | description                                                                                                                                              |
+| -------------- | -------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mode`         |          | `"ping"`       | One of `"ping"`, `"prepare"` or `"release"`                                                                                                              |
+| `repositories` | Maybe    |                | Iterate over repositories for detecting changes and releasing. Must be a JSON string. See type below. Required when `mode` is `"prepare"` or `"release"` |
+| `dry-run`      |          | `false`        | If `true`, running this action will have no side-effects.                                                                                                |
+| `gh-token`     |          | `github.token` | A GitHub token with write access to all exivity repositories.                                                                                            |
+
+The `repositories` input must be a JSON string containing an object with this
+type:
+
+```ts
+type Repositories = {
+  [repository: string]: {
+    releaseBranch?: string
+  }
+}
+```
+
+Where `repository` is the repository name (without `"exivity/"`). If
+`releaseBranch` is not set, `"main"` is used.
 
 # `put-artefacts`
 

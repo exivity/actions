@@ -6930,57 +6930,11 @@ var require_github = __commonJS({
 });
 
 // semantic-pull-request/src/index.ts
-var import_core2 = __toESM(require_core());
+var import_core3 = __toESM(require_core());
 var import_github = __toESM(require_github());
 
-// lib/github.ts
+// lib/conventionalCommits.ts
 var import_core = __toESM(require_core());
-var import_utils = __toESM(require_utils4());
-async function getPr({
-  octokit,
-  owner,
-  repo,
-  number
-}) {
-  return (await octokit.rest.pulls.get({
-    owner,
-    repo,
-    pull_number: parseInt(String(number), 10)
-  })).data;
-}
-function getRepository() {
-  const { owner, repo } = import_utils.context.repo;
-  if (!owner || !repo) {
-    throw new Error("The GitHub repository is missing");
-  }
-  return { owner, repo, fqn: `${owner}/${repo}` };
-}
-function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core.getInput)(inputName);
-  if (!ghToken) {
-    throw new Error("The GitHub token is missing");
-  }
-  return ghToken;
-}
-function getEventName(supportedEvents2) {
-  const eventName = import_utils.context.eventName;
-  if (!eventName) {
-    throw new Error("The GitHub event name is missing");
-  }
-  if (supportedEvents2 && !supportedEvents2.includes(eventName)) {
-    throw new Error(`The event ${eventName} is not supported by this action`);
-  }
-  return eventName;
-}
-function getEventData(eventName) {
-  const payload = import_utils.context.payload;
-  if (Object.keys(payload).length === 0) {
-    throw new Error("The GitHub event payload is missing");
-  }
-  return payload;
-}
-
-// semantic-pull-request/src/types.ts
 var types = {
   feat: {
     description: "A new feature",
@@ -7027,36 +6981,102 @@ var types = {
     title: "Reverts"
   }
 };
-
-// semantic-pull-request/src/index.ts
-var supportedEvents = ["pull_request"];
-function validateCommitMessage(message) {
+var availableTypes = Object.keys(types);
+function parseCommitMessage(message) {
   const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/);
-  const availableTypes = Object.keys(types);
+  if (!matches) {
+    return {
+      description: message
+    };
+  }
+  const [, type, component, breaking, description] = matches;
+  return {
+    type,
+    component,
+    breaking: breaking === "!",
+    description
+  };
+}
+function isValidType(type) {
+  return availableTypes.includes(type);
+}
+function isSemanticCommitMessage(message) {
+  const parsed = parseCommitMessage(message);
+  const availableTypes2 = Object.keys(types);
   const genericHelp = "See https://www.conventionalcommits.org/en/v1.0.0/ for more details.";
   const typesHelp = `Available types:
-- ${availableTypes.join("\n- ")}`;
-  if (!matches) {
-    (0, import_core2.warning)(`Commit message can't be matched to the conventional commit pattern. See https://www.conventionalcommits.org/en/v1.0.0/ for more details.`);
+- ${availableTypes2.join("\n- ")}`;
+  if (typeof parsed.type === "undefined") {
+    (0, import_core.warning)(`Commit message can't be matched to the conventional commit pattern. See https://www.conventionalcommits.org/en/v1.0.0/ for more details.`);
     return false;
   }
-  const [, type, , , description] = matches;
+  const { type, description } = parsed;
   if (!type) {
-    (0, import_core2.warning)(`No release type found.${genericHelp}`);
+    (0, import_core.warning)(`No release type found. ${genericHelp}`);
     return false;
   }
   if (!description) {
-    (0, import_core2.warning)(`No description found.${genericHelp}`);
+    (0, import_core.warning)(`No description found. ${genericHelp}`);
     return false;
   }
-  if (!availableTypes.includes(type)) {
-    (0, import_core2.warning)(`No release type found or not a valid release type. Add a prefix to indicate what kind of release this pull request corresponds to. ${genericHelp}
+  if (!isValidType(type)) {
+    (0, import_core.warning)(`No release type found or not a valid release type. Add a prefix to indicate what kind of release this pull request corresponds to. ${genericHelp}
 
 ${typesHelp}`);
     return false;
   }
   return true;
 }
+
+// lib/github.ts
+var import_core2 = __toESM(require_core());
+var import_utils = __toESM(require_utils4());
+async function getPr({
+  octokit,
+  owner,
+  repo,
+  number
+}) {
+  return (await octokit.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: parseInt(String(number), 10)
+  })).data;
+}
+function getRepository() {
+  const { owner, repo } = import_utils.context.repo;
+  if (!owner || !repo) {
+    throw new Error("The GitHub repository is missing");
+  }
+  return { owner, repo, fqn: `${owner}/${repo}` };
+}
+function getToken(inputName = "gh-token") {
+  const ghToken = (0, import_core2.getInput)(inputName);
+  if (!ghToken) {
+    throw new Error("The GitHub token is missing");
+  }
+  return ghToken;
+}
+function getEventName(supportedEvents2) {
+  const eventName = import_utils.context.eventName;
+  if (!eventName) {
+    throw new Error("The GitHub event name is missing");
+  }
+  if (supportedEvents2 && !supportedEvents2.includes(eventName)) {
+    throw new Error(`The event ${eventName} is not supported by this action`);
+  }
+  return eventName;
+}
+function getEventData(eventName) {
+  const payload = import_utils.context.payload;
+  if (Object.keys(payload).length === 0) {
+    throw new Error("The GitHub event payload is missing");
+  }
+  return payload;
+}
+
+// semantic-pull-request/src/index.ts
+var supportedEvents = ["pull_request"];
 async function run() {
   const token = getToken();
   const { owner, repo } = getRepository();
@@ -7069,7 +7089,7 @@ async function run() {
     repo,
     number: eventData.pull_request.number
   });
-  if (!validateCommitMessage(pr.title)) {
+  if (!isSemanticCommitMessage(pr.title)) {
     throw new Error(`PR title "${pr.title}" is not semantic, see above for more details.`);
   }
   const commits = [];
@@ -7086,16 +7106,16 @@ async function run() {
   }
   if (nonMergeCommits.length === 1) {
     const commitTitle = nonMergeCommits[0].commit.message.split("\n")[0];
-    if (!validateCommitMessage(commitTitle)) {
+    if (!isSemanticCommitMessage(commitTitle)) {
       throw new Error(`Pull request has only one commit and it's not semantic; this may lead to a non-semantic commit in the base branch (see https://github.community/t/how-to-change-the-default-squash-merge-commit-message/1155). Amend the commit message to match the pull request title, or add another commit.`);
     }
     if (commitTitle !== pr.title) {
       throw new Error(`The pull request has only one (non-merge) commit and in this case Github will use it as the default commit message when merging. The pull request title doesn't match the commit though ("${pr.title}" vs. "${commitTitle}"). Please update the pull request title accordingly to avoid surprises.`);
     }
   }
-  (0, import_core2.info)("\u{1F389} Congratulation! Your pull request is semantic.");
+  (0, import_core3.info)("\u{1F389} Congratulation! Your pull request is semantic.");
 }
-run().catch(import_core2.setFailed);
+run().catch(import_core3.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

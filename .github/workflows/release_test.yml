@@ -5,8 +5,10 @@ on:
   push:
     paths:
       - '.github/workflows/release_test.yml'
+      - 'lib/conventionalCommits.ts'
       - 'lib/git.ts'
       - 'lib/github.ts'
+      - 'lib/semver.ts'
       - 'release/**'
 
 jobs:
@@ -35,7 +37,10 @@ jobs:
         run: |
           echo 'REPOSITORIES<<EOF' >> $GITHUB_ENV
           cat fixtures/release/repositories.json >> $GITHUB_ENV
+          echo '' >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
+      - name: inspect repositories
+        run: echo $REPOSITORIES
       - uses: ./release
         with:
           mode: prepare
@@ -43,6 +48,10 @@ jobs:
           dry-run: false
           repositories: ${{ env.REPOSITORIES }}
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
+      - name: inspect lockfile
+        run: cat exivity.lock
+      - name: inspect changelog
+        run: cat CHANGELOG.md
 
   release_release-test:
     runs-on: ubuntu-latest

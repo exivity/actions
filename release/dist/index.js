@@ -8,6 +8,10 @@ var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -17,6 +21,7 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
@@ -1258,7 +1263,7 @@ var require_summary = __commonJS({
     exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
     var os_1 = require("os");
     var fs_1 = require("fs");
-    var { access, appendFile, writeFile } = fs_1.promises;
+    var { access, appendFile, writeFile: writeFile2 } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
     exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
     var Summary = class {
@@ -1294,7 +1299,7 @@ var require_summary = __commonJS({
         return __awaiter(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
           const filePath = yield this.filePath();
-          const writeFunc = overwrite ? writeFile : appendFile;
+          const writeFunc = overwrite ? writeFile2 : appendFile;
           yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
           return this.emptyBuffer();
         });
@@ -1591,10 +1596,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning2(message, properties = {}) {
+    function warning3(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning2;
+    exports.warning = warning3;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -10291,7 +10296,12 @@ var require_semver2 = __commonJS({
 });
 
 // release/src/index.ts
-var import_core3 = __toESM(require_core());
+var src_exports = {};
+__export(src_exports, {
+  DEFAULT_RELEASE_BRANCH: () => DEFAULT_RELEASE_BRANCH
+});
+module.exports = __toCommonJS(src_exports);
+var import_core4 = __toESM(require_core());
 var import_github3 = __toESM(require_github());
 
 // lib/core.ts
@@ -10340,6 +10350,34 @@ function getToken(inputName = "gh-token") {
   }
   return ghToken;
 }
+async function getCommit({
+  octokit,
+  owner,
+  repo,
+  ref
+}) {
+  return (await octokit.rest.repos.getCommit({
+    owner,
+    repo,
+    ref
+  })).data;
+}
+async function getCommits({
+  octokit,
+  owner,
+  repo,
+  sha,
+  since,
+  until
+}) {
+  return await octokit.paginate(octokit.rest.repos.listCommits, {
+    owner,
+    repo,
+    sha,
+    since,
+    until
+  });
+}
 async function dispatchWorkflow({
   octokit,
   owner,
@@ -10382,6 +10420,73 @@ async function ping({
 
 // release/src/prepare.ts
 var import_console2 = require("console");
+var import_promises = require("fs/promises");
+var import_semver2 = __toESM(require_semver2());
+
+// lib/conventionalCommits.ts
+var import_core3 = __toESM(require_core());
+var types = {
+  feat: {
+    description: "A new feature",
+    title: "Features"
+  },
+  fix: {
+    description: "A bug fix",
+    title: "Bug Fixes"
+  },
+  docs: {
+    description: "Documentation only changes",
+    title: "Documentation"
+  },
+  style: {
+    description: "Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)",
+    title: "Styles"
+  },
+  refactor: {
+    description: "A code change that neither fixes a bug nor adds a feature",
+    title: "Code Refactoring"
+  },
+  perf: {
+    description: "A code change that improves performance",
+    title: "Performance Improvements"
+  },
+  test: {
+    description: "Adding missing tests or correcting existing tests",
+    title: "Tests"
+  },
+  build: {
+    description: "Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)",
+    title: "Builds"
+  },
+  ci: {
+    description: "Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)",
+    title: "Continuous Integrations"
+  },
+  chore: {
+    description: "Other changes that don't modify src or test files",
+    title: "Chores"
+  },
+  revert: {
+    description: "Reverts a previous commit",
+    title: "Reverts"
+  }
+};
+var availableTypes = Object.keys(types);
+function parseCommitMessage(message) {
+  const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/);
+  if (!matches) {
+    return {
+      description: message
+    };
+  }
+  const [, type, component, breaking, description] = matches;
+  return {
+    type,
+    component,
+    breaking: breaking === "!",
+    description
+  };
+}
 
 // lib/git.ts
 var import_exec2 = __toESM(require_exec());
@@ -10403,21 +10508,172 @@ async function getLatestSemverTag() {
 }
 
 // release/src/prepare.ts
+var LOCKFILE_PATH = "exivity.lock";
+async function getLatestRelease() {
+  const repo = getRepository();
+  (0, import_console2.info)(`Finding latest release in ${repo.fqn}...`);
+  const latestReleaseTag = await getLatestSemverTag();
+  if (typeof latestReleaseTag === "undefined") {
+    throw new Error("Could not determine latest release");
+  }
+  (0, import_console2.info)(`Latest release: ${latestReleaseTag}`);
+  return latestReleaseTag;
+}
+async function getCommitForTag({
+  octokit,
+  repository,
+  tag
+}) {
+  var _a;
+  (0, import_console2.info)(`  Lookup commit for tag ${tag}...`);
+  try {
+    const commit = await getCommit({
+      octokit,
+      owner: "exivity",
+      repo: repository,
+      ref: `tags/${tag}`
+    });
+    const timestamp = (_a = commit.commit.author) == null ? void 0 : _a.date;
+    if (typeof timestamp === "undefined") {
+      throw new Error(`Could not find timestamp for commit ${commit.sha} in exivity/${repository}...`);
+    }
+    (0, import_console2.info)(`  Commit: ${commit.sha}`);
+    return { ...commit, tag, timestamp };
+  } catch (error) {
+    throw new Error(`Could not find tag ${tag} in exivity/${repository}...`);
+  }
+}
+async function getCommitsSince({
+  octokit,
+  repository,
+  branch,
+  since
+}) {
+  (0, import_console2.info)(`  Reading commits since ${since.timestamp} in exivity/${repository}#${branch}...`);
+  (0, import_console2.info)(`  See commits: https://github.com/exivity/${repository}/compare/${since.tag}...${branch}`);
+  const commits = (await getCommits({
+    octokit,
+    owner: "exivity",
+    repo: repository,
+    sha: branch,
+    since: since.timestamp
+  })).filter((commit) => commit.sha !== since.sha);
+  (0, import_console2.info)(`  Found ${commits.length} commits`);
+  return commits;
+}
+function createNote(commit) {
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+  const commitMessageLines = commit.commit.message.split("\n");
+  const commitTitle = commitMessageLines[0];
+  const commitDescription = commitMessageLines.slice(1).join("\n");
+  const parsed = parseCommitMessage(commitTitle);
+  let type;
+  switch (true) {
+    case ((_a = parsed.type) == null ? void 0 : _a.toLowerCase()) === "feat":
+    case ((_b = parsed.type) == null ? void 0 : _b.toLowerCase()) === "feature":
+      type = "feat";
+      break;
+    case ((_c = parsed.type) == null ? void 0 : _c.toLowerCase()) === "fix":
+    case ((_d = parsed.type) == null ? void 0 : _d.toLowerCase()) === "bugfix":
+      type = "fix";
+      break;
+    default:
+      type = "chore";
+  }
+  return {
+    repository: commit.repository,
+    sha: commit.sha,
+    author: ((_e = commit.author) == null ? void 0 : _e.login) || ((_f = commit.author) == null ? void 0 : _f.name) || ((_g = commit.author) == null ? void 0 : _g.login) || "unknown author",
+    date: ((_h = commit.commit.author) == null ? void 0 : _h.date) || ((_i = commit.commit.committer) == null ? void 0 : _i.date) || "unknown date",
+    type,
+    breaking: parsed.breaking || false,
+    title: parsed.description || commitTitle,
+    description: commitDescription,
+    issues: []
+  };
+}
+function noChores(changelogItem) {
+  return changelogItem.type !== "chore";
+}
+function byDate(a, b) {
+  if (a.date < b.date) {
+    return -1;
+  }
+  if (a.date > b.date) {
+    return 1;
+  }
+  return 0;
+}
+function byType(a, b) {
+  if (a.type < b.type) {
+    return -1;
+  }
+  if (a.type > b.type) {
+    return 1;
+  }
+  return 0;
+}
 async function prepare({
   octokit,
   repositories,
   dryRun
 }) {
-  const repo = getRepository();
-  (0, import_console2.info)(`Finding latest release in ${repo.fqn}...`);
-  const latest = await getLatestSemverTag();
-  if (typeof latest === "undefined") {
-    throw new Error("Could not determine latest version");
+  let changelog = [];
+  let pendingVersionIncrement = "patch";
+  let pendingVersion;
+  const pendingCommits = [];
+  const pendingLockfile = { version: "", repositories: {} };
+  const latestReleaseTag = await getLatestRelease();
+  (0, import_console2.info)(`Processing repositories...`);
+  for (const [repository, repositoryOptions] of Object.entries(repositories)) {
+    (0, import_console2.info)(`- exivity/${repository}`);
+    const latestReleaseCommit = await getCommitForTag({
+      octokit,
+      repository,
+      tag: latestReleaseTag
+    });
+    const repoCommits = await getCommitsSince({
+      octokit,
+      repository,
+      branch: repositoryOptions.releaseBranch || DEFAULT_RELEASE_BRANCH,
+      since: latestReleaseCommit
+    });
+    pendingLockfile.repositories[repository] = repoCommits.length > 0 ? repoCommits[0].sha : latestReleaseCommit.sha;
+    repoCommits.forEach((repoCommit) => {
+      const commit = { ...repoCommit, repository };
+      pendingCommits.push(commit);
+      changelog.push(createNote(commit));
+    });
   }
-  (0, import_console2.info)(`Latest version: ${latest}`);
-  for (const repository of repositories) {
-    (0, import_console2.info)(`Reading commits since last release in exivity/${repository}...`);
+  if (changelog.length === 0) {
+    (0, import_console2.info)(`Nothing to release`);
+    return;
   }
+  changelog = changelog.filter(noChores);
+  changelog.sort(byDate);
+  changelog.sort(byType);
+  (0, import_console2.info)(`Changelog:`);
+  changelog.forEach((item) => {
+    (0, import_console2.info)(`- [${item.repository}] ${item.type}: ${item.title} (${item.sha})`);
+  });
+  (0, import_console2.info)(`Inferring pending version increment...`);
+  if (changelog.some((item) => item.breaking)) {
+    (0, import_console2.info)(`Breaking change detected, incrementing to major`);
+    pendingVersionIncrement = "major";
+  } else if (changelog.some((item) => item.type === "feat")) {
+    (0, import_console2.info)(`Feature detected, incrementing to minor`);
+    pendingVersionIncrement = "minor";
+  } else {
+    (0, import_console2.info)(`Only fixes and/or chores detected, incrementing to patch`);
+  }
+  pendingVersion = import_semver2.default.inc(latestReleaseTag, pendingVersionIncrement);
+  if (pendingVersion === null) {
+    throw new Error(`Could not calculate new version (incremeting ${latestReleaseTag} to ${pendingVersionIncrement})`);
+  }
+  (0, import_console2.info)(`Pending version: ${pendingVersion}`);
+  pendingLockfile.version = pendingVersion;
+  await (0, import_promises.writeFile)(LOCKFILE_PATH, JSON.stringify(pendingLockfile, null, 2));
+  (0, import_console2.info)(`Written lockfile to: ${LOCKFILE_PATH}`);
 }
 
 // release/src/release.ts
@@ -10431,8 +10687,9 @@ async function release({
 var ModePing = "ping";
 var ModePrepare = "prepare";
 var ModeRelease = "release";
+var DEFAULT_RELEASE_BRANCH = "main";
 async function run() {
-  const mode = (0, import_core3.getInput)("mode");
+  const mode = (0, import_core4.getInput)("mode");
   const repositories = getJSONInput("repositories");
   const dryRun = getBooleanInput("dry-run", false);
   const ghToken = getToken();
@@ -10457,7 +10714,11 @@ async function run() {
       throw new Error(`Unknown mode "${mode}"`);
   }
 }
-run().catch(import_core3.setFailed);
+run().catch(import_core4.setFailed);
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  DEFAULT_RELEASE_BRANCH
+});
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

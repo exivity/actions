@@ -1,1 +1,6 @@
-["actions"]
+{
+  "actions": {},
+  "react-orbitjs": {
+    "releaseBranch": "main"
+  }
+}

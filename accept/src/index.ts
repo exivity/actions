@@ -137,7 +137,12 @@ async function run() {
   // If this is a PR and the filter input is set, obtain commit details and bail
   // if no files match
   if (pull_request && filter.length > 0) {
-    const commit = await getCommit(octokit, component, ref)
+    const commit = await getCommit({
+      octokit,
+      owner: 'exivity',
+      repo: component,
+      ref,
+    })
     const someFilesMatch = (commit.files || []).some((file) =>
       filter.some((item) =>
         minimatch(file.filename || file.previous_filename || 'unknown', item)

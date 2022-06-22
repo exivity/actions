@@ -32891,9 +32891,14 @@ function isDevelopBranch(ref) {
   }
   return DevelopBranches.includes(ref);
 }
-async function getCommit(octokit, repo, ref) {
+async function getCommit({
+  octokit,
+  owner,
+  repo,
+  ref
+}) {
   return (await octokit.rest.repos.getCommit({
-    owner: "exivity",
+    owner,
     repo,
     ref
   })).data;
@@ -37097,7 +37102,12 @@ async function run() {
   (0, import_core4.info)(JSON.stringify({ eventData, pr }, void 0, 2));
   (0, import_core4.endGroup)();
   if (pull_request && filter.length > 0) {
-    const commit = await getCommit(octokit, component, ref);
+    const commit = await getCommit({
+      octokit,
+      owner: "exivity",
+      repo: component,
+      ref
+    });
     const someFilesMatch = (commit.files || []).some((file) => filter.some((item) => (0, import_minimatch.default)(file.filename || file.previous_filename || "unknown", item)));
     if (!someFilesMatch) {
       (0, import_core4.warning)(`[accept] Skipping: no modified files match the filter option`);
