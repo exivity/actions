@@ -10789,6 +10789,8 @@ async function prepare({
     (0, import_console2.info)("Detected uncommitted changes, aborting");
   } else {
     execGit("git branch", [], false);
+    execGit("git fetch origin main", [], false);
+    execGit("git branch", [], false);
     const latestReleasedCommit = await gitGetLatestCommitInBranch(DEFAULT_REPOSITORY_RELEASE_BRANCH);
     await gitSwitchBranch(UPCOMING_RELEASE_BRANCH);
     await gitHardReset(latestReleasedCommit);
