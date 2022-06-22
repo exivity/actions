@@ -10323,6 +10323,22 @@ function getBooleanInput(name, defaultValue) {
 // lib/github.ts
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
+async function getPrFromRef({
+  octokit,
+  owner,
+  repo,
+  ref
+}) {
+  const { data } = await octokit.rest.pulls.list({
+    owner,
+    repo,
+    head: `${owner}:${ref}`,
+    sort: "updated"
+  });
+  if (data.length > 0) {
+    return data[0];
+  }
+}
 function getRepository() {
   const { owner, repo } = import_utils.context.repo;
   if (!owner || !repo) {
@@ -10563,20 +10579,42 @@ async function getCommitsSince({
   (0, import_console2.info)(`  Found ${commits.length} commits since ${since.tag} in exivity/${repository}#${branch}`);
   return commits;
 }
-async function createPullRequest({
+async function createOrUpdatePullRequest({
   octokit,
   pendingVersion,
   prTemplate,
   changelogContents
 }) {
-  return (await octokit.rest.pulls.create({
+  const existingPullRequest = await getPrFromRef({
+    octokit,
     owner: "exivity",
-    repo: getRepository().repo,
-    title: `chore: new release ${pendingVersion}`,
-    body: [prTemplate, ...changelogContents].join("\n"),
-    head: PENDING_RELEASE_BRANCH,
-    base: DEFAULT_REPOSITORY_RELEASE_BRANCH
-  })).data;
+    repo: "exivity",
+    ref: PENDING_RELEASE_BRANCH
+  });
+  const title = `chore: new release ${pendingVersion}`;
+  const body = [prTemplate, ...changelogContents].join("\n");
+  if (existingPullRequest) {
+    const pr = await octokit.rest.pulls.update({
+      owner: "exivity",
+      repo: getRepository().repo,
+      pull_number: existingPullRequest.number,
+      title,
+      body
+    });
+    (0, import_console2.info)(`Updated pull request #${pr.data.number}`);
+    return pr.data;
+  } else {
+    const pr = await octokit.rest.pulls.create({
+      owner: "exivity",
+      repo: getRepository().repo,
+      title,
+      body,
+      head: PENDING_RELEASE_BRANCH,
+      base: DEFAULT_REPOSITORY_RELEASE_BRANCH
+    });
+    (0, import_console2.info)(`Opened pull request #${pr.data.number}`);
+    return pr.data;
+  }
 }
 function createNote(commit) {
   var _a, _b, _c, _d, _e, _f, _g, _h, _i;
@@ -10767,13 +10805,12 @@ ${changelogContents.join("\n")}
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not creating pull request`);
   } else {
-    const pr = await createPullRequest({
+    const pr = await createOrUpdatePullRequest({
       octokit,
       pendingVersion,
       prTemplate,
       changelogContents
     });
-    (0, import_console2.info)(`Opened pull request #${pr.number}`);
     (0, import_console2.info)(pr.issue_url);
   }
 }

@@ -13,7 +13,12 @@ import {
   gitPush,
   gitSetAuthor,
 } from '../../lib/git'
-import { getCommit, getCommits, getRepository } from '../../lib/github'
+import {
+  getCommit,
+  getCommits,
+  getPrFromRef,
+  getRepository,
+} from '../../lib/github'
 
 type ChangelogType = 'feat' | 'fix' | 'chore'
 
@@ -117,7 +122,7 @@ async function getCommitsSince({
   return commits
 }
 
-async function createPullRequest({
+async function createOrUpdatePullRequest({
   octokit,
   pendingVersion,
   prTemplate,
@@ -128,16 +133,36 @@ async function createPullRequest({
   prTemplate: string
   changelogContents: string[]
 }) {
-  return (
-    await octokit.rest.pulls.create({
+  const existingPullRequest = await getPrFromRef({
+    octokit,
+    owner: 'exivity',
+    repo: 'exivity',
+    ref: PENDING_RELEASE_BRANCH,
+  })
+  const title = `chore: new release ${pendingVersion}`
+  const body = [prTemplate, ...changelogContents].join('\n')
+  if (existingPullRequest) {
+    const pr = await octokit.rest.pulls.update({
       owner: 'exivity',
       repo: getRepository().repo,
-      title: `chore: new release ${pendingVersion}`,
-      body: [prTemplate, ...changelogContents].join('\n'),
+      pull_number: existingPullRequest.number,
+      title,
+      body,
+    })
+    info(`Updated pull request #${pr.data.number}`)
+    return pr.data
+  } else {
+    const pr = await octokit.rest.pulls.create({
+      owner: 'exivity',
+      repo: getRepository().repo,
+      title,
+      body,
       head: PENDING_RELEASE_BRANCH,
       base: DEFAULT_REPOSITORY_RELEASE_BRANCH,
     })
-  ).data
+    info(`Opened pull request #${pr.data.number}`)
+    return pr.data
+  }
 }
 
 function createNote(commit: Commit) {
@@ -418,13 +443,12 @@ export async function prepare({
   if (dryRun) {
     info(`Dry run, not creating pull request`)
   } else {
-    const pr = await createPullRequest({
+    const pr = await createOrUpdatePullRequest({
       octokit,
       pendingVersion,
       prTemplate,
       changelogContents,
     })
-    info(`Opened pull request #${pr.number}`)
     info(pr.issue_url)
   }
 }
