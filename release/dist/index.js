@@ -10298,7 +10298,7 @@ var require_semver2 = __commonJS({
 // release/src/index.ts
 var src_exports = {};
 __export(src_exports, {
-  DEFAULT_RELEASE_BRANCH: () => DEFAULT_RELEASE_BRANCH
+  DEFAULT_REPOSITORY_RELEASE_BRANCH: () => DEFAULT_REPOSITORY_RELEASE_BRANCH
 });
 module.exports = __toCommonJS(src_exports);
 var import_core4 = __toESM(require_core());
@@ -10420,6 +10420,7 @@ async function ping({
 
 // release/src/prepare.ts
 var import_console2 = require("console");
+var import_fs = require("fs");
 var import_promises = require("fs/promises");
 var import_semver2 = __toESM(require_semver2());
 
@@ -10492,8 +10493,8 @@ function parseCommitMessage(message) {
 var import_exec2 = __toESM(require_exec());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
-async function execGit(command, silent = true) {
-  return (await (0, import_exec2.getExecOutput)(command, void 0, { silent })).stdout;
+async function execGit(command, args, silent = true) {
+  return (await (0, import_exec2.getExecOutput)(command, args, { silent })).stdout;
 }
 async function getAllTags() {
   return (await execGit("git tag")).split(import_os.EOL).filter((item) => item);
@@ -10506,18 +10507,31 @@ async function getLatestSemverTag() {
   const semvers = await getAllSemverTags();
   return import_semver.default.rsort(semvers)[0];
 }
+async function gitCreateBranch(branch) {
+  return execGit("git checkout -b", [branch]);
+}
+async function gitAdd() {
+  return execGit("git add .");
+}
+async function gitCommit(message) {
+  return execGit("git commit -m", [message]);
+}
+async function gitPush(force = false) {
+  return execGit("git push --set-upstream", [force ? "--force" : ""]);
+}
 
 // release/src/prepare.ts
 var LOCKFILE_PATH = "exivity.lock";
-async function getLatestRelease() {
+var CHANGELOG_PATH = "CHANGELOG.md";
+var PENDING_RELEASE_BRANCH = "chore/pending-release";
+async function getLatestVersion() {
   const repo = getRepository();
-  (0, import_console2.info)(`Finding latest release in ${repo.fqn}...`);
-  const latestReleaseTag = await getLatestSemverTag();
-  if (typeof latestReleaseTag === "undefined") {
-    throw new Error("Could not determine latest release");
+  const latestVersionTag = await getLatestSemverTag();
+  if (typeof latestVersionTag === "undefined") {
+    throw new Error("Could not determine latest version");
   }
-  (0, import_console2.info)(`Latest release: ${latestReleaseTag}`);
-  return latestReleaseTag;
+  (0, import_console2.info)(`Latest version in ${repo.fqn}: ${latestVersionTag}`);
+  return latestVersionTag;
 }
 async function getCommitForTag({
   octokit,
@@ -10525,7 +10539,6 @@ async function getCommitForTag({
   tag
 }) {
   var _a;
-  (0, import_console2.info)(`  Lookup commit for tag ${tag}...`);
   try {
     const commit = await getCommit({
       octokit,
@@ -10537,7 +10550,6 @@ async function getCommitForTag({
     if (typeof timestamp === "undefined") {
       throw new Error(`Could not find timestamp for commit ${commit.sha} in exivity/${repository}...`);
     }
-    (0, import_console2.info)(`  Commit: ${commit.sha}`);
     return { ...commit, tag, timestamp };
   } catch (error) {
     throw new Error(`Could not find tag ${tag} in exivity/${repository}...`);
@@ -10549,8 +10561,6 @@ async function getCommitsSince({
   branch,
   since
 }) {
-  (0, import_console2.info)(`  Reading commits since ${since.timestamp} in exivity/${repository}#${branch}...`);
-  (0, import_console2.info)(`  See commits: https://github.com/exivity/${repository}/compare/${since.tag}...${branch}`);
   const commits = (await getCommits({
     octokit,
     owner: "exivity",
@@ -10558,8 +10568,21 @@ async function getCommitsSince({
     sha: branch,
     since: since.timestamp
   })).filter((commit) => commit.sha !== since.sha);
-  (0, import_console2.info)(`  Found ${commits.length} commits`);
+  (0, import_console2.info)(`  Found ${commits.length} commits since ${since.tag} in exivity/${repository}#${branch}`);
   return commits;
+}
+async function createPullRequest({
+  octokit,
+  pendingVersion
+}) {
+  return octokit.rest.pulls.create({
+    owner: "exivity",
+    repo: getRepository().repo,
+    title: `chore: new release ${pendingVersion}`,
+    body: "Merging this pull request will create a new Exivity release.",
+    head: PENDING_RELEASE_BRANCH,
+    base: DEFAULT_REPOSITORY_RELEASE_BRANCH
+  });
 }
 function createNote(commit) {
   var _a, _b, _c, _d, _e, _f, _g, _h, _i;
@@ -10592,6 +10615,44 @@ function createNote(commit) {
     issues: []
   };
 }
+function buildChangelogItem(changelogItem) {
+  let result = `- **${changelogItem.title}**`;
+  if (changelogItem.description) {
+    result += `
+  ${changelogItem.description.split("\n").join("\n  ")}`;
+  }
+  return result;
+}
+function buildChangelogSection(header, changelogItems) {
+  if (changelogItems.length === 0) {
+    return [];
+  }
+  return [`### ${header}`, "", ...changelogItems.map(buildChangelogItem)];
+}
+function buildChangelogItems(changelogItems) {
+  return [
+    ...buildChangelogSection("New features", changelogItems.filter((item) => item.type === "feat")),
+    "",
+    ...buildChangelogSection("Bug fixes", changelogItems.filter((item) => item.type === "fix")),
+    "",
+    ""
+  ];
+}
+function buildChangelogHeader(version) {
+  const date = new Date();
+  return [
+    `## ${version}`,
+    "",
+    `Released on ${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
+    ""
+  ];
+}
+function buildChangelog(version, changelogItems) {
+  return [
+    ...buildChangelogHeader(version),
+    ...buildChangelogItems(changelogItems)
+  ];
+}
 function noChores(changelogItem) {
   return changelogItem.type !== "chore";
 }
@@ -10623,22 +10684,22 @@ async function prepare({
   let pendingVersion;
   const pendingCommits = [];
   const pendingLockfile = { version: "", repositories: {} };
-  const latestReleaseTag = await getLatestRelease();
-  (0, import_console2.info)(`Processing repositories...`);
+  const latestVersion = await getLatestVersion();
+  (0, import_console2.info)(`Iterating repositories`);
   for (const [repository, repositoryOptions] of Object.entries(repositories)) {
     (0, import_console2.info)(`- exivity/${repository}`);
-    const latestReleaseCommit = await getCommitForTag({
+    const latestVersionCommit = await getCommitForTag({
       octokit,
       repository,
-      tag: latestReleaseTag
+      tag: latestVersion
     });
     const repoCommits = await getCommitsSince({
       octokit,
       repository,
-      branch: repositoryOptions.releaseBranch || DEFAULT_RELEASE_BRANCH,
-      since: latestReleaseCommit
+      branch: repositoryOptions.releaseBranch || DEFAULT_REPOSITORY_RELEASE_BRANCH,
+      since: latestVersionCommit
     });
-    pendingLockfile.repositories[repository] = repoCommits.length > 0 ? repoCommits[0].sha : latestReleaseCommit.sha;
+    pendingLockfile.repositories[repository] = repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha;
     repoCommits.forEach((repoCommit) => {
       const commit = { ...repoCommit, repository };
       pendingCommits.push(commit);
@@ -10656,24 +10717,55 @@ async function prepare({
   changelog.forEach((item) => {
     (0, import_console2.info)(`- [${item.repository}] ${item.type}: ${item.title} (${item.sha})`);
   });
-  (0, import_console2.info)(`Inferring pending version increment...`);
+  let incrementDescription;
   if (changelog.some((item) => item.breaking)) {
-    (0, import_console2.info)(`Breaking change detected, incrementing to major`);
+    incrementDescription = "major: breaking change detected";
     pendingVersionIncrement = "major";
   } else if (changelog.some((item) => item.type === "feat")) {
-    (0, import_console2.info)(`Feature detected, incrementing to minor`);
+    incrementDescription = "minor: new feature detected";
     pendingVersionIncrement = "minor";
   } else {
-    (0, import_console2.info)(`Only fixes and/or chores detected, incrementing to patch`);
+    incrementDescription = "patch: only fixes and/or chores detected";
   }
-  pendingVersion = import_semver2.default.inc(latestReleaseTag, pendingVersionIncrement);
+  pendingVersion = import_semver2.default.inc(latestVersion, pendingVersionIncrement);
   if (pendingVersion === null) {
-    throw new Error(`Could not calculate new version (incremeting ${latestReleaseTag} to ${pendingVersionIncrement})`);
+    throw new Error(`Could not calculate new version (incremeting ${latestVersion} to ${pendingVersionIncrement})`);
+  } else {
+    pendingVersion = `v${pendingVersion}`;
   }
-  (0, import_console2.info)(`Pending version: ${pendingVersion}`);
+  (0, import_console2.info)(`Version increment (${incrementDescription}): ${latestVersion} -> ${pendingVersion}`);
   pendingLockfile.version = pendingVersion;
-  await (0, import_promises.writeFile)(LOCKFILE_PATH, JSON.stringify(pendingLockfile, null, 2));
-  (0, import_console2.info)(`Written lockfile to: ${LOCKFILE_PATH}`);
+  if (dryRun) {
+    (0, import_console2.info)(`Dry run, not writing lockfile`);
+  } else {
+    await (0, import_promises.writeFile)(LOCKFILE_PATH, JSON.stringify(pendingLockfile, null, 2));
+    (0, import_console2.info)(`Written lockfile to: ${LOCKFILE_PATH}`);
+  }
+  const currentContents = (0, import_fs.existsSync)(CHANGELOG_PATH) ? await (0, import_promises.readFile)(CHANGELOG_PATH, "utf8") : "# Changelog\n\n";
+  const newContents = buildChangelog(pendingVersion, changelog);
+  if (dryRun) {
+    (0, import_console2.info)(`Dry run, not writing changelog`);
+  } else {
+    await (0, import_promises.writeFile)(CHANGELOG_PATH, currentContents.replace("# Changelog\n\n", `# Changelog
+
+${newContents.join("\n")}
+
+`));
+    (0, import_console2.info)(`Written changelog to: ${CHANGELOG_PATH}`);
+  }
+  if (dryRun) {
+    (0, import_console2.info)(`Dry run, not pushing changes`);
+  } else {
+    await gitCreateBranch(PENDING_RELEASE_BRANCH);
+    await gitAdd();
+    await gitCommit(`chore: new release ${pendingVersion}`);
+    await gitPush(true);
+  }
+  if (dryRun) {
+    (0, import_console2.info)(`Dry run, not creating pull request`);
+  } else {
+    await createPullRequest({ octokit, pendingVersion });
+  }
 }
 
 // release/src/release.ts
@@ -10687,7 +10779,7 @@ async function release({
 var ModePing = "ping";
 var ModePrepare = "prepare";
 var ModeRelease = "release";
-var DEFAULT_RELEASE_BRANCH = "main";
+var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
 async function run() {
   const mode = (0, import_core4.getInput)("mode");
   const repositories = getJSONInput("repositories");
@@ -10717,7 +10809,7 @@ async function run() {
 run().catch(import_core4.setFailed);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  DEFAULT_RELEASE_BRANCH
+  DEFAULT_REPOSITORY_RELEASE_BRANCH
 });
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>

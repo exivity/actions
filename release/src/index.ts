@@ -16,7 +16,7 @@ export type Repositories = {
   }
 }
 
-export const DEFAULT_RELEASE_BRANCH = 'main'
+export const DEFAULT_REPOSITORY_RELEASE_BRANCH = 'main'
 
 async function run() {
   // Input
