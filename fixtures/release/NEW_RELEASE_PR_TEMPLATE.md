@@ -18,3 +18,9 @@ actions:
   their 'Fix version' will be set accordingly
 - A new `exivity/scaffold` release will be triggered
 - A new `exivity/charts` release will be triggered
+
+---
+
+# Changelog
+
+<!-- CHANGELOG_CONTENTS -->

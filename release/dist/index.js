@@ -10496,7 +10496,7 @@ function parseCommitMessage(message) {
 var import_exec2 = __toESM(require_exec());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
-async function execGit(command, args, silent = false) {
+async function execGit(command, args, silent = true) {
   return (await (0, import_exec2.getExecOutput)(command, args, { silent })).stdout;
 }
 async function getAllTags() {
@@ -10522,10 +10522,6 @@ async function gitSetAuthor(name, email) {
 }
 async function gitCommit(message) {
   return execGit("git commit --no-verify --message", [message]);
-}
-async function gitPush(force = false) {
-  await execGit("git config --global push.default current");
-  return execGit("git push --set-upstream", [force ? "--force" : ""]);
 }
 
 // release/src/prepare.ts
@@ -10588,11 +10584,11 @@ async function createOrUpdatePullRequest({
   const existingPullRequest = await getPrFromRef({
     octokit,
     owner: "exivity",
-    repo: "exivity",
+    repo: getRepository().repo,
     ref: PENDING_RELEASE_BRANCH
   });
   const title = `chore: new release ${pendingVersion}`;
-  const body = [prTemplate, ...changelogContents].join("\n");
+  const body = prTemplate.replace("<!-- CHANGELOG_CONTENTS -->", changelogContents.join("\n"));
   if (existingPullRequest) {
     const pr = await octokit.rest.pulls.update({
       owner: "exivity",
@@ -10799,7 +10795,6 @@ ${changelogContents.join("\n")}
     await gitAdd();
     await gitSetAuthor("Exivity bot", "bot@exivity.com");
     await gitCommit(`chore: new release ${pendingVersion}`);
-    await gitPush(true);
     (0, import_console2.info)(`Written changes to branch: ${PENDING_RELEASE_BRANCH}`);
   }
   if (dryRun) {
@@ -10811,7 +10806,7 @@ ${changelogContents.join("\n")}
       prTemplate,
       changelogContents
     });
-    (0, import_console2.info)(pr.issue_url);
+    (0, import_console2.info)(pr.html_url);
   }
 }
 

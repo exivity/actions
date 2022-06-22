@@ -10,7 +10,6 @@ import {
   gitAdd,
   gitCommit,
   gitCreateBranch,
-  gitPush,
   gitSetAuthor,
 } from '../../lib/git'
 import {
@@ -136,11 +135,14 @@ async function createOrUpdatePullRequest({
   const existingPullRequest = await getPrFromRef({
     octokit,
     owner: 'exivity',
-    repo: 'exivity',
+    repo: getRepository().repo,
     ref: PENDING_RELEASE_BRANCH,
   })
   const title = `chore: new release ${pendingVersion}`
-  const body = [prTemplate, ...changelogContents].join('\n')
+  const body = prTemplate.replace(
+    '<!-- CHANGELOG_CONTENTS -->',
+    changelogContents.join('\n')
+  )
   if (existingPullRequest) {
     const pr = await octokit.rest.pulls.update({
       owner: 'exivity',
@@ -435,7 +437,7 @@ export async function prepare({
     await gitAdd()
     await gitSetAuthor('Exivity bot', 'bot@exivity.com')
     await gitCommit(`chore: new release ${pendingVersion}`)
-    await gitPush(true)
+    // await gitPush(true)
     info(`Written changes to branch: ${PENDING_RELEASE_BRANCH}`)
   }
 
@@ -449,6 +451,6 @@ export async function prepare({
       prTemplate,
       changelogContents,
     })
-    info(pr.issue_url)
+    info(pr.html_url)
   }
 }
