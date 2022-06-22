@@ -2,7 +2,11 @@ import { getExecOutput } from '@actions/exec'
 import { EOL } from 'os'
 import semver from 'semver'
 
-async function execGit(command: string, args?: string[], silent = false) {
+export async function execGit(
+  command: string,
+  args?: string[],
+  silent = false
+) {
   return (await getExecOutput(command, args, { silent })).stdout
 }
 
@@ -37,7 +41,7 @@ export async function gitFetch(remote: string, branch: string) {
 }
 
 export async function gitSwitchBranch(branch: string) {
-  return execGit('git checkout -b', [branch])
+  return execGit('git switch', [branch])
 }
 
 export async function gitAdd() {

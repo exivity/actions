@@ -10510,11 +10510,8 @@ async function getLatestSemverTag() {
   const semvers = await getAllSemverTags();
   return import_semver.default.rsort(semvers)[0];
 }
-async function gitFetch(remote, branch) {
-  return execGit("git fetch", [remote, branch]);
-}
 async function gitSwitchBranch(branch) {
-  return execGit("git checkout -b", [branch]);
+  return execGit("git switch", [branch]);
 }
 async function gitAdd() {
   return execGit("git add .");
@@ -10791,7 +10788,7 @@ async function prepare({
   } else if (await gitHasChanges()) {
     (0, import_console2.info)("Detected uncommitted changes, aborting");
   } else {
-    await gitFetch("origin", DEFAULT_REPOSITORY_RELEASE_BRANCH);
+    execGit("git branch", [], false);
     const latestReleasedCommit = await gitGetLatestCommitInBranch(DEFAULT_REPOSITORY_RELEASE_BRANCH);
     await gitSwitchBranch(UPCOMING_RELEASE_BRANCH);
     await gitHardReset(latestReleasedCommit);

@@ -6,10 +6,10 @@ import semver from 'semver'
 import { DEFAULT_REPOSITORY_RELEASE_BRANCH, Repositories } from '.'
 import { parseCommitMessage } from '../../lib/conventionalCommits'
 import {
+  execGit,
   getLatestSemverTag,
   gitAdd,
   gitCommit,
-  gitFetch,
   gitGetLatestCommitInBranch,
   gitHardReset,
   gitHasChanges,
@@ -411,7 +411,7 @@ export async function prepare({
   } else if (await gitHasChanges()) {
     info('Detected uncommitted changes, aborting')
   } else {
-    await gitFetch('origin', DEFAULT_REPOSITORY_RELEASE_BRANCH)
+    execGit('git branch', [], false)
     const latestReleasedCommit = await gitGetLatestCommitInBranch(
       DEFAULT_REPOSITORY_RELEASE_BRANCH
     )
