@@ -32,6 +32,10 @@ export async function getLatestSemverTag() {
   return semver.rsort(semvers)[0]
 }
 
+export async function gitFetch(remote: string, branch: string) {
+  return execGit('git fetch', [remote, branch])
+}
+
 export async function gitSwitchBranch(branch: string) {
   return execGit('git checkout -b', [branch])
 }

@@ -9,6 +9,7 @@ import {
   getLatestSemverTag,
   gitAdd,
   gitCommit,
+  gitFetch,
   gitHasChanges,
   gitPush,
   gitReset,
@@ -409,6 +410,7 @@ export async function prepare({
   } else if (await gitHasChanges()) {
     info('Detected uncommitted changes, aborting')
   } else {
+    await gitFetch('origin', DEFAULT_REPOSITORY_RELEASE_BRANCH)
     await gitSwitchBranch(UPCOMING_RELEASE_BRANCH)
     await gitReset(DEFAULT_REPOSITORY_RELEASE_BRANCH, true)
   }
