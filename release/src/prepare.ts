@@ -11,6 +11,7 @@ import {
   gitCommit,
   gitCreateBranch,
   gitPush,
+  gitSetAuthor,
 } from '../../lib/git'
 import { getCommit, getCommits, getRepository } from '../../lib/github'
 
@@ -123,14 +124,16 @@ async function createPullRequest({
   octokit: ReturnType<typeof getOctokit>
   pendingVersion: string
 }) {
-  return octokit.rest.pulls.create({
-    owner: 'exivity',
-    repo: getRepository().repo,
-    title: `chore: new release ${pendingVersion}`,
-    body: 'Merging this pull request will create a new Exivity release.',
-    head: PENDING_RELEASE_BRANCH,
-    base: DEFAULT_REPOSITORY_RELEASE_BRANCH,
-  })
+  return (
+    await octokit.rest.pulls.create({
+      owner: 'exivity',
+      repo: getRepository().repo,
+      title: `chore: new release ${pendingVersion}`,
+      body: 'Merging this pull request will create a new Exivity release.',
+      head: PENDING_RELEASE_BRANCH,
+      base: DEFAULT_REPOSITORY_RELEASE_BRANCH,
+    })
+  ).data
 }
 
 function createNote(commit: Commit) {
@@ -388,14 +391,18 @@ export async function prepare({
   } else {
     await gitCreateBranch(PENDING_RELEASE_BRANCH)
     await gitAdd()
+    await gitSetAuthor('Exivity bot', 'bot@exivity.com')
     await gitCommit(`chore: new release ${pendingVersion}`)
     await gitPush(true)
+    info(`Written changes to branch: ${PENDING_RELEASE_BRANCH}`)
   }
 
   // Create pull request
   if (dryRun) {
     info(`Dry run, not creating pull request`)
   } else {
-    await createPullRequest({ octokit, pendingVersion })
+    const pr = await createPullRequest({ octokit, pendingVersion })
+    info(`Opened pull request #${pr.number}`)
+    info(pr.issue_url)
   }
 }

@@ -10493,7 +10493,7 @@ function parseCommitMessage(message) {
 var import_exec2 = __toESM(require_exec());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
-async function execGit(command, args, silent = true) {
+async function execGit(command, args, silent = false) {
   return (await (0, import_exec2.getExecOutput)(command, args, { silent })).stdout;
 }
 async function getAllTags() {
@@ -10513,10 +10513,15 @@ async function gitCreateBranch(branch) {
 async function gitAdd() {
   return execGit("git add .");
 }
+async function gitSetAuthor(name, email) {
+  await execGit("git config --global user.name", [name]);
+  await execGit("git config --global user.email", [email]);
+}
 async function gitCommit(message) {
-  return execGit("git commit -m", [message]);
+  return execGit("git commit --no-verify --message", [message]);
 }
 async function gitPush(force = false) {
+  await execGit("git config --global push.default current");
   return execGit("git push --set-upstream", [force ? "--force" : ""]);
 }
 
@@ -10575,14 +10580,14 @@ async function createPullRequest({
   octokit,
   pendingVersion
 }) {
-  return octokit.rest.pulls.create({
+  return (await octokit.rest.pulls.create({
     owner: "exivity",
     repo: getRepository().repo,
     title: `chore: new release ${pendingVersion}`,
     body: "Merging this pull request will create a new Exivity release.",
     head: PENDING_RELEASE_BRANCH,
     base: DEFAULT_REPOSITORY_RELEASE_BRANCH
-  });
+  })).data;
 }
 function createNote(commit) {
   var _a, _b, _c, _d, _e, _f, _g, _h, _i;
@@ -10758,13 +10763,17 @@ ${newContents.join("\n")}
   } else {
     await gitCreateBranch(PENDING_RELEASE_BRANCH);
     await gitAdd();
+    await gitSetAuthor("Exivity bot", "bot@exivity.com");
     await gitCommit(`chore: new release ${pendingVersion}`);
     await gitPush(true);
+    (0, import_console2.info)(`Written changes to branch: ${PENDING_RELEASE_BRANCH}`);
   }
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not creating pull request`);
   } else {
-    await createPullRequest({ octokit, pendingVersion });
+    const pr = await createPullRequest({ octokit, pendingVersion });
+    (0, import_console2.info)(`Opened pull request #${pr.number}`);
+    (0, import_console2.info)(pr.issue_url);
   }
 }
 
