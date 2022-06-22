@@ -10510,8 +10510,8 @@ async function getLatestSemverTag() {
   const semvers = await getAllSemverTags();
   return import_semver.default.rsort(semvers)[0];
 }
-async function gitSwitchBranch(branch) {
-  return execGit("git switch", [branch]);
+async function gitForceSwitchBranch(branch, startPoint) {
+  return execGit("git switch -C", [branch, startPoint || ""]);
 }
 async function gitAdd() {
   return execGit("git add .");
@@ -10529,12 +10529,6 @@ async function gitPush(force = false) {
 }
 async function gitHasChanges() {
   return (await execGit("git status --porcelain")).length > 0;
-}
-async function gitGetLatestCommitInBranch(branch) {
-  return execGit(`git log -n 1 ${branch} --pretty=format:"%H"`);
-}
-async function gitHardReset(commit) {
-  return execGit(`git reset --hard ${commit}`);
 }
 
 // release/src/prepare.ts
@@ -10788,12 +10782,7 @@ async function prepare({
   } else if (await gitHasChanges()) {
     (0, import_console2.info)("Detected uncommitted changes, aborting");
   } else {
-    execGit("git branch", [], false);
-    execGit("git fetch origin main", [], false);
-    execGit("git branch", [], false);
-    const latestReleasedCommit = await gitGetLatestCommitInBranch(DEFAULT_REPOSITORY_RELEASE_BRANCH);
-    await gitSwitchBranch(UPCOMING_RELEASE_BRANCH);
-    await gitHardReset(latestReleasedCommit);
+    await gitForceSwitchBranch(UPCOMING_RELEASE_BRANCH, `origin/${DEFAULT_REPOSITORY_RELEASE_BRANCH}`);
   }
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing lockfile`);

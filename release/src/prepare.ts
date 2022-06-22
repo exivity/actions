@@ -6,16 +6,13 @@ import semver from 'semver'
 import { DEFAULT_REPOSITORY_RELEASE_BRANCH, Repositories } from '.'
 import { parseCommitMessage } from '../../lib/conventionalCommits'
 import {
-  execGit,
   getLatestSemverTag,
   gitAdd,
   gitCommit,
-  gitGetLatestCommitInBranch,
-  gitHardReset,
+  gitForceSwitchBranch,
   gitHasChanges,
   gitPush,
   gitSetAuthor,
-  gitSwitchBranch,
 } from '../../lib/git'
 import {
   getCommit,
@@ -411,14 +408,10 @@ export async function prepare({
   } else if (await gitHasChanges()) {
     info('Detected uncommitted changes, aborting')
   } else {
-    execGit('git branch', [], false)
-    execGit('git fetch origin main', [], false)
-    execGit('git branch', [], false)
-    const latestReleasedCommit = await gitGetLatestCommitInBranch(
-      DEFAULT_REPOSITORY_RELEASE_BRANCH
+    await gitForceSwitchBranch(
+      UPCOMING_RELEASE_BRANCH,
+      `origin/${DEFAULT_REPOSITORY_RELEASE_BRANCH}`
     )
-    await gitSwitchBranch(UPCOMING_RELEASE_BRANCH)
-    await gitHardReset(latestReleasedCommit)
   }
 
   // Write lockfile
