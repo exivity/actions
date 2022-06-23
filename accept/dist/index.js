@@ -1591,10 +1591,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning6(message, properties = {}) {
+    function warning7(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning6;
+    exports.warning = warning7;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -7924,7 +7924,7 @@ var require_io = __commonJS({
     var path7 = __importStar(require("path"));
     var util_1 = require("util");
     var ioUtil = __importStar(require_io_util());
-    var exec6 = util_1.promisify(childProcess.exec);
+    var exec5 = util_1.promisify(childProcess.exec);
     var execFile = util_1.promisify(childProcess.execFile);
     function cp3(source, dest, options = {}) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -7983,11 +7983,11 @@ var require_io = __commonJS({
           try {
             const cmdPath = ioUtil.getCmdPath();
             if (yield ioUtil.isDirectory(inputPath, true)) {
-              yield exec6(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
+              yield exec5(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
                 env: { inputPath }
               });
             } else {
-              yield exec6(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
+              yield exec5(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
                 env: { inputPath }
               });
             }
@@ -8683,7 +8683,7 @@ var require_exec = __commonJS({
     exports.getExecOutput = exports.exec = void 0;
     var string_decoder_1 = require("string_decoder");
     var tr = __importStar(require_toolrunner());
-    function exec6(commandLine, args, options) {
+    function exec5(commandLine, args, options) {
       return __awaiter(this, void 0, void 0, function* () {
         const commandArgs = tr.argStringToArray(commandLine);
         if (commandArgs.length === 0) {
@@ -8695,8 +8695,8 @@ var require_exec = __commonJS({
         return runner.exec();
       });
     }
-    exports.exec = exec6;
-    function getExecOutput(commandLine, args, options) {
+    exports.exec = exec5;
+    function getExecOutput2(commandLine, args, options) {
       var _a, _b;
       return __awaiter(this, void 0, void 0, function* () {
         let stdout = "";
@@ -8718,7 +8718,7 @@ var require_exec = __commonJS({
           }
         };
         const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
-        const exitCode = yield exec6(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+        const exitCode = yield exec5(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
         stdout += stdoutDecoder.end();
         stderr += stderrDecoder.end();
         return {
@@ -8728,7 +8728,7 @@ var require_exec = __commonJS({
         };
       });
     }
-    exports.getExecOutput = getExecOutput;
+    exports.getExecOutput = getExecOutput2;
   }
 });
 
@@ -10025,10 +10025,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning6(message, properties = {}) {
+    function warning7(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning6;
+    exports.warning = warning7;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -30256,10 +30256,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning6(message, properties = {}) {
+    function warning7(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning6;
+    exports.warning = warning7;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -33029,7 +33029,7 @@ var core7 = __toESM(require_core2());
 // node_modules/checkout/src/git-auth-helper.ts
 var assert2 = __toESM(require("assert"));
 var core = __toESM(require_core2());
-var exec2 = __toESM(require_exec());
+var exec = __toESM(require_exec());
 var fs2 = __toESM(require("fs"));
 var io = __toESM(require_io());
 var os = __toESM(require("os"));
@@ -33206,8 +33206,8 @@ var GitAuthHelper = class {
     await fs2.promises.writeFile(this.sshKeyPath, this.settings.sshKey.trim() + "\n", { mode: 384 });
     if (IS_WINDOWS) {
       const icacls = await io.which("icacls.exe");
-      await exec2.exec(`"${icacls}" "${this.sshKeyPath}" /grant:r "${process.env["USERDOMAIN"]}\\${process.env["USERNAME"]}:F"`);
-      await exec2.exec(`"${icacls}" "${this.sshKeyPath}" /inheritance:r`);
+      await exec.exec(`"${icacls}" "${this.sshKeyPath}" /grant:r "${process.env["USERDOMAIN"]}\\${process.env["USERNAME"]}:F"`);
+      await exec.exec(`"${icacls}" "${this.sshKeyPath}" /inheritance:r`);
     }
     const userKnownHostsPath = path.join(os.homedir(), ".ssh", "known_hosts");
     let userKnownHosts = "";
@@ -33304,7 +33304,7 @@ github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXY
 
 // node_modules/checkout/src/git-command-manager.ts
 var core4 = __toESM(require_core2());
-var exec4 = __toESM(require_exec());
+var exec3 = __toESM(require_exec());
 var io2 = __toESM(require_io());
 var path2 = __toESM(require("path"));
 
@@ -33826,7 +33826,7 @@ var GitCommandManager = class {
         }
       }
     };
-    result.exitCode = await exec4.exec(`"${this.gitPath}"`, args, options);
+    result.exitCode = await exec3.exec(`"${this.gitPath}"`, args, options);
     result.stdout = stdout.join("");
     return result;
   }

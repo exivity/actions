@@ -1596,10 +1596,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning3(message, properties = {}) {
+    function warning4(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning3;
+    exports.warning = warning4;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -10301,7 +10301,7 @@ __export(src_exports, {
   DEFAULT_REPOSITORY_RELEASE_BRANCH: () => DEFAULT_REPOSITORY_RELEASE_BRANCH
 });
 module.exports = __toCommonJS(src_exports);
-var import_core5 = __toESM(require_core());
+var import_core6 = __toESM(require_core());
 var import_github4 = __toESM(require_github());
 
 // lib/core.ts
@@ -10318,6 +10318,19 @@ function getBooleanInput(name, defaultValue) {
     return false;
   }
   throw new Error(`Can't parse input value (${JSON.stringify(inputValue)}) as boolean`);
+}
+async function exec(command, args) {
+  const result = await (0, import_exec.getExecOutput)(command, args, {
+    ignoreReturnCode: true
+  });
+  if (result.exitCode !== 0) {
+    (0, import_core.warning)(`STDOUT:
+${result.stdout}
+STDERR:
+${result.stderr}`);
+    throw new Error(`Process completed with exit code ${result.exitCode}`);
+  }
+  return result.stdout;
 }
 
 // lib/github.ts
@@ -10525,14 +10538,10 @@ function parseCommitMessage(message) {
 }
 
 // lib/git.ts
-var import_exec2 = __toESM(require_exec());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
-async function execGit(command, args, silent = true) {
-  return (await (0, import_exec2.getExecOutput)(command, args, { silent })).stdout;
-}
 async function getAllTags() {
-  return (await execGit("git tag")).split(import_os.EOL).filter((item) => item);
+  return (await exec("git tag")).split(import_os.EOL).filter((item) => item);
 }
 async function getAllSemverTags() {
   const tags = await getAllTags();
@@ -10543,30 +10552,30 @@ async function getLatestSemverTag() {
   return import_semver.default.rsort(semvers)[0];
 }
 async function gitForceSwitchBranch(branch, startPoint) {
-  return execGit("git switch -C", [branch, startPoint || ""]);
+  return exec("git switch -C", [branch, startPoint || ""]);
 }
 async function gitAdd() {
-  return execGit("git add .");
+  return exec("git add .");
 }
 async function gitSetAuthor(name, email) {
-  await execGit("git config --global user.name", [name]);
-  await execGit("git config --global user.email", [email]);
+  await exec("git config --global user.name", [name]);
+  await exec("git config --global user.email", [email]);
 }
 async function gitCommit(message) {
-  return execGit("git commit --no-verify --message", [message]);
+  return exec("git commit --no-verify --message", [message]);
 }
 async function gitPush(force = false) {
-  await execGit("git config --global push.default current");
-  return execGit("git push --set-upstream", [force ? "--force" : ""]);
+  await exec("git config --global push.default current");
+  return exec("git push --set-upstream", [force ? "--force" : ""]);
 }
 async function gitPushTags() {
-  return execGit("git push --tags");
+  return exec("git push --tags");
 }
 async function gitHasChanges() {
-  return (await execGit("git status --porcelain")).length > 0;
+  return (await exec("git status --porcelain")).length > 0;
 }
 async function gitTag(tag) {
-  return execGit(`git tag`, [tag]);
+  return exec(`git tag`, [tag]);
 }
 
 // release/src/prepare.ts
@@ -10868,7 +10877,7 @@ ${changelogContents.join("\n")}
 }
 
 // release/src/release.ts
-var import_core4 = __toESM(require_core());
+var import_core5 = __toESM(require_core());
 var import_promises2 = require("fs/promises");
 async function release({
   octokit,
@@ -10892,15 +10901,15 @@ async function release({
     throw new Error(`Can't read "${lockfilePath}" or it's not valid JSON`);
   }
   if (dryRun) {
-    (0, import_core4.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_core5.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_core4.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_core5.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
   for (const [repository2, sha] of Object.entries(lockfile.repositories)) {
     if (dryRun) {
-      (0, import_core4.info)(`Dry run, not tagging ${repository2}`);
+      (0, import_core5.info)(`Dry run, not tagging ${repository2}`);
     } else {
       await createLightweightTag({
         octokit,
@@ -10919,13 +10928,13 @@ var ModePrepare = "prepare";
 var ModeRelease = "release";
 var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
 async function run() {
-  const mode = (0, import_core5.getInput)("mode");
-  const lockfilePath = (0, import_core5.getInput)("lockfile");
-  const changelogPath = (0, import_core5.getInput)("changelog");
-  const repositoriesJsonPath = (0, import_core5.getInput)("repositories");
-  const prTemplatePath = (0, import_core5.getInput)("pr-template");
-  const upcomingReleaseBranch = (0, import_core5.getInput)("upcoming-release-branch");
-  const releaseBranch = (0, import_core5.getInput)("release-branch");
+  const mode = (0, import_core6.getInput)("mode");
+  const lockfilePath = (0, import_core6.getInput)("lockfile");
+  const changelogPath = (0, import_core6.getInput)("changelog");
+  const repositoriesJsonPath = (0, import_core6.getInput)("repositories");
+  const prTemplatePath = (0, import_core6.getInput)("pr-template");
+  const upcomingReleaseBranch = (0, import_core6.getInput)("upcoming-release-branch");
+  const releaseBranch = (0, import_core6.getInput)("release-branch");
   const dryRun = getBooleanInput("dry-run", false);
   const ghToken = getToken();
   const octokit = (0, import_github4.getOctokit)(ghToken);
@@ -10952,7 +10961,7 @@ async function run() {
       throw new Error(`Unknown mode "${mode}"`);
   }
 }
-run().catch(import_core5.setFailed);
+run().catch(import_core6.setFailed);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   DEFAULT_REPOSITORY_RELEASE_BRANCH

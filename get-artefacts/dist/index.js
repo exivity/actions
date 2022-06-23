@@ -1591,10 +1591,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning2(message, properties = {}) {
+    function warning3(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning2;
+    exports.warning = warning3;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -7943,7 +7943,7 @@ var require_exec = __commonJS({
       });
     }
     exports.exec = exec3;
-    function getExecOutput(commandLine, args, options) {
+    function getExecOutput2(commandLine, args, options) {
       var _a, _b;
       return __awaiter(this, void 0, void 0, function* () {
         let stdout = "";
@@ -7975,7 +7975,7 @@ var require_exec = __commonJS({
         };
       });
     }
-    exports.getExecOutput = getExecOutput;
+    exports.getExecOutput = getExecOutput2;
   }
 });
 
@@ -8003,11 +8003,24 @@ function getBooleanInput(name, defaultValue) {
 async function unzipAll(path) {
   for (const file of await import_fs.promises.readdir(path)) {
     if (file.endsWith(".zip")) {
-      await (0, import_exec.exec)("7z", ["x", (0, import_path.join)(path, file), `-o${path}`]);
+      await exec("7z", ["x", (0, import_path.join)(path, file), `-o${path}`]);
     } else if ((await import_fs.promises.lstat((0, import_path.join)(path, file))).isDirectory()) {
       unzipAll((0, import_path.join)(path, file));
     }
   }
+}
+async function exec(command, args) {
+  const result = await (0, import_exec.getExecOutput)(command, args, {
+    ignoreReturnCode: true
+  });
+  if (result.exitCode !== 0) {
+    (0, import_core.warning)(`STDOUT:
+${result.stdout}
+STDERR:
+${result.stderr}`);
+    throw new Error(`Process completed with exit code ${result.exitCode}`);
+  }
+  return result.stdout;
 }
 
 // lib/github.ts
