@@ -8011,13 +8011,15 @@ async function unzipAll(path) {
 }
 async function exec(command, args) {
   const result = await (0, import_exec.getExecOutput)(command, args, {
+    silent: true,
     ignoreReturnCode: true
   });
   if (result.exitCode !== 0) {
-    (0, import_core.warning)(`STDOUT:
-${result.stdout}
-STDERR:
-${result.stderr}`);
+    (0, import_core.warning)([
+      result.stdout.trim(),
+      result.stdout.trim() && result.stderr.trim() ? "\n" : "",
+      result.stderr.trim()
+    ].join(""));
     throw new Error(`Process completed with exit code ${result.exitCode}`);
   }
   return result.stdout;
