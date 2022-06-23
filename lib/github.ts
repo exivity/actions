@@ -347,7 +347,7 @@ export async function review({
   event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT'
   body?: string
 }) {
-  info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
+  info(`Will ${event} PR ${pull_number} of repo ${repo}...`)
 
   const repository = getRepository().fqn
   body = `${body}${body ? '\n\n---\n\n' : ''}\
@@ -385,9 +385,7 @@ export async function writeStatus({
   description?: string
   target_url?: string
 }) {
-  info(
-    `Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`
-  )
+  info(`Writing ${state} commit status for ${sha} of repo ${repo}`)
 
   return (
     await octokit.rest.repos.createCommitStatus({
@@ -418,7 +416,7 @@ export async function dispatchWorkflow({
   inputs?: { [key: string]: string }
 }) {
   info(
-    `Calling GitHub API to dispatch workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:\n${JSON.stringify(
+    `Dispatching workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:\n${JSON.stringify(
       inputs,
       undefined,
       2
@@ -427,7 +425,7 @@ export async function dispatchWorkflow({
 
   // Create workflow-dispatch event
   // See: https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event
-  return await octokit.request(
+  return octokit.request(
     'POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches',
     {
       owner,
@@ -437,4 +435,26 @@ export async function dispatchWorkflow({
       inputs,
     }
   )
+}
+
+export async function createLightweightTag({
+  octokit,
+  owner,
+  repo,
+  tag,
+  sha,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  tag: string
+  sha: string
+}) {
+  info(`Creating lightweight tag "${tag}" on ${owner}:${repo}@${sha}...`)
+  return octokit.rest.git.createRef({
+    owner,
+    repo,
+    ref: `refs/tags/${tag}`,
+    sha,
+  })
 }

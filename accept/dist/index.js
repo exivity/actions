@@ -32911,7 +32911,7 @@ async function review({
   event,
   body
 }) {
-  (0, import_core2.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
+  (0, import_core2.info)(`Will ${event} PR ${pull_number} of repo ${repo}...`);
   const repository = getRepository().fqn;
   body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${getWorkflowName()}** workflow in **${repository}**](https://github.com/${repository}/actions/runs/${import_utils.context.runId})_`;
   return (await octokit.rest.pulls.createReview({
@@ -32932,7 +32932,7 @@ async function writeStatus({
   description,
   target_url
 }) {
-  (0, import_core2.info)(`Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`);
+  (0, import_core2.info)(`Writing ${state} commit status for ${sha} of repo ${repo}`);
   return (await octokit.rest.repos.createCommitStatus({
     owner,
     repo,
@@ -32951,9 +32951,9 @@ async function dispatchWorkflow({
   ref,
   inputs
 }) {
-  (0, import_core2.info)(`Calling GitHub API to dispatch workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:
+  (0, import_core2.info)(`Dispatching workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:
 ${JSON.stringify(inputs, void 0, 2)}`);
-  return await octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
+  return octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
     owner,
     repo,
     workflow_id,

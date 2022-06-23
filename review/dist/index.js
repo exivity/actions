@@ -7007,7 +7007,7 @@ async function review({
   event,
   body
 }) {
-  (0, import_core.info)(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`);
+  (0, import_core.info)(`Will ${event} PR ${pull_number} of repo ${repo}...`);
   const repository = getRepository().fqn;
   body = `${body}${body ? "\n\n---\n\n" : ""}_Automated review from [**${getWorkflowName()}** workflow in **${repository}**](https://github.com/${repository}/actions/runs/${import_utils.context.runId})_`;
   return (await octokit.rest.pulls.createReview({

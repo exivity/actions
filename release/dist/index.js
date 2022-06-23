@@ -10406,14 +10406,29 @@ async function dispatchWorkflow({
   ref,
   inputs
 }) {
-  (0, import_core2.info)(`Calling GitHub API to dispatch workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:
+  (0, import_core2.info)(`Dispatching workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:
 ${JSON.stringify(inputs, void 0, 2)}`);
-  return await octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
+  return octokit.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
     owner,
     repo,
     workflow_id,
     ref,
     inputs
+  });
+}
+async function createLightweightTag({
+  octokit,
+  owner,
+  repo,
+  tag,
+  sha
+}) {
+  (0, import_core2.info)(`Creating lightweight tag "${tag}" on ${owner}:${repo}@${sha}...`);
+  return octokit.rest.git.createRef({
+    owner,
+    repo,
+    ref: `refs/tags/${tag}`,
+    sha
   });
 }
 
@@ -10513,7 +10528,7 @@ function parseCommitMessage(message) {
 var import_exec2 = __toESM(require_exec());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
-async function execGit(command, args, silent = false) {
+async function execGit(command, args, silent = true) {
   return (await (0, import_exec2.getExecOutput)(command, args, { silent })).stdout;
 }
 async function getAllTags() {
@@ -10881,7 +10896,20 @@ async function release({
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_core4.info)(`Pushed tag ${lockfile.version}`);
+    (0, import_core4.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+  }
+  for (const [repository2, sha] of Object.entries(lockfile.repositories)) {
+    if (dryRun) {
+      (0, import_core4.info)(`Dry run, not tagging ${repository2}`);
+    } else {
+      await createLightweightTag({
+        octokit,
+        owner: "exivity",
+        repo: repository2,
+        tag: lockfile.version,
+        sha
+      });
+    }
   }
 }
 

@@ -3,7 +3,12 @@ import { getOctokit } from '@actions/github'
 import { readFile } from 'fs/promises'
 import { Repositories } from '.'
 import { gitPushTags, gitTag } from '../../lib/git'
-import { getEventData, getEventName, getRepository } from '../../lib/github'
+import {
+  createLightweightTag,
+  getEventData,
+  getEventName,
+  getRepository,
+} from '../../lib/github'
 import { Lockfile } from './types'
 
 export async function release({
@@ -45,6 +50,21 @@ export async function release({
   } else {
     await gitTag(lockfile.version)
     await gitPushTags()
-    info(`Pushed tag ${lockfile.version}`)
+    info(`Pushed tag ${lockfile.version} to ${repository.fqn}`)
+  }
+
+  // Tag repositories in lockfile
+  for (const [repository, sha] of Object.entries(lockfile.repositories)) {
+    if (dryRun) {
+      info(`Dry run, not tagging ${repository}`)
+    } else {
+      await createLightweightTag({
+        octokit,
+        owner: 'exivity',
+        repo: repository,
+        tag: lockfile.version,
+        sha,
+      })
+    }
   }
 }

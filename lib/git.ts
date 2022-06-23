@@ -2,11 +2,7 @@ import { getExecOutput } from '@actions/exec'
 import { EOL } from 'os'
 import semver from 'semver'
 
-export async function execGit(
-  command: string,
-  args?: string[],
-  silent = false
-) {
+export async function execGit(command: string, args?: string[], silent = true) {
   return (await getExecOutput(command, args, { silent })).stdout
 }
 
