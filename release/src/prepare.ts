@@ -20,37 +20,13 @@ import {
   getPrFromRef,
   getRepository,
 } from '../../lib/github'
-
-type ChangelogType = 'feat' | 'fix' | 'chore'
-
-type ChangelogItem = {
-  repository: string
-  sha: string
-  author: string
-  date: string
-  type: ChangelogType
-  breaking: boolean
-  title: string
-  description?: string
-  issues?: string[]
-}
-
-type VersionIncrement = 'major' | 'minor' | 'patch'
-
-type Commit = Awaited<ReturnType<typeof getCommit>> & {
-  repository: string
-}
-
-type Lockfile = {
-  version: string
-  repositories: {
-    [repository: string]: string
-  }
-}
-
-const LOCKFILE_PATH = 'exivity.lock'
-const CHANGELOG_PATH = 'CHANGELOG.md'
-const UPCOMING_RELEASE_BRANCH = 'chore/upcoming-release'
+import {
+  ChangelogItem,
+  ChangelogType,
+  Commit,
+  Lockfile,
+  VersionIncrement,
+} from './types'
 
 async function getLatestVersion() {
   const repo = getRepository()
@@ -128,17 +104,21 @@ async function createOrUpdatePullRequest({
   title,
   prTemplate,
   changelogContents,
+  upcomingReleaseBranch,
+  releaseBranch,
 }: {
   octokit: ReturnType<typeof getOctokit>
   title: string
   prTemplate: string
   changelogContents: string[]
+  upcomingReleaseBranch: string
+  releaseBranch: string
 }) {
   const existingPullRequest = await getPrFromRef({
     octokit,
     owner: 'exivity',
     repo: getRepository().repo,
-    ref: UPCOMING_RELEASE_BRANCH,
+    ref: upcomingReleaseBranch,
   })
   const body = prTemplate.replace(
     '<!-- CHANGELOG_CONTENTS -->',
@@ -160,8 +140,8 @@ async function createOrUpdatePullRequest({
       repo: getRepository().repo,
       title,
       body,
-      head: UPCOMING_RELEASE_BRANCH,
-      base: DEFAULT_REPOSITORY_RELEASE_BRANCH,
+      head: upcomingReleaseBranch,
+      base: releaseBranch,
     })
     info(`Opened pull request #${pr.data.number}`)
     return pr.data
@@ -284,13 +264,21 @@ function byType(a: ChangelogItem, b: ChangelogItem) {
 
 export async function prepare({
   octokit,
+  lockfilePath,
+  changelogPath,
   repositoriesJsonPath,
   prTemplatePath,
+  upcomingReleaseBranch,
+  releaseBranch,
   dryRun,
 }: {
   octokit: ReturnType<typeof getOctokit>
+  lockfilePath: string
+  changelogPath: string
   repositoriesJsonPath: string
   prTemplatePath: string
+  upcomingReleaseBranch: string
+  releaseBranch: string
   dryRun: boolean
 }) {
   // Initial variables
@@ -407,36 +395,33 @@ export async function prepare({
   } else if (await gitHasChanges()) {
     info('Detected uncommitted changes, aborting')
   } else {
-    await gitForceSwitchBranch(
-      UPCOMING_RELEASE_BRANCH,
-      `origin/${DEFAULT_REPOSITORY_RELEASE_BRANCH}`
-    )
+    await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`)
   }
 
   // Write lockfile
   if (dryRun) {
     info(`Dry run, not writing lockfile`)
   } else {
-    await writeFile(LOCKFILE_PATH, JSON.stringify(lockfile, null, 2) + '\n')
-    info(`Written lockfile to: ${LOCKFILE_PATH}`)
+    await writeFile(lockfilePath, JSON.stringify(lockfile, null, 2) + '\n')
+    info(`Written lockfile to: ${lockfilePath}`)
   }
 
   // Write CHANGELOG.md
-  const currentContents = existsSync(CHANGELOG_PATH)
-    ? await readFile(CHANGELOG_PATH, 'utf8')
+  const currentContents = existsSync(changelogPath)
+    ? await readFile(changelogPath, 'utf8')
     : '# Changelog\n\n'
   const changelogContents = buildChangelog(upcomingVersion, changelog)
   if (dryRun) {
     info(`Dry run, not writing changelog`)
   } else {
     await writeFile(
-      CHANGELOG_PATH,
+      changelogPath,
       currentContents.replace(
         '# Changelog\n\n',
         `# Changelog\n\n${changelogContents.join('\n')}\n\n`
       )
     )
-    info(`Written changelog to: ${CHANGELOG_PATH}`)
+    info(`Written changelog to: ${changelogPath}`)
   }
 
   // Commit and push changes
@@ -448,7 +433,7 @@ export async function prepare({
     await gitSetAuthor('Exivity bot', 'bot@exivity.com')
     await gitCommit(title)
     await gitPush(true)
-    info(`Written changes to branch: ${UPCOMING_RELEASE_BRANCH}`)
+    info(`Written changes to branch: ${upcomingReleaseBranch}`)
   }
 
   // Create or update pull request
@@ -460,6 +445,8 @@ export async function prepare({
       title,
       prTemplate,
       changelogContents,
+      upcomingReleaseBranch,
+      releaseBranch,
     })
     info(pr.html_url)
   }

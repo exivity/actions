@@ -756,12 +756,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info5 = this._prepareRequest(verb, parsedUrl, headers);
+          let info6 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info5, data);
+            response = yield this.requestRaw(info6, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -771,7 +771,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info5, data);
+                return authenticationHandler.handleAuthentication(this, info6, data);
               } else {
                 return response;
               }
@@ -794,8 +794,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info5 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info5, data);
+              info6 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info6, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -816,7 +816,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info5, data) {
+      requestRaw(info6, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -828,16 +828,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info5, data, callbackForResult);
+            this.requestRawWithCallback(info6, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info5, data, onResult) {
+      requestRawWithCallback(info6, data, onResult) {
         if (typeof data === "string") {
-          if (!info5.options.headers) {
-            info5.options.headers = {};
+          if (!info6.options.headers) {
+            info6.options.headers = {};
           }
-          info5.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info6.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -846,7 +846,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info5.httpModule.request(info5.options, (msg) => {
+        const req = info6.httpModule.request(info6.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -858,7 +858,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info5.options.path}`));
+          handleResult(new Error(`Request timeout: ${info6.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -880,27 +880,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info5 = {};
-        info5.parsedUrl = requestUrl;
-        const usingSsl = info5.parsedUrl.protocol === "https:";
-        info5.httpModule = usingSsl ? https : http;
+        const info6 = {};
+        info6.parsedUrl = requestUrl;
+        const usingSsl = info6.parsedUrl.protocol === "https:";
+        info6.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info5.options = {};
-        info5.options.host = info5.parsedUrl.hostname;
-        info5.options.port = info5.parsedUrl.port ? parseInt(info5.parsedUrl.port) : defaultPort;
-        info5.options.path = (info5.parsedUrl.pathname || "") + (info5.parsedUrl.search || "");
-        info5.options.method = method;
-        info5.options.headers = this._mergeHeaders(headers);
+        info6.options = {};
+        info6.options.host = info6.parsedUrl.hostname;
+        info6.options.port = info6.parsedUrl.port ? parseInt(info6.parsedUrl.port) : defaultPort;
+        info6.options.path = (info6.parsedUrl.pathname || "") + (info6.parsedUrl.search || "");
+        info6.options.method = method;
+        info6.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info5.options.headers["user-agent"] = this.userAgent;
+          info6.options.headers["user-agent"] = this.userAgent;
         }
-        info5.options.agent = this._getAgent(info5.parsedUrl);
+        info6.options.agent = this._getAgent(info6.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info5.options);
+            handler.prepareRequest(info6.options);
           }
         }
-        return info5;
+        return info6;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1604,10 +1604,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info5(message) {
+    function info6(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info5;
+    exports.info = info6;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -10301,8 +10301,8 @@ __export(src_exports, {
   DEFAULT_REPOSITORY_RELEASE_BRANCH: () => DEFAULT_REPOSITORY_RELEASE_BRANCH
 });
 module.exports = __toCommonJS(src_exports);
-var import_core4 = __toESM(require_core());
-var import_github3 = __toESM(require_github());
+var import_core5 = __toESM(require_core());
+var import_github4 = __toESM(require_github());
 
 // lib/core.ts
 var import_core = __toESM(require_core());
@@ -10352,6 +10352,23 @@ function getToken(inputName = "gh-token") {
     throw new Error("The GitHub token is missing");
   }
   return ghToken;
+}
+function getEventName(supportedEvents) {
+  const eventName = import_utils.context.eventName;
+  if (!eventName) {
+    throw new Error("The GitHub event name is missing");
+  }
+  if (supportedEvents && !supportedEvents.includes(eventName)) {
+    throw new Error(`The event ${eventName} is not supported by this action`);
+  }
+  return eventName;
+}
+function getEventData(eventName) {
+  const payload = import_utils.context.payload;
+  if (Object.keys(payload).length === 0) {
+    throw new Error("The GitHub event payload is missing");
+  }
+  return payload;
 }
 async function getCommit({
   octokit,
@@ -10496,7 +10513,7 @@ function parseCommitMessage(message) {
 var import_exec2 = __toESM(require_exec());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
-async function execGit(command, args, silent = true) {
+async function execGit(command, args, silent = false) {
   return (await (0, import_exec2.getExecOutput)(command, args, { silent })).stdout;
 }
 async function getAllTags() {
@@ -10527,14 +10544,17 @@ async function gitPush(force = false) {
   await execGit("git config --global push.default current");
   return execGit("git push --set-upstream", [force ? "--force" : ""]);
 }
+async function gitPushTags() {
+  return execGit("git push --tags");
+}
 async function gitHasChanges() {
   return (await execGit("git status --porcelain")).length > 0;
 }
+async function gitTag(tag) {
+  return execGit(`git tag`, [tag]);
+}
 
 // release/src/prepare.ts
-var LOCKFILE_PATH = "exivity.lock";
-var CHANGELOG_PATH = "CHANGELOG.md";
-var UPCOMING_RELEASE_BRANCH = "chore/upcoming-release";
 async function getLatestVersion() {
   const repo = getRepository();
   const latestVersionTag = await getLatestSemverTag();
@@ -10586,13 +10606,15 @@ async function createOrUpdatePullRequest({
   octokit,
   title,
   prTemplate,
-  changelogContents
+  changelogContents,
+  upcomingReleaseBranch,
+  releaseBranch
 }) {
   const existingPullRequest = await getPrFromRef({
     octokit,
     owner: "exivity",
     repo: getRepository().repo,
-    ref: UPCOMING_RELEASE_BRANCH
+    ref: upcomingReleaseBranch
   });
   const body = prTemplate.replace("<!-- CHANGELOG_CONTENTS -->", changelogContents.join("\n"));
   if (existingPullRequest) {
@@ -10611,8 +10633,8 @@ async function createOrUpdatePullRequest({
       repo: getRepository().repo,
       title,
       body,
-      head: UPCOMING_RELEASE_BRANCH,
-      base: DEFAULT_REPOSITORY_RELEASE_BRANCH
+      head: upcomingReleaseBranch,
+      base: releaseBranch
     });
     (0, import_console2.info)(`Opened pull request #${pr.data.number}`);
     return pr.data;
@@ -10704,8 +10726,12 @@ function byType(a, b) {
 }
 async function prepare({
   octokit,
+  lockfilePath,
+  changelogPath,
   repositoriesJsonPath,
   prTemplatePath,
+  upcomingReleaseBranch,
+  releaseBranch,
   dryRun
 }) {
   let changelog = [];
@@ -10781,25 +10807,25 @@ async function prepare({
   } else if (await gitHasChanges()) {
     (0, import_console2.info)("Detected uncommitted changes, aborting");
   } else {
-    await gitForceSwitchBranch(UPCOMING_RELEASE_BRANCH, `origin/${DEFAULT_REPOSITORY_RELEASE_BRANCH}`);
+    await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`);
   }
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing lockfile`);
   } else {
-    await (0, import_promises.writeFile)(LOCKFILE_PATH, JSON.stringify(lockfile, null, 2) + "\n");
-    (0, import_console2.info)(`Written lockfile to: ${LOCKFILE_PATH}`);
+    await (0, import_promises.writeFile)(lockfilePath, JSON.stringify(lockfile, null, 2) + "\n");
+    (0, import_console2.info)(`Written lockfile to: ${lockfilePath}`);
   }
-  const currentContents = (0, import_fs.existsSync)(CHANGELOG_PATH) ? await (0, import_promises.readFile)(CHANGELOG_PATH, "utf8") : "# Changelog\n\n";
+  const currentContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
   const changelogContents = buildChangelog(upcomingVersion, changelog);
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing changelog`);
   } else {
-    await (0, import_promises.writeFile)(CHANGELOG_PATH, currentContents.replace("# Changelog\n\n", `# Changelog
+    await (0, import_promises.writeFile)(changelogPath, currentContents.replace("# Changelog\n\n", `# Changelog
 
 ${changelogContents.join("\n")}
 
 `));
-    (0, import_console2.info)(`Written changelog to: ${CHANGELOG_PATH}`);
+    (0, import_console2.info)(`Written changelog to: ${changelogPath}`);
   }
   const title = `chore: release ${upcomingVersion}`;
   if (dryRun) {
@@ -10809,7 +10835,7 @@ ${changelogContents.join("\n")}
     await gitSetAuthor("Exivity bot", "bot@exivity.com");
     await gitCommit(title);
     await gitPush(true);
-    (0, import_console2.info)(`Written changes to branch: ${UPCOMING_RELEASE_BRANCH}`);
+    (0, import_console2.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
   }
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not creating pull request`);
@@ -10818,17 +10844,45 @@ ${changelogContents.join("\n")}
       octokit,
       title,
       prTemplate,
-      changelogContents
+      changelogContents,
+      upcomingReleaseBranch,
+      releaseBranch
     });
     (0, import_console2.info)(pr.html_url);
   }
 }
 
 // release/src/release.ts
+var import_core4 = __toESM(require_core());
+var import_promises2 = require("fs/promises");
 async function release({
   octokit,
+  lockfilePath,
+  repositoriesJsonPath,
   dryRun
 }) {
+  const eventName = getEventName(["push"]);
+  const eventData = getEventData(eventName);
+  const repository = getRepository();
+  let repositories;
+  try {
+    repositories = JSON.parse(await (0, import_promises2.readFile)(repositoriesJsonPath, "utf8"));
+  } catch (error) {
+    throw new Error(`Can't read "${repositoriesJsonPath}" or it's not valid JSON`);
+  }
+  let lockfile;
+  try {
+    lockfile = JSON.parse(await (0, import_promises2.readFile)(lockfilePath, "utf8"));
+  } catch (error) {
+    throw new Error(`Can't read "${lockfilePath}" or it's not valid JSON`);
+  }
+  if (dryRun) {
+    (0, import_core4.info)(`Dry run, not tagging ${repository.fqn}`);
+  } else {
+    await gitTag(lockfile.version);
+    await gitPushTags();
+    (0, import_core4.info)(`Pushed tag ${lockfile.version}`);
+  }
 }
 
 // release/src/index.ts
@@ -10837,27 +10891,40 @@ var ModePrepare = "prepare";
 var ModeRelease = "release";
 var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
 async function run() {
-  const mode = (0, import_core4.getInput)("mode");
-  const repositoriesJsonPath = (0, import_core4.getInput)("repositories");
-  const prTemplatePath = (0, import_core4.getInput)("pr-template");
+  const mode = (0, import_core5.getInput)("mode");
+  const lockfilePath = (0, import_core5.getInput)("lockfile");
+  const changelogPath = (0, import_core5.getInput)("changelog");
+  const repositoriesJsonPath = (0, import_core5.getInput)("repositories");
+  const prTemplatePath = (0, import_core5.getInput)("pr-template");
+  const upcomingReleaseBranch = (0, import_core5.getInput)("upcoming-release-branch");
+  const releaseBranch = (0, import_core5.getInput)("release-branch");
   const dryRun = getBooleanInput("dry-run", false);
   const ghToken = getToken();
-  const octokit = (0, import_github3.getOctokit)(ghToken);
+  const octokit = (0, import_github4.getOctokit)(ghToken);
   switch (mode) {
     case ModePing:
       await ping({ octokit, dryRun });
       break;
     case ModePrepare:
-      await prepare({ octokit, repositoriesJsonPath, prTemplatePath, dryRun });
+      await prepare({
+        octokit,
+        lockfilePath,
+        changelogPath,
+        repositoriesJsonPath,
+        prTemplatePath,
+        upcomingReleaseBranch,
+        releaseBranch,
+        dryRun
+      });
       break;
     case ModeRelease:
-      await release({ octokit, dryRun });
+      await release({ octokit, lockfilePath, repositoriesJsonPath, dryRun });
       break;
     default:
       throw new Error(`Unknown mode "${mode}"`);
   }
 }
-run().catch(import_core4.setFailed);
+run().catch(import_core5.setFailed);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   DEFAULT_REPOSITORY_RELEASE_BRANCH

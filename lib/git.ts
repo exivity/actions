@@ -2,7 +2,11 @@ import { getExecOutput } from '@actions/exec'
 import { EOL } from 'os'
 import semver from 'semver'
 
-export async function execGit(command: string, args?: string[], silent = true) {
+export async function execGit(
+  command: string,
+  args?: string[],
+  silent = false
+) {
   return (await getExecOutput(command, args, { silent })).stdout
 }
 
@@ -62,6 +66,10 @@ export async function gitPush(force = false) {
   return execGit('git push --set-upstream', [force ? '--force' : ''])
 }
 
+export async function gitPushTags() {
+  return execGit('git push --tags')
+}
+
 export async function gitHasChanges() {
   return (await execGit('git status --porcelain')).length > 0
 }
@@ -72,4 +80,8 @@ export async function gitGetLatestCommitInBranch(branch: string) {
 
 export async function gitHardReset(commit: string) {
   return execGit(`git reset --hard ${commit}`)
+}
+
+export async function gitTag(tag: string) {
+  return execGit(`git tag`, [tag])
 }

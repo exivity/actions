@@ -21,8 +21,12 @@ export const DEFAULT_REPOSITORY_RELEASE_BRANCH = 'main'
 async function run() {
   // Input
   const mode = getInput('mode')
+  const lockfilePath = getInput('lockfile')
+  const changelogPath = getInput('changelog')
   const repositoriesJsonPath = getInput('repositories')
   const prTemplatePath = getInput('pr-template')
+  const upcomingReleaseBranch = getInput('upcoming-release-branch')
+  const releaseBranch = getInput('release-branch')
   const dryRun = getBooleanInput('dry-run', false)
   const ghToken = getToken()
 
@@ -37,12 +41,21 @@ async function run() {
 
     case ModePrepare:
       // Act
-      await prepare({ octokit, repositoriesJsonPath, prTemplatePath, dryRun })
+      await prepare({
+        octokit,
+        lockfilePath,
+        changelogPath,
+        repositoriesJsonPath,
+        prTemplatePath,
+        upcomingReleaseBranch,
+        releaseBranch,
+        dryRun,
+      })
       break
 
     case ModeRelease:
       // Act
-      await release({ octokit, dryRun })
+      await release({ octokit, lockfilePath, repositoriesJsonPath, dryRun })
       break
 
     default:

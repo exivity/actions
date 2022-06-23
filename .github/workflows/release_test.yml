@@ -37,6 +37,8 @@ jobs:
           mode: prepare
           # @todo change to true
           dry-run: false
+          lockfile: fixtures/release/exivity.lock
+          changelog: fixtures/release/CHANGELOG.md
           repositories: fixtures/release/repositories.json
           pr-template: fixtures/release/NEW_RELEASE_PR_TEMPLATE.md
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
@@ -56,4 +58,6 @@ jobs:
           mode: release
           # @todo change to true
           dry-run: false
+          lockfile: fixtures/release/exivity.lock
+          repositories: fixtures/release/repositories.json
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
