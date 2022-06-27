@@ -517,3 +517,65 @@ export async function createLightweightTag({
     sha,
   })
 }
+
+export async function getAssociatedPullRequest({
+  octokit,
+  owner,
+  repo,
+  sha,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  sha: string
+}) {
+  // Obtain the the commits most recent associated pull requests
+  try {
+    const associatedPRs = await octokit.graphql<{
+      repository: {
+        commit: {
+          associatedPullRequests: {
+            edges: {
+              node: {
+                number: number
+                title: string
+                body: string
+              }
+            }[]
+          }
+        }
+      }
+    }>(
+      `
+query ($sha: String!, $repo: String!, $owner: String!) {
+  repository(name: $repo, owner: $owner) {
+    commit: object(expression: $sha) {
+      ... on Commit {
+        associatedPullRequests(first: 1) {
+          edges {
+            node {
+              number
+              title
+              body
+            }
+          }
+        }
+      }
+    }
+  }
+}
+      `,
+      {
+        owner,
+        repo,
+        sha,
+      }
+    )
+
+    return associatedPRs.repository.commit.associatedPullRequests.edges[0].node
+  } catch (err: any) {
+    throw new Error(
+      `Failed to fetch associated pull requests for ${owner}:${repo}@${sha}`
+    )
+  }
+}

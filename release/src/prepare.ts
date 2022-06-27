@@ -12,6 +12,7 @@ import {
   gitSetAuthor,
 } from '../../lib/git'
 import { getCommitForTag, getCommitsSince } from '../../lib/github'
+import { runPlugins } from './changelogPlugins'
 import {
   buildChangelog,
   byDate,
@@ -90,6 +91,10 @@ export async function prepare({
     })
   }
 
+  // Run changelog plugins
+  changelog = await runPlugins({ octokit, changelog })
+
+  // If there are no items in the changelog, we have nothing to release
   if (changelog.length === 0) {
     info(`Nothing to release`)
     return

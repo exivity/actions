@@ -10292,7 +10292,7 @@ var require_semver2 = __commonJS({
 
 // release/src/index.ts
 var import_core9 = __toESM(require_core());
-var import_github6 = __toESM(require_github());
+var import_github7 = __toESM(require_github());
 
 // lib/core.ts
 var import_core = __toESM(require_core());
@@ -10476,6 +10476,41 @@ async function createLightweightTag({
     sha
   });
 }
+async function getAssociatedPullRequest({
+  octokit,
+  owner,
+  repo,
+  sha
+}) {
+  try {
+    const associatedPRs = await octokit.graphql(`
+query ($sha: String!, $repo: String!, $owner: String!) {
+  repository(name: $repo, owner: $owner) {
+    commit: object(expression: $sha) {
+      ... on Commit {
+        associatedPullRequests(first: 1) {
+          edges {
+            node {
+              number
+              title
+              body
+            }
+          }
+        }
+      }
+    }
+  }
+}
+      `, {
+      owner,
+      repo,
+      sha
+    });
+    return associatedPRs.repository.commit.associatedPullRequests.edges[0].node;
+  } catch (err) {
+    throw new Error(`Failed to fetch associated pull requests for ${owner}:${repo}@${sha}`);
+  }
+}
 
 // release/src/ping.ts
 var import_console = require("console");
@@ -10552,6 +10587,37 @@ async function getLatestVersion() {
   }
   (0, import_core3.info)(`Latest version in ${repo.fqn}: ${latestVersionTag}`);
   return latestVersionTag;
+}
+
+// release/src/changelogPlugins/associatedPullRequest.ts
+async function associatedPullRequest({
+  octokit,
+  changelog
+}) {
+  for (const item of changelog) {
+    const associatedPullRequest2 = await getAssociatedPullRequest({
+      octokit,
+      owner: "exivity",
+      repo: item.repository,
+      sha: item.sha
+    });
+    console.log(associatedPullRequest2);
+  }
+  return changelog;
+}
+
+// release/src/changelogPlugins/jira.ts
+async function jiraPlugin({ octokit, changelog }) {
+  return changelog;
+}
+
+// release/src/changelogPlugins/index.ts
+var plugins = [associatedPullRequest, jiraPlugin];
+async function runPlugins({ octokit, changelog }) {
+  for (const plugin of plugins) {
+    changelog = await plugin({ octokit, changelog });
+  }
+  return changelog;
 }
 
 // lib/conventionalCommits.ts
@@ -10838,6 +10904,7 @@ async function prepare({
       changelog.push(createChangelogItemFromCommit(commit));
     });
   }
+  changelog = await runPlugins({ octokit, changelog });
   if (changelog.length === 0) {
     (0, import_console2.info)(`Nothing to release`);
     return;
@@ -10949,7 +11016,7 @@ async function run() {
   const releaseBranch = (0, import_core9.getInput)("release-branch");
   const dryRun = getBooleanInput("dry-run", false);
   const ghToken = getToken();
-  const octokit = (0, import_github6.getOctokit)(ghToken);
+  const octokit = (0, import_github7.getOctokit)(ghToken);
   switch (mode) {
     case ModePing:
       await ping({ octokit, dryRun });
