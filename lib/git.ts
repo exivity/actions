@@ -1,6 +1,8 @@
+import { info } from '@actions/core'
 import { EOL } from 'os'
 import semver from 'semver'
 import { exec } from './core'
+import { getRepository } from './github'
 
 export async function getCommitMessage() {
   return exec('git log -1 --pretty=format:"%s"')
@@ -76,4 +78,15 @@ export async function gitHardReset(commit: string) {
 
 export async function gitTag(tag: string) {
   return exec(`git tag`, [tag])
+}
+
+export async function getLatestVersion() {
+  const repo = getRepository()
+  const latestVersionTag = await getLatestSemverTag()
+  if (typeof latestVersionTag === 'undefined') {
+    throw new Error('Could not determine latest version')
+  }
+  info(`Latest version in ${repo.fqn}: ${latestVersionTag}`)
+
+  return latestVersionTag
 }

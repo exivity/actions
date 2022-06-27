@@ -2,11 +2,8 @@ import { getOctokit } from '@actions/github'
 import { info } from 'console'
 import { existsSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
-import semver from 'semver'
-import { DEFAULT_REPOSITORY_RELEASE_BRANCH, Repositories } from '.'
-import { parseCommitMessage } from '../../lib/conventionalCommits'
 import {
-  getLatestSemverTag,
+  getLatestVersion,
   gitAdd,
   gitCommit,
   gitForceSwitchBranch,
@@ -14,253 +11,19 @@ import {
   gitPush,
   gitSetAuthor,
 } from '../../lib/git'
+import { getCommitForTag, getCommitsSince } from '../../lib/github'
 import {
-  getCommit,
-  getCommits,
-  getPrFromRef,
-  getRepository,
-} from '../../lib/github'
-import {
-  ChangelogItem,
-  ChangelogType,
-  Commit,
-  Lockfile,
-  VersionIncrement,
-} from './types'
-
-async function getLatestVersion() {
-  const repo = getRepository()
-  const latestVersionTag = await getLatestSemverTag()
-  if (typeof latestVersionTag === 'undefined') {
-    throw new Error('Could not determine latest version')
-  }
-  info(`Latest version in ${repo.fqn}: ${latestVersionTag}`)
-
-  return latestVersionTag
-}
-
-async function getCommitForTag({
-  octokit,
-  repository,
-  tag,
-}: {
-  octokit: ReturnType<typeof getOctokit>
-  repository: string
-  tag: string
-}) {
-  try {
-    const commit = await getCommit({
-      octokit,
-      owner: 'exivity',
-      repo: repository,
-      ref: `tags/${tag}`,
-    })
-    const timestamp = commit.commit.author?.date
-    if (typeof timestamp === 'undefined') {
-      throw new Error(
-        `Could not find timestamp for commit ${commit.sha} in exivity/${repository}...`
-      )
-    }
-    // debug(`  Commit for tag ${tag}: ${commit.sha}`)
-
-    return { ...commit, tag, timestamp }
-  } catch (error: unknown) {
-    throw new Error(`Could not find tag ${tag} in exivity/${repository}...`)
-  }
-}
-
-async function getCommitsSince({
-  octokit,
-  repository,
-  branch,
-  since,
-}: {
-  octokit: ReturnType<typeof getOctokit>
-  repository: string
-  branch: string
-  since: { timestamp: string; tag: string; sha: string }
-}) {
-  const commits = (
-    await getCommits({
-      octokit,
-      owner: 'exivity',
-      repo: repository,
-      sha: branch,
-      since: since.timestamp,
-    })
-  ).filter((commit) => commit.sha !== since.sha)
-  info(
-    `  Found ${commits.length} commits since ${since.tag} in exivity/${repository}#${branch}`
-  )
-  // debug(
-  //   `  See commits: https://github.com/exivity/${repository}/compare/${since.tag}...${branch}`
-  // )
-
-  return commits
-}
-
-async function createOrUpdatePullRequest({
-  octokit,
-  title,
-  prTemplate,
-  changelogContents,
-  upcomingReleaseBranch,
-  releaseBranch,
-}: {
-  octokit: ReturnType<typeof getOctokit>
-  title: string
-  prTemplate: string
-  changelogContents: string[]
-  upcomingReleaseBranch: string
-  releaseBranch: string
-}) {
-  const existingPullRequest = await getPrFromRef({
-    octokit,
-    owner: 'exivity',
-    repo: getRepository().repo,
-    ref: upcomingReleaseBranch,
-  })
-  const body = prTemplate.replace(
-    '<!-- CHANGELOG_CONTENTS -->',
-    changelogContents.join('\n')
-  )
-  if (existingPullRequest) {
-    const pr = await octokit.rest.pulls.update({
-      owner: 'exivity',
-      repo: getRepository().repo,
-      pull_number: existingPullRequest.number,
-      title,
-      body,
-    })
-    info(`Updated pull request #${pr.data.number}`)
-    return pr.data
-  } else {
-    const pr = await octokit.rest.pulls.create({
-      owner: 'exivity',
-      repo: getRepository().repo,
-      title,
-      body,
-      head: upcomingReleaseBranch,
-      base: releaseBranch,
-    })
-    info(`Opened pull request #${pr.data.number}`)
-    return pr.data
-  }
-}
-
-function createNote(commit: Commit) {
-  const commitMessageLines = commit.commit.message.split('\n')
-  const commitTitle = commitMessageLines[0]
-  const commitDescription = commitMessageLines.slice(1).join('\n')
-
-  const parsed = parseCommitMessage(commitTitle)
-  let type: ChangelogType
-  switch (true) {
-    case parsed.type?.toLowerCase() === 'feat':
-    case parsed.type?.toLowerCase() === 'feature':
-      type = 'feat'
-      break
-
-    case parsed.type?.toLowerCase() === 'fix':
-    case parsed.type?.toLowerCase() === 'bugfix':
-      type = 'fix'
-      break
-
-    default:
-      type = 'chore'
-  }
-
-  return {
-    repository: commit.repository,
-    sha: commit.sha,
-    author:
-      commit.author?.login ||
-      commit.author?.name ||
-      commit.author?.login ||
-      'unknown author',
-    date:
-      commit.commit.author?.date ||
-      commit.commit.committer?.date ||
-      'unknown date',
-    type,
-    breaking: parsed.breaking || false,
-    title: parsed.description || commitTitle,
-    description: commitDescription,
-    issues: [],
-  } as ChangelogItem
-}
-
-function buildChangelogItem(changelogItem: ChangelogItem) {
-  let result: string = `- **${changelogItem.title}**`
-  if (changelogItem.description) {
-    result += `\n  ${changelogItem.description.split('\n').join('\n  ')}`
-  }
-
-  return result
-}
-
-function buildChangelogSection(
-  header: string,
-  changelogItems: ChangelogItem[]
-) {
-  if (changelogItems.length === 0) {
-    return []
-  }
-
-  return [`### ${header}`, '', ...changelogItems.map(buildChangelogItem)]
-}
-
-function buildChangelogItems(changelogItems: ChangelogItem[]) {
-  return [
-    ...buildChangelogSection(
-      'New features',
-      changelogItems.filter((item) => item.type === 'feat')
-    ),
-    '',
-    ...buildChangelogSection(
-      'Bug fixes',
-      changelogItems.filter((item) => item.type === 'fix')
-    ),
-    '',
-    '',
-  ]
-}
-
-function buildChangelogHeader(version: string) {
-  return [`## ${version}`, '']
-}
-
-function buildChangelog(version: string, changelogItems: ChangelogItem[]) {
-  return [
-    ...buildChangelogHeader(version),
-    ...buildChangelogItems(changelogItems),
-  ]
-}
-
-function noChores(changelogItem: ChangelogItem) {
-  return changelogItem.type !== 'chore'
-}
-
-function byDate(a: ChangelogItem, b: ChangelogItem) {
-  if (a.date < b.date) {
-    return -1
-  }
-  if (a.date > b.date) {
-    return 1
-  }
-  return 0
-}
-
-function byType(a: ChangelogItem, b: ChangelogItem) {
-  // Sort notes by type, feat first, then fix
-  if (a.type < b.type) {
-    return -1
-  }
-  if (a.type > b.type) {
-    return 1
-  }
-  return 0
-}
+  buildChangelog,
+  byDate,
+  byType,
+  createChangelogItemFromCommit,
+  noChores,
+} from './common/changelog'
+import { DEFAULT_REPOSITORY_RELEASE_BRANCH } from './common/consts'
+import { readRepositories, readTextFile } from './common/files'
+import { createOrUpdatePullRequest } from './common/pr'
+import { ChangelogItem, Commit, Lockfile } from './common/types'
+import { inferVersionFromChangelog } from './common/version'
 
 export async function prepare({
   octokit,
@@ -283,28 +46,10 @@ export async function prepare({
 }) {
   // Initial variables
   let changelog: ChangelogItem[] = []
-  let upcomingVersionIncrement: VersionIncrement = 'patch'
-  let upcomingVersion: string | null
   const pendingCommits: Commit[] = []
   const lockfile: Lockfile = { version: '', repositories: {} }
-
-  let repositories: Repositories
-  try {
-    repositories = JSON.parse(await readFile(repositoriesJsonPath, 'utf8'))
-  } catch (error: unknown) {
-    throw new Error(
-      `Can't read "${repositoriesJsonPath}" or it's not valid JSON`
-    )
-  }
-
-  let prTemplate: string
-  try {
-    prTemplate = await readFile(prTemplatePath, 'utf8')
-  } catch (error: unknown) {
-    throw new Error(`Can't read "${prTemplatePath}"`)
-  }
-
-  // Get latest version of current repository
+  const repositories = await readRepositories(repositoriesJsonPath)
+  const prTemplate = await readTextFile(prTemplatePath)
   const latestVersion = await getLatestVersion()
 
   // Iterate over repositories
@@ -314,14 +59,16 @@ export async function prepare({
     // Find commit for latest version tag in target repository
     const latestVersionCommit = await getCommitForTag({
       octokit,
-      repository,
+      owner: 'exivity',
+      repo: repository,
       tag: latestVersion,
     })
 
     // Get a list of commits from the last version
     const repoCommits = await getCommitsSince({
       octokit,
-      repository,
+      owner: 'exivity',
+      repo: repository,
       branch:
         repositoryOptions.releaseBranch || DEFAULT_REPOSITORY_RELEASE_BRANCH,
       since: latestVersionCommit,
@@ -339,7 +86,7 @@ export async function prepare({
       pendingCommits.push(commit)
 
       // Add to notes
-      changelog.push(createNote(commit))
+      changelog.push(createChangelogItemFromCommit(commit))
     })
   }
 
@@ -364,29 +111,7 @@ export async function prepare({
   })
 
   // Infer upcoming version increment
-  let incrementDescription: string
-  if (changelog.some((item) => item.breaking)) {
-    incrementDescription = 'major: breaking change detected'
-    upcomingVersionIncrement = 'major'
-  } else if (changelog.some((item) => item.type === 'feat')) {
-    incrementDescription = 'minor: new feature detected'
-    upcomingVersionIncrement = 'minor'
-  } else {
-    incrementDescription = 'patch: only fixes and/or chores detected'
-  }
-
-  // Record upcoming version in lockfile
-  upcomingVersion = semver.inc(latestVersion, upcomingVersionIncrement)
-  if (upcomingVersion === null) {
-    throw new Error(
-      `Could not calculate new version (incremeting ${latestVersion} to ${upcomingVersionIncrement})`
-    )
-  } else {
-    upcomingVersion = `v${upcomingVersion}`
-  }
-  info(
-    `Version increment (${incrementDescription}): ${latestVersion} -> ${upcomingVersion}`
-  )
+  const upcomingVersion = inferVersionFromChangelog(latestVersion, changelog)
   lockfile.version = upcomingVersion
 
   // Switch to upcoming release branch and reset state to current release branch

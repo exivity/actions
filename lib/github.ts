@@ -308,6 +308,36 @@ export async function getCommit({
   ).data
 }
 
+export async function getCommitForTag({
+  octokit,
+  owner,
+  repo,
+  tag,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  tag: string
+}) {
+  try {
+    const commit = await getCommit({
+      octokit,
+      owner,
+      repo,
+      ref: `tags/${tag}`,
+    })
+    const timestamp = commit.commit.author?.date
+    if (typeof timestamp === 'undefined') {
+      throw new Error(
+        `Could not find timestamp for commit ${commit.sha} in ${owner}/${repo}...`
+      )
+    }
+    return { ...commit, tag, timestamp }
+  } catch (error: unknown) {
+    throw new Error(`Could not find tag ${tag} in ${owner}/${repo}...`)
+  }
+}
+
 export async function getCommits({
   octokit,
   owner,
@@ -330,6 +360,35 @@ export async function getCommits({
     since,
     until,
   })
+}
+
+export async function getCommitsSince({
+  octokit,
+  owner,
+  repo,
+  branch,
+  since,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  branch: string
+  since: { timestamp: string; tag: string; sha: string }
+}) {
+  const commits = (
+    await getCommits({
+      octokit,
+      owner,
+      repo,
+      sha: branch,
+      since: since.timestamp,
+    })
+  ).filter((commit) => commit.sha !== since.sha)
+  info(
+    `  Found ${commits.length} commits since ${since.tag} in ${owner}/${repo}#${branch}`
+  )
+
+  return commits
 }
 
 export async function review({

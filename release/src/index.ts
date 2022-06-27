@@ -10,14 +10,6 @@ const ModePing = 'ping'
 const ModePrepare = 'prepare'
 const ModeRelease = 'release'
 
-export type Repositories = {
-  [repository: string]: {
-    releaseBranch?: string
-  }
-}
-
-export const DEFAULT_REPOSITORY_RELEASE_BRANCH = 'main'
-
 async function run() {
   // Input
   const mode = getInput('mode')

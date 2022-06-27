@@ -751,12 +751,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info5 = this._prepareRequest(verb, parsedUrl, headers);
+          let info6 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info5, data);
+            response = yield this.requestRaw(info6, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -766,7 +766,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info5, data);
+                return authenticationHandler.handleAuthentication(this, info6, data);
               } else {
                 return response;
               }
@@ -789,8 +789,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info5 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info5, data);
+              info6 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info6, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -811,7 +811,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info5, data) {
+      requestRaw(info6, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -823,16 +823,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info5, data, callbackForResult);
+            this.requestRawWithCallback(info6, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info5, data, onResult) {
+      requestRawWithCallback(info6, data, onResult) {
         if (typeof data === "string") {
-          if (!info5.options.headers) {
-            info5.options.headers = {};
+          if (!info6.options.headers) {
+            info6.options.headers = {};
           }
-          info5.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info6.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -841,7 +841,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info5.httpModule.request(info5.options, (msg) => {
+        const req = info6.httpModule.request(info6.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -853,7 +853,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info5.options.path}`));
+          handleResult(new Error(`Request timeout: ${info6.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -875,27 +875,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info5 = {};
-        info5.parsedUrl = requestUrl;
-        const usingSsl = info5.parsedUrl.protocol === "https:";
-        info5.httpModule = usingSsl ? https : http;
+        const info6 = {};
+        info6.parsedUrl = requestUrl;
+        const usingSsl = info6.parsedUrl.protocol === "https:";
+        info6.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info5.options = {};
-        info5.options.host = info5.parsedUrl.hostname;
-        info5.options.port = info5.parsedUrl.port ? parseInt(info5.parsedUrl.port) : defaultPort;
-        info5.options.path = (info5.parsedUrl.pathname || "") + (info5.parsedUrl.search || "");
-        info5.options.method = method;
-        info5.options.headers = this._mergeHeaders(headers);
+        info6.options = {};
+        info6.options.host = info6.parsedUrl.hostname;
+        info6.options.port = info6.parsedUrl.port ? parseInt(info6.parsedUrl.port) : defaultPort;
+        info6.options.path = (info6.parsedUrl.pathname || "") + (info6.parsedUrl.search || "");
+        info6.options.method = method;
+        info6.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info5.options.headers["user-agent"] = this.userAgent;
+          info6.options.headers["user-agent"] = this.userAgent;
         }
-        info5.options.agent = this._getAgent(info5.parsedUrl);
+        info6.options.agent = this._getAgent(info6.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info5.options);
+            handler.prepareRequest(info6.options);
           }
         }
-        return info5;
+        return info6;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1599,10 +1599,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info5(message) {
+    function info6(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info5;
+    exports.info = info6;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -10291,11 +10291,12 @@ var require_exec = __commonJS({
 });
 
 // slack/src/index.ts
-var import_core5 = __toESM(require_core());
-var import_github = __toESM(require_github());
+var import_core6 = __toESM(require_core());
+var import_github2 = __toESM(require_github());
 var import_console2 = require("console");
 
 // lib/git.ts
+var import_core3 = __toESM(require_core());
 var import_semver = __toESM(require_semver2());
 
 // lib/core.ts
@@ -10317,19 +10318,8 @@ async function exec(command, args) {
   return result.stdout;
 }
 
-// lib/git.ts
-async function getCommitMessage() {
-  return exec('git log -1 --pretty=format:"%s"');
-}
-async function getCommitAuthorName() {
-  return exec('git log -1 --pretty=format:"%an"');
-}
-async function getCommitAuthorEmail() {
-  return exec('git log -1 --pretty=format:"%ae"');
-}
-
 // lib/github.ts
-var import_core3 = __toESM(require_core());
+var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 var import_console = require("console");
 async function getPrFromRef({
@@ -10386,7 +10376,7 @@ function getRef() {
   throw new Error("The git ref could not be determined");
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core3.getInput)(inputName);
+  const ghToken = (0, import_core2.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
@@ -10410,8 +10400,19 @@ function getEventData(eventName) {
   return payload;
 }
 
+// lib/git.ts
+async function getCommitMessage() {
+  return exec('git log -1 --pretty=format:"%s"');
+}
+async function getCommitAuthorName() {
+  return exec('git log -1 --pretty=format:"%an"');
+}
+async function getCommitAuthorEmail() {
+  return exec('git log -1 --pretty=format:"%ae"');
+}
+
 // slack/src/slack.ts
-var import_core4 = __toESM(require_core());
+var import_core5 = __toESM(require_core());
 var import_http_client = __toESM(require_lib());
 var SLACK_BASE_URL = "https://slack.com/api";
 function toQueryString(params) {
@@ -10437,7 +10438,7 @@ var Slack = class {
     return this.parseResponse(response);
   }
   parseResponse(response) {
-    (0, import_core4.debug)(`Received ${response.statusCode} response from Slack`);
+    (0, import_core5.debug)(`Received ${response.statusCode} response from Slack`);
     if (response.statusCode >= 300) {
       throw new Error("Response status code is not 2xx");
     }
@@ -10453,7 +10454,7 @@ var Slack = class {
     try {
       return (await this.post("chat.postMessage", payload)).message;
     } catch (error) {
-      (0, import_core4.debug)(`Received error from Slack:
+      (0, import_core5.debug)(`Received error from Slack:
 ${JSON.stringify(error), void 0, 2}`);
       throw new Error("Could not send Slack message");
     }
@@ -10466,7 +10467,7 @@ ${JSON.stringify(error), void 0, 2}`);
       this.cachedConversations = (await this.get("conversations.list", payload)).channels;
       return this.cachedConversations;
     } catch (error) {
-      (0, import_core4.debug)(`Received error from Slack:
+      (0, import_core5.debug)(`Received error from Slack:
 ${JSON.stringify(error, void 0, 2)}`);
       throw new Error("Could not retrieve Slack channels");
     }
@@ -10479,14 +10480,14 @@ ${JSON.stringify(error, void 0, 2)}`);
       this.cachedUsers = (await this.get("users.list", payload)).members;
       return this.cachedUsers;
     } catch (error) {
-      (0, import_core4.debug)(`Received error from Slack:
+      (0, import_core5.debug)(`Received error from Slack:
 ${JSON.stringify(error, void 0, 2)}`);
       throw new Error("Could not retrieve Slack users");
     }
   }
   async resolveChannelId(value) {
     if (value.startsWith("@")) {
-      (0, import_core4.info)(`Trying to resolve user ${value}...`);
+      (0, import_core5.info)(`Trying to resolve user ${value}...`);
       const users = await this.usersList({
         limit: 1e3
       });
@@ -10494,7 +10495,7 @@ ${JSON.stringify(error, void 0, 2)}`);
       return (userMatch == null ? void 0 : userMatch.id) || null;
     }
     if (value.startsWith("#")) {
-      (0, import_core4.info)(`Trying to resolve channel ${value}`);
+      (0, import_core5.info)(`Trying to resolve channel ${value}`);
       const channels = await this.conversationsList({
         exclude_archived: false,
         limit: 1e3,
@@ -10520,17 +10521,17 @@ function isValidStatus(status) {
   return validStatuses.includes(status);
 }
 async function run() {
-  const message = (0, import_core5.getInput)("message");
-  const status = (0, import_core5.getInput)("status");
+  const message = (0, import_core6.getInput)("message");
+  const status = (0, import_core6.getInput)("status");
   const { owner, repo, fqn } = getRepository();
   const sha = getSha();
-  const slackApiToken = (0, import_core5.getInput)("slack-api-token", {
+  const slackApiToken = (0, import_core6.getInput)("slack-api-token", {
     required: true
   });
   const token = getToken();
   const ref = getRef();
-  const userProvidedChannel = (0, import_core5.getInput)("channel") || null;
-  const fallbackChannel = (0, import_core5.getInput)("fallback-channel") || null;
+  const userProvidedChannel = (0, import_core6.getInput)("channel") || null;
+  const fallbackChannel = (0, import_core6.getInput)("fallback-channel") || null;
   let channel = null;
   if (!isValidStatus(status)) {
     throw new Error("The status input is invalid");
@@ -10539,7 +10540,7 @@ async function run() {
     throw new Error("The message input is required when status is not set");
   }
   const slack = new Slack(slackApiToken);
-  const octokit = (0, import_github.getOctokit)(token);
+  const octokit = (0, import_github2.getOctokit)(token);
   const commitMessage = await getCommitMessage();
   const authorName = await getCommitAuthorName();
   const authorEmail = await getCommitAuthorEmail();
@@ -10547,7 +10548,7 @@ async function run() {
   const user = await slack.findUserFuzzy([
     authorName,
     authorEmail,
-    import_github.context.actor
+    import_github2.context.actor
   ]);
   if (userProvidedChannel) {
     channel = await slack.resolveChannelId(userProvidedChannel);
@@ -10555,7 +10556,7 @@ async function run() {
     channel = user.id;
   }
   if (!channel) {
-    (0, import_core5.warning)(`Please set the "channel" input or make sure this action can match the author of the commit triggering this workflow to a Slack user (tried with "${authorName}", "${authorEmail}" and "${import_github.context.action}").`);
+    (0, import_core6.warning)(`Please set the "channel" input or make sure this action can match the author of the commit triggering this workflow to a Slack user (tried with "${authorName}", "${authorEmail}" and "${import_github2.context.action}").`);
     (0, import_console2.info)(`This action will try to match the author of the commit using the Slack user attributes "name", "display_name", "real_name" or "email".`);
     if (fallbackChannel) {
       (0, import_console2.info)(`Using fallback channel "${fallbackChannel}"`);
@@ -10583,7 +10584,7 @@ async function run() {
   };
   const actorBlock = {
     type: "mrkdwn",
-    text: `\u{1F9D1}\u200D\u{1F4BB} ${import_github.context.actor}` + (user ? ` <@${user.id}>` : "")
+    text: `\u{1F9D1}\u200D\u{1F4BB} ${import_github2.context.actor}` + (user ? ` <@${user.id}>` : "")
   };
   const repoBlock = {
     type: "mrkdwn",
@@ -10595,7 +10596,7 @@ async function run() {
   };
   const runBlock = {
     type: "mrkdwn",
-    text: `\u26A1 <https://github.com/${fqn}/actions/runs/${import_github.context.runId}|${import_github.context.workflow} / ${import_github.context.job} (${import_github.context.eventName})>`
+    text: `\u26A1 <https://github.com/${fqn}/actions/runs/${import_github2.context.runId}|${import_github2.context.workflow} / ${import_github2.context.job} (${import_github2.context.eventName})>`
   };
   const blocks = [
     {
@@ -10623,7 +10624,7 @@ async function run() {
     blocks
   });
 }
-run().catch(import_core5.setFailed);
+run().catch(import_core6.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

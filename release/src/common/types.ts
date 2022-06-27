@@ -1,4 +1,10 @@
-import type { getCommit } from '../../lib/github'
+import type { getCommit } from '../../../lib/github'
+
+export type Repositories = {
+  [repository: string]: {
+    releaseBranch?: string
+  }
+}
 
 export type ChangelogType = 'feat' | 'fix' | 'chore'
 

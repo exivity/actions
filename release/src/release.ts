@@ -1,7 +1,5 @@
 import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { readFile } from 'fs/promises'
-import { Repositories } from '.'
 import { gitPushTags, gitTag } from '../../lib/git'
 import {
   createLightweightTag,
@@ -9,7 +7,7 @@ import {
   getEventName,
   getRepository,
 } from '../../lib/github'
-import { Lockfile } from './types'
+import { readLockfile } from './common/files'
 
 export async function release({
   octokit,
@@ -27,22 +25,7 @@ export async function release({
   const eventData = getEventData(eventName)
   const repository = getRepository()
 
-  // Read repositories and lockfile
-  let repositories: Repositories
-  try {
-    repositories = JSON.parse(await readFile(repositoriesJsonPath, 'utf8'))
-  } catch (error: unknown) {
-    throw new Error(
-      `Can't read "${repositoriesJsonPath}" or it's not valid JSON`
-    )
-  }
-
-  let lockfile: Lockfile
-  try {
-    lockfile = JSON.parse(await readFile(lockfilePath, 'utf8'))
-  } catch (error: unknown) {
-    throw new Error(`Can't read "${lockfilePath}" or it's not valid JSON`)
-  }
+  const lockfile = await readLockfile(lockfilePath)
 
   // Tag current commit with version
   if (dryRun) {
