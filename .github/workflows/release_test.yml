@@ -43,9 +43,9 @@ jobs:
           pr-template: fixtures/release/NEW_RELEASE_PR_TEMPLATE.md
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
       - name: inspect lockfile
-        run: cat exivity.lock
+        run: cat fixtures/release/exivity.lock || true
       - name: inspect changelog
-        run: cat CHANGELOG.md
+        run: cat fixtures/release/CHANGELOG.md || true
 
   release_release-test:
     runs-on: ubuntu-latest
