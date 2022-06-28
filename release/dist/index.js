@@ -10905,13 +10905,13 @@ async function prepare({
     });
   }
   changelog = await runPlugins({ octokit, changelog });
+  changelog = changelog.filter(noChores);
+  changelog.sort(byDate);
+  changelog.sort(byType);
   if (changelog.length === 0) {
     (0, import_console2.info)(`Nothing to release`);
     return;
   }
-  changelog = changelog.filter(noChores);
-  changelog.sort(byDate);
-  changelog.sort(byType);
   (0, import_console2.info)(`Changelog:`);
   changelog.forEach((item) => {
     (0, import_console2.info)(`- [${item.repository}] ${item.type}: ${item.title} (${item.sha})`);

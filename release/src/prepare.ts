@@ -94,12 +94,6 @@ export async function prepare({
   // Run changelog plugins
   changelog = await runPlugins({ octokit, changelog })
 
-  // If there are no items in the changelog, we have nothing to release
-  if (changelog.length === 0) {
-    info(`Nothing to release`)
-    return
-  }
-
   // Filter out chores
   changelog = changelog.filter(noChores)
 
@@ -108,6 +102,12 @@ export async function prepare({
 
   // Sort notes by type, feat first, then fix
   changelog.sort(byType)
+
+  // If there are no items in the changelog, we have nothing to release
+  if (changelog.length === 0) {
+    info(`Nothing to release`)
+    return
+  }
 
   // Display summary of notes
   info(`Changelog:`)
