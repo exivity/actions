@@ -127,7 +127,7 @@ function buildChangelogItem(changelogItem: ChangelogItem) {
       ? [`  ${changelogItem.description.split('\n').join('\n  ')}`]
       : []),
     ...(changelogItem.warnings.length > 0
-      ? ['⚠️ _WARNING:_', ...changelogItem.warnings]
+      ? [`⚠️ _WARNING:_ ${changelogItem.warnings.join('\n')}`]
       : []),
     '',
     '<details>',
@@ -137,6 +137,7 @@ function buildChangelogItem(changelogItem: ChangelogItem) {
       return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`
     }),
     '</details>',
+    '',
   ].join('\n')
 }
 

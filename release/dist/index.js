@@ -67989,7 +67989,7 @@ function buildChangelogItem(changelogItem) {
   return [
     `- **${changelogItem.title}**`,
     ...changelogItem.description ? [`  ${changelogItem.description.split("\n").join("\n  ")}`] : [],
-    ...changelogItem.warnings.length > 0 ? ["\u26A0\uFE0F _WARNING:_", ...changelogItem.warnings] : [],
+    ...changelogItem.warnings.length > 0 ? [`\u26A0\uFE0F _WARNING:_ ${changelogItem.warnings.join("\n")}`] : [],
     "",
     "<details>",
     "  <summary></summary>",
@@ -67997,7 +67997,8 @@ function buildChangelogItem(changelogItem) {
     ...Object.entries(changelogItem.links).map(([type, link]) => {
       return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`;
     }),
-    "</details>"
+    "</details>",
+    ""
   ].join("\n");
 }
 function formatLinkType(type) {
