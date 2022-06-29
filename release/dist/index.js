@@ -67781,7 +67781,7 @@ async function associatedPullRequestPlugin({
 // release/src/changelogPlugins/jira.ts
 async function jiraPlugin({ jiraClient, changelog }) {
   var _a, _b;
-  const jiraKey = new RegExp(/race/g);
+  const jiraKey = new RegExp(/\b[A-Z]+-\d+\b/g);
   for (const item of changelog) {
     const issues = [
       ...item.links.pr ? item.links.pr.originalTitle.match(jiraKey) || [] : [],
@@ -67790,7 +67790,7 @@ async function jiraPlugin({ jiraClient, changelog }) {
       ...item.links.commit.originalTitle.match(jiraKey) || []
     ];
     if (issues.length > 0) {
-      const issueKey = "EXVT-5340";
+      const issueKey = issues[0];
       const issue = await jiraClient.issues.getIssue({ issueIdOrKey: issueKey });
       item.links.issue = {
         title: getReleaseNotesTitle(issue) || issue.fields.summary,

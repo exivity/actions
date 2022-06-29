@@ -3,8 +3,7 @@ import type { PluginParams } from '.'
 import { JiraCustomFields, JiraIssueType } from '../common/types'
 
 export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
-  // const jiraKey = new RegExp(/\b[A-Z]+-\d+\b/g)
-  const jiraKey = new RegExp(/race/g)
+  const jiraKey = new RegExp(/\b[A-Z]+-\d+\b/g)
   for (const item of changelog) {
     const issues = [
       ...(item.links.pr
@@ -17,7 +16,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
 
     // Take only first issue
     if (issues.length > 0) {
-      const issueKey = 'EXVT-5340' // issues[0]
+      const issueKey = issues[0]
       const issue = await jiraClient.issues.getIssue({ issueIdOrKey: issueKey })
 
       item.links.issue = {
