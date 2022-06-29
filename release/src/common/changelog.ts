@@ -30,6 +30,7 @@ export function createChangelogItemFromCommit(commit: Commit) {
       commit: {
         repository: commit.repository,
         sha: commit.sha,
+        originalTitle: commitTitle,
         title: parsed.description || commitTitle,
         description: commitDescription,
         author:

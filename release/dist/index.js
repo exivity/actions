@@ -67768,6 +67768,7 @@ async function associatedPullRequestPlugin({
     if (typeof associatedPullRequest !== "undefined") {
       item.links.pr = {
         title: parseCommitMessage(associatedPullRequest.title).description,
+        originalTitle: associatedPullRequest.title,
         description: associatedPullRequest.body,
         slug: `exivity/${item.links.commit.repository}#${associatedPullRequest.number}`,
         url: associatedPullRequest.url
@@ -67783,10 +67784,10 @@ async function jiraPlugin({ jiraClient, changelog }) {
   const jiraKey = new RegExp(/race/g);
   for (const item of changelog) {
     const issues = [
-      ...item.links.pr ? item.links.pr.title.match(jiraKey) || [] : [],
+      ...item.links.pr ? item.links.pr.originalTitle.match(jiraKey) || [] : [],
       ...item.links.pr ? ((_a = item.links.pr.description) == null ? void 0 : _a.match(jiraKey)) || [] : [],
       ...((_b = item.links.commit.description) == null ? void 0 : _b.match(jiraKey)) || [],
-      ...item.links.commit.title.match(jiraKey) || []
+      ...item.links.commit.originalTitle.match(jiraKey) || []
     ];
     if (issues.length > 0) {
       const issueKey = "EXVT-5340";
@@ -67890,6 +67891,7 @@ function createChangelogItemFromCommit(commit) {
       commit: {
         repository: commit.repository,
         sha: commit.sha,
+        originalTitle: commitTitle,
         title: parsed.description || commitTitle,
         description: commitDescription,
         author: ((_e = commit.author) == null ? void 0 : _e.login) || ((_f = commit.author) == null ? void 0 : _f.name) || ((_g = commit.author) == null ? void 0 : _g.login) || "unknown author",

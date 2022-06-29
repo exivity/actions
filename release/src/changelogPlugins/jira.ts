@@ -7,10 +7,12 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
   const jiraKey = new RegExp(/race/g)
   for (const item of changelog) {
     const issues = [
-      ...(item.links.pr ? item.links.pr.title.match(jiraKey) || [] : []),
+      ...(item.links.pr
+        ? item.links.pr.originalTitle.match(jiraKey) || []
+        : []),
       ...(item.links.pr ? item.links.pr.description?.match(jiraKey) || [] : []),
       ...(item.links.commit.description?.match(jiraKey) || []),
-      ...(item.links.commit.title.match(jiraKey) || []),
+      ...(item.links.commit.originalTitle.match(jiraKey) || []),
     ]
 
     // Take only first issue

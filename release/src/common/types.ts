@@ -24,12 +24,15 @@ export type ChangelogItem = {
   breaking: boolean
   links: {
     commit: ChangelogLinkCommon & {
+      originalTitle: string
       repository: string
       sha: string
       author: string
       date: string
     }
-    pr?: ChangelogLinkCommon
+    pr?: ChangelogLinkCommon & {
+      originalTitle: string
+    }
     issue?: ChangelogLinkCommon
     milestone?: ChangelogLinkCommon
   }

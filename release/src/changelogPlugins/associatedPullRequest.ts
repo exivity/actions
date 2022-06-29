@@ -17,6 +17,7 @@ export async function associatedPullRequestPlugin({
     if (typeof associatedPullRequest !== 'undefined') {
       item.links.pr = {
         title: parseCommitMessage(associatedPullRequest.title).description,
+        originalTitle: associatedPullRequest.title,
         description: associatedPullRequest.body,
         slug: `exivity/${item.links.commit.repository}#${associatedPullRequest.number}`,
         url: associatedPullRequest.url,
