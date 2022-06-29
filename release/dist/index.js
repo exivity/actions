@@ -68143,7 +68143,6 @@ ${changelogContents.join("\n")}
 
 `));
     (0, import_console2.info)(`Written changelog to: ${changelogPath}`);
-    console.log(changelogContents.join("\n"));
   }
   const title = `chore: release ${upcomingVersion}`;
   if (dryRun) {

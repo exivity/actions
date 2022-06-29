@@ -162,8 +162,6 @@ export async function prepare({
       )
     )
     info(`Written changelog to: ${changelogPath}`)
-
-    console.log(changelogContents.join('\n'))
   }
 
   // Commit and push changes
