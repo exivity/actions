@@ -67988,7 +67988,7 @@ function buildChangelogSection(header, changelogItems) {
 function buildChangelogItem(changelogItem) {
   return [
     `- **${changelogItem.title}**`,
-    ...changelogItem.description ? `  ${changelogItem.description.split("\n").join("\n  ")}` : [],
+    ...changelogItem.description ? [`  ${changelogItem.description.split("\n").join("\n  ")}`] : [],
     ...changelogItem.warnings.length > 0 ? ["\u26A0\uFE0F _WARNING:_", ...changelogItem.warnings] : [],
     "",
     "<details>",

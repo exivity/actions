@@ -124,7 +124,7 @@ function buildChangelogItem(changelogItem: ChangelogItem) {
   return [
     `- **${changelogItem.title}**`,
     ...(changelogItem.description
-      ? `  ${changelogItem.description.split('\n').join('\n  ')}`
+      ? [`  ${changelogItem.description.split('\n').join('\n  ')}`]
       : []),
     ...(changelogItem.warnings.length > 0
       ? ['⚠️ _WARNING:_', ...changelogItem.warnings]
