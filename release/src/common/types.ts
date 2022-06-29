@@ -22,6 +22,7 @@ export type ChangelogItem = {
   description: string | null
   type: ChangelogType
   breaking: boolean
+  warnings: string[]
   links: {
     commit: ChangelogLinkCommon & {
       originalTitle: string

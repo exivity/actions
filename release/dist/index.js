@@ -67525,6 +67525,27 @@ async function getCommitsSince({
   (0, import_core2.info)(`  Found ${commits.length} commits since ${since.tag} in ${owner}/${repo}#${branch}`);
   return commits;
 }
+async function writeStatus({
+  octokit,
+  owner,
+  repo,
+  sha,
+  state,
+  context: context2,
+  description,
+  target_url
+}) {
+  (0, import_core2.info)(`Writing ${state} commit status for ${sha} of repo ${repo}`);
+  return (await octokit.rest.repos.createCommitStatus({
+    owner,
+    repo,
+    sha,
+    state,
+    context: context2,
+    description,
+    target_url
+  })).data;
+}
 async function dispatchWorkflow({
   octokit,
   owner,
@@ -67641,6 +67662,9 @@ var import_promises2 = require("fs/promises");
 var import_core3 = __toESM(require_core());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
+async function getCommitSha() {
+  return exec('git log -1 --pretty=format:"%H"');
+}
 async function getAllTags() {
   return (await exec("git tag")).split(import_os.EOL).filter((item) => item);
 }
@@ -67793,11 +67817,18 @@ async function jiraPlugin({ jiraClient, changelog }) {
       const issueKey = issues[0];
       const issue = await jiraClient.issues.getIssue({ issueIdOrKey: issueKey });
       item.links.issue = {
-        title: getReleaseNotesTitle(issue) || issue.fields.summary,
-        description: getReleaseNotesDescription(issue) || issue.fields.description || null,
+        title: issue.fields.summary,
+        description: issue.fields.description || null,
         slug: issueKey,
         url: `https://exivity.atlassian.net/browse/${issueKey}`
       };
+      const releaseNotesTitle = getReleaseNotesTitle(issue);
+      if (releaseNotesTitle) {
+        item.links.issue.title = releaseNotesTitle;
+        item.links.issue.description = getReleaseNotesDescription(issue) || null;
+      } else {
+        item.warnings.push("No release notes title and/or description set in Jira");
+      }
       if (issue.fields.issuetype.name === "Chore" /* Chore */) {
         item.type = "chore";
       }
@@ -67833,11 +67864,14 @@ function getEpic(issue) {
 
 // release/src/changelogPlugins/titleAndDescription.ts
 function formatTitle(changelogItem) {
-  return changelogItem.links.issue ? changelogItem.links.issue.title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title;
+  return capitalizeFirstLetter(changelogItem.links.issue ? changelogItem.links.issue.title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title);
 }
 function formatDecription(changelogItem) {
   var _a;
   return ((_a = changelogItem.links.issue) == null ? void 0 : _a.description) || null;
+}
+function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 async function titleAndDescriptionPlugin({ changelog }) {
   for (const item of changelog) {
@@ -67884,9 +67918,12 @@ function createChangelogItemFromCommit(commit) {
     default:
       type = "chore";
   }
-  return {
+  const item = {
+    title: parsed.description || commitTitle,
+    description: null,
     type,
     breaking: parsed.breaking || false,
+    warnings: [],
     links: {
       commit: {
         repository: commit.repository,
@@ -67901,6 +67938,7 @@ function createChangelogItemFromCommit(commit) {
       }
     }
   };
+  return item;
 }
 function noChores(changelogItem) {
   return changelogItem.type !== "chore";
@@ -67948,14 +67986,19 @@ function buildChangelogSection(header, changelogItems) {
   return [`### ${header}`, "", ...changelogItems.map(buildChangelogItem)];
 }
 function buildChangelogItem(changelogItem) {
-  const result = [`- **${changelogItem.title}**`];
-  if (changelogItem.description) {
-    result.push(`  ${changelogItem.description.split("\n").join("\n  ")}`);
-  }
-  Object.entries(changelogItem.links).forEach(([type, link]) => {
-    result.push(`  - ${formatLinkType(type)}: [${link.slug}](${link.url})`);
-  });
-  return result.join("\n");
+  return [
+    `- **${changelogItem.title}**`,
+    ...changelogItem.description ? `  ${changelogItem.description.split("\n").join("\n  ")}` : [],
+    ...changelogItem.warnings.length > 0 ? ["\u26A0\uFE0F _WARNING:_", ...changelogItem.warnings] : [],
+    "",
+    "<details>",
+    "  <summary></summary>",
+    "",
+    ...Object.entries(changelogItem.links).map(([type, link]) => {
+      return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`;
+    }),
+    "</details>"
+  ].join("\n");
 }
 function formatLinkType(type) {
   switch (type) {
@@ -68108,8 +68151,8 @@ async function prepare({
   }
   changelog = changelog.filter(noChores);
   changelog.sort(byDate);
-  changelog.sort(byType);
   changelog = await runPlugins({ octokit, jiraClient, changelog });
+  changelog.sort(byType);
   changelog = changelog.filter(noChores);
   if (changelog.length === 0) {
     (0, import_console2.info)(`Nothing to release`);
@@ -68156,6 +68199,17 @@ ${changelogContents.join("\n")}
     await gitPush(true);
     (0, import_console2.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
   }
+  const sha = await getCommitSha();
+  const state = changelog.some((item) => item.warnings.length > 0) ? "pending" : "success";
+  await writeStatus({
+    octokit,
+    owner: "exivity",
+    repo: "exivity",
+    sha,
+    state,
+    context: "changelog",
+    description: state === "pending" ? "Changelog contains warnings" : "Changelog is good to go!"
+  });
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not creating pull request`);
   } else {

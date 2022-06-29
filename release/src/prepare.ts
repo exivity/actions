@@ -3,6 +3,7 @@ import { info } from 'console'
 import { existsSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
 import {
+  getCommitSha,
   getLatestVersion,
   gitAdd,
   gitCommit,
@@ -11,7 +12,7 @@ import {
   gitPush,
   gitSetAuthor,
 } from '../../lib/git'
-import { getCommitForTag, getCommitsSince } from '../../lib/github'
+import { getCommitForTag, getCommitsSince, writeStatus } from '../../lib/github'
 import { runPlugins } from './changelogPlugins'
 import {
   buildChangelog,
@@ -100,16 +101,14 @@ export async function prepare({
   // Sort notes by date
   changelog.sort(byDate)
 
-  // Sort notes by type, feat first, then fix
-  changelog.sort(byType)
-
   // Run changelog plugins
   changelog = await runPlugins({ octokit, jiraClient, changelog })
 
+  // Sort notes by type, feat first, then fix
+  changelog.sort(byType)
+
   // Filter out chores again (plugins may have changed types)
   changelog = changelog.filter(noChores)
-
-  // @todo filter out duplicated (e.g. epics)
 
   // If there are no items in the changelog, we have nothing to release
   if (changelog.length === 0) {
@@ -175,6 +174,24 @@ export async function prepare({
     await gitPush(true)
     info(`Written changes to branch: ${upcomingReleaseBranch}`)
   }
+
+  // Set status on commit
+  const sha = await getCommitSha()
+  const state = changelog.some((item) => item.warnings.length > 0)
+    ? 'pending'
+    : 'success'
+  await writeStatus({
+    octokit,
+    owner: 'exivity',
+    repo: 'exivity',
+    sha,
+    state,
+    context: 'changelog',
+    description:
+      state === 'pending'
+        ? 'Changelog contains warnings'
+        : 'Changelog is good to go!',
+  })
 
   // Create or update pull request
   if (dryRun) {

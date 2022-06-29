@@ -23,9 +23,12 @@ export function createChangelogItemFromCommit(commit: Commit) {
       type = 'chore'
   }
 
-  return {
+  const item: ChangelogItem = {
+    title: parsed.description || commitTitle,
+    description: null,
     type,
     breaking: parsed.breaking || false,
+    warnings: [],
     links: {
       commit: {
         repository: commit.repository,
@@ -46,7 +49,9 @@ export function createChangelogItemFromCommit(commit: Commit) {
         url: `https://github.com/exivity/${commit.repository}/commit/${commit.sha}`,
       },
     },
-  } as ChangelogItem
+  }
+
+  return item
 }
 
 export function noChores(changelogItem: ChangelogItem) {
@@ -116,15 +121,23 @@ function buildChangelogSection(
 }
 
 function buildChangelogItem(changelogItem: ChangelogItem) {
-  const result = [`- **${changelogItem.title}**`]
-  if (changelogItem.description) {
-    result.push(`  ${changelogItem.description.split('\n').join('\n  ')}`)
-  }
-  Object.entries(changelogItem.links).forEach(([type, link]) => {
-    result.push(`  - ${formatLinkType(type)}: [${link.slug}](${link.url})`)
-  })
-
-  return result.join('\n')
+  return [
+    `- **${changelogItem.title}**`,
+    ...(changelogItem.description
+      ? `  ${changelogItem.description.split('\n').join('\n  ')}`
+      : []),
+    ...(changelogItem.warnings.length > 0
+      ? ['⚠️ _WARNING:_', ...changelogItem.warnings]
+      : []),
+    '',
+    '<details>',
+    '  <summary></summary>',
+    '',
+    ...Object.entries(changelogItem.links).map(([type, link]) => {
+      return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`
+    }),
+    '</details>',
+  ].join('\n')
 }
 
 function formatLinkType(type: string) {

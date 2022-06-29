@@ -4,6 +4,10 @@ import semver from 'semver'
 import { exec } from './core'
 import { getRepository } from './github'
 
+export async function getCommitSha() {
+  return exec('git log -1 --pretty=format:"%H"')
+}
+
 export async function getCommitMessage() {
   return exec('git log -1 --pretty=format:"%s"')
 }

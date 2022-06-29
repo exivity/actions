@@ -20,11 +20,20 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
       const issue = await jiraClient.issues.getIssue({ issueIdOrKey: issueKey })
 
       item.links.issue = {
-        title: getReleaseNotesTitle(issue) || issue.fields.summary,
-        description:
-          getReleaseNotesDescription(issue) || issue.fields.description || null,
+        title: issue.fields.summary,
+        description: issue.fields.description || null,
         slug: issueKey,
         url: `https://exivity.atlassian.net/browse/${issueKey}`,
+      }
+
+      const releaseNotesTitle = getReleaseNotesTitle(issue)
+      if (releaseNotesTitle) {
+        item.links.issue.title = releaseNotesTitle
+        item.links.issue.description = getReleaseNotesDescription(issue) || null
+      } else {
+        item.warnings.push(
+          'No release notes title and/or description set in Jira'
+        )
       }
 
       // Change item type
@@ -41,7 +50,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
         item.type = 'feat'
       }
 
-      // Add epic as milestoneif present
+      // Add epic as milestone if present
       const epicKey = getEpic(issue)
       if (epicKey) {
         const epic = await jiraClient.issues.getIssue({ issueIdOrKey: epicKey })
