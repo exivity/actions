@@ -30,12 +30,18 @@ inputs:
     required: false
     default: main
   dry-run:
-    description: If `true`, running this action will have no side-effects.
+    description: If `true`, running this action will have no side-effects
     required: false
   gh-token:
-    description: A GitHub token with access to the exivity/exivity repository.
+    description: A GitHub token with access to the exivity/exivity repository
     required: false
     default: ${{ github.token }}
+  jira-username:
+    description: The Jira username (required in prepare and release mode)
+    required: false
+  jira-token:
+    description: The Jira token (required in prepare and release mode)
+    required: false
 runs:
   using: node16
   main: dist/index.js

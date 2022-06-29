@@ -22,12 +22,14 @@ import {
 } from './common/changelog'
 import { DEFAULT_REPOSITORY_RELEASE_BRANCH } from './common/consts'
 import { readRepositories, readTextFile } from './common/files'
+import type { getJiraClient } from './common/jiraClient'
 import { createOrUpdatePullRequest } from './common/pr'
 import { ChangelogItem, Commit, Lockfile } from './common/types'
 import { inferVersionFromChangelog } from './common/version'
 
 export async function prepare({
   octokit,
+  jiraClient,
   lockfilePath,
   changelogPath,
   repositoriesJsonPath,
@@ -37,6 +39,7 @@ export async function prepare({
   dryRun,
 }: {
   octokit: ReturnType<typeof getOctokit>
+  jiraClient: ReturnType<typeof getJiraClient>
   lockfilePath: string
   changelogPath: string
   repositoriesJsonPath: string
@@ -91,9 +94,6 @@ export async function prepare({
     })
   }
 
-  // Run changelog plugins
-  changelog = await runPlugins({ octokit, changelog })
-
   // Filter out chores
   changelog = changelog.filter(noChores)
 
@@ -102,6 +102,14 @@ export async function prepare({
 
   // Sort notes by type, feat first, then fix
   changelog.sort(byType)
+
+  // Run changelog plugins
+  changelog = await runPlugins({ octokit, jiraClient, changelog })
+
+  // Filter out chores again (plugins may have changed types)
+  changelog = changelog.filter(noChores)
+
+  // @todo filter out duplicated (e.g. epics)
 
   // If there are no items in the changelog, we have nothing to release
   if (changelog.length === 0) {
@@ -112,7 +120,9 @@ export async function prepare({
   // Display summary of notes
   info(`Changelog:`)
   changelog.forEach((item) => {
-    info(`- [${item.repository}] ${item.type}: ${item.title} (${item.sha})`)
+    info(
+      `- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`
+    )
   })
 
   // Infer upcoming version increment
@@ -152,6 +162,8 @@ export async function prepare({
       )
     )
     info(`Written changelog to: ${changelogPath}`)
+
+    console.log(changelogContents.join('\n'))
   }
 
   // Commit and push changes

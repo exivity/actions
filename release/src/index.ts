@@ -2,6 +2,7 @@ import { getInput, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getBooleanInput } from '../../lib/core'
 import { getToken } from '../../lib/github'
+import { getJiraClient } from './common/jiraClient'
 import { ping } from './ping'
 import { prepare } from './prepare'
 import { release } from './release'
@@ -21,9 +22,13 @@ async function run() {
   const releaseBranch = getInput('release-branch')
   const dryRun = getBooleanInput('dry-run', false)
   const ghToken = getToken()
+  const jiraUsername = getInput('jira-username')
+  const jiraToken = getInput('jira-token')
 
   // Init deps
   const octokit = getOctokit(ghToken)
+  const jiraClient =
+    jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null
 
   switch (mode) {
     case ModePing:
@@ -32,9 +37,17 @@ async function run() {
       break
 
     case ModePrepare:
+      // Assert
+      if (!jiraClient) {
+        throw new Error(
+          'jira-username and jira-token inputs are required in prepare mode'
+        )
+      }
+
       // Act
       await prepare({
         octokit,
+        jiraClient,
         lockfilePath,
         changelogPath,
         repositoriesJsonPath,
@@ -46,8 +59,21 @@ async function run() {
       break
 
     case ModeRelease:
+      // Assert
+      if (!jiraClient) {
+        throw new Error(
+          'jira-username and jira-token inputs are required in release mode'
+        )
+      }
+
       // Act
-      await release({ octokit, lockfilePath, repositoriesJsonPath, dryRun })
+      await release({
+        octokit,
+        jiraClient,
+        lockfilePath,
+        repositoriesJsonPath,
+        dryRun,
+      })
       break
 
     default:

@@ -24,33 +24,28 @@ export function createChangelogItemFromCommit(commit: Commit) {
   }
 
   return {
-    repository: commit.repository,
-    sha: commit.sha,
-    author:
-      commit.author?.login ||
-      commit.author?.name ||
-      commit.author?.login ||
-      'unknown author',
-    date:
-      commit.commit.author?.date ||
-      commit.commit.committer?.date ||
-      'unknown date',
     type,
     breaking: parsed.breaking || false,
-    title: parsed.description || commitTitle,
-    description: commitDescription,
-    issues: [],
+    links: {
+      commit: {
+        repository: commit.repository,
+        sha: commit.sha,
+        title: parsed.description || commitTitle,
+        description: commitDescription,
+        author:
+          commit.author?.login ||
+          commit.author?.name ||
+          commit.author?.login ||
+          'unknown author',
+        date:
+          commit.commit.author?.date ||
+          commit.commit.committer?.date ||
+          'unknown date',
+        slug: `exivity/${commit.repository}@${commit.sha.substring(0, 7)}`,
+        url: `https://github.com/exivity/${commit.repository}/commit/${commit.sha}`,
+      },
+    },
   } as ChangelogItem
-}
-
-export function buildChangelog(
-  version: string,
-  changelogItems: ChangelogItem[]
-) {
-  return [
-    ...buildChangelogHeader(version),
-    ...buildChangelogItems(changelogItems),
-  ]
 }
 
 export function noChores(changelogItem: ChangelogItem) {
@@ -58,10 +53,10 @@ export function noChores(changelogItem: ChangelogItem) {
 }
 
 export function byDate(a: ChangelogItem, b: ChangelogItem) {
-  if (a.date < b.date) {
+  if (a.links.commit.date < b.links.commit.date) {
     return -1
   }
-  if (a.date > b.date) {
+  if (a.links.commit.date > b.links.commit.date) {
     return 1
   }
   return 0
@@ -78,24 +73,18 @@ export function byType(a: ChangelogItem, b: ChangelogItem) {
   return 0
 }
 
-function buildChangelogItem(changelogItem: ChangelogItem) {
-  let result: string = `- **${changelogItem.title}**`
-  if (changelogItem.description) {
-    result += `\n  ${changelogItem.description.split('\n').join('\n  ')}`
-  }
-
-  return result
-}
-
-function buildChangelogSection(
-  header: string,
+export function buildChangelog(
+  version: string,
   changelogItems: ChangelogItem[]
 ) {
-  if (changelogItems.length === 0) {
-    return []
-  }
+  return [
+    ...buildChangelogHeader(version),
+    ...buildChangelogItems(changelogItems),
+  ]
+}
 
-  return [`### ${header}`, '', ...changelogItems.map(buildChangelogItem)]
+function buildChangelogHeader(version: string) {
+  return [`## ${version}`, '']
 }
 
 function buildChangelogItems(changelogItems: ChangelogItem[]) {
@@ -114,6 +103,40 @@ function buildChangelogItems(changelogItems: ChangelogItem[]) {
   ]
 }
 
-function buildChangelogHeader(version: string) {
-  return [`## ${version}`, '']
+function buildChangelogSection(
+  header: string,
+  changelogItems: ChangelogItem[]
+) {
+  if (changelogItems.length === 0) {
+    return []
+  }
+
+  return [`### ${header}`, '', ...changelogItems.map(buildChangelogItem)]
+}
+
+function buildChangelogItem(changelogItem: ChangelogItem) {
+  const result = [`- **${changelogItem.title}**`]
+  if (changelogItem.description) {
+    result.push(`  ${changelogItem.description.split('\n').join('\n  ')}`)
+  }
+  Object.entries(changelogItem.links).forEach(([type, link]) => {
+    result.push(`  - ${formatLinkType(type)}: [${link.slug}](${link.url})`)
+  })
+
+  return result.join('\n')
+}
+
+function formatLinkType(type: string) {
+  switch (type) {
+    case 'commit':
+      return 'Commit'
+    case 'pr':
+      return 'Pull request'
+    case 'issue':
+      return 'Issue'
+    case 'milestone':
+      return 'Milestone'
+    default:
+      return 'Unknown'
+  }
 }

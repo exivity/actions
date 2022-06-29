@@ -334,7 +334,9 @@ export async function getCommitForTag({
     }
     return { ...commit, tag, timestamp }
   } catch (error: unknown) {
-    throw new Error(`Could not find tag ${tag} in ${owner}/${repo}...`)
+    throw new Error(
+      `Could not find commit for tag ${tag} in ${owner}/${repo}...`
+    )
   }
 }
 
@@ -534,12 +536,13 @@ export async function getAssociatedPullRequest({
     const associatedPRs = await octokit.graphql<{
       repository: {
         commit: {
-          associatedPullRequests: {
+          associatedPullRequests?: {
             edges: {
               node: {
                 number: number
                 title: string
                 body: string
+                url: string
               }
             }[]
           }
@@ -557,6 +560,7 @@ query ($sha: String!, $repo: String!, $owner: String!) {
               number
               title
               body
+              url
             }
           }
         }
@@ -571,8 +575,8 @@ query ($sha: String!, $repo: String!, $owner: String!) {
         sha,
       }
     )
-
-    return associatedPRs.repository.commit.associatedPullRequests.edges[0].node
+    return associatedPRs.repository?.commit?.associatedPullRequests?.edges[0]
+      ?.node
   } catch (err: any) {
     throw new Error(
       `Failed to fetch associated pull requests for ${owner}:${repo}@${sha}`

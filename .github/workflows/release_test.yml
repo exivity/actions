@@ -42,6 +42,8 @@ jobs:
           repositories: fixtures/release/repositories.json
           pr-template: fixtures/release/NEW_RELEASE_PR_TEMPLATE.md
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
+          jira-username: ${{ secrets.JIRA_BOT_EMAIL }}
+          jira-token: ${{ secrets.JIRA_BOT_TOKEN }}
       - name: inspect lockfile
         run: cat fixtures/release/exivity.lock || true
       - name: inspect changelog
@@ -61,3 +63,5 @@ jobs:
           lockfile: fixtures/release/exivity.lock
           repositories: fixtures/release/repositories.json
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
+          jira-username: ${{ secrets.JIRA_BOT_EMAIL }}
+          jira-token: ${{ secrets.JIRA_BOT_TOKEN }}

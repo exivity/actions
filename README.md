@@ -647,17 +647,19 @@ release tag in the release repository, plus new tags in all released components.
 
 ## Inputs
 
-| name                      | required | default                        | description                                                   |
-| ------------------------- | -------- | ------------------------------ | ------------------------------------------------------------- |
-| `mode`                    |          | `"ping"`                       | One of `"ping"`, `"prepare"` or `"release"`                   |
-| `lockfile`                |          | `"exivity.lock"`               | Location of lockfile (json)                                   |
-| `changelog`               |          | `"CHANGELOG.md"`               | Location of changelog (markdown)                              |
-| `repositories`            |          | `"repositories.json"`          | Location of repositories manifest (json)                      |
-| `pr-template`             |          | `"NEW_RELEASE_PR_TEMPLATE.md"` | Location of new release PR template (markdown)                |
-| `upcoming-release-branch` |          | `"chore/upcoming-release"`     | Upcoming release branch name                                  |
-| `release-branch`          |          | `"main"`                       | Release branch name                                           |
-| `dry-run`                 |          | `false`                        | If `true`, running this action will have no side-effects.     |
-| `gh-token`                |          | `github.token`                 | A GitHub token with write access to all exivity repositories. |
+| name                      | required | default                        | description                                                  |
+| ------------------------- | -------- | ------------------------------ | ------------------------------------------------------------ |
+| `mode`                    |          | `"ping"`                       | One of `"ping"`, `"prepare"` or `"release"`                  |
+| `lockfile`                |          | `"exivity.lock"`               | Location of lockfile (json)                                  |
+| `changelog`               |          | `"CHANGELOG.md"`               | Location of changelog (markdown)                             |
+| `repositories`            |          | `"repositories.json"`          | Location of repositories manifest (json)                     |
+| `pr-template`             |          | `"NEW_RELEASE_PR_TEMPLATE.md"` | Location of new release PR template (markdown)               |
+| `upcoming-release-branch` |          | `"chore/upcoming-release"`     | Upcoming release branch name                                 |
+| `release-branch`          |          | `"main"`                       | Release branch name                                          |
+| `dry-run`                 |          | `false`                        | If `true`, running this action will have no side-effects     |
+| `gh-token`                |          | `github.token`                 | A GitHub token with write access to all exivity repositories |
+| `jira-username`           | Maybe    |                                | The Jira username (required in prepare and release mode)     |
+| `jira-token`              | Maybe    |                                | The Jira token (required in prepare and release mode)        |
 
 The `repositories.json` file must contain an object with this type:
 

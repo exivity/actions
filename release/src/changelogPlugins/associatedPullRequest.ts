@@ -1,7 +1,8 @@
 import type { PluginParams } from '.'
+import { parseCommitMessage } from '../../../lib/conventionalCommits'
 import { getAssociatedPullRequest } from '../../../lib/github'
 
-export async function associatedPullRequest({
+export async function associatedPullRequestPlugin({
   octokit,
   changelog,
 }: PluginParams) {
@@ -9,10 +10,18 @@ export async function associatedPullRequest({
     const associatedPullRequest = await getAssociatedPullRequest({
       octokit,
       owner: 'exivity',
-      repo: item.repository,
-      sha: item.sha,
+      repo: item.links.commit.repository,
+      sha: item.links.commit.sha,
     })
-    console.log(associatedPullRequest)
+
+    if (typeof associatedPullRequest !== 'undefined') {
+      item.links.pr = {
+        title: parseCommitMessage(associatedPullRequest.title).description,
+        description: associatedPullRequest.body,
+        slug: `exivity/${item.links.commit.repository}#${associatedPullRequest.number}`,
+        url: associatedPullRequest.url,
+      }
+    }
   }
 
   return changelog
