@@ -37,8 +37,12 @@ function buildChangelogItem(changelogItem: ChangelogItem) {
     ...(changelogItem.warnings.length > 0
       ? [`⚠️ _WARNING:_ ${changelogItem.warnings.join('\n')}`]
       : []),
+    '<details>',
+    '  <summary>Show details</summary>',
+    '',
     ...Object.entries(changelogItem.links).map(([type, link]) => {
       return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`
     }),
+    '</details>',
   ].join('\n')
 }
