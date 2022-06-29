@@ -67634,7 +67634,7 @@ function getJiraClient(username, token) {
 
 // release/src/ping.ts
 var import_console = require("console");
-var prepareWorkflowId = "prepare.yml";
+var prepareWorkflowId = "prepare-on-demand.yml";
 var defaultExivityRepoBranch = "main";
 async function ping({
   octokit,
