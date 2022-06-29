@@ -5,21 +5,43 @@ inputs:
     description: Ping, prepare or release
     required: false
     default: ping
+  lockfile:
+    description: Location of lockfile (json)
+    required: false
+    default: exivity.lock
+  changelog:
+    description: Location of changelog (markdown)
+    required: false
+    default: CHANGELOG.md
   repositories:
-    description: Location of repositories.json
+    description: Location of repositories manifest (json)
     required: false
     default: repositories.json
   pr-template:
-    description: Location of NEW_RELEASE_PR_TEMPLATE.md
+    description: Location of new release PR template (markdown)
     required: false
     default: NEW_RELEASE_PR_TEMPLATE.md
+  upcoming-release-branch:
+    description: Upcoming release branch name
+    required: false
+    default: chore/upcoming-release
+  release-branch:
+    description: Release branch name
+    required: false
+    default: main
   dry-run:
-    description: If `true`, running this action will have no side-effects.
+    description: If `true`, running this action will have no side-effects
     required: false
   gh-token:
-    description: A GitHub token with access to the exivity/exivity repository.
+    description: A GitHub token with access to the exivity/exivity repository
     required: false
     default: ${{ github.token }}
+  jira-username:
+    description: The Jira username (required in prepare and release mode)
+    required: false
+  jira-token:
+    description: The Jira token (required in prepare and release mode)
+    required: false
 runs:
   using: node16
   main: dist/index.js

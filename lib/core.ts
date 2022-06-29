@@ -1,5 +1,5 @@
-import { getInput, info } from '@actions/core'
-import { exec } from '@actions/exec'
+import { getInput, info, warning } from '@actions/core'
+import { getExecOutput } from '@actions/exec'
 import { promises as fs } from 'fs'
 import { join as pathJoin } from 'path'
 
@@ -78,4 +78,24 @@ export function isObject(
     typeof value === 'object' &&
     value.constructor === {}.constructor
   )
+}
+
+export async function exec(command: string, args?: string[]) {
+  const result = await getExecOutput(command, args, {
+    silent: true,
+    ignoreReturnCode: true,
+  })
+
+  if (result.exitCode !== 0) {
+    warning(
+      [
+        result.stdout.trim(),
+        result.stdout.trim() && result.stderr.trim() ? '\n' : '',
+        result.stderr.trim(),
+      ].join('')
+    )
+    throw new Error(`Process completed with exit code ${result.exitCode}`)
+  }
+
+  return result.stdout
 }

@@ -15,7 +15,7 @@ actions:
 - A release tag is written on all component repositories on the commits defined
   in the `exivity.lock` file.
 - Detected Jira issues in the release will be transitioned to 'Released' and
-  their 'Fix version' will be set accordingly
+  their 'Fix version' will be set accordingly (not yet implemented)
 - A new `exivity/scaffold` release will be triggered
 - A new `exivity/charts` release will be triggered
 

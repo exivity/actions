@@ -6994,7 +6994,7 @@ async function writeStatus({
   description,
   target_url
 }) {
-  (0, import_core.info)(`Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`);
+  (0, import_core.info)(`Writing ${state} commit status for ${sha} of repo ${repo}`);
   return (await octokit.rest.repos.createCommitStatus({
     owner,
     repo,

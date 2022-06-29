@@ -2,7 +2,7 @@ import { getOctokit } from '@actions/github'
 import { info } from 'console'
 import { dispatchWorkflow } from '../../lib/github'
 
-const prepareWorkflowId = 'prepare.yml'
+const prepareWorkflowId = 'prepare-on-demand.yml'
 
 const defaultExivityRepoBranch = 'main'
 

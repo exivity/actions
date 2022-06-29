@@ -2,320 +2,59 @@ import { getOctokit } from '@actions/github'
 import { info } from 'console'
 import { existsSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
-import semver from 'semver'
-import { DEFAULT_REPOSITORY_RELEASE_BRANCH, Repositories } from '.'
-import { parseCommitMessage } from '../../lib/conventionalCommits'
 import {
-  getLatestSemverTag,
+  getCommitSha,
+  getLatestVersion,
   gitAdd,
   gitCommit,
-  gitCreateBranch,
+  gitForceSwitchBranch,
+  gitHasChanges,
+  gitPush,
   gitSetAuthor,
 } from '../../lib/git'
+import { getCommitForTag, getCommitsSince, writeStatus } from '../../lib/github'
+import { formatPrChangelog, formatPublicChangelog } from './changelogFormatters'
+import { runPlugins } from './changelogPlugins'
 import {
-  getCommit,
-  getCommits,
-  getPrFromRef,
-  getRepository,
-} from '../../lib/github'
-
-type ChangelogType = 'feat' | 'fix' | 'chore'
-
-type ChangelogItem = {
-  repository: string
-  sha: string
-  author: string
-  date: string
-  type: ChangelogType
-  breaking: boolean
-  title: string
-  description?: string
-  issues?: string[]
-}
-
-type VersionIncrement = 'major' | 'minor' | 'patch'
-
-type Commit = Awaited<ReturnType<typeof getCommit>> & {
-  repository: string
-}
-
-type Lockfile = {
-  version: string
-  repositories: {
-    [repository: string]: string
-  }
-}
-
-const LOCKFILE_PATH = 'exivity.lock'
-const CHANGELOG_PATH = 'CHANGELOG.md'
-const PENDING_RELEASE_BRANCH = 'chore/pending-release'
-
-async function getLatestVersion() {
-  const repo = getRepository()
-  const latestVersionTag = await getLatestSemverTag()
-  if (typeof latestVersionTag === 'undefined') {
-    throw new Error('Could not determine latest version')
-  }
-  info(`Latest version in ${repo.fqn}: ${latestVersionTag}`)
-
-  return latestVersionTag
-}
-
-async function getCommitForTag({
-  octokit,
-  repository,
-  tag,
-}: {
-  octokit: ReturnType<typeof getOctokit>
-  repository: string
-  tag: string
-}) {
-  try {
-    const commit = await getCommit({
-      octokit,
-      owner: 'exivity',
-      repo: repository,
-      ref: `tags/${tag}`,
-    })
-    const timestamp = commit.commit.author?.date
-    if (typeof timestamp === 'undefined') {
-      throw new Error(
-        `Could not find timestamp for commit ${commit.sha} in exivity/${repository}...`
-      )
-    }
-    // debug(`  Commit for tag ${tag}: ${commit.sha}`)
-
-    return { ...commit, tag, timestamp }
-  } catch (error: unknown) {
-    throw new Error(`Could not find tag ${tag} in exivity/${repository}...`)
-  }
-}
-
-async function getCommitsSince({
-  octokit,
-  repository,
-  branch,
-  since,
-}: {
-  octokit: ReturnType<typeof getOctokit>
-  repository: string
-  branch: string
-  since: { timestamp: string; tag: string; sha: string }
-}) {
-  const commits = (
-    await getCommits({
-      octokit,
-      owner: 'exivity',
-      repo: repository,
-      sha: branch,
-      since: since.timestamp,
-    })
-  ).filter((commit) => commit.sha !== since.sha)
-  info(
-    `  Found ${commits.length} commits since ${since.tag} in exivity/${repository}#${branch}`
-  )
-  // debug(
-  //   `  See commits: https://github.com/exivity/${repository}/compare/${since.tag}...${branch}`
-  // )
-
-  return commits
-}
-
-async function createOrUpdatePullRequest({
-  octokit,
-  pendingVersion,
-  prTemplate,
-  changelogContents,
-}: {
-  octokit: ReturnType<typeof getOctokit>
-  pendingVersion: string
-  prTemplate: string
-  changelogContents: string[]
-}) {
-  const existingPullRequest = await getPrFromRef({
-    octokit,
-    owner: 'exivity',
-    repo: getRepository().repo,
-    ref: PENDING_RELEASE_BRANCH,
-  })
-  const title = `chore: new release ${pendingVersion}`
-  const body = prTemplate.replace(
-    '<!-- CHANGELOG_CONTENTS -->',
-    changelogContents.join('\n')
-  )
-  if (existingPullRequest) {
-    const pr = await octokit.rest.pulls.update({
-      owner: 'exivity',
-      repo: getRepository().repo,
-      pull_number: existingPullRequest.number,
-      title,
-      body,
-    })
-    info(`Updated pull request #${pr.data.number}`)
-    return pr.data
-  } else {
-    const pr = await octokit.rest.pulls.create({
-      owner: 'exivity',
-      repo: getRepository().repo,
-      title,
-      body,
-      head: PENDING_RELEASE_BRANCH,
-      base: DEFAULT_REPOSITORY_RELEASE_BRANCH,
-    })
-    info(`Opened pull request #${pr.data.number}`)
-    return pr.data
-  }
-}
-
-function createNote(commit: Commit) {
-  const commitMessageLines = commit.commit.message.split('\n')
-  const commitTitle = commitMessageLines[0]
-  const commitDescription = commitMessageLines.slice(1).join('\n')
-
-  const parsed = parseCommitMessage(commitTitle)
-  let type: ChangelogType
-  switch (true) {
-    case parsed.type?.toLowerCase() === 'feat':
-    case parsed.type?.toLowerCase() === 'feature':
-      type = 'feat'
-      break
-
-    case parsed.type?.toLowerCase() === 'fix':
-    case parsed.type?.toLowerCase() === 'bugfix':
-      type = 'fix'
-      break
-
-    default:
-      type = 'chore'
-  }
-
-  return {
-    repository: commit.repository,
-    sha: commit.sha,
-    author:
-      commit.author?.login ||
-      commit.author?.name ||
-      commit.author?.login ||
-      'unknown author',
-    date:
-      commit.commit.author?.date ||
-      commit.commit.committer?.date ||
-      'unknown date',
-    type,
-    breaking: parsed.breaking || false,
-    title: parsed.description || commitTitle,
-    description: commitDescription,
-    issues: [],
-  } as ChangelogItem
-}
-
-function buildChangelogItem(changelogItem: ChangelogItem) {
-  let result: string = `- **${changelogItem.title}**`
-  if (changelogItem.description) {
-    result += `\n  ${changelogItem.description.split('\n').join('\n  ')}`
-  }
-
-  return result
-}
-
-function buildChangelogSection(
-  header: string,
-  changelogItems: ChangelogItem[]
-) {
-  if (changelogItems.length === 0) {
-    return []
-  }
-
-  return [`### ${header}`, '', ...changelogItems.map(buildChangelogItem)]
-}
-
-function buildChangelogItems(changelogItems: ChangelogItem[]) {
-  return [
-    ...buildChangelogSection(
-      'New features',
-      changelogItems.filter((item) => item.type === 'feat')
-    ),
-    '',
-    ...buildChangelogSection(
-      'Bug fixes',
-      changelogItems.filter((item) => item.type === 'fix')
-    ),
-    '',
-    '',
-  ]
-}
-
-function buildChangelogHeader(version: string) {
-  return [`## ${version}`, '']
-}
-
-function buildChangelog(version: string, changelogItems: ChangelogItem[]) {
-  return [
-    ...buildChangelogHeader(version),
-    ...buildChangelogItems(changelogItems),
-  ]
-}
-
-function noChores(changelogItem: ChangelogItem) {
-  return changelogItem.type !== 'chore'
-}
-
-function byDate(a: ChangelogItem, b: ChangelogItem) {
-  if (a.date < b.date) {
-    return -1
-  }
-  if (a.date > b.date) {
-    return 1
-  }
-  return 0
-}
-
-function byType(a: ChangelogItem, b: ChangelogItem) {
-  // Sort notes by type, feat first, then fix
-  if (a.type < b.type) {
-    return -1
-  }
-  if (a.type > b.type) {
-    return 1
-  }
-  return 0
-}
+  byDate,
+  byType,
+  createChangelogItemFromCommit,
+  noChores,
+} from './common/changelog'
+import { DEFAULT_REPOSITORY_RELEASE_BRANCH } from './common/consts'
+import { readRepositories, readTextFile } from './common/files'
+import type { getJiraClient } from './common/jiraClient'
+import { createOrUpdatePullRequest } from './common/pr'
+import { ChangelogItem, Commit, Lockfile } from './common/types'
+import { inferVersionFromChangelog } from './common/version'
 
 export async function prepare({
   octokit,
+  jiraClient,
+  lockfilePath,
+  changelogPath,
   repositoriesJsonPath,
   prTemplatePath,
+  upcomingReleaseBranch,
+  releaseBranch,
   dryRun,
 }: {
   octokit: ReturnType<typeof getOctokit>
+  jiraClient: ReturnType<typeof getJiraClient>
+  lockfilePath: string
+  changelogPath: string
   repositoriesJsonPath: string
   prTemplatePath: string
+  upcomingReleaseBranch: string
+  releaseBranch: string
   dryRun: boolean
 }) {
   // Initial variables
   let changelog: ChangelogItem[] = []
-  let pendingVersionIncrement: VersionIncrement = 'patch'
-  let pendingVersion: string | null
   const pendingCommits: Commit[] = []
-  const pendingLockfile: Lockfile = { version: '', repositories: {} }
-
-  let repositories: Repositories
-  try {
-    repositories = JSON.parse(await readFile(repositoriesJsonPath, 'utf8'))
-  } catch (error: unknown) {
-    throw new Error(
-      `Can't read "${repositoriesJsonPath}" or it's not valid JSON`
-    )
-  }
-
-  let prTemplate: string
-  try {
-    prTemplate = await readFile(prTemplatePath, 'utf8')
-  } catch (error: unknown) {
-    throw new Error(`Can't read "${prTemplatePath}"`)
-  }
-
-  // Get latest version of current repository
+  const lockfile: Lockfile = { version: '', repositories: {} }
+  const repositories = await readRepositories(repositoriesJsonPath)
+  const prTemplate = await readTextFile(prTemplatePath)
   const latestVersion = await getLatestVersion()
 
   // Iterate over repositories
@@ -325,14 +64,16 @@ export async function prepare({
     // Find commit for latest version tag in target repository
     const latestVersionCommit = await getCommitForTag({
       octokit,
-      repository,
+      owner: 'exivity',
+      repo: repository,
       tag: latestVersion,
     })
 
     // Get a list of commits from the last version
     const repoCommits = await getCommitsSince({
       octokit,
-      repository,
+      owner: 'exivity',
+      repo: repository,
       branch:
         repositoryOptions.releaseBranch || DEFAULT_REPOSITORY_RELEASE_BRANCH,
       since: latestVersionCommit,
@@ -340,7 +81,7 @@ export async function prepare({
 
     // Record first commit in lockfile, or use latest version commit in case
     // there are no pending repo commits
-    pendingLockfile.repositories[repository] =
+    lockfile.repositories[repository] =
       repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha
 
     repoCommits.forEach((repoCommit) => {
@@ -350,13 +91,8 @@ export async function prepare({
       pendingCommits.push(commit)
 
       // Add to notes
-      changelog.push(createNote(commit))
+      changelog.push(createChangelogItemFromCommit(commit))
     })
-  }
-
-  if (changelog.length === 0) {
-    info(`Nothing to release`)
-    return
   }
 
   // Filter out chores
@@ -365,91 +101,113 @@ export async function prepare({
   // Sort notes by date
   changelog.sort(byDate)
 
+  // Run changelog plugins
+  changelog = await runPlugins({ octokit, jiraClient, changelog })
+
   // Sort notes by type, feat first, then fix
   changelog.sort(byType)
+
+  // Filter out chores again (plugins may have changed types)
+  changelog = changelog.filter(noChores)
+
+  // If there are no items in the changelog, we have nothing to release
+  if (changelog.length === 0) {
+    info(`Nothing to release`)
+    return
+  }
 
   // Display summary of notes
   info(`Changelog:`)
   changelog.forEach((item) => {
-    info(`- [${item.repository}] ${item.type}: ${item.title} (${item.sha})`)
+    info(
+      `- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`
+    )
   })
 
-  // Infer pending version increment
-  let incrementDescription: string
-  if (changelog.some((item) => item.breaking)) {
-    incrementDescription = 'major: breaking change detected'
-    pendingVersionIncrement = 'major'
-  } else if (changelog.some((item) => item.type === 'feat')) {
-    incrementDescription = 'minor: new feature detected'
-    pendingVersionIncrement = 'minor'
-  } else {
-    incrementDescription = 'patch: only fixes and/or chores detected'
-  }
+  // Infer upcoming version increment
+  const upcomingVersion = inferVersionFromChangelog(latestVersion, changelog)
+  lockfile.version = upcomingVersion
 
-  // Record pending version in lockfile
-  pendingVersion = semver.inc(latestVersion, pendingVersionIncrement)
-  if (pendingVersion === null) {
-    throw new Error(
-      `Could not calculate new version (incremeting ${latestVersion} to ${pendingVersionIncrement})`
-    )
+  // Switch to upcoming release branch and reset state to current release branch
+  if (dryRun) {
+    info(`Dry run, not switching branches`)
+  } else if (await gitHasChanges()) {
+    info('Detected uncommitted changes, aborting')
   } else {
-    pendingVersion = `v${pendingVersion}`
+    await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`)
   }
-  info(
-    `Version increment (${incrementDescription}): ${latestVersion} -> ${pendingVersion}`
-  )
-  pendingLockfile.version = pendingVersion
 
   // Write lockfile
   if (dryRun) {
     info(`Dry run, not writing lockfile`)
   } else {
-    await writeFile(
-      LOCKFILE_PATH,
-      JSON.stringify(pendingLockfile, null, 2) + '\n'
-    )
-    info(`Written lockfile to: ${LOCKFILE_PATH}`)
+    await writeFile(lockfilePath, JSON.stringify(lockfile, null, 2) + '\n')
+    info(`Written lockfile to: ${lockfilePath}`)
   }
 
   // Write CHANGELOG.md
-  const currentContents = existsSync(CHANGELOG_PATH)
-    ? await readFile(CHANGELOG_PATH, 'utf8')
+  const currentPublicChangelogContents = existsSync(changelogPath)
+    ? await readFile(changelogPath, 'utf8')
     : '# Changelog\n\n'
-  const changelogContents = buildChangelog(pendingVersion, changelog)
+  const publicChangelogContents = formatPublicChangelog(
+    upcomingVersion,
+    changelog
+  )
   if (dryRun) {
     info(`Dry run, not writing changelog`)
   } else {
     await writeFile(
-      CHANGELOG_PATH,
-      currentContents.replace(
+      changelogPath,
+      currentPublicChangelogContents.replace(
         '# Changelog\n\n',
-        `# Changelog\n\n${changelogContents.join('\n')}\n\n`
+        `# Changelog\n\n${publicChangelogContents}\n\n`
       )
     )
-    info(`Written changelog to: ${CHANGELOG_PATH}`)
+    info(`Written changelog to: ${changelogPath}`)
   }
 
-  // Checkout pending release branch
+  // Commit and push changes
+  const title = `chore: release ${upcomingVersion}`
   if (dryRun) {
-    info(`Dry run, not pushing changes`)
+    info(`Dry run, not committing and pushing changes`)
   } else {
-    await gitCreateBranch(PENDING_RELEASE_BRANCH)
     await gitAdd()
     await gitSetAuthor('Exivity bot', 'bot@exivity.com')
-    await gitCommit(`chore: new release ${pendingVersion}`)
-    // await gitPush(true)
-    info(`Written changes to branch: ${PENDING_RELEASE_BRANCH}`)
+    await gitCommit(title)
+    await gitPush(true)
+    info(`Written changes to branch: ${upcomingReleaseBranch}`)
   }
 
-  // Create pull request
+  // Set status on commit
+  const sha = await getCommitSha()
+  const state = changelog.some((item) => item.warnings.length > 0)
+    ? 'pending'
+    : 'success'
+  await writeStatus({
+    octokit,
+    owner: 'exivity',
+    repo: 'exivity',
+    sha,
+    state,
+    context: 'changelog',
+    description:
+      state === 'pending'
+        ? 'Changelog contains warnings'
+        : 'Changelog is good to go!',
+  })
+
+  // Create or update pull request
   if (dryRun) {
     info(`Dry run, not creating pull request`)
   } else {
+    const prChangelogContents = formatPrChangelog(upcomingVersion, changelog)
     const pr = await createOrUpdatePullRequest({
       octokit,
-      pendingVersion,
+      title,
       prTemplate,
-      changelogContents,
+      changelogContents: prChangelogContents,
+      upcomingReleaseBranch,
+      releaseBranch,
     })
     info(pr.html_url)
   }

@@ -308,6 +308,38 @@ export async function getCommit({
   ).data
 }
 
+export async function getCommitForTag({
+  octokit,
+  owner,
+  repo,
+  tag,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  tag: string
+}) {
+  try {
+    const commit = await getCommit({
+      octokit,
+      owner,
+      repo,
+      ref: `tags/${tag}`,
+    })
+    const timestamp = commit.commit.author?.date
+    if (typeof timestamp === 'undefined') {
+      throw new Error(
+        `Could not find timestamp for commit ${commit.sha} in ${owner}/${repo}...`
+      )
+    }
+    return { ...commit, tag, timestamp }
+  } catch (error: unknown) {
+    throw new Error(
+      `Could not find commit for tag ${tag} in ${owner}/${repo}...`
+    )
+  }
+}
+
 export async function getCommits({
   octokit,
   owner,
@@ -332,6 +364,35 @@ export async function getCommits({
   })
 }
 
+export async function getCommitsSince({
+  octokit,
+  owner,
+  repo,
+  branch,
+  since,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  branch: string
+  since: { timestamp: string; tag: string; sha: string }
+}) {
+  const commits = (
+    await getCommits({
+      octokit,
+      owner,
+      repo,
+      sha: branch,
+      since: since.timestamp,
+    })
+  ).filter((commit) => commit.sha !== since.sha)
+  info(
+    `  Found ${commits.length} commits since ${since.tag} in ${owner}/${repo}#${branch}`
+  )
+
+  return commits
+}
+
 export async function review({
   octokit,
   owner,
@@ -347,7 +408,7 @@ export async function review({
   event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT'
   body?: string
 }) {
-  info(`Calling GitHub API to ${event} PR ${pull_number} of repo ${repo}`)
+  info(`Will ${event} PR ${pull_number} of repo ${repo}...`)
 
   const repository = getRepository().fqn
   body = `${body}${body ? '\n\n---\n\n' : ''}\
@@ -385,9 +446,7 @@ export async function writeStatus({
   description?: string
   target_url?: string
 }) {
-  info(
-    `Calling GitHub API to write ${state} commit status for ${sha} of repo ${repo}`
-  )
+  info(`Writing ${state} commit status for ${sha} of repo ${repo}`)
 
   return (
     await octokit.rest.repos.createCommitStatus({
@@ -418,7 +477,7 @@ export async function dispatchWorkflow({
   inputs?: { [key: string]: string }
 }) {
   info(
-    `Calling GitHub API to dispatch workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:\n${JSON.stringify(
+    `Dispatching workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:\n${JSON.stringify(
       inputs,
       undefined,
       2
@@ -427,7 +486,7 @@ export async function dispatchWorkflow({
 
   // Create workflow-dispatch event
   // See: https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event
-  return await octokit.request(
+  return octokit.request(
     'POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches',
     {
       owner,
@@ -437,4 +496,90 @@ export async function dispatchWorkflow({
       inputs,
     }
   )
+}
+
+export async function createLightweightTag({
+  octokit,
+  owner,
+  repo,
+  tag,
+  sha,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  tag: string
+  sha: string
+}) {
+  info(`Creating lightweight tag "${tag}" on ${owner}:${repo}@${sha}...`)
+  return octokit.rest.git.createRef({
+    owner,
+    repo,
+    ref: `refs/tags/${tag}`,
+    sha,
+  })
+}
+
+export async function getAssociatedPullRequest({
+  octokit,
+  owner,
+  repo,
+  sha,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  sha: string
+}) {
+  // Obtain the the commits most recent associated pull requests
+  try {
+    const associatedPRs = await octokit.graphql<{
+      repository: {
+        commit: {
+          associatedPullRequests?: {
+            edges: {
+              node: {
+                number: number
+                title: string
+                body: string
+                url: string
+              }
+            }[]
+          }
+        }
+      }
+    }>(
+      `
+query ($sha: String!, $repo: String!, $owner: String!) {
+  repository(name: $repo, owner: $owner) {
+    commit: object(expression: $sha) {
+      ... on Commit {
+        associatedPullRequests(first: 1) {
+          edges {
+            node {
+              number
+              title
+              body
+              url
+            }
+          }
+        }
+      }
+    }
+  }
+}
+      `,
+      {
+        owner,
+        repo,
+        sha,
+      }
+    )
+    return associatedPRs.repository?.commit?.associatedPullRequests?.edges[0]
+      ?.node
+  } catch (err: any) {
+    throw new Error(
+      `Failed to fetch associated pull requests for ${owner}:${repo}@${sha}`
+    )
+  }
 }

@@ -1591,10 +1591,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning2(message, properties = {}) {
+    function warning3(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning2;
+    exports.warning = warning3;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -2673,7 +2673,7 @@ var require_exec = __commonJS({
       });
     }
     exports.exec = exec4;
-    function getExecOutput(commandLine, args, options) {
+    function getExecOutput2(commandLine, args, options) {
       var _a, _b;
       return __awaiter(this, void 0, void 0, function* () {
         let stdout = "";
@@ -2705,7 +2705,7 @@ var require_exec = __commonJS({
         };
       });
     }
-    exports.getExecOutput = getExecOutput;
+    exports.getExecOutput = getExecOutput2;
   }
 });
 
@@ -7995,11 +7995,26 @@ var import_path = require("path");
 async function unzipAll(path2) {
   for (const file of await import_fs.promises.readdir(path2)) {
     if (file.endsWith(".zip")) {
-      await (0, import_exec.exec)("7z", ["x", (0, import_path.join)(path2, file), `-o${path2}`]);
+      await exec("7z", ["x", (0, import_path.join)(path2, file), `-o${path2}`]);
     } else if ((await import_fs.promises.lstat((0, import_path.join)(path2, file))).isDirectory()) {
       unzipAll((0, import_path.join)(path2, file));
     }
   }
+}
+async function exec(command, args) {
+  const result = await (0, import_exec.getExecOutput)(command, args, {
+    silent: true,
+    ignoreReturnCode: true
+  });
+  if (result.exitCode !== 0) {
+    (0, import_core.warning)([
+      result.stdout.trim(),
+      result.stdout.trim() && result.stderr.trim() ? "\n" : "",
+      result.stderr.trim()
+    ].join(""));
+    throw new Error(`Process completed with exit code ${result.exitCode}`);
+  }
+  return result.stdout;
 }
 
 // lib/github.ts
