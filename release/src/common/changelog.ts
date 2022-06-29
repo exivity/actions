@@ -79,69 +79,7 @@ export function byType(a: ChangelogItem, b: ChangelogItem) {
   return 0
 }
 
-export function buildChangelog(
-  version: string,
-  changelogItems: ChangelogItem[]
-) {
-  return [
-    ...buildChangelogHeader(version),
-    ...buildChangelogItems(changelogItems),
-  ]
-}
-
-function buildChangelogHeader(version: string) {
-  return [`## ${version}`, '']
-}
-
-function buildChangelogItems(changelogItems: ChangelogItem[]) {
-  return [
-    ...buildChangelogSection(
-      'New features',
-      changelogItems.filter((item) => item.type === 'feat')
-    ),
-    '',
-    ...buildChangelogSection(
-      'Bug fixes',
-      changelogItems.filter((item) => item.type === 'fix')
-    ),
-    '',
-    '',
-  ]
-}
-
-function buildChangelogSection(
-  header: string,
-  changelogItems: ChangelogItem[]
-) {
-  if (changelogItems.length === 0) {
-    return []
-  }
-
-  return [`### ${header}`, '', ...changelogItems.map(buildChangelogItem)]
-}
-
-function buildChangelogItem(changelogItem: ChangelogItem) {
-  return [
-    `- **${changelogItem.title}**`,
-    ...(changelogItem.description
-      ? [`  ${changelogItem.description.split('\n').join('\n  ')}`]
-      : []),
-    ...(changelogItem.warnings.length > 0
-      ? [`⚠️ _WARNING:_ ${changelogItem.warnings.join('\n')}`]
-      : []),
-    '',
-    '<details>',
-    '  <summary></summary>',
-    '',
-    ...Object.entries(changelogItem.links).map(([type, link]) => {
-      return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`
-    }),
-    '</details>',
-    '',
-  ].join('\n')
-}
-
-function formatLinkType(type: string) {
+export function formatLinkType(type: string) {
   switch (type) {
     case 'commit':
       return 'Commit'

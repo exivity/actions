@@ -13,7 +13,7 @@ export async function createOrUpdatePullRequest({
   octokit: ReturnType<typeof getOctokit>
   title: string
   prTemplate: string
-  changelogContents: string[]
+  changelogContents: string
   upcomingReleaseBranch: string
   releaseBranch: string
 }) {
@@ -25,7 +25,7 @@ export async function createOrUpdatePullRequest({
   })
   const body = prTemplate.replace(
     '<!-- CHANGELOG_CONTENTS -->',
-    changelogContents.join('\n')
+    changelogContents
   )
   if (existingPullRequest) {
     const pr = await octokit.rest.pulls.update({

@@ -32,7 +32,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
         item.links.issue.description = getReleaseNotesDescription(issue) || null
       } else {
         item.warnings.push(
-          'No release notes title and/or description set in Jira'
+          `Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`
         )
       }
 

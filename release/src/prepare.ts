@@ -13,9 +13,9 @@ import {
   gitSetAuthor,
 } from '../../lib/git'
 import { getCommitForTag, getCommitsSince, writeStatus } from '../../lib/github'
+import { formatPrChangelog, formatPublicChangelog } from './changelogFormatters'
 import { runPlugins } from './changelogPlugins'
 import {
-  buildChangelog,
   byDate,
   byType,
   createChangelogItemFromCommit,
@@ -146,18 +146,21 @@ export async function prepare({
   }
 
   // Write CHANGELOG.md
-  const currentContents = existsSync(changelogPath)
+  const currentPublicChangelogContents = existsSync(changelogPath)
     ? await readFile(changelogPath, 'utf8')
     : '# Changelog\n\n'
-  const changelogContents = buildChangelog(upcomingVersion, changelog)
+  const publicChangelogContents = formatPublicChangelog(
+    upcomingVersion,
+    changelog
+  )
   if (dryRun) {
     info(`Dry run, not writing changelog`)
   } else {
     await writeFile(
       changelogPath,
-      currentContents.replace(
+      currentPublicChangelogContents.replace(
         '# Changelog\n\n',
-        `# Changelog\n\n${changelogContents.join('\n')}\n\n`
+        `# Changelog\n\n${publicChangelogContents}\n\n`
       )
     )
     info(`Written changelog to: ${changelogPath}`)
@@ -197,11 +200,12 @@ export async function prepare({
   if (dryRun) {
     info(`Dry run, not creating pull request`)
   } else {
+    const prChangelogContents = formatPrChangelog(upcomingVersion, changelog)
     const pr = await createOrUpdatePullRequest({
       octokit,
       title,
       prTemplate,
-      changelogContents,
+      changelogContents: prChangelogContents,
       upcomingReleaseBranch,
       releaseBranch,
     })

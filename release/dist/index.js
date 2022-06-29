@@ -67777,6 +67777,150 @@ function parseCommitMessage(message) {
   };
 }
 
+// release/src/common/changelog.ts
+function createChangelogItemFromCommit(commit) {
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+  const commitMessageLines = commit.commit.message.split("\n");
+  const commitTitle = commitMessageLines[0];
+  const commitDescription = commitMessageLines.slice(1).join("\n");
+  const parsed = parseCommitMessage(commitTitle);
+  let type;
+  switch (true) {
+    case ((_a = parsed.type) == null ? void 0 : _a.toLowerCase()) === "feat":
+    case ((_b = parsed.type) == null ? void 0 : _b.toLowerCase()) === "feature":
+      type = "feat";
+      break;
+    case ((_c = parsed.type) == null ? void 0 : _c.toLowerCase()) === "fix":
+    case ((_d = parsed.type) == null ? void 0 : _d.toLowerCase()) === "bugfix":
+      type = "fix";
+      break;
+    default:
+      type = "chore";
+  }
+  const item = {
+    title: parsed.description || commitTitle,
+    description: null,
+    type,
+    breaking: parsed.breaking || false,
+    warnings: [],
+    links: {
+      commit: {
+        repository: commit.repository,
+        sha: commit.sha,
+        originalTitle: commitTitle,
+        title: parsed.description || commitTitle,
+        description: commitDescription,
+        author: ((_e = commit.author) == null ? void 0 : _e.login) || ((_f = commit.author) == null ? void 0 : _f.name) || ((_g = commit.author) == null ? void 0 : _g.login) || "unknown author",
+        date: ((_h = commit.commit.author) == null ? void 0 : _h.date) || ((_i = commit.commit.committer) == null ? void 0 : _i.date) || "unknown date",
+        slug: `exivity/${commit.repository}@${commit.sha.substring(0, 7)}`,
+        url: `https://github.com/exivity/${commit.repository}/commit/${commit.sha}`
+      }
+    }
+  };
+  return item;
+}
+function noChores(changelogItem) {
+  return changelogItem.type !== "chore";
+}
+function byDate(a, b) {
+  if (a.links.commit.date < b.links.commit.date) {
+    return -1;
+  }
+  if (a.links.commit.date > b.links.commit.date) {
+    return 1;
+  }
+  return 0;
+}
+function byType(a, b) {
+  if (a.type < b.type) {
+    return -1;
+  }
+  if (a.type > b.type) {
+    return 1;
+  }
+  return 0;
+}
+function formatLinkType(type) {
+  switch (type) {
+    case "commit":
+      return "Commit";
+    case "pr":
+      return "Pull request";
+    case "issue":
+      return "Issue";
+    case "milestone":
+      return "Milestone";
+    default:
+      return "Unknown";
+  }
+}
+
+// release/src/changelogFormatters/prChangelog.ts
+function formatPrChangelog(version, changelog) {
+  return [
+    ...buildChangelogSection("New features", changelog.filter((item) => item.type === "feat")),
+    "",
+    ...buildChangelogSection("Bug fixes", changelog.filter((item) => item.type === "fix")),
+    "",
+    ""
+  ].join("\n");
+}
+function buildChangelogSection(header, changelogItems) {
+  if (changelogItems.length === 0) {
+    return [];
+  }
+  return [`### ${header}`, "", ...changelogItems.map(buildChangelogItem)];
+}
+function buildChangelogItem(changelogItem) {
+  return [
+    `- **${changelogItem.title}**`,
+    ...changelogItem.description ? [`  ${changelogItem.description.split("\n").join("\n  ")}`] : [],
+    ...changelogItem.warnings.length > 0 ? [`\u26A0\uFE0F _WARNING:_ ${changelogItem.warnings.join("\n")}`] : [],
+    ...Object.entries(changelogItem.links).map(([type, link]) => {
+      return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`;
+    })
+  ].join("\n");
+}
+
+// release/src/changelogFormatters/publicChangelog.ts
+function formatPublicChangelog(version, changelog) {
+  return [
+    ...buildChangelogHeader(version),
+    ...buildChangelogItems(changelog)
+  ].join("\n");
+}
+function buildChangelogHeader(version) {
+  return [`## ${version}`, ""];
+}
+function buildChangelogItems(changelogItems) {
+  return [
+    ...buildChangelogSection2("New features", changelogItems.filter((item) => item.type === "feat")),
+    "",
+    ...buildChangelogSection2("Bug fixes", changelogItems.filter((item) => item.type === "fix")),
+    "",
+    ""
+  ];
+}
+function buildChangelogSection2(header, changelogItems) {
+  if (changelogItems.length === 0) {
+    return [];
+  }
+  return [`### ${header}`, "", ...changelogItems.map(buildChangelogItem2)];
+}
+function buildChangelogItem2(changelogItem) {
+  return [
+    `- **${changelogItem.title}**`,
+    ...changelogItem.description ? [`  ${changelogItem.description.split("\n").join("\n  ")}`] : [],
+    "",
+    "<!--",
+    ...Object.entries(changelogItem.links).map(([type, link]) => {
+      return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`;
+    }),
+    "-->",
+    ""
+  ].join("\n");
+}
+
 // release/src/changelogPlugins/associatedPullRequest.ts
 async function associatedPullRequestPlugin({
   octokit,
@@ -67827,7 +67971,7 @@ async function jiraPlugin({ jiraClient, changelog }) {
         item.links.issue.title = releaseNotesTitle;
         item.links.issue.description = getReleaseNotesDescription(issue) || null;
       } else {
-        item.warnings.push("No release notes title and/or description set in Jira");
+        item.warnings.push(`Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`);
       }
       if (issue.fields.issuetype.name === "Chore" /* Chore */) {
         item.type = "chore";
@@ -67898,124 +68042,6 @@ async function runPlugins({
   return changelog;
 }
 
-// release/src/common/changelog.ts
-function createChangelogItemFromCommit(commit) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
-  const commitMessageLines = commit.commit.message.split("\n");
-  const commitTitle = commitMessageLines[0];
-  const commitDescription = commitMessageLines.slice(1).join("\n");
-  const parsed = parseCommitMessage(commitTitle);
-  let type;
-  switch (true) {
-    case ((_a = parsed.type) == null ? void 0 : _a.toLowerCase()) === "feat":
-    case ((_b = parsed.type) == null ? void 0 : _b.toLowerCase()) === "feature":
-      type = "feat";
-      break;
-    case ((_c = parsed.type) == null ? void 0 : _c.toLowerCase()) === "fix":
-    case ((_d = parsed.type) == null ? void 0 : _d.toLowerCase()) === "bugfix":
-      type = "fix";
-      break;
-    default:
-      type = "chore";
-  }
-  const item = {
-    title: parsed.description || commitTitle,
-    description: null,
-    type,
-    breaking: parsed.breaking || false,
-    warnings: [],
-    links: {
-      commit: {
-        repository: commit.repository,
-        sha: commit.sha,
-        originalTitle: commitTitle,
-        title: parsed.description || commitTitle,
-        description: commitDescription,
-        author: ((_e = commit.author) == null ? void 0 : _e.login) || ((_f = commit.author) == null ? void 0 : _f.name) || ((_g = commit.author) == null ? void 0 : _g.login) || "unknown author",
-        date: ((_h = commit.commit.author) == null ? void 0 : _h.date) || ((_i = commit.commit.committer) == null ? void 0 : _i.date) || "unknown date",
-        slug: `exivity/${commit.repository}@${commit.sha.substring(0, 7)}`,
-        url: `https://github.com/exivity/${commit.repository}/commit/${commit.sha}`
-      }
-    }
-  };
-  return item;
-}
-function noChores(changelogItem) {
-  return changelogItem.type !== "chore";
-}
-function byDate(a, b) {
-  if (a.links.commit.date < b.links.commit.date) {
-    return -1;
-  }
-  if (a.links.commit.date > b.links.commit.date) {
-    return 1;
-  }
-  return 0;
-}
-function byType(a, b) {
-  if (a.type < b.type) {
-    return -1;
-  }
-  if (a.type > b.type) {
-    return 1;
-  }
-  return 0;
-}
-function buildChangelog(version, changelogItems) {
-  return [
-    ...buildChangelogHeader(version),
-    ...buildChangelogItems(changelogItems)
-  ];
-}
-function buildChangelogHeader(version) {
-  return [`## ${version}`, ""];
-}
-function buildChangelogItems(changelogItems) {
-  return [
-    ...buildChangelogSection("New features", changelogItems.filter((item) => item.type === "feat")),
-    "",
-    ...buildChangelogSection("Bug fixes", changelogItems.filter((item) => item.type === "fix")),
-    "",
-    ""
-  ];
-}
-function buildChangelogSection(header, changelogItems) {
-  if (changelogItems.length === 0) {
-    return [];
-  }
-  return [`### ${header}`, "", ...changelogItems.map(buildChangelogItem)];
-}
-function buildChangelogItem(changelogItem) {
-  return [
-    `- **${changelogItem.title}**`,
-    ...changelogItem.description ? [`  ${changelogItem.description.split("\n").join("\n  ")}`] : [],
-    ...changelogItem.warnings.length > 0 ? [`\u26A0\uFE0F _WARNING:_ ${changelogItem.warnings.join("\n")}`] : [],
-    "",
-    "<details>",
-    "  <summary></summary>",
-    "",
-    ...Object.entries(changelogItem.links).map(([type, link]) => {
-      return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`;
-    }),
-    "</details>",
-    ""
-  ].join("\n");
-}
-function formatLinkType(type) {
-  switch (type) {
-    case "commit":
-      return "Commit";
-    case "pr":
-      return "Pull request";
-    case "issue":
-      return "Issue";
-    case "milestone":
-      return "Milestone";
-    default:
-      return "Unknown";
-  }
-}
-
 // release/src/common/consts.ts
 var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
 
@@ -68058,7 +68084,7 @@ async function createOrUpdatePullRequest({
     repo: getRepository().repo,
     ref: upcomingReleaseBranch
   });
-  const body = prTemplate.replace("<!-- CHANGELOG_CONTENTS -->", changelogContents.join("\n"));
+  const body = prTemplate.replace("<!-- CHANGELOG_CONTENTS -->", changelogContents);
   if (existingPullRequest) {
     const pr = await octokit.rest.pulls.update({
       owner: "exivity",
@@ -68178,14 +68204,14 @@ async function prepare({
     await (0, import_promises2.writeFile)(lockfilePath, JSON.stringify(lockfile, null, 2) + "\n");
     (0, import_console2.info)(`Written lockfile to: ${lockfilePath}`);
   }
-  const currentContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises2.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
-  const changelogContents = buildChangelog(upcomingVersion, changelog);
+  const currentPublicChangelogContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises2.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
+  const publicChangelogContents = formatPublicChangelog(upcomingVersion, changelog);
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing changelog`);
   } else {
-    await (0, import_promises2.writeFile)(changelogPath, currentContents.replace("# Changelog\n\n", `# Changelog
+    await (0, import_promises2.writeFile)(changelogPath, currentPublicChangelogContents.replace("# Changelog\n\n", `# Changelog
 
-${changelogContents.join("\n")}
+${publicChangelogContents}
 
 `));
     (0, import_console2.info)(`Written changelog to: ${changelogPath}`);
@@ -68214,11 +68240,12 @@ ${changelogContents.join("\n")}
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not creating pull request`);
   } else {
+    const prChangelogContents = formatPrChangelog(upcomingVersion, changelog);
     const pr = await createOrUpdatePullRequest({
       octokit,
       title,
       prTemplate,
-      changelogContents,
+      changelogContents: prChangelogContents,
       upcomingReleaseBranch,
       releaseBranch
     });
