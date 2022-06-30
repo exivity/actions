@@ -1,13 +1,12 @@
 import { Version2Client } from 'jira.js'
-import { sleep } from '../../../lib/core'
 
 const transitionIds = {
-  'Done->Released': '',
-  'New->Accepted': '',
-  'Accepted->InProgress': '',
-  'InProgress->Done': '',
-  'NoActionNeeded->New': '',
-  'InReview->Done': '',
+  'Done->Released': '211',
+  'New->Accepted': '171',
+  'Accepted->InProgress': '71',
+  'InProgress->Done': '91',
+  'NoActionNeeded->New': '201',
+  'InReview->Done': '91',
 }
 
 export function getJiraClient(username: string, token: string) {
@@ -72,7 +71,5 @@ export async function transitionToReleased(
         id: transitionIds[flowKey],
       },
     })
-
-    sleep(100)
   }
 }

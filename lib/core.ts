@@ -99,7 +99,3 @@ export async function exec(command: string, args?: string[]) {
 
   return result.stdout
 }
-
-export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}

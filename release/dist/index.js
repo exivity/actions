@@ -67498,7 +67498,7 @@ var require_semver2 = __commonJS({
 });
 
 // release/src/index.ts
-var import_core10 = __toESM(require_core());
+var import_core9 = __toESM(require_core());
 var import_github7 = __toESM(require_github());
 
 // lib/core.ts
@@ -67530,9 +67530,6 @@ async function exec(command, args) {
     throw new Error(`Process completed with exit code ${result.exitCode}`);
   }
   return result.stdout;
-}
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // lib/github.ts
@@ -67748,12 +67745,12 @@ query ($sha: String!, $repo: String!, $owner: String!) {
 // release/src/common/jiraClient.ts
 var import_jira = __toESM(require_out());
 var transitionIds = {
-  "Done->Released": "",
-  "New->Accepted": "",
-  "Accepted->InProgress": "",
-  "InProgress->Done": "",
-  "NoActionNeeded->New": "",
-  "InReview->Done": ""
+  "Done->Released": "211",
+  "New->Accepted": "171",
+  "Accepted->InProgress": "71",
+  "InProgress->Done": "91",
+  "NoActionNeeded->New": "201",
+  "InReview->Done": "91"
 };
 function getJiraClient(username, token) {
   return new import_jira.Version2Client({
@@ -67810,7 +67807,6 @@ async function transitionToReleased(issueIdOrKey, jiraClient) {
         id: transitionIds[flowKey]
       }
     });
-    sleep(100);
   }
 }
 
@@ -67841,7 +67837,7 @@ var import_fs = require("fs");
 var import_promises2 = require("fs/promises");
 
 // lib/git.ts
-var import_core4 = __toESM(require_core());
+var import_core3 = __toESM(require_core());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
 async function getCommitSha() {
@@ -67893,12 +67889,12 @@ async function getLatestVersion() {
   if (typeof latestVersionTag === "undefined") {
     throw new Error("Could not determine latest version");
   }
-  (0, import_core4.info)(`Latest version in ${repo.fqn}: ${latestVersionTag}`);
+  (0, import_core3.info)(`Latest version in ${repo.fqn}: ${latestVersionTag}`);
   return latestVersionTag;
 }
 
 // lib/conventionalCommits.ts
-var import_core6 = __toESM(require_core());
+var import_core5 = __toESM(require_core());
 var types = {
   feat: {
     description: "A new feature",
@@ -68260,7 +68256,7 @@ async function readRepositories(repositoriesJsonPath) {
 }
 
 // release/src/common/pr.ts
-var import_core7 = __toESM(require_core());
+var import_core6 = __toESM(require_core());
 async function createOrUpdatePullRequest({
   octokit,
   title,
@@ -68284,7 +68280,7 @@ async function createOrUpdatePullRequest({
       title,
       body
     });
-    (0, import_core7.info)(`Updated pull request #${pr.data.number}`);
+    (0, import_core6.info)(`Updated pull request #${pr.data.number}`);
     return pr.data;
   } else {
     const pr = await octokit.rest.pulls.create({
@@ -68295,13 +68291,13 @@ async function createOrUpdatePullRequest({
       head: upcomingReleaseBranch,
       base: releaseBranch
     });
-    (0, import_core7.info)(`Opened pull request #${pr.data.number}`);
+    (0, import_core6.info)(`Opened pull request #${pr.data.number}`);
     return pr.data;
   }
 }
 
 // release/src/common/version.ts
-var import_core8 = __toESM(require_core());
+var import_core7 = __toESM(require_core());
 var import_semver2 = __toESM(require_semver2());
 function inferVersionFromChangelog(from, changelog) {
   let upcomingVersionIncrement = "patch";
@@ -68322,7 +68318,7 @@ function inferVersionFromChangelog(from, changelog) {
   } else {
     upcomingVersion = `v${upcomingVersion}`;
   }
-  (0, import_core8.info)(`Version increment (${incrementDescription}): ${from} -> ${upcomingVersion}`);
+  (0, import_core7.info)(`Version increment (${incrementDescription}): ${from} -> ${upcomingVersion}`);
   return upcomingVersion;
 }
 
@@ -68445,7 +68441,7 @@ ${publicChangelogContents}
 }
 
 // release/src/release.ts
-var import_core9 = __toESM(require_core());
+var import_core8 = __toESM(require_core());
 async function release({
   octokit,
   jiraClient,
@@ -68458,15 +68454,15 @@ async function release({
   const repository = getRepository();
   const lockfile = await readLockfile(lockfilePath);
   if (dryRun) {
-    (0, import_core9.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_core8.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_core9.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_core8.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
   for (const [repository2, sha] of Object.entries(lockfile.repositories)) {
     if (dryRun) {
-      (0, import_core9.info)(`Dry run, not tagging ${repository2}`);
+      (0, import_core8.info)(`Dry run, not tagging ${repository2}`);
     } else {
       await createLightweightTag({
         octokit,
@@ -68478,12 +68474,12 @@ async function release({
     }
   }
   if (dryRun) {
-    (0, import_core9.info)(`Dry run, not transitioning issues`);
+    (0, import_core8.info)(`Dry run, not transitioning issues`);
   } else {
     const issueIds = await getAllIssueIdsInLatestTag();
     await Promise.all(issueIds.map(async (issueIdOrKey) => {
       await transitionToReleased(issueIdOrKey, jiraClient);
-      (0, import_core9.info)(`Transitioned issue ${issueIdOrKey} to Released`);
+      (0, import_core8.info)(`Transitioned issue ${issueIdOrKey} to Released`);
     }));
   }
 }
@@ -68493,17 +68489,17 @@ var ModePing = "ping";
 var ModePrepare = "prepare";
 var ModeRelease = "release";
 async function run() {
-  const mode = (0, import_core10.getInput)("mode");
-  const lockfilePath = (0, import_core10.getInput)("lockfile");
-  const changelogPath = (0, import_core10.getInput)("changelog");
-  const repositoriesJsonPath = (0, import_core10.getInput)("repositories");
-  const prTemplatePath = (0, import_core10.getInput)("pr-template");
-  const upcomingReleaseBranch = (0, import_core10.getInput)("upcoming-release-branch");
-  const releaseBranch = (0, import_core10.getInput)("release-branch");
+  const mode = (0, import_core9.getInput)("mode");
+  const lockfilePath = (0, import_core9.getInput)("lockfile");
+  const changelogPath = (0, import_core9.getInput)("changelog");
+  const repositoriesJsonPath = (0, import_core9.getInput)("repositories");
+  const prTemplatePath = (0, import_core9.getInput)("pr-template");
+  const upcomingReleaseBranch = (0, import_core9.getInput)("upcoming-release-branch");
+  const releaseBranch = (0, import_core9.getInput)("release-branch");
   const dryRun = getBooleanInput("dry-run", false);
   const ghToken = getToken();
-  const jiraUsername = (0, import_core10.getInput)("jira-username");
-  const jiraToken = (0, import_core10.getInput)("jira-token");
+  const jiraUsername = (0, import_core9.getInput)("jira-username");
+  const jiraToken = (0, import_core9.getInput)("jira-token");
   const octokit = (0, import_github7.getOctokit)(ghToken);
   const jiraClient = jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null;
   switch (mode) {
@@ -68542,7 +68538,7 @@ async function run() {
       throw new Error(`Unknown mode "${mode}"`);
   }
 }
-run().catch(import_core10.setFailed);
+run().catch(import_core9.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
