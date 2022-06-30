@@ -1,6 +1,6 @@
 import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { gitPushTags, gitTag } from '../../lib/git'
+import { gitPushTags, gitTag, getAllIssueIdsInLatestTag } from '../../lib/git'
 import {
   createLightweightTag,
   getEventData,
@@ -52,5 +52,19 @@ export async function release({
         sha,
       })
     }
+  }
+
+  if (dryRun) {
+    info(`Dry run, not transitioning issues`)
+  } else {
+    const issueIds = await getAllIssueIdsInLatestTag()
+
+    await Promise.all(
+      issueIds.map((issueIdOrKey) => {
+        return jiraClient.issues.doTransition({
+          issueIdOrKey,
+        })
+      })
+    )
   }
 }
