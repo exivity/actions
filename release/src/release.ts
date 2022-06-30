@@ -8,7 +8,7 @@ import {
   getRepository,
 } from '../../lib/github'
 import { readLockfile } from './common/files'
-import type { getJiraClient } from './common/jiraClient'
+import { getJiraClient, transitionToReleased } from './common/jiraClient'
 
 export async function release({
   octokit,
@@ -60,10 +60,10 @@ export async function release({
     const issueIds = await getAllIssueIdsInLatestTag()
 
     await Promise.all(
-      issueIds.map((issueIdOrKey) => {
-        return jiraClient.issues.doTransition({
-          issueIdOrKey,
-        })
+      issueIds.map(async (issueIdOrKey) => {
+        await transitionToReleased(issueIdOrKey, jiraClient)
+
+        info(`Transitioned issue ${issueIdOrKey} to Released`)
       })
     )
   }
