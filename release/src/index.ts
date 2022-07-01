@@ -71,7 +71,6 @@ async function run() {
         octokit,
         jiraClient,
         lockfilePath,
-        repositoriesJsonPath,
         dryRun,
       })
       break

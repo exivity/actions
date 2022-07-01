@@ -67565,23 +67565,6 @@ function getToken(inputName = "gh-token") {
   }
   return ghToken;
 }
-function getEventName(supportedEvents) {
-  const eventName = import_utils.context.eventName;
-  if (!eventName) {
-    throw new Error("The GitHub event name is missing");
-  }
-  if (supportedEvents && !supportedEvents.includes(eventName)) {
-    throw new Error(`The event ${eventName} is not supported by this action`);
-  }
-  return eventName;
-}
-function getEventData(eventName) {
-  const payload = import_utils.context.payload;
-  if (Object.keys(payload).length === 0) {
-    throw new Error("The GitHub event payload is missing");
-  }
-  return payload;
-}
 async function getCommit({
   octokit,
   owner,
@@ -67847,8 +67830,7 @@ async function getAllTags() {
   return (await exec("git tag")).split(import_os.EOL).filter((item) => item);
 }
 async function getAllIssueIdsInLatestTag() {
-  const regex = "'s/.*(EXVT-[0-9]*).*//p'";
-  return exec(`git log --pretty=format:"%s %b" $(git describe --tags --abbrev=0 HEAD^1)..HEAD | sed -n ${regex} | sort -r | uniq`).then((issues) => issues.split(/\r?\n/));
+  return exec(`git log --pretty=format:"%s %b" $(git describe --tags --abbrev=0 HEAD^1)..HEAD | sed -n 's/.*(EXVT-[0-9]*).*//p' | sort -r | uniq`).then((issues) => issues.split(/\r?\n/));
 }
 async function getAllSemverTags() {
   const tags = await getAllTags();
@@ -68451,11 +68433,8 @@ async function release({
   octokit,
   jiraClient,
   lockfilePath,
-  repositoriesJsonPath,
   dryRun
 }) {
-  const eventName = getEventName(["push"]);
-  const eventData = getEventData(eventName);
   const repository = getRepository();
   const lockfile = await readLockfile(lockfilePath);
   if (dryRun) {
@@ -68536,7 +68515,6 @@ async function run() {
         octokit,
         jiraClient,
         lockfilePath,
-        repositoriesJsonPath,
         dryRun
       });
       break;
