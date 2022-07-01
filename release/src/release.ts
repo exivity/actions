@@ -54,17 +54,18 @@ export async function release({
     }
   }
 
-  if (dryRun) {
-    info(`Dry run, not transitioning issues`)
-  } else {
-    const issueIds = await getAllIssueIdsInLatestTag()
+  const issueIds = await getAllIssueIdsInLatestTag()
 
-    await Promise.all(
-      issueIds.map(async (issueIdOrKey) => {
-        await transitionToReleased(issueIdOrKey, jiraClient)
+  info(`Transitioning:`)
+  info(`${issueIds.join('\n')}`)
 
-        info(`Transitioned issue ${issueIdOrKey} to Released`)
-      })
-    )
-  }
+  await Promise.all(
+    issueIds.map((issueIdOrKey) => {
+      return transitionToReleased(issueIdOrKey, jiraClient)
+    })
+  ).then(() => {
+    issueIds.forEach((issueIdOrKey) => {
+      info(`Transitioned issue ${issueIdOrKey} to released`)
+    })
+  })
 }
