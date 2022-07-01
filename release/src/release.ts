@@ -1,6 +1,6 @@
 import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { gitPushTags, gitTag, getAllIssueIdsInLatestTag } from '../../lib/git'
+import { gitPushTags, gitTag, getJiraIdsFromLatestTag } from '../../lib/git'
 import { createLightweightTag, getRepository } from '../../lib/github'
 import { readLockfile } from './common/files'
 import { getJiraClient, transitionToReleased } from './common/jiraClient'
@@ -45,7 +45,7 @@ export async function release({
     }
   }
 
-  const issueIds = await getAllIssueIdsInLatestTag()
+  const issueIds = await getJiraIdsFromLatestTag()
 
   info(`Transitioning:`)
   info(`${issueIds.join('\n')}`)

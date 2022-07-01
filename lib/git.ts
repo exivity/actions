@@ -31,6 +31,13 @@ export async function getAllIssueIdsInLatestTag() {
   ).then((issues) => issues.split(/\r?\n/))
 }
 
+export async function getJiraIdsFromLatestTag() {
+  return exec('git log -1 --pretty=format:"%B"').then((log) => {
+    const jiraIds = log.match(/\bEX-\d+\b/g)
+    return jiraIds ? jiraIds : []
+  })
+}
+
 export async function getAllSemverTags() {
   const tags = await getAllTags()
   return tags.filter((tag) => semver.valid(tag))

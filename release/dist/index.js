@@ -67829,8 +67829,11 @@ async function getCommitSha() {
 async function getAllTags() {
   return (await exec("git tag")).split(import_os.EOL).filter((item) => item);
 }
-async function getAllIssueIdsInLatestTag() {
-  return exec(`git log --pretty=format:"%s %b" $(git describe --tags --abbrev=0 HEAD^1)..HEAD | sed -n 's/.*(EXVT-[0-9]*).*//p' | sort -r | uniq`).then((issues) => issues.split(/\r?\n/));
+async function getJiraIdsFromLatestTag() {
+  return exec('git log -1 --pretty=format:"%B"').then((log) => {
+    const jiraIds = log.match(/\bEX-\d+\b/g);
+    return jiraIds ? jiraIds : [];
+  });
 }
 async function getAllSemverTags() {
   const tags = await getAllTags();
@@ -68457,7 +68460,7 @@ async function release({
       });
     }
   }
-  const issueIds = await getAllIssueIdsInLatestTag();
+  const issueIds = await getJiraIdsFromLatestTag();
   (0, import_core8.info)(`Transitioning:`);
   (0, import_core8.info)(`${issueIds.join("\n")}`);
   await Promise.all(issueIds.map((issueIdOrKey) => {
