@@ -24,20 +24,6 @@ export async function getAllTags() {
   return (await exec('git tag')).split(EOL).filter((item) => item)
 }
 
-// Parse commit log of latest tag to parent of HEAD to get list of issues in latest tag
-export async function getAllIssueIdsInLatestTag() {
-  return exec(
-    'git log --pretty=format:"%s %b" $(git describe --tags --abbrev=0 HEAD^1)..HEAD | sed -n \'s/.*(EXVT-[0-9]*).*/\1/p\' | sort -r | uniq'
-  ).then((issues) => issues.split(/\r?\n/))
-}
-
-export async function getJiraIdsFromLatestTag() {
-  return exec('git log -1 --pretty=format:"%B"').then((log) => {
-    const jiraIds = log.match(/EXVT-\d+/g)
-    return jiraIds ? jiraIds : []
-  })
-}
-
 export async function getAllSemverTags() {
   const tags = await getAllTags()
   return tags.filter((tag) => semver.valid(tag))

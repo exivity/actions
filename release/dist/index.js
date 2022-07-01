@@ -14792,7 +14792,7 @@ var require_lodash = __commonJS({
           if (fromIndex < 0) {
             fromIndex = nativeMax(length + fromIndex, 0);
           }
-          return isString(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
+          return isString2(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
         }
         var invokeMap = baseRest(function(collection, path, args) {
           var index = -1, isFunc = typeof path == "function", result2 = isArrayLike(collection) ? Array2(collection.length) : [];
@@ -14860,7 +14860,7 @@ var require_lodash = __commonJS({
             return 0;
           }
           if (isArrayLike(collection)) {
-            return isString(collection) ? stringSize(collection) : collection.length;
+            return isString2(collection) ? stringSize(collection) : collection.length;
           }
           var tag = getTag(collection);
           if (tag == mapTag || tag == setTag) {
@@ -15295,7 +15295,7 @@ var require_lodash = __commonJS({
           return isInteger(value) && value >= -MAX_SAFE_INTEGER && value <= MAX_SAFE_INTEGER;
         }
         var isSet = nodeIsSet ? baseUnary(nodeIsSet) : baseIsSet;
-        function isString(value) {
+        function isString2(value) {
           return typeof value == "string" || !isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag;
         }
         function isSymbol(value) {
@@ -15320,7 +15320,7 @@ var require_lodash = __commonJS({
             return [];
           }
           if (isArrayLike(value)) {
-            return isString(value) ? stringToArray(value) : copyArray(value);
+            return isString2(value) ? stringToArray(value) : copyArray(value);
           }
           if (symIterator && value[symIterator]) {
             return iteratorToArray(value[symIterator]());
@@ -16346,7 +16346,7 @@ var require_lodash = __commonJS({
         lodash.isRegExp = isRegExp;
         lodash.isSafeInteger = isSafeInteger;
         lodash.isSet = isSet;
-        lodash.isString = isString;
+        lodash.isString = isString2;
         lodash.isSymbol = isSymbol;
         lodash.isTypedArray = isTypedArray;
         lodash.isUndefined = isUndefined;
@@ -18287,7 +18287,7 @@ var require_utils6 = __commonJS({
       }
       return result;
     }
-    function isString(val) {
+    function isString2(val) {
       return typeof val === "string";
     }
     function isNumber(val) {
@@ -18437,7 +18437,7 @@ var require_utils6 = __commonJS({
       isBuffer,
       isFormData,
       isArrayBufferView,
-      isString,
+      isString: isString2,
       isNumber,
       isObject,
       isPlainObject,
@@ -67829,12 +67829,6 @@ async function getCommitSha() {
 async function getAllTags() {
   return (await exec("git tag")).split(import_os.EOL).filter((item) => item);
 }
-async function getJiraIdsFromLatestTag() {
-  return exec('git log -1 --pretty=format:"%B"').then((log) => {
-    const jiraIds = log.match(/EXVT-\d+/g);
-    return jiraIds ? jiraIds : [];
-  });
-}
 async function getAllSemverTags() {
   const tags = await getAllTags();
   return tags.filter((tag) => import_semver.default.valid(tag));
@@ -68309,6 +68303,9 @@ function inferVersionFromChangelog(from, changelog) {
 }
 
 // release/src/prepare.ts
+function isString(x) {
+  return typeof x === "string";
+}
 async function prepare({
   octokit,
   jiraClient,
@@ -68356,7 +68353,7 @@ async function prepare({
   changelog = changelog.filter(noChores);
   if (changelog.length === 0) {
     (0, import_console2.info)(`Nothing to release`);
-    return;
+    return [];
   }
   (0, import_console2.info)(`Changelog:`);
   changelog.forEach((item) => {
@@ -68428,6 +68425,10 @@ ${publicChangelogContents}
     });
     (0, import_console2.info)(pr.html_url);
   }
+  return changelog.map((item) => {
+    var _a;
+    return (_a = item.links.issue) == null ? void 0 : _a.slug;
+  }).filter(isString);
 }
 
 // release/src/release.ts
@@ -68436,6 +68437,7 @@ async function release({
   octokit,
   jiraClient,
   lockfilePath,
+  jiraIssueIds,
   dryRun
 }) {
   const repository = getRepository();
@@ -68463,13 +68465,12 @@ async function release({
   if (dryRun) {
     (0, import_core8.info)(`Dry run, not transitioning issues`);
   } else {
-    const issueIds = await getJiraIdsFromLatestTag();
     (0, import_core8.info)(`Transitioning ticket status of:`);
-    (0, import_core8.info)(`${issueIds.length > 0 ? "found no tickets" : issueIds.join("\n")}`);
-    await Promise.all(issueIds.map((issueIdOrKey) => {
+    (0, import_core8.info)(`${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`);
+    await Promise.all(jiraIssueIds.map((issueIdOrKey) => {
       return transitionToReleased(issueIdOrKey, jiraClient);
     })).then(() => {
-      issueIds.forEach((issueIdOrKey) => {
+      jiraIssueIds.forEach((issueIdOrKey) => {
         (0, import_core8.info)(`Transitioned issue ${issueIdOrKey} to released`);
       });
     });
@@ -68494,6 +68495,7 @@ async function run() {
   const jiraToken = (0, import_core9.getInput)("jira-token");
   const octokit = (0, import_github7.getOctokit)(ghToken);
   const jiraClient = jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null;
+  let jiraIssueIds = [];
   switch (mode) {
     case ModePing:
       await ping({ octokit, dryRun });
@@ -68502,7 +68504,7 @@ async function run() {
       if (!jiraClient) {
         throw new Error("jira-username and jira-token inputs are required in prepare mode");
       }
-      await prepare({
+      jiraIssueIds = await prepare({
         octokit,
         jiraClient,
         lockfilePath,
@@ -68522,6 +68524,7 @@ async function run() {
         octokit,
         jiraClient,
         lockfilePath,
+        jiraIssueIds,
         dryRun
       });
       break;
