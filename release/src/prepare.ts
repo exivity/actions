@@ -180,21 +180,26 @@ export async function prepare({
 
   // Set status on commit
   const sha = await getCommitSha()
-  const state = changelog.some((item) => item.warnings.length > 0)
-    ? 'pending'
-    : 'success'
-  await writeStatus({
-    octokit,
-    owner: 'exivity',
-    repo: 'exivity',
-    sha,
-    state,
-    context: 'changelog',
-    description:
-      state === 'pending'
-        ? 'Changelog contains warnings'
-        : 'Changelog is good to go!',
-  })
+  if (dryRun) {
+    info(`Dry run, no need to write commit status`)
+  } else {
+    const state = changelog.some((item) => item.warnings.length > 0)
+      ? 'pending'
+      : 'success'
+
+    await writeStatus({
+      octokit,
+      owner: 'exivity',
+      repo: 'exivity',
+      sha,
+      state,
+      context: 'changelog',
+      description:
+        state === 'pending'
+          ? 'Changelog contains warnings'
+          : 'Changelog is good to go!',
+    })
+  }
 
   // Create or update pull request
   if (dryRun) {
