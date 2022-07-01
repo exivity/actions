@@ -67847,7 +67847,8 @@ async function getAllTags() {
   return (await exec("git tag")).split(import_os.EOL).filter((item) => item);
 }
 async function getAllIssueIdsInLatestTag() {
-  return exec(`git log --pretty=format:"%s %b" $(git describe --tags --abbrev=0 HEAD^1)..HEAD | sed -n 's/.*(EXVT-[0-9]*).*//p' | sort -r | uniq`).then((issues) => issues.split(/\r?\n/));
+  const regex = "'s/.*(EXVT-[0-9]*).*//p'";
+  return exec(`git log --pretty=format:"%s %b" $(git describe --tags --abbrev=0 HEAD^1)..HEAD | sed -n ${regex} | sort -r | uniq`).then((issues) => issues.split(/\r?\n/));
 }
 async function getAllSemverTags() {
   const tags = await getAllTags();

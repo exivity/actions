@@ -26,8 +26,9 @@ export async function getAllTags() {
 
 // Parse commit log of latest tag to parent of HEAD to get list of issues in latest tag
 export async function getAllIssueIdsInLatestTag() {
+  const regex = "'s/.*(EXVT-[0-9]*).*/\1/p'"
   return exec(
-    'git log --pretty=format:"%s %b" $(git describe --tags --abbrev=0 HEAD^1)..HEAD | sed -n \'s/.*(EXVT-[0-9]*).*/\1/p\' | sort -r | uniq'
+    `git log --pretty=format:"%s %b" $(git describe --tags --abbrev=0 HEAD^1)..HEAD | sed -n ${regex} | sort -r | uniq`
   ).then((issues) => issues.split(/\r?\n/))
 }
 
