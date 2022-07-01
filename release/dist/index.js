@@ -68460,16 +68460,20 @@ async function release({
       });
     }
   }
-  const issueIds = await getJiraIdsFromLatestTag();
-  (0, import_core8.info)(`Transitioning:`);
-  (0, import_core8.info)(`${issueIds.join("\n")}`);
-  await Promise.all(issueIds.map((issueIdOrKey) => {
-    return transitionToReleased(issueIdOrKey, jiraClient);
-  })).then(() => {
-    issueIds.forEach((issueIdOrKey) => {
-      (0, import_core8.info)(`Transitioned issue ${issueIdOrKey} to released`);
+  if (dryRun) {
+    (0, import_core8.info)(`Dry run, not transitioning issues`);
+  } else {
+    const issueIds = await getJiraIdsFromLatestTag();
+    (0, import_core8.info)(`Transitioning ticket status of:`);
+    (0, import_core8.info)(`${issueIds.length > 0 ? "found no tickets" : issueIds.join("\n")}`);
+    await Promise.all(issueIds.map((issueIdOrKey) => {
+      return transitionToReleased(issueIdOrKey, jiraClient);
+    })).then(() => {
+      issueIds.forEach((issueIdOrKey) => {
+        (0, import_core8.info)(`Transitioned issue ${issueIdOrKey} to released`);
+      });
     });
-  });
+  }
 }
 
 // release/src/index.ts
