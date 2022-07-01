@@ -28,6 +28,10 @@ import { createOrUpdatePullRequest } from './common/pr'
 import { ChangelogItem, Commit, Lockfile } from './common/types'
 import { inferVersionFromChangelog } from './common/version'
 
+function isString(x: any): x is string {
+  return typeof x === 'string'
+}
+
 export async function prepare({
   octokit,
   jiraClient,
@@ -113,7 +117,7 @@ export async function prepare({
   // If there are no items in the changelog, we have nothing to release
   if (changelog.length === 0) {
     info(`Nothing to release`)
-    return
+    return []
   }
 
   // Display summary of notes
@@ -216,4 +220,6 @@ export async function prepare({
     })
     info(pr.html_url)
   }
+
+  return changelog.map((item) => item.links.issue?.slug).filter(isString)
 }
