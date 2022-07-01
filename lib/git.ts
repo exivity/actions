@@ -33,7 +33,7 @@ export async function getAllIssueIdsInLatestTag() {
 
 export async function getJiraIdsFromLatestTag() {
   return exec('git log -1 --pretty=format:"%B"').then((log) => {
-    const jiraIds = log.match(/\bEX-\d+\b/g)
+    const jiraIds = log.match(/EXVT-\d+/g)
     return jiraIds ? jiraIds : []
   })
 }
