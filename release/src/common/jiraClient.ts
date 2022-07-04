@@ -65,7 +65,7 @@ export async function transitionToReleased(
         throw new Error(`Unknown status ${status}`)
     }
 
-    return await jiraClient.issues.doTransition({
+    await jiraClient.issues.doTransition({
       issueIdOrKey,
       transition: {
         id: transitionIds[flowKey],
