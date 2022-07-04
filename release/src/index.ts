@@ -30,8 +30,6 @@ async function run() {
   const jiraClient =
     jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null
 
-  let jiraIssueIds: string[] = []
-
   switch (mode) {
     case ModePing:
       // Act
@@ -47,7 +45,7 @@ async function run() {
       }
 
       // Act
-      jiraIssueIds = await prepare({
+      await prepare({
         octokit,
         jiraClient,
         lockfilePath,
@@ -71,9 +69,7 @@ async function run() {
       // Act
       await release({
         octokit,
-        jiraClient,
         lockfilePath,
-        jiraIssueIds,
         dryRun,
       })
       break
