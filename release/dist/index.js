@@ -14792,7 +14792,7 @@ var require_lodash = __commonJS({
           if (fromIndex < 0) {
             fromIndex = nativeMax(length + fromIndex, 0);
           }
-          return isString2(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
+          return isString(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
         }
         var invokeMap = baseRest(function(collection, path, args) {
           var index = -1, isFunc = typeof path == "function", result2 = isArrayLike(collection) ? Array2(collection.length) : [];
@@ -14860,7 +14860,7 @@ var require_lodash = __commonJS({
             return 0;
           }
           if (isArrayLike(collection)) {
-            return isString2(collection) ? stringSize(collection) : collection.length;
+            return isString(collection) ? stringSize(collection) : collection.length;
           }
           var tag = getTag(collection);
           if (tag == mapTag || tag == setTag) {
@@ -15295,7 +15295,7 @@ var require_lodash = __commonJS({
           return isInteger(value) && value >= -MAX_SAFE_INTEGER && value <= MAX_SAFE_INTEGER;
         }
         var isSet = nodeIsSet ? baseUnary(nodeIsSet) : baseIsSet;
-        function isString2(value) {
+        function isString(value) {
           return typeof value == "string" || !isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag;
         }
         function isSymbol(value) {
@@ -15320,7 +15320,7 @@ var require_lodash = __commonJS({
             return [];
           }
           if (isArrayLike(value)) {
-            return isString2(value) ? stringToArray(value) : copyArray(value);
+            return isString(value) ? stringToArray(value) : copyArray(value);
           }
           if (symIterator && value[symIterator]) {
             return iteratorToArray(value[symIterator]());
@@ -16346,7 +16346,7 @@ var require_lodash = __commonJS({
         lodash.isRegExp = isRegExp;
         lodash.isSafeInteger = isSafeInteger;
         lodash.isSet = isSet;
-        lodash.isString = isString2;
+        lodash.isString = isString;
         lodash.isSymbol = isSymbol;
         lodash.isTypedArray = isTypedArray;
         lodash.isUndefined = isUndefined;
@@ -18287,7 +18287,7 @@ var require_utils6 = __commonJS({
       }
       return result;
     }
-    function isString2(val) {
+    function isString(val) {
       return typeof val === "string";
     }
     function isNumber(val) {
@@ -18437,7 +18437,7 @@ var require_utils6 = __commonJS({
       isBuffer,
       isFormData,
       isArrayBufferView,
-      isString: isString2,
+      isString,
       isNumber,
       isObject,
       isPlainObject,
@@ -67727,14 +67727,6 @@ query ($sha: String!, $repo: String!, $owner: String!) {
 
 // release/src/common/jiraClient.ts
 var import_jira = __toESM(require_out());
-var transitionIds = {
-  "Done->Released": "211",
-  "New->Accepted": "171",
-  "Accepted->InProgress": "71",
-  "InProgress->Done": "91",
-  "NoActionNeeded->New": "201",
-  "InReview->Done": "91"
-};
 function getJiraClient(username, token) {
   return new import_jira.Version2Client({
     host: "https://exivity.atlassian.net",
@@ -67746,51 +67738,6 @@ function getJiraClient(username, token) {
     },
     newErrorHandling: true
   });
-}
-async function transitionToReleased(issueIdOrKey, jiraClient) {
-  const issue = await jiraClient.issues.getIssue({
-    issueIdOrKey,
-    fields: ["status"],
-    expand: ["transitions"]
-  });
-  let status = issue.fields.status.name;
-  while (status !== "Released") {
-    let flowKey;
-    switch (status) {
-      case "Done":
-        flowKey = "Done->Released";
-        status = "Released";
-        break;
-      case "New":
-        flowKey = "New->Accepted";
-        status = "Accepted";
-        break;
-      case "Accepted":
-        flowKey = "Accepted->InProgress";
-        status = "InProgress";
-        break;
-      case "In Progress":
-        flowKey = "InProgress->Done";
-        status = "Done";
-        break;
-      case "No action needed":
-        flowKey = "NoActionNeeded->New";
-        status = "New";
-        break;
-      case "In review":
-        flowKey = "InReview->Done";
-        status = "Done";
-        break;
-      default:
-        throw new Error(`Unknown status ${status}`);
-    }
-    return await jiraClient.issues.doTransition({
-      issueIdOrKey,
-      transition: {
-        id: transitionIds[flowKey]
-      }
-    });
-  }
 }
 
 // release/src/ping.ts
@@ -68303,9 +68250,6 @@ function inferVersionFromChangelog(from, changelog) {
 }
 
 // release/src/prepare.ts
-function isString(x) {
-  return typeof x === "string";
-}
 async function prepare({
   octokit,
   jiraClient,
@@ -68353,7 +68297,7 @@ async function prepare({
   changelog = changelog.filter(noChores);
   if (changelog.length === 0) {
     (0, import_console2.info)(`Nothing to release`);
-    return [];
+    return;
   }
   (0, import_console2.info)(`Changelog:`);
   changelog.forEach((item) => {
@@ -68425,19 +68369,13 @@ ${publicChangelogContents}
     });
     (0, import_console2.info)(pr.html_url);
   }
-  return changelog.map((item) => {
-    var _a;
-    return (_a = item.links.issue) == null ? void 0 : _a.slug;
-  }).filter(isString);
 }
 
 // release/src/release.ts
 var import_core8 = __toESM(require_core());
 async function release({
   octokit,
-  jiraClient,
   lockfilePath,
-  jiraIssueIds,
   dryRun
 }) {
   const repository = getRepository();
@@ -68462,19 +68400,6 @@ async function release({
       });
     }
   }
-  if (dryRun) {
-    (0, import_core8.info)(`Dry run, not transitioning issues`);
-  } else {
-    (0, import_core8.info)(`Transitioning ticket status of:`);
-    (0, import_core8.info)(`${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`);
-    await Promise.all(jiraIssueIds.map((issueIdOrKey) => {
-      return transitionToReleased(issueIdOrKey, jiraClient);
-    })).then(() => {
-      jiraIssueIds.forEach((issueIdOrKey) => {
-        (0, import_core8.info)(`Transitioned issue ${issueIdOrKey} to released`);
-      });
-    });
-  }
 }
 
 // release/src/index.ts
@@ -68495,7 +68420,6 @@ async function run() {
   const jiraToken = (0, import_core9.getInput)("jira-token");
   const octokit = (0, import_github7.getOctokit)(ghToken);
   const jiraClient = jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null;
-  let jiraIssueIds = [];
   switch (mode) {
     case ModePing:
       await ping({ octokit, dryRun });
@@ -68504,7 +68428,7 @@ async function run() {
       if (!jiraClient) {
         throw new Error("jira-username and jira-token inputs are required in prepare mode");
       }
-      jiraIssueIds = await prepare({
+      await prepare({
         octokit,
         jiraClient,
         lockfilePath,
@@ -68522,9 +68446,7 @@ async function run() {
       }
       await release({
         octokit,
-        jiraClient,
         lockfilePath,
-        jiraIssueIds,
         dryRun
       });
       break;
