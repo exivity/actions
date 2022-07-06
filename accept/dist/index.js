@@ -34061,7 +34061,6 @@ var js_yaml_default = jsYaml;
 
 // accept/src/checks.ts
 var import_path = require("path");
-var EXIVITY_BOT_LOGIN = "exivity-bot";
 async function isWorkflowDependencyDone(octokit, token, sha, repo) {
   var _a, _b;
   (0, import_core3.info)("Checking out repository to get workflow contents...");
@@ -34111,10 +34110,7 @@ function workflowNameMatchesCheckName(workflowName, checkName) {
   if (workflowName === checkName) {
     return true;
   }
-  if (new RegExp(`^${workflowName} (.+)$`).test(checkName)) {
-    return true;
-  }
-  return false;
+  return new RegExp(`^${workflowName} (.+)$`).test(checkName);
 }
 async function getChecks(octokit, ref, repo) {
   return (await octokit.rest.checks.listForRef({
@@ -34122,14 +34118,6 @@ async function getChecks(octokit, ref, repo) {
     repo,
     ref
   })).data.check_runs;
-}
-function isBotReviewRequested(pr) {
-  var _a;
-  return ((_a = pr.requested_reviewers) == null ? void 0 : _a.some((reviewer) => (reviewer == null ? void 0 : reviewer.login) === EXIVITY_BOT_LOGIN)) ?? false;
-}
-function includesBotRequest(eventData) {
-  var _a;
-  return ((_a = eventData["requested_reviewer"]) == null ? void 0 : _a["login"]) === EXIVITY_BOT_LOGIN;
 }
 
 // accept/src/dispatch.ts
@@ -34191,10 +34179,6 @@ async function run() {
   if (isEvent(eventName, "pull_request", eventData)) {
     if (eventData["action"] !== "review_requested") {
       (0, import_core4.warning)('[accept] Skipping: only the "pull_request.review_requested" event is supported');
-      return;
-    }
-    if (!includesBotRequest(eventData)) {
-      (0, import_core4.warning)("[accept] Skipping: exivity-bot not requested for review");
       return;
     }
     ref = eventData["pull_request"]["head"]["ref"];
@@ -34264,10 +34248,6 @@ async function run() {
   if (isEvent(eventName, "workflow_run", eventData)) {
     if (eventData["workflow_run"]["conclusion"] !== "success") {
       (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
-      return;
-    }
-    if (pr && !isBotReviewRequested(pr)) {
-      (0, import_core4.warning)("[accept] Skipping: exivity-bot not requested for review");
       return;
     }
   }
