@@ -67971,7 +67971,7 @@ async function associatedPullRequestPlugin({
 // release/src/changelogPlugins/jira.ts
 async function jiraPlugin({ jiraClient, changelog }) {
   var _a, _b;
-  const jiraKey = new RegExp(/\b[A-Z]+-\d+\b/g);
+  const jiraKey = new RegExp(/\bEXVT-\d+\b/g);
   for (const item of changelog) {
     const issues = [
       ...item.links.pr ? item.links.pr.originalTitle.match(jiraKey) || [] : [],
@@ -67988,7 +67988,7 @@ async function jiraPlugin({ jiraClient, changelog }) {
         });
       } catch (err) {
         throw new Error(`got error when getting issue ${issueKey}:
-${err}`);
+${JSON.stringify(err)}`);
       }
       item.links.issue = {
         title: issue.fields.summary,
@@ -68519,8 +68519,6 @@ async function transitionIssues(dryRun, jiraIssueIds, jiraClient) {
 async function getJiraIssues(octokit, jiraClient, repositoriesJsonPath) {
   const latestVersion = await getLatestVersion();
   let [changelog, _] = await checkRepositories(repositoriesJsonPath, latestVersion, octokit);
-  (0, import_core10.info)(`found issues: 
-- ${changelog.map((item) => `${item.links.commit.sha}: ${item.title}`).join("\n- ")}`);
   changelog = await runPlugins({ octokit, jiraClient, changelog });
   return changelog.map((item) => {
     var _a;
