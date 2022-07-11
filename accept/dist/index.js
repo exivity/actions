@@ -25133,6 +25133,8 @@ var require_request_error = __commonJS({
             request: options
           });
         }
+        requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+        this.request = requestCopy;
       }
       if (typeof state.auth.on2fa !== "function") {
         throw new RequestError("2FA required, but options.on2fa is not a function. See https://github.com/octokit/rest.js#authentication", 401, {
