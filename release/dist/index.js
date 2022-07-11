@@ -751,12 +751,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info10 = this._prepareRequest(verb, parsedUrl, headers);
+          let info11 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info10, data);
+            response = yield this.requestRaw(info11, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -766,7 +766,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info10, data);
+                return authenticationHandler.handleAuthentication(this, info11, data);
               } else {
                 return response;
               }
@@ -789,8 +789,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info10 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info10, data);
+              info11 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info11, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -811,7 +811,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info10, data) {
+      requestRaw(info11, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -823,16 +823,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info10, data, callbackForResult);
+            this.requestRawWithCallback(info11, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info10, data, onResult) {
+      requestRawWithCallback(info11, data, onResult) {
         if (typeof data === "string") {
-          if (!info10.options.headers) {
-            info10.options.headers = {};
+          if (!info11.options.headers) {
+            info11.options.headers = {};
           }
-          info10.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info11.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -841,7 +841,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info10.httpModule.request(info10.options, (msg) => {
+        const req = info11.httpModule.request(info11.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -853,7 +853,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info10.options.path}`));
+          handleResult(new Error(`Request timeout: ${info11.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -875,27 +875,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info10 = {};
-        info10.parsedUrl = requestUrl;
-        const usingSsl = info10.parsedUrl.protocol === "https:";
-        info10.httpModule = usingSsl ? https : http;
+        const info11 = {};
+        info11.parsedUrl = requestUrl;
+        const usingSsl = info11.parsedUrl.protocol === "https:";
+        info11.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info10.options = {};
-        info10.options.host = info10.parsedUrl.hostname;
-        info10.options.port = info10.parsedUrl.port ? parseInt(info10.parsedUrl.port) : defaultPort;
-        info10.options.path = (info10.parsedUrl.pathname || "") + (info10.parsedUrl.search || "");
-        info10.options.method = method;
-        info10.options.headers = this._mergeHeaders(headers);
+        info11.options = {};
+        info11.options.host = info11.parsedUrl.hostname;
+        info11.options.port = info11.parsedUrl.port ? parseInt(info11.parsedUrl.port) : defaultPort;
+        info11.options.path = (info11.parsedUrl.pathname || "") + (info11.parsedUrl.search || "");
+        info11.options.method = method;
+        info11.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info10.options.headers["user-agent"] = this.userAgent;
+          info11.options.headers["user-agent"] = this.userAgent;
         }
-        info10.options.agent = this._getAgent(info10.parsedUrl);
+        info11.options.agent = this._getAgent(info11.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info10.options);
+            handler.prepareRequest(info11.options);
           }
         }
-        return info10;
+        return info11;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1599,10 +1599,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info10(message) {
+    function info11(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info10;
+    exports.info = info11;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -14795,7 +14795,7 @@ var require_lodash = __commonJS({
           if (fromIndex < 0) {
             fromIndex = nativeMax(length + fromIndex, 0);
           }
-          return isString(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
+          return isString2(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
         }
         var invokeMap = baseRest(function(collection, path, args) {
           var index = -1, isFunc = typeof path == "function", result2 = isArrayLike(collection) ? Array2(collection.length) : [];
@@ -14863,7 +14863,7 @@ var require_lodash = __commonJS({
             return 0;
           }
           if (isArrayLike(collection)) {
-            return isString(collection) ? stringSize(collection) : collection.length;
+            return isString2(collection) ? stringSize(collection) : collection.length;
           }
           var tag = getTag(collection);
           if (tag == mapTag || tag == setTag) {
@@ -15298,7 +15298,7 @@ var require_lodash = __commonJS({
           return isInteger(value) && value >= -MAX_SAFE_INTEGER && value <= MAX_SAFE_INTEGER;
         }
         var isSet = nodeIsSet ? baseUnary(nodeIsSet) : baseIsSet;
-        function isString(value) {
+        function isString2(value) {
           return typeof value == "string" || !isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag;
         }
         function isSymbol(value) {
@@ -15323,7 +15323,7 @@ var require_lodash = __commonJS({
             return [];
           }
           if (isArrayLike(value)) {
-            return isString(value) ? stringToArray(value) : copyArray(value);
+            return isString2(value) ? stringToArray(value) : copyArray(value);
           }
           if (symIterator && value[symIterator]) {
             return iteratorToArray(value[symIterator]());
@@ -16349,7 +16349,7 @@ var require_lodash = __commonJS({
         lodash.isRegExp = isRegExp;
         lodash.isSafeInteger = isSafeInteger;
         lodash.isSet = isSet;
-        lodash.isString = isString;
+        lodash.isString = isString2;
         lodash.isSymbol = isSymbol;
         lodash.isTypedArray = isTypedArray;
         lodash.isUndefined = isUndefined;
@@ -18290,7 +18290,7 @@ var require_utils6 = __commonJS({
       }
       return result;
     }
-    function isString(val) {
+    function isString2(val) {
       return typeof val === "string";
     }
     function isNumber(val) {
@@ -18440,7 +18440,7 @@ var require_utils6 = __commonJS({
       isBuffer,
       isFormData,
       isArrayBufferView,
-      isString,
+      isString: isString2,
       isNumber,
       isObject,
       isPlainObject,
@@ -67501,8 +67501,8 @@ var require_semver2 = __commonJS({
 });
 
 // release/src/index.ts
-var import_core10 = __toESM(require_core());
-var import_github7 = __toESM(require_github());
+var import_core11 = __toESM(require_core());
+var import_github8 = __toESM(require_github());
 
 // lib/core.ts
 var import_core = __toESM(require_core());
@@ -67730,6 +67730,14 @@ query ($sha: String!, $repo: String!, $owner: String!) {
 
 // release/src/common/jiraClient.ts
 var import_jira = __toESM(require_out());
+var transitionIds = {
+  "Done->Released": "211",
+  "New->Accepted": "171",
+  "Accepted->InProgress": "71",
+  "InProgress->Done": "91",
+  "NoActionNeeded->New": "201",
+  "InReview->Done": "91"
+};
 function getJiraClient(username, token) {
   return new import_jira.Version2Client({
     host: "https://exivity.atlassian.net",
@@ -67741,6 +67749,51 @@ function getJiraClient(username, token) {
     },
     newErrorHandling: true
   });
+}
+async function transitionToReleased(issueIdOrKey, jiraClient) {
+  const issue = await jiraClient.issues.getIssue({
+    issueIdOrKey,
+    fields: ["status"],
+    expand: ["transitions"]
+  });
+  let status = issue.fields.status.name;
+  while (status !== "Released") {
+    let flowKey;
+    switch (status) {
+      case "Done":
+        flowKey = "Done->Released";
+        status = "Released";
+        break;
+      case "New":
+        flowKey = "New->Accepted";
+        status = "Accepted";
+        break;
+      case "Accepted":
+        flowKey = "Accepted->InProgress";
+        status = "InProgress";
+        break;
+      case "In Progress":
+        flowKey = "InProgress->Done";
+        status = "Done";
+        break;
+      case "No action needed":
+        flowKey = "NoActionNeeded->New";
+        status = "New";
+        break;
+      case "In review":
+        flowKey = "InReview->Done";
+        status = "Done";
+        break;
+      default:
+        throw new Error(`Unknown status ${status}`);
+    }
+    return await jiraClient.issues.doTransition({
+      issueIdOrKey,
+      transition: {
+        id: transitionIds[flowKey]
+      }
+    });
+  }
 }
 
 // release/src/ping.ts
@@ -68106,7 +68159,7 @@ async function prepareChangelog(changelog, octokit, jiraClient) {
   });
   return changelog;
 }
-async function write_to_changelog(changelogPath, changelog, upcomingVersion, dryRun) {
+async function writeToChangelog(changelogPath, changelog, upcomingVersion, dryRun) {
   const currentPublicChangelogContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
   const publicChangelogContents = formatPublicChangelog(upcomingVersion, changelog);
   if (dryRun) {
@@ -68193,140 +68246,8 @@ function buildChangelogItem2(changelogItem) {
   ].join("\n");
 }
 
-// release/src/changelogPlugins/associatedPullRequest.ts
-async function associatedPullRequestPlugin({
-  octokit,
-  changelog
-}) {
-  for (const item of changelog) {
-    const associatedPullRequest = await getAssociatedPullRequest({
-      octokit,
-      owner: "exivity",
-      repo: item.links.commit.repository,
-      sha: item.links.commit.sha
-    });
-    if (typeof associatedPullRequest !== "undefined") {
-      item.links.pr = {
-        title: parseCommitMessage(associatedPullRequest.title).description,
-        originalTitle: associatedPullRequest.title,
-        description: associatedPullRequest.body,
-        slug: `exivity/${item.links.commit.repository}#${associatedPullRequest.number}`,
-        url: associatedPullRequest.url
-      };
-    }
-  }
-  return changelog;
-}
-
-// release/src/changelogPlugins/jira.ts
-var import_core6 = __toESM(require_core());
-async function jiraPlugin({ jiraClient, changelog }) {
-  var _a, _b;
-  const jiraKey = new RegExp(/\bEXVT-\d+\b/g);
-  for (const item of changelog) {
-    const issues = [
-      ...item.links.pr ? item.links.pr.originalTitle.match(jiraKey) || [] : [],
-      ...item.links.pr ? ((_a = item.links.pr.description) == null ? void 0 : _a.match(jiraKey)) || [] : [],
-      ...((_b = item.links.commit.description) == null ? void 0 : _b.match(jiraKey)) || [],
-      ...item.links.commit.originalTitle.match(jiraKey) || []
-    ];
-    if (issues.length > 0) {
-      const issueKey = issues[0];
-      let issue;
-      try {
-        issue = await jiraClient.issues.getIssue({
-          issueIdOrKey: issueKey
-        });
-        item.links.issue = {
-          title: issue.fields.summary,
-          description: issue.fields.description || null,
-          slug: issueKey,
-          url: `https://exivity.atlassian.net/browse/${issueKey}`
-        };
-        const releaseNotesTitle = getReleaseNotesTitle(issue);
-        if (releaseNotesTitle) {
-          item.links.issue.title = releaseNotesTitle;
-          item.links.issue.description = getReleaseNotesDescription(issue) || null;
-        } else {
-          item.warnings.push(`Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`);
-        }
-        if (issue.fields.issuetype.name === "Chore" /* Chore */) {
-          item.type = "chore";
-        }
-        if (issue.fields.issuetype.name === "Bug" /* Bug */) {
-          item.type = "fix";
-        }
-        if (issue.fields.issuetype.name === "Feature" /* Feature */ || issue.fields.issuetype.name === "Epic" /* Epic */) {
-          item.type = "feat";
-        }
-        const epicKey = getEpic(issue);
-        if (epicKey) {
-          const epic = await jiraClient.issues.getIssue({
-            issueIdOrKey: epicKey
-          });
-          item.links.milestone = {
-            title: getReleaseNotesTitle(epic) || epic.fields.summary,
-            description: getReleaseNotesDescription(epic) || epic.fields.description || null,
-            slug: getReleaseNotesTitle(epic) || epic.fields.summary,
-            url: `https://exivity.atlassian.net/browse/${epicKey}`
-          };
-        }
-      } catch (err) {
-        (0, import_core6.info)(`got error when getting issue ${issueKey}:
-${JSON.stringify(err)}`);
-      }
-    }
-  }
-  return changelog;
-}
-function getReleaseNotesTitle(issue) {
-  return issue.fields["customfield_10529" /* ReleaseNotesTitle */];
-}
-function getReleaseNotesDescription(issue) {
-  return issue.fields["customfield_10530" /* ReleaseNotesDescription */];
-}
-function getEpic(issue) {
-  return issue.fields["customfield_10005" /* Epic */];
-}
-
-// release/src/changelogPlugins/titleAndDescription.ts
-function formatTitle(changelogItem) {
-  return capitalizeFirstLetter(changelogItem.links.issue ? changelogItem.links.issue.title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title);
-}
-function formatDecription(changelogItem) {
-  var _a;
-  return ((_a = changelogItem.links.issue) == null ? void 0 : _a.description) || null;
-}
-function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-async function titleAndDescriptionPlugin({ changelog }) {
-  for (const item of changelog) {
-    item.title = formatTitle(item);
-    item.description = formatDecription(item);
-  }
-  return changelog;
-}
-
-// release/src/changelogPlugins/index.ts
-var plugins = [
-  associatedPullRequestPlugin,
-  jiraPlugin,
-  titleAndDescriptionPlugin
-];
-async function runPlugins({
-  octokit,
-  jiraClient,
-  changelog
-}) {
-  for (const plugin of plugins) {
-    changelog = await plugin({ octokit, jiraClient, changelog });
-  }
-  return changelog;
-}
-
-// release/src/common/consts.ts
-var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
+// release/src/common/repositories.ts
+var import_core7 = __toESM(require_core());
 
 // release/src/common/files.ts
 var import_promises2 = require("fs/promises");
@@ -68347,8 +68268,43 @@ async function readTextFile(path) {
 var readLockfile = readJson;
 var readRepositories = readJson;
 
+// release/src/common/consts.ts
+var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
+
+// release/src/common/repositories.ts
+async function checkRepositories(repositoriesJsonPath, latestVersion, octokit) {
+  const pendingCommits = [];
+  let changelog = [];
+  const lockfile = { version: "", repositories: {} };
+  const repositories = await readRepositories(repositoriesJsonPath);
+  (0, import_core7.info)(`Iterating repositories`);
+  for (const [repository, repositoryOptions] of Object.entries(repositories)) {
+    (0, import_core7.info)(`- exivity/${repository}`);
+    const latestVersionCommit = await getCommitForTag({
+      octokit,
+      owner: "exivity",
+      repo: repository,
+      tag: latestVersion
+    });
+    const repoCommits = await getCommitsSince({
+      octokit,
+      owner: "exivity",
+      repo: repository,
+      branch: repositoryOptions.releaseBranch || DEFAULT_REPOSITORY_RELEASE_BRANCH,
+      since: latestVersionCommit
+    });
+    lockfile.repositories[repository] = repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha;
+    repoCommits.forEach((repoCommit) => {
+      const commit = { ...repoCommit, repository };
+      pendingCommits.push(commit);
+      changelog.push(createChangelogItemFromCommit(commit));
+    });
+  }
+  return [changelog, lockfile];
+}
+
 // release/src/common/pr.ts
-var import_core7 = __toESM(require_core());
+var import_core8 = __toESM(require_core());
 async function createOrUpdatePullRequest({
   octokit,
   title,
@@ -68372,7 +68328,7 @@ async function createOrUpdatePullRequest({
       title,
       body
     });
-    (0, import_core7.info)(`Updated pull request #${pr.data.number}`);
+    (0, import_core8.info)(`Updated pull request #${pr.data.number}`);
     return pr.data;
   } else {
     const pr = await octokit.rest.pulls.create({
@@ -68383,13 +68339,13 @@ async function createOrUpdatePullRequest({
       head: upcomingReleaseBranch,
       base: releaseBranch
     });
-    (0, import_core7.info)(`Opened pull request #${pr.data.number}`);
+    (0, import_core8.info)(`Opened pull request #${pr.data.number}`);
     return pr.data;
   }
 }
 
 // release/src/common/version.ts
-var import_core8 = __toESM(require_core());
+var import_core9 = __toESM(require_core());
 var import_semver2 = __toESM(require_semver2());
 function inferVersionFromChangelog(from, changelog) {
   let upcomingVersionIncrement = "patch";
@@ -68410,7 +68366,7 @@ function inferVersionFromChangelog(from, changelog) {
   } else {
     upcomingVersion = `v${upcomingVersion}`;
   }
-  (0, import_core8.info)(`Version increment (${incrementDescription}): ${from} -> ${upcomingVersion}`);
+  (0, import_core9.info)(`Version increment (${incrementDescription}): ${from} -> ${upcomingVersion}`);
   return upcomingVersion;
 }
 
@@ -68431,7 +68387,7 @@ async function prepare({
   let [changelog, lockfile] = await checkRepositories(repositoriesJsonPath, latestVersion, octokit);
   changelog = await prepareChangelog(changelog, octokit, jiraClient);
   if (changelog.length === 0) {
-    return;
+    return [];
   }
   const upcomingVersion = inferVersionFromChangelog(latestVersion, changelog);
   lockfile.version = upcomingVersion;
@@ -68448,42 +68404,12 @@ async function prepare({
     await (0, import_promises3.writeFile)(lockfilePath, JSON.stringify(lockfile, null, 2) + "\n");
     (0, import_console2.info)(`Written lockfile to: ${lockfilePath}`);
   }
-  await write_to_changelog(changelogPath, changelog, upcomingVersion, dryRun);
-  const title = await commit_and_push(dryRun, upcomingVersion, upcomingReleaseBranch);
-  await update_commit_status(dryRun, changelog, octokit);
-  await update_pr(dryRun, upcomingVersion, title, prTemplate, upcomingReleaseBranch, releaseBranch, changelog, octokit);
+  await writeToChangelog(changelogPath, changelog, upcomingVersion, dryRun);
+  const title = await commitAndPush(dryRun, upcomingVersion, upcomingReleaseBranch);
+  await updateCommitStatus(dryRun, changelog, octokit);
+  await updatePr(dryRun, upcomingVersion, title, prTemplate, upcomingReleaseBranch, releaseBranch, changelog, octokit);
 }
-async function checkRepositories(repositoriesJsonPath, latestVersion, octokit) {
-  const pendingCommits = [];
-  let changelog = [];
-  const lockfile = { version: "", repositories: {} };
-  const repositories = await readRepositories(repositoriesJsonPath);
-  (0, import_console2.info)(`Iterating repositories`);
-  for (const [repository, repositoryOptions] of Object.entries(repositories)) {
-    (0, import_console2.info)(`- exivity/${repository}`);
-    const latestVersionCommit = await getCommitForTag({
-      octokit,
-      owner: "exivity",
-      repo: repository,
-      tag: latestVersion
-    });
-    const repoCommits = await getCommitsSince({
-      octokit,
-      owner: "exivity",
-      repo: repository,
-      branch: repositoryOptions.releaseBranch || DEFAULT_REPOSITORY_RELEASE_BRANCH,
-      since: latestVersionCommit
-    });
-    lockfile.repositories[repository] = repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha;
-    repoCommits.forEach((repoCommit) => {
-      const commit = { ...repoCommit, repository };
-      pendingCommits.push(commit);
-      changelog.push(createChangelogItemFromCommit(commit));
-    });
-  }
-  return [changelog, lockfile];
-}
-async function commit_and_push(dryRun, upcomingVersion, upcomingReleaseBranch) {
+async function commitAndPush(dryRun, upcomingVersion, upcomingReleaseBranch) {
   const title = `chore: release ${upcomingVersion}`;
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not committing and pushing changes`);
@@ -68496,7 +68422,7 @@ async function commit_and_push(dryRun, upcomingVersion, upcomingReleaseBranch) {
   }
   return title;
 }
-async function update_commit_status(dryRun, changelog, octokit) {
+async function updateCommitStatus(dryRun, changelog, octokit) {
   const sha = await getCommitSha();
   if (dryRun) {
     (0, import_console2.info)(`Dry run, no need to write commit status`);
@@ -68513,7 +68439,7 @@ async function update_commit_status(dryRun, changelog, octokit) {
     });
   }
 }
-async function update_pr(dryRun, upcomingVersion, title, prTemplate, upcomingReleaseBranch, releaseBranch, changelog, octokit) {
+async function updatePr(dryRun, upcomingVersion, title, prTemplate, upcomingReleaseBranch, releaseBranch, changelog, octokit) {
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not creating pull request`);
   } else {
@@ -68531,34 +68457,68 @@ async function update_pr(dryRun, upcomingVersion, title, prTemplate, upcomingRel
 }
 
 // release/src/release.ts
-var import_core9 = __toESM(require_core());
+var import_core10 = __toESM(require_core());
 async function release({
   octokit,
   lockfilePath,
+  jiraClient,
+  repositoriesJsonPath,
   dryRun
 }) {
   const repository = getRepository();
   const lockfile = await readLockfile(lockfilePath);
   if (dryRun) {
-    (0, import_core9.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_core10.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_core9.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_core10.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
-  for (const [repository2, sha] of Object.entries(lockfile.repositories)) {
+  await tagRepositories(dryRun, lockfile, octokit);
+  const jiraIssueIds = await getJiraIssues(octokit, jiraClient, repositoriesJsonPath);
+  await transitionIssues(dryRun, jiraIssueIds, jiraClient);
+}
+async function tagRepositories(dryRun, lockfile, octokit) {
+  for (const [repository, sha] of Object.entries(lockfile.repositories)) {
     if (dryRun) {
-      (0, import_core9.info)(`Dry run, not tagging ${repository2}`);
+      (0, import_core10.info)(`Dry run, not tagging ${repository}`);
     } else {
       await createLightweightTag({
         octokit,
         owner: "exivity",
-        repo: repository2,
+        repo: repository,
         tag: lockfile.version,
         sha
       });
     }
   }
+}
+async function transitionIssues(dryRun, jiraIssueIds, jiraClient) {
+  if (dryRun) {
+    (0, import_core10.info)(`Dry run, not transitioning issues`);
+  } else {
+    (0, import_core10.info)(`Transitioning ticket status of:`);
+    (0, import_core10.info)(`${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`);
+    await Promise.all(jiraIssueIds.map((issueIdOrKey) => {
+      return transitionToReleased(issueIdOrKey, jiraClient);
+    })).then(() => {
+      jiraIssueIds.forEach((issueIdOrKey) => {
+        (0, import_core10.info)(`Transitioned issue ${issueIdOrKey} to released`);
+      });
+    });
+  }
+}
+async function getJiraIssues(octokit, jiraClient, repositoriesJsonPath) {
+  const latestVersion = await getLatestVersion();
+  let [changelog, _] = await checkRepositories(repositoriesJsonPath, latestVersion, octokit);
+  changelog = await runPlugins({ octokit, jiraClient, changelog });
+  return changelog.map((item) => {
+    var _a;
+    return (_a = item.links.issue) == null ? void 0 : _a.slug;
+  }).filter(isString);
+}
+function isString(x) {
+  return typeof x === "string";
 }
 
 // release/src/index.ts
@@ -68566,18 +68526,18 @@ var ModePing = "ping";
 var ModePrepare = "prepare";
 var ModeRelease = "release";
 async function run() {
-  const mode = (0, import_core10.getInput)("mode");
-  const lockfilePath = (0, import_core10.getInput)("lockfile");
-  const changelogPath = (0, import_core10.getInput)("changelog");
-  const repositoriesJsonPath = (0, import_core10.getInput)("repositories");
-  const prTemplatePath = (0, import_core10.getInput)("pr-template");
-  const upcomingReleaseBranch = (0, import_core10.getInput)("upcoming-release-branch");
-  const releaseBranch = (0, import_core10.getInput)("release-branch");
+  const mode = (0, import_core11.getInput)("mode");
+  const lockfilePath = (0, import_core11.getInput)("lockfile");
+  const changelogPath = (0, import_core11.getInput)("changelog");
+  const repositoriesJsonPath = (0, import_core11.getInput)("repositories");
+  const prTemplatePath = (0, import_core11.getInput)("pr-template");
+  const upcomingReleaseBranch = (0, import_core11.getInput)("upcoming-release-branch");
+  const releaseBranch = (0, import_core11.getInput)("release-branch");
   const dryRun = getBooleanInput("dry-run", false);
   const ghToken = getToken();
-  const jiraUsername = (0, import_core10.getInput)("jira-username");
-  const jiraToken = (0, import_core10.getInput)("jira-token");
-  const octokit = (0, import_github7.getOctokit)(ghToken);
+  const jiraUsername = (0, import_core11.getInput)("jira-username");
+  const jiraToken = (0, import_core11.getInput)("jira-token");
+  const octokit = (0, import_github8.getOctokit)(ghToken);
   const jiraClient = jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null;
   switch (mode) {
     case ModePing:
@@ -68606,6 +68566,8 @@ async function run() {
       await release({
         octokit,
         lockfilePath,
+        jiraClient,
+        repositoriesJsonPath,
         dryRun
       });
       break;
@@ -68613,7 +68575,7 @@ async function run() {
       throw new Error(`Unknown mode "${mode}"`);
   }
 }
-run().catch(import_core10.setFailed);
+run().catch(import_core11.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

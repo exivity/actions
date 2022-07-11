@@ -70,6 +70,8 @@ async function run() {
       await release({
         octokit,
         lockfilePath,
+        jiraClient,
+        repositoriesJsonPath,
         dryRun,
       })
       break

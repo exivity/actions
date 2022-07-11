@@ -11,18 +11,18 @@ import {
   gitPush,
   gitSetAuthor,
 } from '../../lib/git'
-import { getCommitForTag, getCommitsSince, writeStatus } from '../../lib/github'
+import { writeStatus } from '../../lib/github'
 import { formatPrChangelog } from './changelogFormatters'
 import {
   createChangelogItemFromCommit,
   prepareChangelog,
-  write_to_changelog,
+  writeToChangelog,
 } from './common/changelog'
-import { DEFAULT_REPOSITORY_RELEASE_BRANCH } from './common/consts'
-import { readRepositories, readTextFile } from './common/files'
+import { checkRepositories } from './common/repositories'
+import { readTextFile } from './common/files'
 import type { getJiraClient } from './common/jiraClient'
 import { createOrUpdatePullRequest } from './common/pr'
-import { ChangelogItem, Commit, Lockfile } from './common/types'
+import { ChangelogItem } from './common/types'
 import { inferVersionFromChangelog } from './common/version'
 
 export async function prepare({
@@ -58,7 +58,7 @@ export async function prepare({
 
   changelog = await prepareChangelog(changelog, octokit, jiraClient)
   if (changelog.length === 0) {
-    return
+    return []
   }
 
   // Infer upcoming version increment
@@ -83,20 +83,20 @@ export async function prepare({
   }
 
   // Write CHANGELOG.md
-  await write_to_changelog(changelogPath, changelog, upcomingVersion, dryRun)
+  await writeToChangelog(changelogPath, changelog, upcomingVersion, dryRun)
 
   // Commit and push changes
-  const title = await commit_and_push(
+  const title = await commitAndPush(
     dryRun,
     upcomingVersion,
     upcomingReleaseBranch
   )
 
   // Set status on commit
-  await update_commit_status(dryRun, changelog, octokit)
+  await updateCommitStatus(dryRun, changelog, octokit)
 
   // Create or update pull request
-  await update_pr(
+  await updatePr(
     dryRun,
     upcomingVersion,
     title,
@@ -108,58 +108,7 @@ export async function prepare({
   )
 }
 
-async function checkRepositories(
-  repositoriesJsonPath: string,
-  latestVersion: string,
-  octokit: ReturnType<typeof getOctokit>
-): Promise<[ChangelogItem[], Lockfile]> {
-  const pendingCommits: Commit[] = []
-  let changelog: ChangelogItem[] = []
-  const lockfile: Lockfile = { version: '', repositories: {} }
-  const repositories = await readRepositories(repositoriesJsonPath)
-
-  // Iterate over repositories
-  info(`Iterating repositories`)
-  for (const [repository, repositoryOptions] of Object.entries(repositories)) {
-    info(`- exivity/${repository}`)
-    // Find commit for latest version tag in target repository
-    const latestVersionCommit = await getCommitForTag({
-      octokit,
-      owner: 'exivity',
-      repo: repository,
-      tag: latestVersion,
-    })
-
-    // Get a list of commits from the last version
-    const repoCommits = await getCommitsSince({
-      octokit,
-      owner: 'exivity',
-      repo: repository,
-      branch:
-        repositoryOptions.releaseBranch || DEFAULT_REPOSITORY_RELEASE_BRANCH,
-      since: latestVersionCommit,
-    })
-
-    // Record first commit in lockfile, or use latest version commit in case
-    // there are no pending repo commits
-    lockfile.repositories[repository] =
-      repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha
-
-    repoCommits.forEach((repoCommit) => {
-      const commit = { ...repoCommit, repository }
-
-      // Add to all commits
-      pendingCommits.push(commit)
-
-      // Add to notes
-      changelog.push(createChangelogItemFromCommit(commit))
-    })
-  }
-
-  return [changelog, lockfile]
-}
-
-async function commit_and_push(
+async function commitAndPush(
   dryRun: boolean,
   upcomingVersion: string,
   upcomingReleaseBranch: string
@@ -177,7 +126,7 @@ async function commit_and_push(
   return title
 }
 
-async function update_commit_status(
+async function updateCommitStatus(
   dryRun: boolean,
   changelog: ChangelogItem[],
   octokit: ReturnType<typeof getOctokit>
@@ -205,7 +154,7 @@ async function update_commit_status(
   }
 }
 
-async function update_pr(
+async function updatePr(
   dryRun: boolean,
   upcomingVersion: string,
   title: string,

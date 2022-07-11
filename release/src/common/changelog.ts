@@ -138,7 +138,7 @@ export async function prepareChangelog(
   return changelog
 }
 
-export async function write_to_changelog(
+export async function writeToChangelog(
   changelogPath: string,
   changelog: ChangelogItem[],
   upcomingVersion: string,
