@@ -126,12 +126,6 @@ async function getJiraIssues(
     octokit
   )
 
-  info(
-    `found issues: \n- ${changelog
-      .map((item) => `${item.links.commit.sha}: ${item.title}`)
-      .join('\n- ')}`
-  )
-
   changelog = await runPlugins({ octokit, jiraClient, changelog })
 
   return changelog
