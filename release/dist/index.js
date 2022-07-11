@@ -68561,6 +68561,8 @@ async function transitionIssues(dryRun, jiraIssueIds, jiraClient) {
 async function getJiraIssues(octokit, jiraClient, repositoriesJsonPath) {
   const latestVersion = await getLatestVersion();
   let [changelog, _] = await checkRepositories(repositoriesJsonPath, latestVersion, octokit);
+  (0, import_core10.info)(`found issues: 
+- ${changelog.map((item) => `${item.links.commit.sha}: ${item.title}`).join("\n- ")}`);
   changelog = await runPlugins({ octokit, jiraClient, changelog });
   return changelog.flatMap((item) => {
     var _a;
