@@ -1,4 +1,11 @@
+import { info } from '@actions/core'
+import { getOctokit } from '@actions/github'
 import { parseCommitMessage } from '../../../lib/conventionalCommits'
+import { formatPublicChangelog } from '../changelogFormatters'
+import { runPlugins } from '../changelogPlugins'
+import { getJiraClient } from './jiraClient'
+import { existsSync } from 'fs'
+import { readFile, writeFile } from 'fs/promises'
 import type { ChangelogItem, ChangelogType, Commit } from './types'
 
 export function createChangelogItemFromCommit(commit: Commit) {
@@ -91,5 +98,69 @@ export function formatLinkType(type: string) {
       return 'Milestone'
     default:
       return 'Unknown'
+  }
+}
+
+export async function prepareChangelog(
+  changelog: ChangelogItem[],
+  octokit: ReturnType<typeof getOctokit>,
+  jiraClient: ReturnType<typeof getJiraClient>
+): Promise<ChangelogItem[]> {
+  // Filter out chores
+  changelog = changelog.filter(noChores)
+
+  // Sort notes by date
+  changelog.sort(byDate)
+
+  // Run changelog plugins
+  changelog = await runPlugins({ octokit, jiraClient, changelog })
+
+  // Sort notes by type, feat first, then fix
+  changelog.sort(byType)
+
+  // Filter out chores again (plugins may have changed types)
+  changelog = changelog.filter(noChores)
+
+  // If there are no items in the changelog, we have nothing to release
+  if (changelog.length === 0) {
+    info(`Nothing to release`)
+    return []
+  }
+
+  // Display summary of notes
+  info(`Changelog:`)
+  changelog.forEach((item) => {
+    info(
+      `- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`
+    )
+  })
+
+  return changelog
+}
+
+export async function write_to_changelog(
+  changelogPath: string,
+  changelog: ChangelogItem[],
+  upcomingVersion: string,
+  dryRun: boolean
+) {
+  const currentPublicChangelogContents = existsSync(changelogPath)
+    ? await readFile(changelogPath, 'utf8')
+    : '# Changelog\n\n'
+  const publicChangelogContents = formatPublicChangelog(
+    upcomingVersion,
+    changelog
+  )
+  if (dryRun) {
+    info(`Dry run, not writing changelog`)
+  } else {
+    await writeFile(
+      changelogPath,
+      currentPublicChangelogContents.replace(
+        '# Changelog\n\n',
+        `# Changelog\n\n${publicChangelogContents}\n\n`
+      )
+    )
+    info(`Written changelog to: ${changelogPath}`)
   }
 }

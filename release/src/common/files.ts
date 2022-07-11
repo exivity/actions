@@ -17,10 +17,6 @@ export async function readTextFile(path: string) {
   }
 }
 
-export async function readLockfile(lockfilePath: string) {
-  return readJson<Lockfile>(lockfilePath)
-}
+export const readLockfile = readJson<Lockfile>
 
-export async function readRepositories(repositoriesJsonPath: string) {
-  return readJson<Repositories>(repositoriesJsonPath)
-}
+export const readRepositories = readJson<Repositories>

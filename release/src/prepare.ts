@@ -1,7 +1,6 @@
 import { getOctokit } from '@actions/github'
 import { info } from 'console'
-import { existsSync } from 'fs'
-import { readFile, writeFile } from 'fs/promises'
+import { writeFile } from 'fs/promises'
 import {
   getCommitSha,
   getLatestVersion,
@@ -13,13 +12,11 @@ import {
   gitSetAuthor,
 } from '../../lib/git'
 import { getCommitForTag, getCommitsSince, writeStatus } from '../../lib/github'
-import { formatPrChangelog, formatPublicChangelog } from './changelogFormatters'
-import { runPlugins } from './changelogPlugins'
+import { formatPrChangelog } from './changelogFormatters'
 import {
-  byDate,
-  byType,
   createChangelogItemFromCommit,
-  noChores,
+  prepareChangelog,
+  write_to_changelog,
 } from './common/changelog'
 import { DEFAULT_REPOSITORY_RELEASE_BRANCH } from './common/consts'
 import { readRepositories, readTextFile } from './common/files'
@@ -50,12 +47,76 @@ export async function prepare({
   dryRun: boolean
 }) {
   // Initial variables
-  let changelog: ChangelogItem[] = []
-  const pendingCommits: Commit[] = []
-  const lockfile: Lockfile = { version: '', repositories: {} }
-  const repositories = await readRepositories(repositoriesJsonPath)
   const prTemplate = await readTextFile(prTemplatePath)
   const latestVersion = await getLatestVersion()
+
+  let [changelog, lockfile] = await checkRepositories(
+    repositoriesJsonPath,
+    latestVersion,
+    octokit
+  )
+
+  changelog = await prepareChangelog(changelog, octokit, jiraClient)
+  if (changelog.length === 0) {
+    return
+  }
+
+  // Infer upcoming version increment
+  const upcomingVersion = inferVersionFromChangelog(latestVersion, changelog)
+  lockfile.version = upcomingVersion
+
+  // Switch to upcoming release branch and reset state to current release branch
+  if (dryRun) {
+    info(`Dry run, not switching branches`)
+  } else if (await gitHasChanges()) {
+    info('Detected uncommitted changes, aborting')
+  } else {
+    await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`)
+  }
+
+  // Write lockfile
+  if (dryRun) {
+    info(`Dry run, not writing lockfile`)
+  } else {
+    await writeFile(lockfilePath, JSON.stringify(lockfile, null, 2) + '\n')
+    info(`Written lockfile to: ${lockfilePath}`)
+  }
+
+  // Write CHANGELOG.md
+  await write_to_changelog(changelogPath, changelog, upcomingVersion, dryRun)
+
+  // Commit and push changes
+  const title = await commit_and_push(
+    dryRun,
+    upcomingVersion,
+    upcomingReleaseBranch
+  )
+
+  // Set status on commit
+  await update_commit_status(dryRun, changelog, octokit)
+
+  // Create or update pull request
+  await update_pr(
+    dryRun,
+    upcomingVersion,
+    title,
+    prTemplate,
+    upcomingReleaseBranch,
+    releaseBranch,
+    changelog,
+    octokit
+  )
+}
+
+async function checkRepositories(
+  repositoriesJsonPath: string,
+  latestVersion: string,
+  octokit: ReturnType<typeof getOctokit>
+): Promise<[ChangelogItem[], Lockfile]> {
+  const pendingCommits: Commit[] = []
+  let changelog: ChangelogItem[] = []
+  const lockfile: Lockfile = { version: '', repositories: {} }
+  const repositories = await readRepositories(repositoriesJsonPath)
 
   // Iterate over repositories
   info(`Iterating repositories`)
@@ -95,78 +156,14 @@ export async function prepare({
     })
   }
 
-  // Filter out chores
-  changelog = changelog.filter(noChores)
+  return [changelog, lockfile]
+}
 
-  // Sort notes by date
-  changelog.sort(byDate)
-
-  // Run changelog plugins
-  changelog = await runPlugins({ octokit, jiraClient, changelog })
-
-  // Sort notes by type, feat first, then fix
-  changelog.sort(byType)
-
-  // Filter out chores again (plugins may have changed types)
-  changelog = changelog.filter(noChores)
-
-  // If there are no items in the changelog, we have nothing to release
-  if (changelog.length === 0) {
-    info(`Nothing to release`)
-    return
-  }
-
-  // Display summary of notes
-  info(`Changelog:`)
-  changelog.forEach((item) => {
-    info(
-      `- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`
-    )
-  })
-
-  // Infer upcoming version increment
-  const upcomingVersion = inferVersionFromChangelog(latestVersion, changelog)
-  lockfile.version = upcomingVersion
-
-  // Switch to upcoming release branch and reset state to current release branch
-  if (dryRun) {
-    info(`Dry run, not switching branches`)
-  } else if (await gitHasChanges()) {
-    info('Detected uncommitted changes, aborting')
-  } else {
-    await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`)
-  }
-
-  // Write lockfile
-  if (dryRun) {
-    info(`Dry run, not writing lockfile`)
-  } else {
-    await writeFile(lockfilePath, JSON.stringify(lockfile, null, 2) + '\n')
-    info(`Written lockfile to: ${lockfilePath}`)
-  }
-
-  // Write CHANGELOG.md
-  const currentPublicChangelogContents = existsSync(changelogPath)
-    ? await readFile(changelogPath, 'utf8')
-    : '# Changelog\n\n'
-  const publicChangelogContents = formatPublicChangelog(
-    upcomingVersion,
-    changelog
-  )
-  if (dryRun) {
-    info(`Dry run, not writing changelog`)
-  } else {
-    await writeFile(
-      changelogPath,
-      currentPublicChangelogContents.replace(
-        '# Changelog\n\n',
-        `# Changelog\n\n${publicChangelogContents}\n\n`
-      )
-    )
-    info(`Written changelog to: ${changelogPath}`)
-  }
-
-  // Commit and push changes
+async function commit_and_push(
+  dryRun: boolean,
+  upcomingVersion: string,
+  upcomingReleaseBranch: string
+): Promise<string> {
   const title = `chore: release ${upcomingVersion}`
   if (dryRun) {
     info(`Dry run, not committing and pushing changes`)
@@ -177,8 +174,14 @@ export async function prepare({
     await gitPush(true)
     info(`Written changes to branch: ${upcomingReleaseBranch}`)
   }
+  return title
+}
 
-  // Set status on commit
+async function update_commit_status(
+  dryRun: boolean,
+  changelog: ChangelogItem[],
+  octokit: ReturnType<typeof getOctokit>
+) {
   const sha = await getCommitSha()
   if (dryRun) {
     info(`Dry run, no need to write commit status`)
@@ -200,8 +203,18 @@ export async function prepare({
           : 'Changelog is good to go!',
     })
   }
+}
 
-  // Create or update pull request
+async function update_pr(
+  dryRun: boolean,
+  upcomingVersion: string,
+  title: string,
+  prTemplate: string,
+  upcomingReleaseBranch: string,
+  releaseBranch: string,
+  changelog: ChangelogItem[],
+  octokit: ReturnType<typeof getOctokit>
+) {
   if (dryRun) {
     info(`Dry run, not creating pull request`)
   } else {
