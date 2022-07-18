@@ -59,7 +59,7 @@
     "@types/js-yaml": "4.0.5",
     "@types/mime": "2.0.3",
     "@types/minimatch": "3.0.5",
-    "@types/node": "18.0.4",
+    "@types/node": "18.0.6",
     "@types/semver": "7.3.10",
     "@types/uuid": "8.3.4",
     "esbuild": "0.14.49",
