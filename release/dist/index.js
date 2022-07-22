@@ -6764,7 +6764,7 @@ var require_dist_node10 = __commonJS({
     }
     function _objectSpread2(target) {
       for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i] != null ? arguments[i] : {};
+        var source = null != arguments[i] ? arguments[i] : {};
         i % 2 ? ownKeys(Object(source), true).forEach(function(key) {
           _defineProperty(target, key, source[key]);
         }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
@@ -36403,7 +36403,7 @@ var require_users = __commonJS({
               maxResults: parameters.maxResults,
               username: parameters.username,
               key: parameters.key,
-              accountId: parameters.accountId
+              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52524,7 +52524,7 @@ var require_users2 = __commonJS({
               maxResults: parameters.maxResults,
               username: parameters.username,
               key: parameters.key,
-              accountId: parameters.accountId
+              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
             }
           };
           return this.client.sendRequest(config, callback);
@@ -68073,7 +68073,15 @@ async function jiraPlugin({ jiraClient, changelog }) {
     ];
     if (issues.length > 0) {
       const issueKey = issues[0];
-      const issue = await jiraClient.issues.getIssue({ issueIdOrKey: issueKey });
+      let issue;
+      try {
+        issue = await jiraClient.issues.getIssue({
+          issueIdOrKey: issueKey
+        });
+      } catch (err) {
+        throw new Error(`got error when getting issue ${issueKey}:
+${JSON.stringify(err)}`);
+      }
       item.links.issue = {
         title: issue.fields.summary,
         description: issue.fields.description || null,
