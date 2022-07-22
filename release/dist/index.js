@@ -68073,7 +68073,15 @@ async function jiraPlugin({ jiraClient, changelog }) {
     ];
     if (issues.length > 0) {
       const issueKey = issues[0];
-      const issue = await jiraClient.issues.getIssue({ issueIdOrKey: issueKey });
+      let issue;
+      try {
+        issue = await jiraClient.issues.getIssue({
+          issueIdOrKey: issueKey
+        });
+      } catch (err) {
+        throw new Error(`got error when getting issue ${issueKey}:
+${JSON.stringify(err)}`);
+      }
       item.links.issue = {
         title: issue.fields.summary,
         description: issue.fields.description || null,
