@@ -50,7 +50,7 @@
     "minimatch": "5.1.0",
     "rcedit": "3.0.1",
     "semver": "7.3.7",
-    "zod": "3.17.9"
+    "zod": "3.17.10"
   },
   "devDependencies": {
     "@octokit/webhooks": "10.0.9",
