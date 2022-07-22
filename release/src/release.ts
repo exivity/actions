@@ -3,7 +3,6 @@ import { getOctokit } from '@actions/github'
 import { gitPushTags, gitTag } from '../../lib/git'
 import { createLightweightTag, getRepository } from '../../lib/github'
 import { readLockfile } from './common/files'
-import { getJiraClient } from './common/jiraClient'
 
 export async function release({
   octokit,
