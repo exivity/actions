@@ -6764,7 +6764,7 @@ var require_dist_node10 = __commonJS({
     }
     function _objectSpread2(target) {
       for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i] != null ? arguments[i] : {};
+        var source = null != arguments[i] ? arguments[i] : {};
         i % 2 ? ownKeys(Object(source), true).forEach(function(key) {
           _defineProperty(target, key, source[key]);
         }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
@@ -36403,7 +36403,7 @@ var require_users = __commonJS({
               maxResults: parameters.maxResults,
               username: parameters.username,
               key: parameters.key,
-              accountId: parameters.accountId
+              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52524,7 +52524,7 @@ var require_users2 = __commonJS({
               maxResults: parameters.maxResults,
               username: parameters.username,
               key: parameters.key,
-              accountId: parameters.accountId
+              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
             }
           };
           return this.client.sendRequest(config, callback);
@@ -68063,7 +68063,7 @@ async function associatedPullRequestPlugin({
 // release/src/changelogPlugins/jira.ts
 async function jiraPlugin({ jiraClient, changelog }) {
   var _a, _b;
-  const jiraKey = new RegExp(/\b[A-Z]+-\d+\b/g);
+  const jiraKey = new RegExp(/\bEXVT-\d+\b/g);
   for (const item of changelog) {
     const issues = [
       ...item.links.pr ? item.links.pr.originalTitle.match(jiraKey) || [] : [],

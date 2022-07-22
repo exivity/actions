@@ -3,7 +3,7 @@ import type { PluginParams } from '.'
 import { JiraCustomFields, JiraIssueType } from '../common/types'
 
 export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
-  const jiraKey = new RegExp(/\b[A-Z]+-\d+\b/g)
+  const jiraKey = new RegExp(/\bEXVT-\d+\b/g)
   for (const item of changelog) {
     const issues = [
       ...(item.links.pr
