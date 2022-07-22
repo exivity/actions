@@ -68064,7 +68064,7 @@ async function associatedPullRequestPlugin({
 var import_core6 = __toESM(require_core());
 async function jiraPlugin({ jiraClient, changelog }) {
   var _a, _b;
-  const jiraKey = new RegExp(/\b[A-Z]+-\d+\b/g);
+  const jiraKey = new RegExp(/\bEXVT-\d+\b/g);
   for (const item of changelog) {
     const issues = [
       ...item.links.pr ? item.links.pr.originalTitle.match(jiraKey) || [] : [],
