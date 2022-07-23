@@ -335,8 +335,7 @@ export async function getCommitForTag({
     return { ...commit, tag, timestamp }
   } catch (error: unknown) {
     throw new Error(
-      `Could not find commit for tag ${tag} in ${owner}/${repo}...\n
-      ${JSON.stringify(error)}`
+      `Could not find commit for tag ${tag} in ${owner}/${repo}...`
     )
   }
 }

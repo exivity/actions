@@ -67597,9 +67597,7 @@ async function getCommitForTag({
     }
     return { ...commit, tag, timestamp };
   } catch (error) {
-    throw new Error(`Could not find commit for tag ${tag} in ${owner}/${repo}...
-
-      ${JSON.stringify(error)}`);
+    throw new Error(`Could not find commit for tag ${tag} in ${owner}/${repo}...`);
   }
 }
 async function getCommits({
