@@ -3826,7 +3826,7 @@ var require_common = __commonJS({
     function setopts(self, pattern, options) {
       if (!options)
         options = {};
-      if (options.matchBase && pattern.indexOf("/") === -1) {
+      if (options.matchBase && -1 === pattern.indexOf("/")) {
         if (options.noglobstar) {
           throw new Error("base matching requires globstar");
         }
