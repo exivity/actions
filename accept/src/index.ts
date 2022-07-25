@@ -25,11 +25,7 @@ import {
   review,
   writeStatus,
 } from '../../lib/github'
-import {
-  includesBotRequest,
-  isBotReviewRequested,
-  isWorkflowDependencyDone,
-} from './checks'
+import { isWorkflowDependencyDone } from './checks'
 import { dispatch } from './dispatch'
 
 const supportedEvents = ['push', 'pull_request', 'workflow_run'] as const
@@ -80,12 +76,6 @@ async function run() {
       warning(
         '[accept] Skipping: only the "pull_request.review_requested" event is supported'
       )
-      return
-    }
-
-    // Skip accepting commits on PR without exivity-bot review request
-    if (!includesBotRequest(eventData)) {
-      warning('[accept] Skipping: exivity-bot not requested for review')
       return
     }
 
@@ -194,12 +184,6 @@ async function run() {
     // We need to check if conclusion was successful
     if (eventData['workflow_run']['conclusion'] !== 'success') {
       warning(`[accept] Skipping: workflow constraint not satisfied`)
-      return
-    }
-
-    // Skip accepting commits on PR without exivity-bot review request
-    if (pr && !isBotReviewRequested(pr)) {
-      warning('[accept] Skipping: exivity-bot not requested for review')
       return
     }
   }
