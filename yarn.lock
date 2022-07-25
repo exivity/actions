@@ -945,15 +945,15 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-jira.js@2.15.3:
-  version "2.15.3"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-2.15.3.tgz#d778daab75becfbb9e931f92e79301a5fbf1ab29"
-  integrity sha512-5pah9rTm6lC7M+glb5fZi88B1drSKD8xX59MPeHHk5kCaww79doZuwSSHWSUYxFpOalXM4kPVsRX1oStdZJPFQ==
+jira.js@2.15.4:
+  version "2.15.4"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-2.15.4.tgz#fc699f1b051a9a1f3fc2b0b3d37ec9f05d651303"
+  integrity sha512-gp/MHi13McgzcaJMsdpynxVL4hkg+upJrCynCAon5n1xHzMtnkwrsi9eJlAblYNlzQL0FmcScdZPvhvSyoVjzA==
   dependencies:
     atlassian-jwt "^2.0.2"
     axios "^0.27.2"
     form-data "^4.0.0"
-    oauth "^0.9.15"
+    oauth "^0.10.0"
     tslib "^2.4.0"
 
 js-yaml@4.1.0:
@@ -1095,10 +1095,10 @@ npm-run-path@^2.0.0:
   dependencies:
     path-key "^2.0.0"
 
-oauth@^0.9.15:
-  version "0.9.15"
-  resolved "https://registry.yarnpkg.com/oauth/-/oauth-0.9.15.tgz#bd1fefaf686c96b75475aed5196412ff60cfb9c1"
-  integrity sha512-a5ERWK1kh38ExDEfoO6qUHJb32rd7aYmPHuyCu3Fta/cnICvYmgd2uhuKXvPD+PXB+gCEYYEaQdIRAjCOwAKNA==
+oauth@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/oauth/-/oauth-0.10.0.tgz#3551c4c9b95c53ea437e1e21e46b649482339c58"
+  integrity sha512-1orQ9MT1vHFGQxhuy7E/0gECD3fd2fCC+PIX+/jgmU/gI3EpRocXtmtvxCO5x3WZ443FLTLFWNDjl5MPJf9u+Q==
 
 object-inspect@^1.12.0, object-inspect@^1.9.0:
   version "1.12.2"
