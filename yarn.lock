@@ -945,10 +945,10 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-jira.js@2.15.4:
-  version "2.15.4"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-2.15.4.tgz#fc699f1b051a9a1f3fc2b0b3d37ec9f05d651303"
-  integrity sha512-gp/MHi13McgzcaJMsdpynxVL4hkg+upJrCynCAon5n1xHzMtnkwrsi9eJlAblYNlzQL0FmcScdZPvhvSyoVjzA==
+jira.js@2.15.5:
+  version "2.15.5"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-2.15.5.tgz#2ec61831e617bbc69194383bc676e2a22c7daf3e"
+  integrity sha512-up2PPi4sKkIsvIH0pNgRUsrCCbTTHZXCAMqxO34ELSliJ3OrElDXLNykjyU3eWUgeR9ucSnDnk/LBsZ3W0OWGg==
   dependencies:
     atlassian-jwt "^2.0.2"
     axios "^0.27.2"
