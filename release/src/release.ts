@@ -7,7 +7,7 @@ import { readLockfile } from './common/files'
 import {
   getJiraClient,
   transitionToReleased,
-  getVersionId,
+  getVersion,
 } from './common/jiraClient'
 import { checkRepositories } from './common/repositories'
 import { Lockfile } from './common/types'
@@ -132,8 +132,6 @@ async function updateIssueReleaseVersion(
   jiraIssueIds: string[],
   jiraClient: ReturnType<typeof getJiraClient>
 ) {
-  const versionId = await getVersionId(jiraClient, version)
-
   if (dryRun) {
     info(`Dry run, not setting release version of tickets`)
   } else {
@@ -144,23 +142,14 @@ async function updateIssueReleaseVersion(
       }`
     )
 
-    await Promise.all(
-      jiraIssueIds.map((issueIdOrKey) => {
-        return jiraClient.issues.editIssue({
-          issueIdOrKey,
-          fields: {
-            fixVersions: [
-              {
-                id: versionId,
-              },
-            ],
-          },
-        })
+    for (const issueIdOrKey of jiraIssueIds) {
+      await jiraClient.issues.editIssue({
+        issueIdOrKey,
+        fields: {
+          fixVersions: [await getVersion(jiraClient, version, issueIdOrKey)],
+        },
       })
-    ).then(() => {
-      jiraIssueIds.forEach((issueIdOrKey) => {
-        info(`Set release version of ${issueIdOrKey} to ${version}`)
-      })
-    })
+      info(`Set release version of ${issueIdOrKey} to ${version}`)
+    }
   }
 }

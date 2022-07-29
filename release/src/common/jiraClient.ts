@@ -74,11 +74,29 @@ export async function transitionToReleased(
   }
 }
 
-export async function getVersionId(
+export async function getVersion(
   jiraClient: ReturnType<typeof getJiraClient>,
-  version: string
+  version: string,
+  issueIdOrKey: string
 ) {
-  jiraClient.issueFields.getFields()
+  const { fields } = (await jiraClient.issues.getEditIssueMeta({
+    issueIdOrKey,
+  })) as any
+  // made into `any` because according to the api docs, these types are wrong
+  console.log(JSON.stringify(fields))
 
-  jiraClient.issueCustomFieldOptions.getOptionsForField
+  const versionData = fields?.fixVersions?.allowedValues?.filter(
+    (data: any) => data.name === version
+  )
+
+  if (typeof versionData === 'undefined') {
+    throw new Error('Cannot get version data')
+  }
+
+  if (versionData.length > 0) {
+    return versionData[0]
+  }
+
+  //const newData = await jiraClient.
+  // FIXME: Create the fixVersion option if it doesn't exist yet
 }
