@@ -73,3 +73,12 @@ export async function transitionToReleased(
     })
   }
 }
+
+export async function getVersionId(
+  jiraClient: ReturnType<typeof getJiraClient>,
+  version: string
+) {
+  jiraClient.issueFields.getFields()
+
+  jiraClient.issueCustomFieldOptions.getOptionsForField
+}

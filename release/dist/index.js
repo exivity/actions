@@ -751,12 +751,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info11 = this._prepareRequest(verb, parsedUrl, headers);
+          let info12 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info11, data);
+            response = yield this.requestRaw(info12, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -766,7 +766,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info11, data);
+                return authenticationHandler.handleAuthentication(this, info12, data);
               } else {
                 return response;
               }
@@ -789,8 +789,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info11 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info11, data);
+              info12 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info12, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -811,7 +811,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info11, data) {
+      requestRaw(info12, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -823,16 +823,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info11, data, callbackForResult);
+            this.requestRawWithCallback(info12, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info11, data, onResult) {
+      requestRawWithCallback(info12, data, onResult) {
         if (typeof data === "string") {
-          if (!info11.options.headers) {
-            info11.options.headers = {};
+          if (!info12.options.headers) {
+            info12.options.headers = {};
           }
-          info11.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info12.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -841,7 +841,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info11.httpModule.request(info11.options, (msg) => {
+        const req = info12.httpModule.request(info12.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -853,7 +853,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info11.options.path}`));
+          handleResult(new Error(`Request timeout: ${info12.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -875,27 +875,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info11 = {};
-        info11.parsedUrl = requestUrl;
-        const usingSsl = info11.parsedUrl.protocol === "https:";
-        info11.httpModule = usingSsl ? https : http;
+        const info12 = {};
+        info12.parsedUrl = requestUrl;
+        const usingSsl = info12.parsedUrl.protocol === "https:";
+        info12.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info11.options = {};
-        info11.options.host = info11.parsedUrl.hostname;
-        info11.options.port = info11.parsedUrl.port ? parseInt(info11.parsedUrl.port) : defaultPort;
-        info11.options.path = (info11.parsedUrl.pathname || "") + (info11.parsedUrl.search || "");
-        info11.options.method = method;
-        info11.options.headers = this._mergeHeaders(headers);
+        info12.options = {};
+        info12.options.host = info12.parsedUrl.hostname;
+        info12.options.port = info12.parsedUrl.port ? parseInt(info12.parsedUrl.port) : defaultPort;
+        info12.options.path = (info12.parsedUrl.pathname || "") + (info12.parsedUrl.search || "");
+        info12.options.method = method;
+        info12.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info11.options.headers["user-agent"] = this.userAgent;
+          info12.options.headers["user-agent"] = this.userAgent;
         }
-        info11.options.agent = this._getAgent(info11.parsedUrl);
+        info12.options.agent = this._getAgent(info12.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info11.options);
+            handler.prepareRequest(info12.options);
           }
         }
-        return info11;
+        return info12;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1599,10 +1599,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info11(message) {
+    function info12(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info11;
+    exports.info = info12;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -5816,6 +5816,7 @@ var require_dist_node9 = __commonJS({
         removeCustomLabelFromSelfHostedRunnerForRepo: ["DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}"],
         removeSelectedRepoFromOrgSecret: ["DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}"],
         reviewPendingDeploymentsForRun: ["POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments"],
+        setActionsOidcCustomIssuerPolicyForEnterprise: ["PUT /enterprises/{enterprise}/actions/oidc/customization/issuer"],
         setAllowedActionsOrganization: ["PUT /orgs/{org}/actions/permissions/selected-actions"],
         setAllowedActionsRepository: ["PUT /repos/{owner}/{repo}/actions/permissions/selected-actions"],
         setCustomLabelsForSelfHostedRunnerForOrg: ["PUT /orgs/{org}/actions/runners/{runner_id}/labels"],
@@ -5974,11 +5975,7 @@ var require_dist_node9 = __commonJS({
         getSecretForAuthenticatedUser: ["GET /user/codespaces/secrets/{secret_name}"],
         listDevcontainersInRepositoryForAuthenticatedUser: ["GET /repos/{owner}/{repo}/codespaces/devcontainers"],
         listForAuthenticatedUser: ["GET /user/codespaces"],
-        listInOrganization: ["GET /orgs/{org}/codespaces", {}, {
-          renamedParameters: {
-            org_id: "org"
-          }
-        }],
+        listInOrganization: ["GET /orgs/{org_id}/codespaces"],
         listInRepositoryForAuthenticatedUser: ["GET /repos/{owner}/{repo}/codespaces"],
         listRepoSecrets: ["GET /repos/{owner}/{repo}/codespaces/secrets"],
         listRepositoriesForSecretForAuthenticatedUser: ["GET /user/codespaces/secrets/{secret_name}/repositories"],
@@ -6671,7 +6668,7 @@ var require_dist_node9 = __commonJS({
         updateAuthenticated: ["PATCH /user"]
       }
     };
-    var VERSION = "5.16.2";
+    var VERSION = "5.16.0";
     function endpointsToMethods(octokit, endpointsMap) {
       const newMethods = {};
       for (const [scope, endpoints] of Object.entries(endpointsMap)) {
@@ -6754,7 +6751,7 @@ var require_dist_node10 = __commonJS({
   "node_modules/@octokit/plugin-paginate-rest/dist-node/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var VERSION = "2.21.2";
+    var VERSION = "2.20.0";
     function ownKeys(object, enumerableOnly) {
       var keys = Object.keys(object);
       if (Object.getOwnPropertySymbols) {
@@ -6767,7 +6764,7 @@ var require_dist_node10 = __commonJS({
     }
     function _objectSpread2(target) {
       for (var i = 1; i < arguments.length; i++) {
-        var source = null != arguments[i] ? arguments[i] : {};
+        var source = arguments[i] != null ? arguments[i] : {};
         i % 2 ? ownKeys(Object(source), true).forEach(function(key) {
           _defineProperty(target, key, source[key]);
         }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
@@ -6882,7 +6879,7 @@ var require_dist_node10 = __commonJS({
     var composePaginateRest = Object.assign(paginate, {
       iterator
     });
-    var paginatingEndpoints = ["GET /app/hook/deliveries", "GET /app/installations", "GET /applications/grants", "GET /authorizations", "GET /enterprises/{enterprise}/actions/permissions/organizations", "GET /enterprises/{enterprise}/actions/runner-groups", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners", "GET /enterprises/{enterprise}/actions/runners", "GET /enterprises/{enterprise}/audit-log", "GET /enterprises/{enterprise}/secret-scanning/alerts", "GET /enterprises/{enterprise}/settings/billing/advanced-security", "GET /events", "GET /gists", "GET /gists/public", "GET /gists/starred", "GET /gists/{gist_id}/comments", "GET /gists/{gist_id}/commits", "GET /gists/{gist_id}/forks", "GET /installation/repositories", "GET /issues", "GET /licenses", "GET /marketplace_listing/plans", "GET /marketplace_listing/plans/{plan_id}/accounts", "GET /marketplace_listing/stubbed/plans", "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts", "GET /networks/{owner}/{repo}/events", "GET /notifications", "GET /organizations", "GET /orgs/{org}/actions/cache/usage-by-repository", "GET /orgs/{org}/actions/permissions/repositories", "GET /orgs/{org}/actions/runner-groups", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners", "GET /orgs/{org}/actions/runners", "GET /orgs/{org}/actions/secrets", "GET /orgs/{org}/actions/secrets/{secret_name}/repositories", "GET /orgs/{org}/audit-log", "GET /orgs/{org}/blocks", "GET /orgs/{org}/code-scanning/alerts", "GET /orgs/{org}/codespaces", "GET /orgs/{org}/credential-authorizations", "GET /orgs/{org}/dependabot/secrets", "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories", "GET /orgs/{org}/events", "GET /orgs/{org}/external-groups", "GET /orgs/{org}/failed_invitations", "GET /orgs/{org}/hooks", "GET /orgs/{org}/hooks/{hook_id}/deliveries", "GET /orgs/{org}/installations", "GET /orgs/{org}/invitations", "GET /orgs/{org}/invitations/{invitation_id}/teams", "GET /orgs/{org}/issues", "GET /orgs/{org}/members", "GET /orgs/{org}/migrations", "GET /orgs/{org}/migrations/{migration_id}/repositories", "GET /orgs/{org}/outside_collaborators", "GET /orgs/{org}/packages", "GET /orgs/{org}/packages/{package_type}/{package_name}/versions", "GET /orgs/{org}/projects", "GET /orgs/{org}/public_members", "GET /orgs/{org}/repos", "GET /orgs/{org}/secret-scanning/alerts", "GET /orgs/{org}/settings/billing/advanced-security", "GET /orgs/{org}/team-sync/groups", "GET /orgs/{org}/teams", "GET /orgs/{org}/teams/{team_slug}/discussions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/invitations", "GET /orgs/{org}/teams/{team_slug}/members", "GET /orgs/{org}/teams/{team_slug}/projects", "GET /orgs/{org}/teams/{team_slug}/repos", "GET /orgs/{org}/teams/{team_slug}/teams", "GET /projects/columns/{column_id}/cards", "GET /projects/{project_id}/collaborators", "GET /projects/{project_id}/columns", "GET /repos/{owner}/{repo}/actions/artifacts", "GET /repos/{owner}/{repo}/actions/caches", "GET /repos/{owner}/{repo}/actions/runners", "GET /repos/{owner}/{repo}/actions/runs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs", "GET /repos/{owner}/{repo}/actions/secrets", "GET /repos/{owner}/{repo}/actions/workflows", "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs", "GET /repos/{owner}/{repo}/assignees", "GET /repos/{owner}/{repo}/branches", "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations", "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs", "GET /repos/{owner}/{repo}/code-scanning/alerts", "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances", "GET /repos/{owner}/{repo}/code-scanning/analyses", "GET /repos/{owner}/{repo}/codespaces", "GET /repos/{owner}/{repo}/codespaces/devcontainers", "GET /repos/{owner}/{repo}/codespaces/secrets", "GET /repos/{owner}/{repo}/collaborators", "GET /repos/{owner}/{repo}/comments", "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/commits", "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments", "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls", "GET /repos/{owner}/{repo}/commits/{ref}/check-runs", "GET /repos/{owner}/{repo}/commits/{ref}/check-suites", "GET /repos/{owner}/{repo}/commits/{ref}/status", "GET /repos/{owner}/{repo}/commits/{ref}/statuses", "GET /repos/{owner}/{repo}/contributors", "GET /repos/{owner}/{repo}/dependabot/secrets", "GET /repos/{owner}/{repo}/deployments", "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses", "GET /repos/{owner}/{repo}/environments", "GET /repos/{owner}/{repo}/events", "GET /repos/{owner}/{repo}/forks", "GET /repos/{owner}/{repo}/git/matching-refs/{ref}", "GET /repos/{owner}/{repo}/hooks", "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries", "GET /repos/{owner}/{repo}/invitations", "GET /repos/{owner}/{repo}/issues", "GET /repos/{owner}/{repo}/issues/comments", "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/issues/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/comments", "GET /repos/{owner}/{repo}/issues/{issue_number}/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/labels", "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions", "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline", "GET /repos/{owner}/{repo}/keys", "GET /repos/{owner}/{repo}/labels", "GET /repos/{owner}/{repo}/milestones", "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels", "GET /repos/{owner}/{repo}/notifications", "GET /repos/{owner}/{repo}/pages/builds", "GET /repos/{owner}/{repo}/projects", "GET /repos/{owner}/{repo}/pulls", "GET /repos/{owner}/{repo}/pulls/comments", "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments", "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", "GET /repos/{owner}/{repo}/pulls/{pull_number}/files", "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments", "GET /repos/{owner}/{repo}/releases", "GET /repos/{owner}/{repo}/releases/{release_id}/assets", "GET /repos/{owner}/{repo}/releases/{release_id}/reactions", "GET /repos/{owner}/{repo}/secret-scanning/alerts", "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations", "GET /repos/{owner}/{repo}/stargazers", "GET /repos/{owner}/{repo}/subscribers", "GET /repos/{owner}/{repo}/tags", "GET /repos/{owner}/{repo}/teams", "GET /repos/{owner}/{repo}/topics", "GET /repositories", "GET /repositories/{repository_id}/environments/{environment_name}/secrets", "GET /search/code", "GET /search/commits", "GET /search/issues", "GET /search/labels", "GET /search/repositories", "GET /search/topics", "GET /search/users", "GET /teams/{team_id}/discussions", "GET /teams/{team_id}/discussions/{discussion_number}/comments", "GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /teams/{team_id}/discussions/{discussion_number}/reactions", "GET /teams/{team_id}/invitations", "GET /teams/{team_id}/members", "GET /teams/{team_id}/projects", "GET /teams/{team_id}/repos", "GET /teams/{team_id}/teams", "GET /user/blocks", "GET /user/codespaces", "GET /user/codespaces/secrets", "GET /user/emails", "GET /user/followers", "GET /user/following", "GET /user/gpg_keys", "GET /user/installations", "GET /user/installations/{installation_id}/repositories", "GET /user/issues", "GET /user/keys", "GET /user/marketplace_purchases", "GET /user/marketplace_purchases/stubbed", "GET /user/memberships/orgs", "GET /user/migrations", "GET /user/migrations/{migration_id}/repositories", "GET /user/orgs", "GET /user/packages", "GET /user/packages/{package_type}/{package_name}/versions", "GET /user/public_emails", "GET /user/repos", "GET /user/repository_invitations", "GET /user/starred", "GET /user/subscriptions", "GET /user/teams", "GET /users", "GET /users/{username}/events", "GET /users/{username}/events/orgs/{org}", "GET /users/{username}/events/public", "GET /users/{username}/followers", "GET /users/{username}/following", "GET /users/{username}/gists", "GET /users/{username}/gpg_keys", "GET /users/{username}/keys", "GET /users/{username}/orgs", "GET /users/{username}/packages", "GET /users/{username}/projects", "GET /users/{username}/received_events", "GET /users/{username}/received_events/public", "GET /users/{username}/repos", "GET /users/{username}/starred", "GET /users/{username}/subscriptions"];
+    var paginatingEndpoints = ["GET /app/hook/deliveries", "GET /app/installations", "GET /applications/grants", "GET /authorizations", "GET /enterprises/{enterprise}/actions/permissions/organizations", "GET /enterprises/{enterprise}/actions/runner-groups", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners", "GET /enterprises/{enterprise}/actions/runners", "GET /enterprises/{enterprise}/actions/runners/downloads", "GET /enterprises/{enterprise}/actions/runners/{runner_id}/labels", "GET /enterprises/{enterprise}/secret-scanning/alerts", "GET /events", "GET /gists", "GET /gists/public", "GET /gists/starred", "GET /gists/{gist_id}/comments", "GET /gists/{gist_id}/commits", "GET /gists/{gist_id}/forks", "GET /installation/repositories", "GET /issues", "GET /marketplace_listing/plans", "GET /marketplace_listing/plans/{plan_id}/accounts", "GET /marketplace_listing/stubbed/plans", "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts", "GET /networks/{owner}/{repo}/events", "GET /notifications", "GET /organizations", "GET /organizations/{organization_id}/custom_roles", "GET /orgs/{org_id}/codespaces", "GET /orgs/{org}/actions/permissions/repositories", "GET /orgs/{org}/actions/runner-groups", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners", "GET /orgs/{org}/actions/runners", "GET /orgs/{org}/actions/runners/downloads", "GET /orgs/{org}/actions/runners/{runner_id}/labels", "GET /orgs/{org}/actions/secrets", "GET /orgs/{org}/actions/secrets/{secret_name}/repositories", "GET /orgs/{org}/blocks", "GET /orgs/{org}/code-scanning/alerts", "GET /orgs/{org}/credential-authorizations", "GET /orgs/{org}/dependabot/secrets", "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories", "GET /orgs/{org}/events", "GET /orgs/{org}/external-groups", "GET /orgs/{org}/failed_invitations", "GET /orgs/{org}/hooks", "GET /orgs/{org}/hooks/{hook_id}/deliveries", "GET /orgs/{org}/installations", "GET /orgs/{org}/invitations", "GET /orgs/{org}/invitations/{invitation_id}/teams", "GET /orgs/{org}/issues", "GET /orgs/{org}/members", "GET /orgs/{org}/migrations", "GET /orgs/{org}/migrations/{migration_id}/repositories", "GET /orgs/{org}/outside_collaborators", "GET /orgs/{org}/packages", "GET /orgs/{org}/projects", "GET /orgs/{org}/public_members", "GET /orgs/{org}/repos", "GET /orgs/{org}/secret-scanning/alerts", "GET /orgs/{org}/team-sync/groups", "GET /orgs/{org}/teams", "GET /orgs/{org}/teams/{team_slug}/discussions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/external-groups", "GET /orgs/{org}/teams/{team_slug}/invitations", "GET /orgs/{org}/teams/{team_slug}/members", "GET /orgs/{org}/teams/{team_slug}/projects", "GET /orgs/{org}/teams/{team_slug}/repos", "GET /orgs/{org}/teams/{team_slug}/team-sync/group-mappings", "GET /orgs/{org}/teams/{team_slug}/teams", "GET /projects/columns/{column_id}/cards", "GET /projects/{project_id}/collaborators", "GET /projects/{project_id}/columns", "GET /repos/{owner}/{repo}/actions/artifacts", "GET /repos/{owner}/{repo}/actions/runners", "GET /repos/{owner}/{repo}/actions/runners/downloads", "GET /repos/{owner}/{repo}/actions/runners/{runner_id}/labels", "GET /repos/{owner}/{repo}/actions/runs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs", "GET /repos/{owner}/{repo}/actions/secrets", "GET /repos/{owner}/{repo}/actions/workflows", "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs", "GET /repos/{owner}/{repo}/assignees", "GET /repos/{owner}/{repo}/autolinks", "GET /repos/{owner}/{repo}/branches", "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations", "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs", "GET /repos/{owner}/{repo}/code-scanning/alerts", "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances", "GET /repos/{owner}/{repo}/code-scanning/analyses", "GET /repos/{owner}/{repo}/codespaces", "GET /repos/{owner}/{repo}/codespaces/devcontainers", "GET /repos/{owner}/{repo}/codespaces/secrets", "GET /repos/{owner}/{repo}/collaborators", "GET /repos/{owner}/{repo}/comments", "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/commits", "GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head", "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments", "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls", "GET /repos/{owner}/{repo}/commits/{ref}/check-runs", "GET /repos/{owner}/{repo}/commits/{ref}/check-suites", "GET /repos/{owner}/{repo}/commits/{ref}/statuses", "GET /repos/{owner}/{repo}/contributors", "GET /repos/{owner}/{repo}/dependabot/secrets", "GET /repos/{owner}/{repo}/deployments", "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses", "GET /repos/{owner}/{repo}/events", "GET /repos/{owner}/{repo}/forks", "GET /repos/{owner}/{repo}/git/matching-refs/{ref}", "GET /repos/{owner}/{repo}/hooks", "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries", "GET /repos/{owner}/{repo}/invitations", "GET /repos/{owner}/{repo}/issues", "GET /repos/{owner}/{repo}/issues/comments", "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/issues/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/comments", "GET /repos/{owner}/{repo}/issues/{issue_number}/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/labels", "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions", "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline", "GET /repos/{owner}/{repo}/keys", "GET /repos/{owner}/{repo}/labels", "GET /repos/{owner}/{repo}/milestones", "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels", "GET /repos/{owner}/{repo}/notifications", "GET /repos/{owner}/{repo}/pages/builds", "GET /repos/{owner}/{repo}/projects", "GET /repos/{owner}/{repo}/pulls", "GET /repos/{owner}/{repo}/pulls/comments", "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments", "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", "GET /repos/{owner}/{repo}/pulls/{pull_number}/files", "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments", "GET /repos/{owner}/{repo}/releases", "GET /repos/{owner}/{repo}/releases/{release_id}/assets", "GET /repos/{owner}/{repo}/releases/{release_id}/reactions", "GET /repos/{owner}/{repo}/secret-scanning/alerts", "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations", "GET /repos/{owner}/{repo}/stargazers", "GET /repos/{owner}/{repo}/subscribers", "GET /repos/{owner}/{repo}/tags", "GET /repos/{owner}/{repo}/tags/protection", "GET /repos/{owner}/{repo}/teams", "GET /repositories", "GET /repositories/{repository_id}/environments/{environment_name}/secrets", "GET /scim/v2/enterprises/{enterprise}/Groups", "GET /scim/v2/enterprises/{enterprise}/Users", "GET /scim/v2/organizations/{org}/Users", "GET /search/code", "GET /search/commits", "GET /search/issues", "GET /search/labels", "GET /search/repositories", "GET /search/topics", "GET /search/users", "GET /teams/{team_id}/discussions", "GET /teams/{team_id}/discussions/{discussion_number}/comments", "GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /teams/{team_id}/discussions/{discussion_number}/reactions", "GET /teams/{team_id}/invitations", "GET /teams/{team_id}/members", "GET /teams/{team_id}/projects", "GET /teams/{team_id}/repos", "GET /teams/{team_id}/team-sync/group-mappings", "GET /teams/{team_id}/teams", "GET /user/blocks", "GET /user/codespaces", "GET /user/codespaces/secrets", "GET /user/codespaces/secrets/{secret_name}/repositories", "GET /user/emails", "GET /user/followers", "GET /user/following", "GET /user/gpg_keys", "GET /user/installations", "GET /user/installations/{installation_id}/repositories", "GET /user/issues", "GET /user/keys", "GET /user/marketplace_purchases", "GET /user/marketplace_purchases/stubbed", "GET /user/memberships/orgs", "GET /user/migrations", "GET /user/migrations/{migration_id}/repositories", "GET /user/orgs", "GET /user/packages", "GET /user/public_emails", "GET /user/repos", "GET /user/repository_invitations", "GET /user/starred", "GET /user/subscriptions", "GET /user/teams", "GET /users", "GET /users/{username}/events", "GET /users/{username}/events/orgs/{org}", "GET /users/{username}/events/public", "GET /users/{username}/followers", "GET /users/{username}/following", "GET /users/{username}/gists", "GET /users/{username}/gpg_keys", "GET /users/{username}/keys", "GET /users/{username}/orgs", "GET /users/{username}/packages", "GET /users/{username}/projects", "GET /users/{username}/received_events", "GET /users/{username}/received_events/public", "GET /users/{username}/repos", "GET /users/{username}/starred", "GET /users/{username}/subscriptions"];
     function isPaginatingEndpoint(arg) {
       if (typeof arg === "string") {
         return paginatingEndpoints.includes(arg);
@@ -36406,7 +36403,7 @@ var require_users = __commonJS({
               maxResults: parameters.maxResults,
               username: parameters.username,
               key: parameters.key,
-              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
+              accountId: parameters.accountId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52527,7 +52524,7 @@ var require_users2 = __commonJS({
               maxResults: parameters.maxResults,
               username: parameters.username,
               key: parameters.key,
-              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
+              accountId: parameters.accountId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -67501,7 +67498,7 @@ var require_semver2 = __commonJS({
 });
 
 // release/src/index.ts
-var import_core11 = __toESM(require_core());
+var import_core12 = __toESM(require_core());
 var import_github8 = __toESM(require_github());
 
 // lib/core.ts
@@ -67795,6 +67792,10 @@ async function transitionToReleased(issueIdOrKey, jiraClient) {
     });
   }
 }
+async function getVersionId(jiraClient, version) {
+  jiraClient.issueFields.getFields();
+  jiraClient.issueCustomFieldOptions.getOptionsForField;
+}
 
 // release/src/ping.ts
 var import_console = require("console");
@@ -67876,7 +67877,7 @@ async function getLatestVersion() {
 }
 
 // release/src/common/changelog.ts
-var import_core6 = __toESM(require_core());
+var import_core7 = __toESM(require_core());
 
 // lib/conventionalCommits.ts
 var import_core5 = __toESM(require_core());
@@ -67969,6 +67970,7 @@ async function associatedPullRequestPlugin({
 }
 
 // release/src/changelogPlugins/jira.ts
+var import_core6 = __toESM(require_core());
 async function jiraPlugin({ jiraClient, changelog }) {
   var _a, _b;
   const jiraKey = new RegExp(/\bEXVT-\d+\b/g);
@@ -67986,41 +67988,43 @@ async function jiraPlugin({ jiraClient, changelog }) {
         issue = await jiraClient.issues.getIssue({
           issueIdOrKey: issueKey
         });
-      } catch (err) {
-        throw new Error(`got error when getting issue ${issueKey}:
-${JSON.stringify(err)}`);
-      }
-      item.links.issue = {
-        title: issue.fields.summary,
-        description: issue.fields.description || null,
-        slug: issueKey,
-        url: `https://exivity.atlassian.net/browse/${issueKey}`
-      };
-      const releaseNotesTitle = getReleaseNotesTitle(issue);
-      if (releaseNotesTitle) {
-        item.links.issue.title = releaseNotesTitle;
-        item.links.issue.description = getReleaseNotesDescription(issue) || null;
-      } else {
-        item.warnings.push(`Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`);
-      }
-      if (issue.fields.issuetype.name === "Chore" /* Chore */) {
-        item.type = "chore";
-      }
-      if (issue.fields.issuetype.name === "Bug" /* Bug */) {
-        item.type = "fix";
-      }
-      if (issue.fields.issuetype.name === "Feature" /* Feature */ || issue.fields.issuetype.name === "Epic" /* Epic */) {
-        item.type = "feat";
-      }
-      const epicKey = getEpic(issue);
-      if (epicKey) {
-        const epic = await jiraClient.issues.getIssue({ issueIdOrKey: epicKey });
-        item.links.milestone = {
-          title: getReleaseNotesTitle(epic) || epic.fields.summary,
-          description: getReleaseNotesDescription(epic) || epic.fields.description || null,
-          slug: getReleaseNotesTitle(epic) || epic.fields.summary,
-          url: `https://exivity.atlassian.net/browse/${epicKey}`
+        item.links.issue = {
+          title: issue.fields.summary,
+          description: issue.fields.description || null,
+          slug: issueKey,
+          url: `https://exivity.atlassian.net/browse/${issueKey}`
         };
+        const releaseNotesTitle = getReleaseNotesTitle(issue);
+        if (releaseNotesTitle) {
+          item.links.issue.title = releaseNotesTitle;
+          item.links.issue.description = getReleaseNotesDescription(issue) || null;
+        } else {
+          item.warnings.push(`Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`);
+        }
+        if (issue.fields.issuetype.name === "Chore" /* Chore */) {
+          item.type = "chore";
+        }
+        if (issue.fields.issuetype.name === "Bug" /* Bug */) {
+          item.type = "fix";
+        }
+        if (issue.fields.issuetype.name === "Feature" /* Feature */ || issue.fields.issuetype.name === "Epic" /* Epic */) {
+          item.type = "feat";
+        }
+        const epicKey = getEpic(issue);
+        if (epicKey) {
+          const epic = await jiraClient.issues.getIssue({
+            issueIdOrKey: epicKey
+          });
+          item.links.milestone = {
+            title: getReleaseNotesTitle(epic) || epic.fields.summary,
+            description: getReleaseNotesDescription(epic) || epic.fields.description || null,
+            slug: getReleaseNotesTitle(epic) || epic.fields.summary,
+            url: `https://exivity.atlassian.net/browse/${epicKey}`
+          };
+        }
+      } catch (err) {
+        (0, import_core6.info)(`got error when getting issue ${issueKey}:
+${JSON.stringify(err)}`);
       }
     }
   }
@@ -68158,12 +68162,12 @@ async function prepareChangelog(changelog, octokit, jiraClient) {
   changelog.sort(byType);
   changelog = changelog.filter(noChores);
   if (changelog.length === 0) {
-    (0, import_core6.info)(`Nothing to release`);
+    (0, import_core7.info)(`Nothing to release`);
     return [];
   }
-  (0, import_core6.info)(`Changelog:`);
+  (0, import_core7.info)(`Changelog:`);
   changelog.forEach((item) => {
-    (0, import_core6.info)(`- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`);
+    (0, import_core7.info)(`- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`);
   });
   return changelog;
 }
@@ -68171,14 +68175,14 @@ async function writeToChangelog(changelogPath, changelog, upcomingVersion, dryRu
   const currentPublicChangelogContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
   const publicChangelogContents = formatPublicChangelog(upcomingVersion, changelog);
   if (dryRun) {
-    (0, import_core6.info)(`Dry run, not writing changelog`);
+    (0, import_core7.info)(`Dry run, not writing changelog`);
   } else {
     await (0, import_promises.writeFile)(changelogPath, currentPublicChangelogContents.replace("# Changelog\n\n", `# Changelog
 
 ${publicChangelogContents}
 
 `));
-    (0, import_core6.info)(`Written changelog to: ${changelogPath}`);
+    (0, import_core7.info)(`Written changelog to: ${changelogPath}`);
   }
 }
 
@@ -68255,7 +68259,7 @@ function buildChangelogItem2(changelogItem) {
 }
 
 // release/src/common/repositories.ts
-var import_core7 = __toESM(require_core());
+var import_core8 = __toESM(require_core());
 
 // release/src/common/files.ts
 var import_promises2 = require("fs/promises");
@@ -68285,9 +68289,9 @@ async function checkRepositories(repositoriesJsonPath, latestVersion, octokit) {
   let changelog = [];
   const lockfile = { version: "", repositories: {} };
   const repositories = await readRepositories(repositoriesJsonPath);
-  (0, import_core7.info)(`Iterating repositories`);
+  (0, import_core8.info)(`Iterating repositories`);
   for (const [repository, repositoryOptions] of Object.entries(repositories)) {
-    (0, import_core7.info)(`- exivity/${repository}`);
+    (0, import_core8.info)(`- exivity/${repository}`);
     const latestVersionCommit = await getCommitForTag({
       octokit,
       owner: "exivity",
@@ -68312,7 +68316,7 @@ async function checkRepositories(repositoriesJsonPath, latestVersion, octokit) {
 }
 
 // release/src/common/pr.ts
-var import_core8 = __toESM(require_core());
+var import_core9 = __toESM(require_core());
 async function createOrUpdatePullRequest({
   octokit,
   title,
@@ -68336,7 +68340,7 @@ async function createOrUpdatePullRequest({
       title,
       body
     });
-    (0, import_core8.info)(`Updated pull request #${pr.data.number}`);
+    (0, import_core9.info)(`Updated pull request #${pr.data.number}`);
     return pr.data;
   } else {
     const pr = await octokit.rest.pulls.create({
@@ -68347,13 +68351,13 @@ async function createOrUpdatePullRequest({
       head: upcomingReleaseBranch,
       base: releaseBranch
     });
-    (0, import_core8.info)(`Opened pull request #${pr.data.number}`);
+    (0, import_core9.info)(`Opened pull request #${pr.data.number}`);
     return pr.data;
   }
 }
 
 // release/src/common/version.ts
-var import_core9 = __toESM(require_core());
+var import_core10 = __toESM(require_core());
 var import_semver2 = __toESM(require_semver2());
 function inferVersionFromChangelog(from, changelog) {
   let upcomingVersionIncrement = "patch";
@@ -68374,7 +68378,7 @@ function inferVersionFromChangelog(from, changelog) {
   } else {
     upcomingVersion = `v${upcomingVersion}`;
   }
-  (0, import_core9.info)(`Version increment (${incrementDescription}): ${from} -> ${upcomingVersion}`);
+  (0, import_core10.info)(`Version increment (${incrementDescription}): ${from} -> ${upcomingVersion}`);
   return upcomingVersion;
 }
 
@@ -68465,7 +68469,7 @@ async function updatePr(dryRun, upcomingVersion, title, prTemplate, upcomingRele
 }
 
 // release/src/release.ts
-var import_core10 = __toESM(require_core());
+var import_core11 = __toESM(require_core());
 async function release({
   octokit,
   lockfilePath,
@@ -68476,20 +68480,21 @@ async function release({
   const repository = getRepository();
   const lockfile = await readLockfile(lockfilePath);
   if (dryRun) {
-    (0, import_core10.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_core11.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_core10.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_core11.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
   await tagRepositories(dryRun, lockfile, octokit);
   const jiraIssueIds = await getJiraIssues(octokit, jiraClient, repositoriesJsonPath);
   await transitionIssues(dryRun, jiraIssueIds, jiraClient);
+  await updateIssueReleaseVersion(dryRun, lockfile.version, jiraIssueIds, jiraClient);
 }
 async function tagRepositories(dryRun, lockfile, octokit) {
   for (const [repository, sha] of Object.entries(lockfile.repositories)) {
     if (dryRun) {
-      (0, import_core10.info)(`Dry run, not tagging ${repository}`);
+      (0, import_core11.info)(`Dry run, not tagging ${repository}`);
     } else {
       await createLightweightTag({
         octokit,
@@ -68503,15 +68508,15 @@ async function tagRepositories(dryRun, lockfile, octokit) {
 }
 async function transitionIssues(dryRun, jiraIssueIds, jiraClient) {
   if (dryRun) {
-    (0, import_core10.info)(`Dry run, not transitioning issues`);
+    (0, import_core11.info)(`Dry run, not transitioning tickets`);
   } else {
-    (0, import_core10.info)(`Transitioning ticket status of:`);
-    (0, import_core10.info)(`${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`);
+    (0, import_core11.info)(`Transitioning ticket status of:`);
+    (0, import_core11.info)(`${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`);
     await Promise.all(jiraIssueIds.map((issueIdOrKey) => {
       return transitionToReleased(issueIdOrKey, jiraClient);
     })).then(() => {
       jiraIssueIds.forEach((issueIdOrKey) => {
-        (0, import_core10.info)(`Transitioned issue ${issueIdOrKey} to released`);
+        (0, import_core11.info)(`Transitioned issue ${issueIdOrKey} to released`);
       });
     });
   }
@@ -68528,23 +68533,48 @@ async function getJiraIssues(octokit, jiraClient, repositoriesJsonPath) {
 function isString(x) {
   return typeof x === "string";
 }
+async function updateIssueReleaseVersion(dryRun, version, jiraIssueIds, jiraClient) {
+  const versionId = await getVersionId(jiraClient, version);
+  if (dryRun) {
+    (0, import_core11.info)(`Dry run, not setting release version of tickets`);
+  } else {
+    (0, import_core11.info)(`Setting release version of:`);
+    (0, import_core11.info)(`${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`);
+    await Promise.all(jiraIssueIds.map((issueIdOrKey) => {
+      return jiraClient.issues.editIssue({
+        issueIdOrKey,
+        fields: {
+          fixVersions: [
+            {
+              id: versionId
+            }
+          ]
+        }
+      });
+    })).then(() => {
+      jiraIssueIds.forEach((issueIdOrKey) => {
+        (0, import_core11.info)(`Set release version of ${issueIdOrKey} to ${version}`);
+      });
+    });
+  }
+}
 
 // release/src/index.ts
 var ModePing = "ping";
 var ModePrepare = "prepare";
 var ModeRelease = "release";
 async function run() {
-  const mode = (0, import_core11.getInput)("mode");
-  const lockfilePath = (0, import_core11.getInput)("lockfile");
-  const changelogPath = (0, import_core11.getInput)("changelog");
-  const repositoriesJsonPath = (0, import_core11.getInput)("repositories");
-  const prTemplatePath = (0, import_core11.getInput)("pr-template");
-  const upcomingReleaseBranch = (0, import_core11.getInput)("upcoming-release-branch");
-  const releaseBranch = (0, import_core11.getInput)("release-branch");
+  const mode = (0, import_core12.getInput)("mode");
+  const lockfilePath = (0, import_core12.getInput)("lockfile");
+  const changelogPath = (0, import_core12.getInput)("changelog");
+  const repositoriesJsonPath = (0, import_core12.getInput)("repositories");
+  const prTemplatePath = (0, import_core12.getInput)("pr-template");
+  const upcomingReleaseBranch = (0, import_core12.getInput)("upcoming-release-branch");
+  const releaseBranch = (0, import_core12.getInput)("release-branch");
   const dryRun = getBooleanInput("dry-run", false);
   const ghToken = getToken();
-  const jiraUsername = (0, import_core11.getInput)("jira-username");
-  const jiraToken = (0, import_core11.getInput)("jira-token");
+  const jiraUsername = (0, import_core12.getInput)("jira-username");
+  const jiraToken = (0, import_core12.getInput)("jira-token");
   const octokit = (0, import_github8.getOctokit)(ghToken);
   const jiraClient = jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null;
   switch (mode) {
@@ -68583,7 +68613,7 @@ async function run() {
       throw new Error(`Unknown mode "${mode}"`);
   }
 }
-run().catch(import_core11.setFailed);
+run().catch(import_core12.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

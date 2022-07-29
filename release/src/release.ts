@@ -4,7 +4,11 @@ import { getLatestVersion, gitPushTags, gitTag } from '../../lib/git'
 import { createLightweightTag, getRepository } from '../../lib/github'
 import { runPlugins } from './changelogPlugins'
 import { readLockfile } from './common/files'
-import { getJiraClient, transitionToReleased } from './common/jiraClient'
+import {
+  getJiraClient,
+  transitionToReleased,
+  getVersionId,
+} from './common/jiraClient'
 import { checkRepositories } from './common/repositories'
 import { Lockfile } from './common/types'
 
@@ -45,6 +49,13 @@ export async function release({
     repositoriesJsonPath
   )
   await transitionIssues(dryRun, jiraIssueIds, jiraClient)
+
+  await updateIssueReleaseVersion(
+    dryRun,
+    lockfile.version,
+    jiraIssueIds,
+    jiraClient
+  )
 }
 
 async function tagRepositories(
@@ -73,7 +84,7 @@ async function transitionIssues(
   jiraClient: ReturnType<typeof getJiraClient>
 ) {
   if (dryRun) {
-    info(`Dry run, not transitioning issues`)
+    info(`Dry run, not transitioning tickets`)
   } else {
     info(`Transitioning ticket status of:`)
     info(
@@ -113,4 +124,43 @@ async function getJiraIssues(
 
 function isString(x: any): x is string {
   return typeof x === 'string'
+}
+
+async function updateIssueReleaseVersion(
+  dryRun: boolean,
+  version: string,
+  jiraIssueIds: string[],
+  jiraClient: ReturnType<typeof getJiraClient>
+) {
+  const versionId = await getVersionId(jiraClient, version)
+
+  if (dryRun) {
+    info(`Dry run, not setting release version of tickets`)
+  } else {
+    info(`Setting release version of:`)
+    info(
+      `${
+        jiraIssueIds.length > 0 ? 'found no tickets' : jiraIssueIds.join('\n')
+      }`
+    )
+
+    await Promise.all(
+      jiraIssueIds.map((issueIdOrKey) => {
+        return jiraClient.issues.editIssue({
+          issueIdOrKey,
+          fields: {
+            fixVersions: [
+              {
+                id: versionId,
+              },
+            ],
+          },
+        })
+      })
+    ).then(() => {
+      jiraIssueIds.forEach((issueIdOrKey) => {
+        info(`Set release version of ${issueIdOrKey} to ${version}`)
+      })
+    })
+  }
 }
