@@ -74,7 +74,14 @@ export async function transitionToReleased(
   }
 }
 
+function toDateString(date: Date): string {
+  return `${date.getUTCFullYear()}-${('0' + date.getUTCMonth()).slice(-2)}-${(
+    '0' + date.getUTCDate()
+  ).slice(-2)}`
+}
+
 export async function getVersion(
+  dryRun: boolean,
   jiraClient: ReturnType<typeof getJiraClient>,
   version: string,
   issueIdOrKey: string
@@ -83,9 +90,9 @@ export async function getVersion(
     issueIdOrKey,
   })) as any
   // made into `any` because according to the api docs, these types are wrong
-  console.log(JSON.stringify(fields))
+  const field = fields?.fixVersions
 
-  const versionData = fields?.fixVersions?.allowedValues?.filter(
+  const versionData = field?.allowedValues?.filter(
     (data: any) => data.name === version
   )
 
@@ -94,9 +101,19 @@ export async function getVersion(
   }
 
   if (versionData.length > 0) {
-    return versionData[0]
+    return versionData[0].id
+  } else if (dryRun) {
+    console.log(
+      "dry run, not creating new version id, returning that of 'next'"
+    )
+    return 10456
   }
 
-  //const newData = await jiraClient.
-  // FIXME: Create the fixVersion option if it doesn't exist yet
+  const newData = await jiraClient.projectVersions.createVersion({
+    name: version,
+    projectId: 10002,
+    releaseDate: toDateString(new Date()),
+  })
+
+  return newData.id
 }

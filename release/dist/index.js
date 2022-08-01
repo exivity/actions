@@ -67795,19 +67795,31 @@ async function transitionToReleased(issueIdOrKey, jiraClient) {
     });
   }
 }
-async function getVersion(jiraClient, version, issueIdOrKey) {
-  var _a, _b;
+function toDateString(date) {
+  return `${date.getUTCFullYear()}-${("0" + date.getUTCMonth()).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}`;
+}
+async function getVersion(dryRun, jiraClient, version, issueIdOrKey) {
+  var _a;
   const { fields } = await jiraClient.issues.getEditIssueMeta({
     issueIdOrKey
   });
-  console.log(JSON.stringify(fields));
-  const versionData = (_b = (_a = fields == null ? void 0 : fields.fixVersions) == null ? void 0 : _a.allowedValues) == null ? void 0 : _b.filter((data) => data.name === version);
+  const field = fields == null ? void 0 : fields.fixVersions;
+  const versionData = (_a = field == null ? void 0 : field.allowedValues) == null ? void 0 : _a.filter((data) => data.name === version);
   if (typeof versionData === "undefined") {
     throw new Error("Cannot get version data");
   }
   if (versionData.length > 0) {
-    return versionData[0];
+    return versionData[0].id;
+  } else if (dryRun) {
+    console.log("dry run, not creating new version id, returning that of 'next'");
+    return 10456;
   }
+  const newData = await jiraClient.projectVersions.createVersion({
+    name: version,
+    projectId: 10002,
+    releaseDate: toDateString(new Date())
+  });
+  return newData.id;
 }
 
 // release/src/ping.ts
@@ -68556,7 +68568,9 @@ async function updateIssueReleaseVersion(dryRun, version, jiraIssueIds, jiraClie
       await jiraClient.issues.editIssue({
         issueIdOrKey,
         fields: {
-          fixVersions: [await getVersion(jiraClient, version, issueIdOrKey)]
+          fixVersions: [
+            { id: await getVersion(dryRun, jiraClient, version, issueIdOrKey) }
+          ]
         }
       });
       (0, import_core11.info)(`Set release version of ${issueIdOrKey} to ${version}`);

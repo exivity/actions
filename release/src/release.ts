@@ -146,7 +146,9 @@ async function updateIssueReleaseVersion(
       await jiraClient.issues.editIssue({
         issueIdOrKey,
         fields: {
-          fixVersions: [await getVersion(jiraClient, version, issueIdOrKey)],
+          fixVersions: [
+            { id: await getVersion(dryRun, jiraClient, version, issueIdOrKey) },
+          ],
         },
       })
       info(`Set release version of ${issueIdOrKey} to ${version}`)
