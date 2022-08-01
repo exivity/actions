@@ -68067,11 +68067,12 @@ function getEpic(issue) {
 
 // release/src/changelogPlugins/titleAndDescription.ts
 function formatTitle(changelogItem) {
-  return capitalizeFirstLetter(changelogItem.links.issues ? changelogItem.links.issues[0].title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title);
+  var _a;
+  return capitalizeFirstLetter(changelogItem.links.issues && ((_a = changelogItem.links.issues) == null ? void 0 : _a.length) > 0 ? changelogItem.links.issues[0].title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title);
 }
 function formatDecription(changelogItem) {
-  var _a;
-  return ((_a = changelogItem.links.issues) == null ? void 0 : _a[0].description) || null;
+  var _a, _b;
+  return ((_b = (_a = changelogItem.links.issues) == null ? void 0 : _a[0]) == null ? void 0 : _b.description) || null;
 }
 function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);

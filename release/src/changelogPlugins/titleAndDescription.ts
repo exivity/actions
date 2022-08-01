@@ -3,7 +3,7 @@ import { ChangelogItem } from '../common/types'
 
 function formatTitle(changelogItem: ChangelogItem) {
   return capitalizeFirstLetter(
-    changelogItem.links.issues
+    changelogItem.links.issues && changelogItem.links.issues?.length > 0
       ? changelogItem.links.issues[0].title
       : changelogItem.links.pr
       ? changelogItem.links.pr.title
@@ -12,7 +12,7 @@ function formatTitle(changelogItem: ChangelogItem) {
 }
 
 function formatDecription(changelogItem: ChangelogItem) {
-  return changelogItem.links.issues?.[0].description || null
+  return changelogItem.links.issues?.[0]?.description || null
 }
 
 function capitalizeFirstLetter(str: string) {
