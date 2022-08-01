@@ -11,7 +11,7 @@ function formatTitle(changelogItem: ChangelogItem) {
   )
 }
 
-function formatDecription(changelogItem: ChangelogItem) {
+function formatDescription(changelogItem: ChangelogItem) {
   return changelogItem.links.issues?.[0]?.description || null
 }
 
@@ -22,7 +22,7 @@ function capitalizeFirstLetter(str: string) {
 export async function titleAndDescriptionPlugin({ changelog }: PluginParams) {
   for (const item of changelog) {
     item.title = formatTitle(item)
-    item.description = formatDecription(item)
+    item.description = formatDescription(item)
   }
 
   return changelog
