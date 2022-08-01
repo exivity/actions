@@ -1,4 +1,4 @@
-import { info } from '@actions/core'
+import { info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { getLatestVersion, gitPushTags, gitTag } from '../../lib/git'
 import { createLightweightTag, getRepository } from '../../lib/github'
@@ -50,12 +50,21 @@ export async function release({
   )
   await transitionIssues(dryRun, jiraIssueIds, jiraClient)
 
-  await updateIssueReleaseVersion(
-    dryRun,
-    lockfile.version,
-    jiraIssueIds,
-    jiraClient
-  )
+  // Update fixVersion of all issues
+  try {
+    await updateIssueReleaseVersion(
+      dryRun,
+      lockfile.version,
+      jiraIssueIds,
+      jiraClient
+    )
+  } catch (e) {
+    warning(
+      `Got error while trying to update release version of tickets: ${JSON.stringify(
+        e
+      )}`
+    )
+  }
 }
 
 async function tagRepositories(
@@ -119,7 +128,9 @@ async function getJiraIssues(
 
   changelog = await runPlugins({ octokit, jiraClient, changelog })
 
-  return changelog.map((item) => item.links.issue?.slug).filter(isString)
+  return changelog
+    .flatMap((item) => item.links.issues?.map((issue) => issue.slug))
+    .filter(isString)
 }
 
 function isString(x: any): x is string {

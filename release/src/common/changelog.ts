@@ -92,7 +92,7 @@ export function formatLinkType(type: string) {
       return 'Commit'
     case 'pr':
       return 'Pull request'
-    case 'issue':
+    case 'issues':
       return 'Issue'
     case 'milestone':
       return 'Milestone'

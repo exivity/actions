@@ -1591,10 +1591,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning4(message, properties = {}) {
+    function warning5(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning4;
+    exports.warning = warning5;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -68006,14 +68006,13 @@ async function jiraPlugin({ jiraClient, changelog }) {
       ...((_b = item.links.commit.description) == null ? void 0 : _b.match(jiraKey)) || [],
       ...item.links.commit.originalTitle.match(jiraKey) || []
     ];
-    if (issues.length > 0) {
-      const issueKey = issues[0];
-      let issue;
+    item.links.issues = [];
+    for (const issueKey of issues) {
       try {
-        issue = await jiraClient.issues.getIssue({
+        const issue = await jiraClient.issues.getIssue({
           issueIdOrKey: issueKey
         });
-        item.links.issue = {
+        const issueItem = {
           title: issue.fields.summary,
           description: issue.fields.description || null,
           slug: issueKey,
@@ -68021,8 +68020,8 @@ async function jiraPlugin({ jiraClient, changelog }) {
         };
         const releaseNotesTitle = getReleaseNotesTitle(issue);
         if (releaseNotesTitle) {
-          item.links.issue.title = releaseNotesTitle;
-          item.links.issue.description = getReleaseNotesDescription(issue) || null;
+          issueItem.title = releaseNotesTitle;
+          issueItem.description = getReleaseNotesDescription(issue) || null;
         } else {
           item.warnings.push(`Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`);
         }
@@ -68047,6 +68046,7 @@ async function jiraPlugin({ jiraClient, changelog }) {
             url: `https://exivity.atlassian.net/browse/${epicKey}`
           };
         }
+        item.links.issues.push(issueItem);
       } catch (err) {
         (0, import_core6.info)(`got error when getting issue ${issueKey}:
 ${JSON.stringify(err)}`);
@@ -68067,11 +68067,11 @@ function getEpic(issue) {
 
 // release/src/changelogPlugins/titleAndDescription.ts
 function formatTitle(changelogItem) {
-  return capitalizeFirstLetter(changelogItem.links.issue ? changelogItem.links.issue.title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title);
+  return capitalizeFirstLetter(changelogItem.links.issues ? changelogItem.links.issues[0].title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title);
 }
 function formatDecription(changelogItem) {
   var _a;
-  return ((_a = changelogItem.links.issue) == null ? void 0 : _a.description) || null;
+  return ((_a = changelogItem.links.issues) == null ? void 0 : _a[0].description) || null;
 }
 function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -68172,7 +68172,7 @@ function formatLinkType(type) {
       return "Commit";
     case "pr":
       return "Pull request";
-    case "issue":
+    case "issues":
       return "Issue";
     case "milestone":
       return "Milestone";
@@ -68236,7 +68236,10 @@ function buildChangelogItem(changelogItem) {
     "  <details>",
     "    <summary>Show details</summary>",
     "",
-    ...Object.entries(changelogItem.links).map(([type, link]) => {
+    ...Object.entries(changelogItem.links).flatMap(([type, link]) => {
+      if (Array.isArray(link)) {
+        return link.map((linkItem) => `    - ${formatLinkType(type)}: [${linkItem.slug}](${linkItem.url})`);
+      }
       return `    - ${formatLinkType(type)}: [${link.slug}](${link.url})`;
     }),
     "  </details>",
@@ -68275,7 +68278,10 @@ function buildChangelogItem2(changelogItem) {
     ...changelogItem.description ? [`  ${changelogItem.description.split("\n").join("\n  ")}`] : [],
     "",
     "<!--",
-    ...Object.entries(changelogItem.links).map(([type, link]) => {
+    ...Object.entries(changelogItem.links).flatMap(([type, link]) => {
+      if (Array.isArray(link)) {
+        return link.map((linkItem) => `  - ${formatLinkType(type)}: [${linkItem.slug}](${linkItem.url})`);
+      }
       return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`;
     }),
     "-->",
@@ -68514,7 +68520,11 @@ async function release({
   await tagRepositories(dryRun, lockfile, octokit);
   const jiraIssueIds = await getJiraIssues(octokit, jiraClient, repositoriesJsonPath);
   await transitionIssues(dryRun, jiraIssueIds, jiraClient);
-  await updateIssueReleaseVersion(dryRun, lockfile.version, jiraIssueIds, jiraClient);
+  try {
+    await updateIssueReleaseVersion(dryRun, lockfile.version, jiraIssueIds, jiraClient);
+  } catch (e) {
+    (0, import_core11.warning)(`Got error while trying to update release version of tickets: ${JSON.stringify(e)}`);
+  }
 }
 async function tagRepositories(dryRun, lockfile, octokit) {
   for (const [repository, sha] of Object.entries(lockfile.repositories)) {
@@ -68550,9 +68560,9 @@ async function getJiraIssues(octokit, jiraClient, repositoriesJsonPath) {
   const latestVersion = await getLatestVersion();
   let [changelog, _] = await checkRepositories(repositoriesJsonPath, latestVersion, octokit);
   changelog = await runPlugins({ octokit, jiraClient, changelog });
-  return changelog.map((item) => {
+  return changelog.flatMap((item) => {
     var _a;
-    return (_a = item.links.issue) == null ? void 0 : _a.slug;
+    return (_a = item.links.issues) == null ? void 0 : _a.map((issue) => issue.slug);
   }).filter(isString);
 }
 function isString(x) {

@@ -3,8 +3,8 @@ import { ChangelogItem } from '../common/types'
 
 function formatTitle(changelogItem: ChangelogItem) {
   return capitalizeFirstLetter(
-    changelogItem.links.issue
-      ? changelogItem.links.issue.title
+    changelogItem.links.issues
+      ? changelogItem.links.issues[0].title
       : changelogItem.links.pr
       ? changelogItem.links.pr.title
       : changelogItem.links.commit.title
@@ -12,7 +12,7 @@ function formatTitle(changelogItem: ChangelogItem) {
 }
 
 function formatDecription(changelogItem: ChangelogItem) {
-  return changelogItem.links.issue?.description || null
+  return changelogItem.links.issues?.[0].description || null
 }
 
 function capitalizeFirstLetter(str: string) {
