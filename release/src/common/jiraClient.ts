@@ -1,3 +1,4 @@
+import { info } from '@actions/core'
 import { Version2Client } from 'jira.js'
 
 const transitionIds = {
@@ -72,4 +73,46 @@ export async function transitionToReleased(
       },
     })
   }
+}
+
+function toDateString(date: Date): string {
+  return `${date.getUTCFullYear()}-${('0' + date.getUTCMonth()).slice(-2)}-${(
+    '0' + date.getUTCDate()
+  ).slice(-2)}`
+}
+
+export async function getVersion(
+  dryRun: boolean,
+  jiraClient: ReturnType<typeof getJiraClient>,
+  version: string,
+  issueIdOrKey: string
+) {
+  const { fields } = (await jiraClient.issues.getEditIssueMeta({
+    issueIdOrKey,
+  })) as any
+  // made into `any` because according to the api docs, these types are wrong
+  const field = fields?.fixVersions
+
+  const versionData = field?.allowedValues?.filter(
+    (data: any) => data.name === version
+  )
+
+  if (typeof versionData === 'undefined') {
+    throw new Error('Cannot get version data')
+  }
+
+  if (versionData.length > 0) {
+    return versionData[0].id
+  } else if (dryRun) {
+    info("dry run, not creating new version id, returning that of 'next'")
+    return 10456 // the 'next' version
+  }
+
+  const newData = await jiraClient.projectVersions.createVersion({
+    name: version,
+    projectId: 10002,
+    releaseDate: toDateString(new Date()),
+  })
+
+  return newData.id
 }

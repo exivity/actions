@@ -751,12 +751,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info10 = this._prepareRequest(verb, parsedUrl, headers);
+          let info13 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info10, data);
+            response = yield this.requestRaw(info13, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -766,7 +766,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info10, data);
+                return authenticationHandler.handleAuthentication(this, info13, data);
               } else {
                 return response;
               }
@@ -789,8 +789,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info10 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info10, data);
+              info13 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info13, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -811,7 +811,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info10, data) {
+      requestRaw(info13, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -823,16 +823,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info10, data, callbackForResult);
+            this.requestRawWithCallback(info13, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info10, data, onResult) {
+      requestRawWithCallback(info13, data, onResult) {
         if (typeof data === "string") {
-          if (!info10.options.headers) {
-            info10.options.headers = {};
+          if (!info13.options.headers) {
+            info13.options.headers = {};
           }
-          info10.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info13.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -841,7 +841,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info10.httpModule.request(info10.options, (msg) => {
+        const req = info13.httpModule.request(info13.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -853,7 +853,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info10.options.path}`));
+          handleResult(new Error(`Request timeout: ${info13.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -875,27 +875,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info10 = {};
-        info10.parsedUrl = requestUrl;
-        const usingSsl = info10.parsedUrl.protocol === "https:";
-        info10.httpModule = usingSsl ? https : http;
+        const info13 = {};
+        info13.parsedUrl = requestUrl;
+        const usingSsl = info13.parsedUrl.protocol === "https:";
+        info13.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info10.options = {};
-        info10.options.host = info10.parsedUrl.hostname;
-        info10.options.port = info10.parsedUrl.port ? parseInt(info10.parsedUrl.port) : defaultPort;
-        info10.options.path = (info10.parsedUrl.pathname || "") + (info10.parsedUrl.search || "");
-        info10.options.method = method;
-        info10.options.headers = this._mergeHeaders(headers);
+        info13.options = {};
+        info13.options.host = info13.parsedUrl.hostname;
+        info13.options.port = info13.parsedUrl.port ? parseInt(info13.parsedUrl.port) : defaultPort;
+        info13.options.path = (info13.parsedUrl.pathname || "") + (info13.parsedUrl.search || "");
+        info13.options.method = method;
+        info13.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info10.options.headers["user-agent"] = this.userAgent;
+          info13.options.headers["user-agent"] = this.userAgent;
         }
-        info10.options.agent = this._getAgent(info10.parsedUrl);
+        info13.options.agent = this._getAgent(info13.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info10.options);
+            handler.prepareRequest(info13.options);
           }
         }
-        return info10;
+        return info13;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1258,7 +1258,7 @@ var require_summary = __commonJS({
     exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
     var os_1 = require("os");
     var fs_1 = require("fs");
-    var { access, appendFile, writeFile: writeFile2 } = fs_1.promises;
+    var { access, appendFile, writeFile: writeFile3 } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
     exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
     var Summary = class {
@@ -1294,7 +1294,7 @@ var require_summary = __commonJS({
         return __awaiter(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
           const filePath = yield this.filePath();
-          const writeFunc = overwrite ? writeFile2 : appendFile;
+          const writeFunc = overwrite ? writeFile3 : appendFile;
           yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
           return this.emptyBuffer();
         });
@@ -1591,18 +1591,18 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning4(message, properties = {}) {
+    function warning5(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning4;
+    exports.warning = warning5;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info10(message) {
+    function info13(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info10;
+    exports.info = info13;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -5816,7 +5816,6 @@ var require_dist_node9 = __commonJS({
         removeCustomLabelFromSelfHostedRunnerForRepo: ["DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}"],
         removeSelectedRepoFromOrgSecret: ["DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}"],
         reviewPendingDeploymentsForRun: ["POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments"],
-        setActionsOidcCustomIssuerPolicyForEnterprise: ["PUT /enterprises/{enterprise}/actions/oidc/customization/issuer"],
         setAllowedActionsOrganization: ["PUT /orgs/{org}/actions/permissions/selected-actions"],
         setAllowedActionsRepository: ["PUT /repos/{owner}/{repo}/actions/permissions/selected-actions"],
         setCustomLabelsForSelfHostedRunnerForOrg: ["PUT /orgs/{org}/actions/runners/{runner_id}/labels"],
@@ -5975,7 +5974,11 @@ var require_dist_node9 = __commonJS({
         getSecretForAuthenticatedUser: ["GET /user/codespaces/secrets/{secret_name}"],
         listDevcontainersInRepositoryForAuthenticatedUser: ["GET /repos/{owner}/{repo}/codespaces/devcontainers"],
         listForAuthenticatedUser: ["GET /user/codespaces"],
-        listInOrganization: ["GET /orgs/{org_id}/codespaces"],
+        listInOrganization: ["GET /orgs/{org}/codespaces", {}, {
+          renamedParameters: {
+            org_id: "org"
+          }
+        }],
         listInRepositoryForAuthenticatedUser: ["GET /repos/{owner}/{repo}/codespaces"],
         listRepoSecrets: ["GET /repos/{owner}/{repo}/codespaces/secrets"],
         listRepositoriesForSecretForAuthenticatedUser: ["GET /user/codespaces/secrets/{secret_name}/repositories"],
@@ -6668,7 +6671,7 @@ var require_dist_node9 = __commonJS({
         updateAuthenticated: ["PATCH /user"]
       }
     };
-    var VERSION = "5.16.0";
+    var VERSION = "5.16.2";
     function endpointsToMethods(octokit, endpointsMap) {
       const newMethods = {};
       for (const [scope, endpoints] of Object.entries(endpointsMap)) {
@@ -6751,7 +6754,7 @@ var require_dist_node10 = __commonJS({
   "node_modules/@octokit/plugin-paginate-rest/dist-node/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var VERSION = "2.20.0";
+    var VERSION = "2.21.2";
     function ownKeys(object, enumerableOnly) {
       var keys = Object.keys(object);
       if (Object.getOwnPropertySymbols) {
@@ -6764,7 +6767,7 @@ var require_dist_node10 = __commonJS({
     }
     function _objectSpread2(target) {
       for (var i = 1; i < arguments.length; i++) {
-        var source = null != arguments[i] ? arguments[i] : {};
+        var source = arguments[i] != null ? arguments[i] : {};
         i % 2 ? ownKeys(Object(source), true).forEach(function(key) {
           _defineProperty(target, key, source[key]);
         }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
@@ -6879,7 +6882,7 @@ var require_dist_node10 = __commonJS({
     var composePaginateRest = Object.assign(paginate, {
       iterator
     });
-    var paginatingEndpoints = ["GET /app/hook/deliveries", "GET /app/installations", "GET /applications/grants", "GET /authorizations", "GET /enterprises/{enterprise}/actions/permissions/organizations", "GET /enterprises/{enterprise}/actions/runner-groups", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners", "GET /enterprises/{enterprise}/actions/runners", "GET /enterprises/{enterprise}/actions/runners/downloads", "GET /enterprises/{enterprise}/actions/runners/{runner_id}/labels", "GET /enterprises/{enterprise}/secret-scanning/alerts", "GET /events", "GET /gists", "GET /gists/public", "GET /gists/starred", "GET /gists/{gist_id}/comments", "GET /gists/{gist_id}/commits", "GET /gists/{gist_id}/forks", "GET /installation/repositories", "GET /issues", "GET /marketplace_listing/plans", "GET /marketplace_listing/plans/{plan_id}/accounts", "GET /marketplace_listing/stubbed/plans", "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts", "GET /networks/{owner}/{repo}/events", "GET /notifications", "GET /organizations", "GET /organizations/{organization_id}/custom_roles", "GET /orgs/{org_id}/codespaces", "GET /orgs/{org}/actions/permissions/repositories", "GET /orgs/{org}/actions/runner-groups", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners", "GET /orgs/{org}/actions/runners", "GET /orgs/{org}/actions/runners/downloads", "GET /orgs/{org}/actions/runners/{runner_id}/labels", "GET /orgs/{org}/actions/secrets", "GET /orgs/{org}/actions/secrets/{secret_name}/repositories", "GET /orgs/{org}/blocks", "GET /orgs/{org}/code-scanning/alerts", "GET /orgs/{org}/credential-authorizations", "GET /orgs/{org}/dependabot/secrets", "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories", "GET /orgs/{org}/events", "GET /orgs/{org}/external-groups", "GET /orgs/{org}/failed_invitations", "GET /orgs/{org}/hooks", "GET /orgs/{org}/hooks/{hook_id}/deliveries", "GET /orgs/{org}/installations", "GET /orgs/{org}/invitations", "GET /orgs/{org}/invitations/{invitation_id}/teams", "GET /orgs/{org}/issues", "GET /orgs/{org}/members", "GET /orgs/{org}/migrations", "GET /orgs/{org}/migrations/{migration_id}/repositories", "GET /orgs/{org}/outside_collaborators", "GET /orgs/{org}/packages", "GET /orgs/{org}/projects", "GET /orgs/{org}/public_members", "GET /orgs/{org}/repos", "GET /orgs/{org}/secret-scanning/alerts", "GET /orgs/{org}/team-sync/groups", "GET /orgs/{org}/teams", "GET /orgs/{org}/teams/{team_slug}/discussions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/external-groups", "GET /orgs/{org}/teams/{team_slug}/invitations", "GET /orgs/{org}/teams/{team_slug}/members", "GET /orgs/{org}/teams/{team_slug}/projects", "GET /orgs/{org}/teams/{team_slug}/repos", "GET /orgs/{org}/teams/{team_slug}/team-sync/group-mappings", "GET /orgs/{org}/teams/{team_slug}/teams", "GET /projects/columns/{column_id}/cards", "GET /projects/{project_id}/collaborators", "GET /projects/{project_id}/columns", "GET /repos/{owner}/{repo}/actions/artifacts", "GET /repos/{owner}/{repo}/actions/runners", "GET /repos/{owner}/{repo}/actions/runners/downloads", "GET /repos/{owner}/{repo}/actions/runners/{runner_id}/labels", "GET /repos/{owner}/{repo}/actions/runs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs", "GET /repos/{owner}/{repo}/actions/secrets", "GET /repos/{owner}/{repo}/actions/workflows", "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs", "GET /repos/{owner}/{repo}/assignees", "GET /repos/{owner}/{repo}/autolinks", "GET /repos/{owner}/{repo}/branches", "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations", "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs", "GET /repos/{owner}/{repo}/code-scanning/alerts", "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances", "GET /repos/{owner}/{repo}/code-scanning/analyses", "GET /repos/{owner}/{repo}/codespaces", "GET /repos/{owner}/{repo}/codespaces/devcontainers", "GET /repos/{owner}/{repo}/codespaces/secrets", "GET /repos/{owner}/{repo}/collaborators", "GET /repos/{owner}/{repo}/comments", "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/commits", "GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head", "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments", "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls", "GET /repos/{owner}/{repo}/commits/{ref}/check-runs", "GET /repos/{owner}/{repo}/commits/{ref}/check-suites", "GET /repos/{owner}/{repo}/commits/{ref}/statuses", "GET /repos/{owner}/{repo}/contributors", "GET /repos/{owner}/{repo}/dependabot/secrets", "GET /repos/{owner}/{repo}/deployments", "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses", "GET /repos/{owner}/{repo}/events", "GET /repos/{owner}/{repo}/forks", "GET /repos/{owner}/{repo}/git/matching-refs/{ref}", "GET /repos/{owner}/{repo}/hooks", "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries", "GET /repos/{owner}/{repo}/invitations", "GET /repos/{owner}/{repo}/issues", "GET /repos/{owner}/{repo}/issues/comments", "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/issues/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/comments", "GET /repos/{owner}/{repo}/issues/{issue_number}/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/labels", "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions", "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline", "GET /repos/{owner}/{repo}/keys", "GET /repos/{owner}/{repo}/labels", "GET /repos/{owner}/{repo}/milestones", "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels", "GET /repos/{owner}/{repo}/notifications", "GET /repos/{owner}/{repo}/pages/builds", "GET /repos/{owner}/{repo}/projects", "GET /repos/{owner}/{repo}/pulls", "GET /repos/{owner}/{repo}/pulls/comments", "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments", "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", "GET /repos/{owner}/{repo}/pulls/{pull_number}/files", "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments", "GET /repos/{owner}/{repo}/releases", "GET /repos/{owner}/{repo}/releases/{release_id}/assets", "GET /repos/{owner}/{repo}/releases/{release_id}/reactions", "GET /repos/{owner}/{repo}/secret-scanning/alerts", "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations", "GET /repos/{owner}/{repo}/stargazers", "GET /repos/{owner}/{repo}/subscribers", "GET /repos/{owner}/{repo}/tags", "GET /repos/{owner}/{repo}/tags/protection", "GET /repos/{owner}/{repo}/teams", "GET /repositories", "GET /repositories/{repository_id}/environments/{environment_name}/secrets", "GET /scim/v2/enterprises/{enterprise}/Groups", "GET /scim/v2/enterprises/{enterprise}/Users", "GET /scim/v2/organizations/{org}/Users", "GET /search/code", "GET /search/commits", "GET /search/issues", "GET /search/labels", "GET /search/repositories", "GET /search/topics", "GET /search/users", "GET /teams/{team_id}/discussions", "GET /teams/{team_id}/discussions/{discussion_number}/comments", "GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /teams/{team_id}/discussions/{discussion_number}/reactions", "GET /teams/{team_id}/invitations", "GET /teams/{team_id}/members", "GET /teams/{team_id}/projects", "GET /teams/{team_id}/repos", "GET /teams/{team_id}/team-sync/group-mappings", "GET /teams/{team_id}/teams", "GET /user/blocks", "GET /user/codespaces", "GET /user/codespaces/secrets", "GET /user/codespaces/secrets/{secret_name}/repositories", "GET /user/emails", "GET /user/followers", "GET /user/following", "GET /user/gpg_keys", "GET /user/installations", "GET /user/installations/{installation_id}/repositories", "GET /user/issues", "GET /user/keys", "GET /user/marketplace_purchases", "GET /user/marketplace_purchases/stubbed", "GET /user/memberships/orgs", "GET /user/migrations", "GET /user/migrations/{migration_id}/repositories", "GET /user/orgs", "GET /user/packages", "GET /user/public_emails", "GET /user/repos", "GET /user/repository_invitations", "GET /user/starred", "GET /user/subscriptions", "GET /user/teams", "GET /users", "GET /users/{username}/events", "GET /users/{username}/events/orgs/{org}", "GET /users/{username}/events/public", "GET /users/{username}/followers", "GET /users/{username}/following", "GET /users/{username}/gists", "GET /users/{username}/gpg_keys", "GET /users/{username}/keys", "GET /users/{username}/orgs", "GET /users/{username}/packages", "GET /users/{username}/projects", "GET /users/{username}/received_events", "GET /users/{username}/received_events/public", "GET /users/{username}/repos", "GET /users/{username}/starred", "GET /users/{username}/subscriptions"];
+    var paginatingEndpoints = ["GET /app/hook/deliveries", "GET /app/installations", "GET /applications/grants", "GET /authorizations", "GET /enterprises/{enterprise}/actions/permissions/organizations", "GET /enterprises/{enterprise}/actions/runner-groups", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners", "GET /enterprises/{enterprise}/actions/runners", "GET /enterprises/{enterprise}/audit-log", "GET /enterprises/{enterprise}/secret-scanning/alerts", "GET /enterprises/{enterprise}/settings/billing/advanced-security", "GET /events", "GET /gists", "GET /gists/public", "GET /gists/starred", "GET /gists/{gist_id}/comments", "GET /gists/{gist_id}/commits", "GET /gists/{gist_id}/forks", "GET /installation/repositories", "GET /issues", "GET /licenses", "GET /marketplace_listing/plans", "GET /marketplace_listing/plans/{plan_id}/accounts", "GET /marketplace_listing/stubbed/plans", "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts", "GET /networks/{owner}/{repo}/events", "GET /notifications", "GET /organizations", "GET /orgs/{org}/actions/cache/usage-by-repository", "GET /orgs/{org}/actions/permissions/repositories", "GET /orgs/{org}/actions/runner-groups", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners", "GET /orgs/{org}/actions/runners", "GET /orgs/{org}/actions/secrets", "GET /orgs/{org}/actions/secrets/{secret_name}/repositories", "GET /orgs/{org}/audit-log", "GET /orgs/{org}/blocks", "GET /orgs/{org}/code-scanning/alerts", "GET /orgs/{org}/codespaces", "GET /orgs/{org}/credential-authorizations", "GET /orgs/{org}/dependabot/secrets", "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories", "GET /orgs/{org}/events", "GET /orgs/{org}/external-groups", "GET /orgs/{org}/failed_invitations", "GET /orgs/{org}/hooks", "GET /orgs/{org}/hooks/{hook_id}/deliveries", "GET /orgs/{org}/installations", "GET /orgs/{org}/invitations", "GET /orgs/{org}/invitations/{invitation_id}/teams", "GET /orgs/{org}/issues", "GET /orgs/{org}/members", "GET /orgs/{org}/migrations", "GET /orgs/{org}/migrations/{migration_id}/repositories", "GET /orgs/{org}/outside_collaborators", "GET /orgs/{org}/packages", "GET /orgs/{org}/packages/{package_type}/{package_name}/versions", "GET /orgs/{org}/projects", "GET /orgs/{org}/public_members", "GET /orgs/{org}/repos", "GET /orgs/{org}/secret-scanning/alerts", "GET /orgs/{org}/settings/billing/advanced-security", "GET /orgs/{org}/team-sync/groups", "GET /orgs/{org}/teams", "GET /orgs/{org}/teams/{team_slug}/discussions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/invitations", "GET /orgs/{org}/teams/{team_slug}/members", "GET /orgs/{org}/teams/{team_slug}/projects", "GET /orgs/{org}/teams/{team_slug}/repos", "GET /orgs/{org}/teams/{team_slug}/teams", "GET /projects/columns/{column_id}/cards", "GET /projects/{project_id}/collaborators", "GET /projects/{project_id}/columns", "GET /repos/{owner}/{repo}/actions/artifacts", "GET /repos/{owner}/{repo}/actions/caches", "GET /repos/{owner}/{repo}/actions/runners", "GET /repos/{owner}/{repo}/actions/runs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs", "GET /repos/{owner}/{repo}/actions/secrets", "GET /repos/{owner}/{repo}/actions/workflows", "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs", "GET /repos/{owner}/{repo}/assignees", "GET /repos/{owner}/{repo}/branches", "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations", "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs", "GET /repos/{owner}/{repo}/code-scanning/alerts", "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances", "GET /repos/{owner}/{repo}/code-scanning/analyses", "GET /repos/{owner}/{repo}/codespaces", "GET /repos/{owner}/{repo}/codespaces/devcontainers", "GET /repos/{owner}/{repo}/codespaces/secrets", "GET /repos/{owner}/{repo}/collaborators", "GET /repos/{owner}/{repo}/comments", "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/commits", "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments", "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls", "GET /repos/{owner}/{repo}/commits/{ref}/check-runs", "GET /repos/{owner}/{repo}/commits/{ref}/check-suites", "GET /repos/{owner}/{repo}/commits/{ref}/status", "GET /repos/{owner}/{repo}/commits/{ref}/statuses", "GET /repos/{owner}/{repo}/contributors", "GET /repos/{owner}/{repo}/dependabot/secrets", "GET /repos/{owner}/{repo}/deployments", "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses", "GET /repos/{owner}/{repo}/environments", "GET /repos/{owner}/{repo}/events", "GET /repos/{owner}/{repo}/forks", "GET /repos/{owner}/{repo}/git/matching-refs/{ref}", "GET /repos/{owner}/{repo}/hooks", "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries", "GET /repos/{owner}/{repo}/invitations", "GET /repos/{owner}/{repo}/issues", "GET /repos/{owner}/{repo}/issues/comments", "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/issues/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/comments", "GET /repos/{owner}/{repo}/issues/{issue_number}/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/labels", "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions", "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline", "GET /repos/{owner}/{repo}/keys", "GET /repos/{owner}/{repo}/labels", "GET /repos/{owner}/{repo}/milestones", "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels", "GET /repos/{owner}/{repo}/notifications", "GET /repos/{owner}/{repo}/pages/builds", "GET /repos/{owner}/{repo}/projects", "GET /repos/{owner}/{repo}/pulls", "GET /repos/{owner}/{repo}/pulls/comments", "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments", "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", "GET /repos/{owner}/{repo}/pulls/{pull_number}/files", "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments", "GET /repos/{owner}/{repo}/releases", "GET /repos/{owner}/{repo}/releases/{release_id}/assets", "GET /repos/{owner}/{repo}/releases/{release_id}/reactions", "GET /repos/{owner}/{repo}/secret-scanning/alerts", "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations", "GET /repos/{owner}/{repo}/stargazers", "GET /repos/{owner}/{repo}/subscribers", "GET /repos/{owner}/{repo}/tags", "GET /repos/{owner}/{repo}/teams", "GET /repos/{owner}/{repo}/topics", "GET /repositories", "GET /repositories/{repository_id}/environments/{environment_name}/secrets", "GET /search/code", "GET /search/commits", "GET /search/issues", "GET /search/labels", "GET /search/repositories", "GET /search/topics", "GET /search/users", "GET /teams/{team_id}/discussions", "GET /teams/{team_id}/discussions/{discussion_number}/comments", "GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /teams/{team_id}/discussions/{discussion_number}/reactions", "GET /teams/{team_id}/invitations", "GET /teams/{team_id}/members", "GET /teams/{team_id}/projects", "GET /teams/{team_id}/repos", "GET /teams/{team_id}/teams", "GET /user/blocks", "GET /user/codespaces", "GET /user/codespaces/secrets", "GET /user/emails", "GET /user/followers", "GET /user/following", "GET /user/gpg_keys", "GET /user/installations", "GET /user/installations/{installation_id}/repositories", "GET /user/issues", "GET /user/keys", "GET /user/marketplace_purchases", "GET /user/marketplace_purchases/stubbed", "GET /user/memberships/orgs", "GET /user/migrations", "GET /user/migrations/{migration_id}/repositories", "GET /user/orgs", "GET /user/packages", "GET /user/packages/{package_type}/{package_name}/versions", "GET /user/public_emails", "GET /user/repos", "GET /user/repository_invitations", "GET /user/starred", "GET /user/subscriptions", "GET /user/teams", "GET /users", "GET /users/{username}/events", "GET /users/{username}/events/orgs/{org}", "GET /users/{username}/events/public", "GET /users/{username}/followers", "GET /users/{username}/following", "GET /users/{username}/gists", "GET /users/{username}/gpg_keys", "GET /users/{username}/keys", "GET /users/{username}/orgs", "GET /users/{username}/packages", "GET /users/{username}/projects", "GET /users/{username}/received_events", "GET /users/{username}/received_events/public", "GET /users/{username}/repos", "GET /users/{username}/starred", "GET /users/{username}/subscriptions"];
     function isPaginatingEndpoint(arg) {
       if (typeof arg === "string") {
         return paginatingEndpoints.includes(arg);
@@ -14792,7 +14795,7 @@ var require_lodash = __commonJS({
           if (fromIndex < 0) {
             fromIndex = nativeMax(length + fromIndex, 0);
           }
-          return isString(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
+          return isString2(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
         }
         var invokeMap = baseRest(function(collection, path, args) {
           var index = -1, isFunc = typeof path == "function", result2 = isArrayLike(collection) ? Array2(collection.length) : [];
@@ -14860,7 +14863,7 @@ var require_lodash = __commonJS({
             return 0;
           }
           if (isArrayLike(collection)) {
-            return isString(collection) ? stringSize(collection) : collection.length;
+            return isString2(collection) ? stringSize(collection) : collection.length;
           }
           var tag = getTag(collection);
           if (tag == mapTag || tag == setTag) {
@@ -15295,7 +15298,7 @@ var require_lodash = __commonJS({
           return isInteger(value) && value >= -MAX_SAFE_INTEGER && value <= MAX_SAFE_INTEGER;
         }
         var isSet = nodeIsSet ? baseUnary(nodeIsSet) : baseIsSet;
-        function isString(value) {
+        function isString2(value) {
           return typeof value == "string" || !isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag;
         }
         function isSymbol(value) {
@@ -15320,7 +15323,7 @@ var require_lodash = __commonJS({
             return [];
           }
           if (isArrayLike(value)) {
-            return isString(value) ? stringToArray(value) : copyArray(value);
+            return isString2(value) ? stringToArray(value) : copyArray(value);
           }
           if (symIterator && value[symIterator]) {
             return iteratorToArray(value[symIterator]());
@@ -16346,7 +16349,7 @@ var require_lodash = __commonJS({
         lodash.isRegExp = isRegExp;
         lodash.isSafeInteger = isSafeInteger;
         lodash.isSet = isSet;
-        lodash.isString = isString;
+        lodash.isString = isString2;
         lodash.isSymbol = isSymbol;
         lodash.isTypedArray = isTypedArray;
         lodash.isUndefined = isUndefined;
@@ -18287,7 +18290,7 @@ var require_utils6 = __commonJS({
       }
       return result;
     }
-    function isString(val) {
+    function isString2(val) {
       return typeof val === "string";
     }
     function isNumber(val) {
@@ -18437,7 +18440,7 @@ var require_utils6 = __commonJS({
       isBuffer,
       isFormData,
       isArrayBufferView,
-      isString,
+      isString: isString2,
       isNumber,
       isObject,
       isPlainObject,
@@ -36403,7 +36406,7 @@ var require_users = __commonJS({
               maxResults: parameters.maxResults,
               username: parameters.username,
               key: parameters.key,
-              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
+              accountId: parameters.accountId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52524,7 +52527,7 @@ var require_users2 = __commonJS({
               maxResults: parameters.maxResults,
               username: parameters.username,
               key: parameters.key,
-              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
+              accountId: parameters.accountId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -67498,8 +67501,8 @@ var require_semver2 = __commonJS({
 });
 
 // release/src/index.ts
-var import_core10 = __toESM(require_core());
-var import_github7 = __toESM(require_github());
+var import_core13 = __toESM(require_core());
+var import_github8 = __toESM(require_github());
 
 // lib/core.ts
 var import_core = __toESM(require_core());
@@ -67726,7 +67729,16 @@ query ($sha: String!, $repo: String!, $owner: String!) {
 }
 
 // release/src/common/jiraClient.ts
+var import_core3 = __toESM(require_core());
 var import_jira = __toESM(require_out());
+var transitionIds = {
+  "Done->Released": "211",
+  "New->Accepted": "171",
+  "Accepted->InProgress": "71",
+  "InProgress->Done": "91",
+  "NoActionNeeded->New": "201",
+  "InReview->Done": "91"
+};
 function getJiraClient(username, token) {
   return new import_jira.Version2Client({
     host: "https://exivity.atlassian.net",
@@ -67738,6 +67750,77 @@ function getJiraClient(username, token) {
     },
     newErrorHandling: true
   });
+}
+async function transitionToReleased(issueIdOrKey, jiraClient) {
+  const issue = await jiraClient.issues.getIssue({
+    issueIdOrKey,
+    fields: ["status"],
+    expand: ["transitions"]
+  });
+  let status = issue.fields.status.name;
+  while (status !== "Released") {
+    let flowKey;
+    switch (status) {
+      case "Done":
+        flowKey = "Done->Released";
+        status = "Released";
+        break;
+      case "New":
+        flowKey = "New->Accepted";
+        status = "Accepted";
+        break;
+      case "Accepted":
+        flowKey = "Accepted->InProgress";
+        status = "InProgress";
+        break;
+      case "In Progress":
+        flowKey = "InProgress->Done";
+        status = "Done";
+        break;
+      case "No action needed":
+        flowKey = "NoActionNeeded->New";
+        status = "New";
+        break;
+      case "In review":
+        flowKey = "InReview->Done";
+        status = "Done";
+        break;
+      default:
+        throw new Error(`Unknown status ${status}`);
+    }
+    return await jiraClient.issues.doTransition({
+      issueIdOrKey,
+      transition: {
+        id: transitionIds[flowKey]
+      }
+    });
+  }
+}
+function toDateString(date) {
+  return `${date.getUTCFullYear()}-${("0" + date.getUTCMonth()).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}`;
+}
+async function getVersion(dryRun, jiraClient, version, issueIdOrKey) {
+  var _a;
+  const { fields } = await jiraClient.issues.getEditIssueMeta({
+    issueIdOrKey
+  });
+  const field = fields == null ? void 0 : fields.fixVersions;
+  const versionData = (_a = field == null ? void 0 : field.allowedValues) == null ? void 0 : _a.filter((data) => data.name === version);
+  if (typeof versionData === "undefined") {
+    throw new Error("Cannot get version data");
+  }
+  if (versionData.length > 0) {
+    return versionData[0].id;
+  } else if (dryRun) {
+    (0, import_core3.info)("dry run, not creating new version id, returning that of 'next'");
+    return 10456;
+  }
+  const newData = await jiraClient.projectVersions.createVersion({
+    name: version,
+    projectId: 10002,
+    releaseDate: toDateString(new Date())
+  });
+  return newData.id;
 }
 
 // release/src/ping.ts
@@ -67763,11 +67846,10 @@ async function ping({
 
 // release/src/prepare.ts
 var import_console2 = require("console");
-var import_fs = require("fs");
-var import_promises2 = require("fs/promises");
+var import_promises3 = require("fs/promises");
 
 // lib/git.ts
-var import_core3 = __toESM(require_core());
+var import_core4 = __toESM(require_core());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
 async function getCommitSha() {
@@ -67816,12 +67898,15 @@ async function getLatestVersion() {
   if (typeof latestVersionTag === "undefined") {
     throw new Error("Could not determine latest version");
   }
-  (0, import_core3.info)(`Latest version in ${repo.fqn}: ${latestVersionTag}`);
+  (0, import_core4.info)(`Latest version in ${repo.fqn}: ${latestVersionTag}`);
   return latestVersionTag;
 }
 
+// release/src/common/changelog.ts
+var import_core8 = __toESM(require_core());
+
 // lib/conventionalCommits.ts
-var import_core5 = __toESM(require_core());
+var import_core6 = __toESM(require_core());
 var types = {
   feat: {
     description: "A new feature",
@@ -67885,7 +67970,142 @@ function parseCommitMessage(message) {
   };
 }
 
+// release/src/changelogPlugins/associatedPullRequest.ts
+async function associatedPullRequestPlugin({
+  octokit,
+  changelog
+}) {
+  for (const item of changelog) {
+    const associatedPullRequest = await getAssociatedPullRequest({
+      octokit,
+      owner: "exivity",
+      repo: item.links.commit.repository,
+      sha: item.links.commit.sha
+    });
+    if (typeof associatedPullRequest !== "undefined") {
+      item.links.pr = {
+        title: parseCommitMessage(associatedPullRequest.title).description,
+        originalTitle: associatedPullRequest.title,
+        description: associatedPullRequest.body,
+        slug: `exivity/${item.links.commit.repository}#${associatedPullRequest.number}`,
+        url: associatedPullRequest.url
+      };
+    }
+  }
+  return changelog;
+}
+
+// release/src/changelogPlugins/jira.ts
+var import_core7 = __toESM(require_core());
+async function jiraPlugin({ jiraClient, changelog }) {
+  var _a, _b;
+  const jiraKey = new RegExp(/\bEXVT-\d+\b/g);
+  for (const item of changelog) {
+    const issues = [
+      ...item.links.pr ? item.links.pr.originalTitle.match(jiraKey) || [] : [],
+      ...item.links.pr ? ((_a = item.links.pr.description) == null ? void 0 : _a.match(jiraKey)) || [] : [],
+      ...((_b = item.links.commit.description) == null ? void 0 : _b.match(jiraKey)) || [],
+      ...item.links.commit.originalTitle.match(jiraKey) || []
+    ];
+    item.links.issues = [];
+    for (const issueKey of issues) {
+      try {
+        const issue = await jiraClient.issues.getIssue({
+          issueIdOrKey: issueKey
+        });
+        const issueItem = {
+          title: issue.fields.summary,
+          description: issue.fields.description || null,
+          slug: issueKey,
+          url: `https://exivity.atlassian.net/browse/${issueKey}`
+        };
+        const releaseNotesTitle = getReleaseNotesTitle(issue);
+        if (releaseNotesTitle) {
+          issueItem.title = releaseNotesTitle;
+          issueItem.description = getReleaseNotesDescription(issue) || null;
+        } else {
+          item.warnings.push(`Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`);
+        }
+        if (issue.fields.issuetype.name === "Chore" /* Chore */) {
+          item.type = "chore";
+        }
+        if (issue.fields.issuetype.name === "Bug" /* Bug */) {
+          item.type = "fix";
+        }
+        if (issue.fields.issuetype.name === "Feature" /* Feature */ || issue.fields.issuetype.name === "Epic" /* Epic */) {
+          item.type = "feat";
+        }
+        const epicKey = getEpic(issue);
+        if (epicKey) {
+          const epic = await jiraClient.issues.getIssue({
+            issueIdOrKey: epicKey
+          });
+          item.links.milestone = {
+            title: getReleaseNotesTitle(epic) || epic.fields.summary,
+            description: getReleaseNotesDescription(epic) || epic.fields.description || null,
+            slug: getReleaseNotesTitle(epic) || epic.fields.summary,
+            url: `https://exivity.atlassian.net/browse/${epicKey}`
+          };
+        }
+        item.links.issues.push(issueItem);
+      } catch (err) {
+        (0, import_core7.info)(`got error when getting issue ${issueKey}:
+${JSON.stringify(err)}`);
+      }
+    }
+  }
+  return changelog;
+}
+function getReleaseNotesTitle(issue) {
+  return issue.fields["customfield_10529" /* ReleaseNotesTitle */];
+}
+function getReleaseNotesDescription(issue) {
+  return issue.fields["customfield_10530" /* ReleaseNotesDescription */];
+}
+function getEpic(issue) {
+  return issue.fields["customfield_10005" /* Epic */];
+}
+
+// release/src/changelogPlugins/titleAndDescription.ts
+function formatTitle(changelogItem) {
+  var _a;
+  return capitalizeFirstLetter(changelogItem.links.issues && ((_a = changelogItem.links.issues) == null ? void 0 : _a.length) > 0 ? changelogItem.links.issues[0].title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title);
+}
+function formatDecription(changelogItem) {
+  var _a, _b;
+  return ((_b = (_a = changelogItem.links.issues) == null ? void 0 : _a[0]) == null ? void 0 : _b.description) || null;
+}
+function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+async function titleAndDescriptionPlugin({ changelog }) {
+  for (const item of changelog) {
+    item.title = formatTitle(item);
+    item.description = formatDecription(item);
+  }
+  return changelog;
+}
+
+// release/src/changelogPlugins/index.ts
+var plugins = [
+  associatedPullRequestPlugin,
+  jiraPlugin,
+  titleAndDescriptionPlugin
+];
+async function runPlugins({
+  octokit,
+  jiraClient,
+  changelog
+}) {
+  for (const plugin of plugins) {
+    changelog = await plugin({ octokit, jiraClient, changelog });
+  }
+  return changelog;
+}
+
 // release/src/common/changelog.ts
+var import_fs = require("fs");
+var import_promises = require("fs/promises");
 function createChangelogItemFromCommit(commit) {
   var _a, _b, _c, _d, _e, _f, _g, _h, _i;
   const commitMessageLines = commit.commit.message.split("\n");
@@ -67954,12 +68174,42 @@ function formatLinkType(type) {
       return "Commit";
     case "pr":
       return "Pull request";
-    case "issue":
+    case "issues":
       return "Issue";
     case "milestone":
       return "Milestone";
     default:
       return "Unknown";
+  }
+}
+async function prepareChangelog(changelog, octokit, jiraClient) {
+  changelog = changelog.filter(noChores);
+  changelog.sort(byDate);
+  changelog = await runPlugins({ octokit, jiraClient, changelog });
+  changelog.sort(byType);
+  changelog = changelog.filter(noChores);
+  if (changelog.length === 0) {
+    (0, import_core8.info)(`Nothing to release`);
+    return [];
+  }
+  (0, import_core8.info)(`Changelog:`);
+  changelog.forEach((item) => {
+    (0, import_core8.info)(`- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`);
+  });
+  return changelog;
+}
+async function writeToChangelog(changelogPath, changelog, upcomingVersion, dryRun) {
+  const currentPublicChangelogContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
+  const publicChangelogContents = formatPublicChangelog(upcomingVersion, changelog);
+  if (dryRun) {
+    (0, import_core8.info)(`Dry run, not writing changelog`);
+  } else {
+    await (0, import_promises.writeFile)(changelogPath, currentPublicChangelogContents.replace("# Changelog\n\n", `# Changelog
+
+${publicChangelogContents}
+
+`));
+    (0, import_core8.info)(`Written changelog to: ${changelogPath}`);
   }
 }
 
@@ -67988,7 +68238,10 @@ function buildChangelogItem(changelogItem) {
     "  <details>",
     "    <summary>Show details</summary>",
     "",
-    ...Object.entries(changelogItem.links).map(([type, link]) => {
+    ...Object.entries(changelogItem.links).flatMap(([type, link]) => {
+      if (Array.isArray(link)) {
+        return link.map((linkItem) => `    - ${formatLinkType(type)}: [${linkItem.slug}](${linkItem.url})`);
+      }
       return `    - ${formatLinkType(type)}: [${link.slug}](${link.url})`;
     }),
     "  </details>",
@@ -68027,7 +68280,10 @@ function buildChangelogItem2(changelogItem) {
     ...changelogItem.description ? [`  ${changelogItem.description.split("\n").join("\n  ")}`] : [],
     "",
     "<!--",
-    ...Object.entries(changelogItem.links).map(([type, link]) => {
+    ...Object.entries(changelogItem.links).flatMap(([type, link]) => {
+      if (Array.isArray(link)) {
+        return link.map((linkItem) => `  - ${formatLinkType(type)}: [${linkItem.slug}](${linkItem.url})`);
+      }
       return `  - ${formatLinkType(type)}: [${link.slug}](${link.url})`;
     }),
     "-->",
@@ -68035,166 +68291,65 @@ function buildChangelogItem2(changelogItem) {
   ].join("\n");
 }
 
-// release/src/changelogPlugins/associatedPullRequest.ts
-async function associatedPullRequestPlugin({
-  octokit,
-  changelog
-}) {
-  for (const item of changelog) {
-    const associatedPullRequest = await getAssociatedPullRequest({
-      octokit,
-      owner: "exivity",
-      repo: item.links.commit.repository,
-      sha: item.links.commit.sha
-    });
-    if (typeof associatedPullRequest !== "undefined") {
-      item.links.pr = {
-        title: parseCommitMessage(associatedPullRequest.title).description,
-        originalTitle: associatedPullRequest.title,
-        description: associatedPullRequest.body,
-        slug: `exivity/${item.links.commit.repository}#${associatedPullRequest.number}`,
-        url: associatedPullRequest.url
-      };
-    }
-  }
-  return changelog;
-}
-
-// release/src/changelogPlugins/jira.ts
-var import_core6 = __toESM(require_core());
-async function jiraPlugin({ jiraClient, changelog }) {
-  var _a, _b;
-  const jiraKey = new RegExp(/\bEXVT-\d+\b/g);
-  for (const item of changelog) {
-    const issues = [
-      ...item.links.pr ? item.links.pr.originalTitle.match(jiraKey) || [] : [],
-      ...item.links.pr ? ((_a = item.links.pr.description) == null ? void 0 : _a.match(jiraKey)) || [] : [],
-      ...((_b = item.links.commit.description) == null ? void 0 : _b.match(jiraKey)) || [],
-      ...item.links.commit.originalTitle.match(jiraKey) || []
-    ];
-    if (issues.length > 0) {
-      const issueKey = issues[0];
-      let issue;
-      try {
-        issue = await jiraClient.issues.getIssue({
-          issueIdOrKey: issueKey
-        });
-        item.links.issue = {
-          title: issue.fields.summary,
-          description: issue.fields.description || null,
-          slug: issueKey,
-          url: `https://exivity.atlassian.net/browse/${issueKey}`
-        };
-        const releaseNotesTitle = getReleaseNotesTitle(issue);
-        if (releaseNotesTitle) {
-          item.links.issue.title = releaseNotesTitle;
-          item.links.issue.description = getReleaseNotesDescription(issue) || null;
-        } else {
-          item.warnings.push(`Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`);
-        }
-        if (issue.fields.issuetype.name === "Chore" /* Chore */) {
-          item.type = "chore";
-        }
-        if (issue.fields.issuetype.name === "Bug" /* Bug */) {
-          item.type = "fix";
-        }
-        if (issue.fields.issuetype.name === "Feature" /* Feature */ || issue.fields.issuetype.name === "Epic" /* Epic */) {
-          item.type = "feat";
-        }
-        const epicKey = getEpic(issue);
-        if (epicKey) {
-          const epic = await jiraClient.issues.getIssue({
-            issueIdOrKey: epicKey
-          });
-          item.links.milestone = {
-            title: getReleaseNotesTitle(epic) || epic.fields.summary,
-            description: getReleaseNotesDescription(epic) || epic.fields.description || null,
-            slug: getReleaseNotesTitle(epic) || epic.fields.summary,
-            url: `https://exivity.atlassian.net/browse/${epicKey}`
-          };
-        }
-      } catch (err) {
-        (0, import_core6.info)(`got error when getting issue ${issueKey}:
-${JSON.stringify(err)}`);
-      }
-    }
-  }
-  return changelog;
-}
-function getReleaseNotesTitle(issue) {
-  return issue.fields["customfield_10529" /* ReleaseNotesTitle */];
-}
-function getReleaseNotesDescription(issue) {
-  return issue.fields["customfield_10530" /* ReleaseNotesDescription */];
-}
-function getEpic(issue) {
-  return issue.fields["customfield_10005" /* Epic */];
-}
-
-// release/src/changelogPlugins/titleAndDescription.ts
-function formatTitle(changelogItem) {
-  return capitalizeFirstLetter(changelogItem.links.issue ? changelogItem.links.issue.title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title);
-}
-function formatDecription(changelogItem) {
-  var _a;
-  return ((_a = changelogItem.links.issue) == null ? void 0 : _a.description) || null;
-}
-function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-async function titleAndDescriptionPlugin({ changelog }) {
-  for (const item of changelog) {
-    item.title = formatTitle(item);
-    item.description = formatDecription(item);
-  }
-  return changelog;
-}
-
-// release/src/changelogPlugins/index.ts
-var plugins = [
-  associatedPullRequestPlugin,
-  jiraPlugin,
-  titleAndDescriptionPlugin
-];
-async function runPlugins({
-  octokit,
-  jiraClient,
-  changelog
-}) {
-  for (const plugin of plugins) {
-    changelog = await plugin({ octokit, jiraClient, changelog });
-  }
-  return changelog;
-}
-
-// release/src/common/consts.ts
-var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
+// release/src/common/repositories.ts
+var import_core9 = __toESM(require_core());
 
 // release/src/common/files.ts
-var import_promises = require("fs/promises");
+var import_promises2 = require("fs/promises");
 async function readJson(path) {
   try {
-    return JSON.parse(await (0, import_promises.readFile)(path, "utf8"));
+    return JSON.parse(await (0, import_promises2.readFile)(path, "utf8"));
   } catch (error) {
     throw new Error(`Can't read "${path}" or it's not valid JSON`);
   }
 }
 async function readTextFile(path) {
   try {
-    return (0, import_promises.readFile)(path, "utf8");
+    return (0, import_promises2.readFile)(path, "utf8");
   } catch (error) {
     throw new Error(`Can't read "${path}"`);
   }
 }
-async function readLockfile(lockfilePath) {
-  return readJson(lockfilePath);
-}
-async function readRepositories(repositoriesJsonPath) {
-  return readJson(repositoriesJsonPath);
+var readLockfile = readJson;
+var readRepositories = readJson;
+
+// release/src/common/consts.ts
+var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
+
+// release/src/common/repositories.ts
+async function checkRepositories(repositoriesJsonPath, latestVersion, octokit) {
+  const pendingCommits = [];
+  let changelog = [];
+  const lockfile = { version: "", repositories: {} };
+  const repositories = await readRepositories(repositoriesJsonPath);
+  (0, import_core9.info)(`Iterating repositories`);
+  for (const [repository, repositoryOptions] of Object.entries(repositories)) {
+    (0, import_core9.info)(`- exivity/${repository}`);
+    const latestVersionCommit = await getCommitForTag({
+      octokit,
+      owner: "exivity",
+      repo: repository,
+      tag: latestVersion
+    });
+    const repoCommits = await getCommitsSince({
+      octokit,
+      owner: "exivity",
+      repo: repository,
+      branch: repositoryOptions.releaseBranch || DEFAULT_REPOSITORY_RELEASE_BRANCH,
+      since: latestVersionCommit
+    });
+    lockfile.repositories[repository] = repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha;
+    repoCommits.forEach((repoCommit) => {
+      const commit = { ...repoCommit, repository };
+      pendingCommits.push(commit);
+      changelog.push(createChangelogItemFromCommit(commit));
+    });
+  }
+  return [changelog, lockfile];
 }
 
 // release/src/common/pr.ts
-var import_core7 = __toESM(require_core());
+var import_core10 = __toESM(require_core());
 async function createOrUpdatePullRequest({
   octokit,
   title,
@@ -68218,7 +68373,7 @@ async function createOrUpdatePullRequest({
       title,
       body
     });
-    (0, import_core7.info)(`Updated pull request #${pr.data.number}`);
+    (0, import_core10.info)(`Updated pull request #${pr.data.number}`);
     return pr.data;
   } else {
     const pr = await octokit.rest.pulls.create({
@@ -68229,13 +68384,13 @@ async function createOrUpdatePullRequest({
       head: upcomingReleaseBranch,
       base: releaseBranch
     });
-    (0, import_core7.info)(`Opened pull request #${pr.data.number}`);
+    (0, import_core10.info)(`Opened pull request #${pr.data.number}`);
     return pr.data;
   }
 }
 
 // release/src/common/version.ts
-var import_core8 = __toESM(require_core());
+var import_core11 = __toESM(require_core());
 var import_semver2 = __toESM(require_semver2());
 function inferVersionFromChangelog(from, changelog) {
   let upcomingVersionIncrement = "patch";
@@ -68256,7 +68411,7 @@ function inferVersionFromChangelog(from, changelog) {
   } else {
     upcomingVersion = `v${upcomingVersion}`;
   }
-  (0, import_core8.info)(`Version increment (${incrementDescription}): ${from} -> ${upcomingVersion}`);
+  (0, import_core11.info)(`Version increment (${incrementDescription}): ${from} -> ${upcomingVersion}`);
   return upcomingVersion;
 }
 
@@ -68272,48 +68427,13 @@ async function prepare({
   releaseBranch,
   dryRun
 }) {
-  let changelog = [];
-  const pendingCommits = [];
-  const lockfile = { version: "", repositories: {} };
-  const repositories = await readRepositories(repositoriesJsonPath);
   const prTemplate = await readTextFile(prTemplatePath);
   const latestVersion = await getLatestVersion();
-  (0, import_console2.info)(`Iterating repositories`);
-  for (const [repository, repositoryOptions] of Object.entries(repositories)) {
-    (0, import_console2.info)(`- exivity/${repository}`);
-    const latestVersionCommit = await getCommitForTag({
-      octokit,
-      owner: "exivity",
-      repo: repository,
-      tag: latestVersion
-    });
-    const repoCommits = await getCommitsSince({
-      octokit,
-      owner: "exivity",
-      repo: repository,
-      branch: repositoryOptions.releaseBranch || DEFAULT_REPOSITORY_RELEASE_BRANCH,
-      since: latestVersionCommit
-    });
-    lockfile.repositories[repository] = repoCommits.length > 0 ? repoCommits[0].sha : latestVersionCommit.sha;
-    repoCommits.forEach((repoCommit) => {
-      const commit = { ...repoCommit, repository };
-      pendingCommits.push(commit);
-      changelog.push(createChangelogItemFromCommit(commit));
-    });
-  }
-  changelog = changelog.filter(noChores);
-  changelog.sort(byDate);
-  changelog = await runPlugins({ octokit, jiraClient, changelog });
-  changelog.sort(byType);
-  changelog = changelog.filter(noChores);
+  let [changelog, lockfile] = await checkRepositories(repositoriesJsonPath, latestVersion, octokit);
+  changelog = await prepareChangelog(changelog, octokit, jiraClient);
   if (changelog.length === 0) {
-    (0, import_console2.info)(`Nothing to release`);
-    return;
+    return [];
   }
-  (0, import_console2.info)(`Changelog:`);
-  changelog.forEach((item) => {
-    (0, import_console2.info)(`- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`);
-  });
   const upcomingVersion = inferVersionFromChangelog(latestVersion, changelog);
   lockfile.version = upcomingVersion;
   if (dryRun) {
@@ -68326,21 +68446,15 @@ async function prepare({
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not writing lockfile`);
   } else {
-    await (0, import_promises2.writeFile)(lockfilePath, JSON.stringify(lockfile, null, 2) + "\n");
+    await (0, import_promises3.writeFile)(lockfilePath, JSON.stringify(lockfile, null, 2) + "\n");
     (0, import_console2.info)(`Written lockfile to: ${lockfilePath}`);
   }
-  const currentPublicChangelogContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises2.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
-  const publicChangelogContents = formatPublicChangelog(upcomingVersion, changelog);
-  if (dryRun) {
-    (0, import_console2.info)(`Dry run, not writing changelog`);
-  } else {
-    await (0, import_promises2.writeFile)(changelogPath, currentPublicChangelogContents.replace("# Changelog\n\n", `# Changelog
-
-${publicChangelogContents}
-
-`));
-    (0, import_console2.info)(`Written changelog to: ${changelogPath}`);
-  }
+  await writeToChangelog(changelogPath, changelog, upcomingVersion, dryRun);
+  const title = await commitAndPush(dryRun, upcomingVersion, upcomingReleaseBranch);
+  await updateCommitStatus(dryRun, changelog, octokit);
+  await updatePr(dryRun, upcomingVersion, title, prTemplate, upcomingReleaseBranch, releaseBranch, changelog, octokit);
+}
+async function commitAndPush(dryRun, upcomingVersion, upcomingReleaseBranch) {
   const title = `chore: release ${upcomingVersion}`;
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not committing and pushing changes`);
@@ -68351,6 +68465,9 @@ ${publicChangelogContents}
     await gitPush(true);
     (0, import_console2.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
   }
+  return title;
+}
+async function updateCommitStatus(dryRun, changelog, octokit) {
   const sha = await getCommitSha();
   if (dryRun) {
     (0, import_console2.info)(`Dry run, no need to write commit status`);
@@ -68366,6 +68483,8 @@ ${publicChangelogContents}
       description: state === "pending" ? "Changelog contains warnings" : "Changelog is good to go!"
     });
   }
+}
+async function updatePr(dryRun, upcomingVersion, title, prTemplate, upcomingReleaseBranch, releaseBranch, changelog, octokit) {
   if (dryRun) {
     (0, import_console2.info)(`Dry run, not creating pull request`);
   } else {
@@ -68383,32 +68502,90 @@ ${publicChangelogContents}
 }
 
 // release/src/release.ts
-var import_core9 = __toESM(require_core());
+var import_core12 = __toESM(require_core());
 async function release({
   octokit,
   lockfilePath,
+  jiraClient,
+  repositoriesJsonPath,
   dryRun
 }) {
   const repository = getRepository();
   const lockfile = await readLockfile(lockfilePath);
   if (dryRun) {
-    (0, import_core9.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_core12.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_core9.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_core12.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
-  for (const [repository2, sha] of Object.entries(lockfile.repositories)) {
+  await tagRepositories(dryRun, lockfile, octokit);
+  const jiraIssueIds = await getJiraIssues(octokit, jiraClient, repositoriesJsonPath);
+  await transitionIssues(dryRun, jiraIssueIds, jiraClient);
+  try {
+    await updateIssueReleaseVersion(dryRun, lockfile.version, jiraIssueIds, jiraClient);
+  } catch (e) {
+    (0, import_core12.warning)(`Got error while trying to update release version of tickets: ${JSON.stringify(e)}`);
+  }
+}
+async function tagRepositories(dryRun, lockfile, octokit) {
+  for (const [repository, sha] of Object.entries(lockfile.repositories)) {
     if (dryRun) {
-      (0, import_core9.info)(`Dry run, not tagging ${repository2}`);
+      (0, import_core12.info)(`Dry run, not tagging ${repository}`);
     } else {
       await createLightweightTag({
         octokit,
         owner: "exivity",
-        repo: repository2,
+        repo: repository,
         tag: lockfile.version,
         sha
       });
+    }
+  }
+}
+async function transitionIssues(dryRun, jiraIssueIds, jiraClient) {
+  if (dryRun) {
+    (0, import_core12.info)(`Dry run, not transitioning tickets`);
+  } else {
+    (0, import_core12.info)(`Transitioning ticket status of:`);
+    (0, import_core12.info)(`${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`);
+    await Promise.all(jiraIssueIds.map((issueIdOrKey) => {
+      return transitionToReleased(issueIdOrKey, jiraClient);
+    })).then(() => {
+      jiraIssueIds.forEach((issueIdOrKey) => {
+        (0, import_core12.info)(`Transitioned issue ${issueIdOrKey} to released`);
+      });
+    });
+  }
+}
+async function getJiraIssues(octokit, jiraClient, repositoriesJsonPath) {
+  const latestVersion = await getLatestVersion();
+  let [changelog, _] = await checkRepositories(repositoriesJsonPath, latestVersion, octokit);
+  changelog = await runPlugins({ octokit, jiraClient, changelog });
+  return changelog.flatMap((item) => {
+    var _a;
+    return (_a = item.links.issues) == null ? void 0 : _a.map((issue) => issue.slug);
+  }).filter(isString);
+}
+function isString(x) {
+  return typeof x === "string";
+}
+async function updateIssueReleaseVersion(dryRun, version, jiraIssueIds, jiraClient) {
+  if (dryRun) {
+    (0, import_core12.info)(`Dry run, not setting release version of tickets`);
+  } else {
+    (0, import_core12.info)(`Setting release version of:`);
+    (0, import_core12.info)(`${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`);
+    for (const issueIdOrKey of jiraIssueIds) {
+      await jiraClient.issues.editIssue({
+        issueIdOrKey,
+        fields: {
+          fixVersions: [
+            { id: await getVersion(dryRun, jiraClient, version, issueIdOrKey) }
+          ]
+        }
+      });
+      (0, import_core12.info)(`Set release version of ${issueIdOrKey} to ${version}`);
     }
   }
 }
@@ -68418,18 +68595,18 @@ var ModePing = "ping";
 var ModePrepare = "prepare";
 var ModeRelease = "release";
 async function run() {
-  const mode = (0, import_core10.getInput)("mode");
-  const lockfilePath = (0, import_core10.getInput)("lockfile");
-  const changelogPath = (0, import_core10.getInput)("changelog");
-  const repositoriesJsonPath = (0, import_core10.getInput)("repositories");
-  const prTemplatePath = (0, import_core10.getInput)("pr-template");
-  const upcomingReleaseBranch = (0, import_core10.getInput)("upcoming-release-branch");
-  const releaseBranch = (0, import_core10.getInput)("release-branch");
+  const mode = (0, import_core13.getInput)("mode");
+  const lockfilePath = (0, import_core13.getInput)("lockfile");
+  const changelogPath = (0, import_core13.getInput)("changelog");
+  const repositoriesJsonPath = (0, import_core13.getInput)("repositories");
+  const prTemplatePath = (0, import_core13.getInput)("pr-template");
+  const upcomingReleaseBranch = (0, import_core13.getInput)("upcoming-release-branch");
+  const releaseBranch = (0, import_core13.getInput)("release-branch");
   const dryRun = getBooleanInput("dry-run", false);
   const ghToken = getToken();
-  const jiraUsername = (0, import_core10.getInput)("jira-username");
-  const jiraToken = (0, import_core10.getInput)("jira-token");
-  const octokit = (0, import_github7.getOctokit)(ghToken);
+  const jiraUsername = (0, import_core13.getInput)("jira-username");
+  const jiraToken = (0, import_core13.getInput)("jira-token");
+  const octokit = (0, import_github8.getOctokit)(ghToken);
   const jiraClient = jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null;
   switch (mode) {
     case ModePing:
@@ -68458,6 +68635,8 @@ async function run() {
       await release({
         octokit,
         lockfilePath,
+        jiraClient,
+        repositoriesJsonPath,
         dryRun
       });
       break;
@@ -68465,7 +68644,7 @@ async function run() {
       throw new Error(`Unknown mode "${mode}"`);
   }
 }
-run().catch(import_core10.setFailed);
+run().catch(import_core13.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

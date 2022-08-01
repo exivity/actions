@@ -10,7 +10,7 @@ export type ChangelogType = 'feat' | 'fix' | 'chore'
 
 export type ChangelogLinkType = 'pr' | 'commit' | 'issue' | 'milestone'
 
-type ChangelogLinkCommon = {
+export type ChangelogLinkCommon = {
   slug: string
   url: string
   title: string
@@ -34,7 +34,7 @@ export type ChangelogItem = {
     pr?: ChangelogLinkCommon & {
       originalTitle: string
     }
-    issue?: ChangelogLinkCommon
+    issues?: ChangelogLinkCommon[]
     milestone?: ChangelogLinkCommon
   }
 }

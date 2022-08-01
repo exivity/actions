@@ -41,7 +41,13 @@ function buildChangelogItem(changelogItem: ChangelogItem) {
     '  <details>',
     '    <summary>Show details</summary>',
     '',
-    ...Object.entries(changelogItem.links).map(([type, link]) => {
+    ...Object.entries(changelogItem.links).flatMap(([type, link]) => {
+      if (Array.isArray(link)) {
+        return link.map(
+          (linkItem) =>
+            `    - ${formatLinkType(type)}: [${linkItem.slug}](${linkItem.url})`
+        )
+      }
       return `    - ${formatLinkType(type)}: [${link.slug}](${link.url})`
     }),
     '  </details>',

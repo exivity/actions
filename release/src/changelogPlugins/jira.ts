@@ -1,7 +1,11 @@
 import { info } from '@actions/core'
 import type { Version2Models } from 'jira.js'
 import type { PluginParams } from '.'
-import { JiraCustomFields, JiraIssueType } from '../common/types'
+import {
+  JiraCustomFields,
+  JiraIssueType,
+  ChangelogLinkCommon,
+} from '../common/types'
 
 export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
   const jiraKey = new RegExp(/\bEXVT-\d+\b/g)
@@ -14,18 +18,15 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
       ...(item.links.commit.description?.match(jiraKey) || []),
       ...(item.links.commit.originalTitle.match(jiraKey) || []),
     ]
+    item.links.issues = []
 
-    // Take only first issue
-    if (issues.length > 0) {
-      const issueKey = issues[0]
-      let issue
-
+    for (const issueKey of issues) {
       try {
-        issue = await jiraClient.issues.getIssue({
+        const issue = await jiraClient.issues.getIssue({
           issueIdOrKey: issueKey,
         })
 
-        item.links.issue = {
+        const issueItem: ChangelogLinkCommon = {
           title: issue.fields.summary,
           description: issue.fields.description || null,
           slug: issueKey,
@@ -34,9 +35,8 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
 
         const releaseNotesTitle = getReleaseNotesTitle(issue)
         if (releaseNotesTitle) {
-          item.links.issue.title = releaseNotesTitle
-          item.links.issue.description =
-            getReleaseNotesDescription(issue) || null
+          issueItem.title = releaseNotesTitle
+          issueItem.description = getReleaseNotesDescription(issue) || null
         } else {
           item.warnings.push(
             `Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`
@@ -73,6 +73,8 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
             url: `https://exivity.atlassian.net/browse/${epicKey}`,
           }
         }
+
+        item.links.issues.push(issueItem)
       } catch (err) {
         info(
           `got error when getting issue ${issueKey}:\n${JSON.stringify(err)}`

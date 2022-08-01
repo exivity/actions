@@ -15,5 +15,5 @@ export function randomString(length: number) {
   return crypto
     .randomBytes(Math.ceil(length / 2))
     .toString('hex')
-    .substr(0, length)
+    .substring(0, length)
 }
