@@ -1,3 +1,4 @@
+import { info } from '@actions/core'
 import { Version2Client } from 'jira.js'
 
 const transitionIds = {
@@ -103,10 +104,8 @@ export async function getVersion(
   if (versionData.length > 0) {
     return versionData[0].id
   } else if (dryRun) {
-    console.log(
-      "dry run, not creating new version id, returning that of 'next'"
-    )
-    return 10456
+    info("dry run, not creating new version id, returning that of 'next'")
+    return 10456 // the 'next' version
   }
 
   const newData = await jiraClient.projectVersions.createVersion({
