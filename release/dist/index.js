@@ -68074,7 +68074,7 @@ function formatTitle(changelogItem) {
   var _a;
   return capitalizeFirstLetter(changelogItem.links.issues && ((_a = changelogItem.links.issues) == null ? void 0 : _a.length) > 0 ? changelogItem.links.issues[0].title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title);
 }
-function formatDecription(changelogItem) {
+function formatDescription(changelogItem) {
   var _a, _b;
   return ((_b = (_a = changelogItem.links.issues) == null ? void 0 : _a[0]) == null ? void 0 : _b.description) || null;
 }
@@ -68084,7 +68084,7 @@ function capitalizeFirstLetter(str) {
 async function titleAndDescriptionPlugin({ changelog }) {
   for (const item of changelog) {
     item.title = formatTitle(item);
-    item.description = formatDecription(item);
+    item.description = formatDescription(item);
   }
   return changelog;
 }
@@ -68522,8 +68522,8 @@ async function release({
     await gitPushTags();
     (0, import_core12.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
-  await tagRepositories(dryRun, lockfile, octokit);
   const jiraIssueIds = await getJiraIssues(octokit, jiraClient, repositoriesJsonPath);
+  await tagRepositories(dryRun, lockfile, octokit);
   await transitionIssues(dryRun, jiraIssueIds, jiraClient);
   try {
     await updateIssueReleaseVersion(dryRun, lockfile.version, jiraIssueIds, jiraClient);
