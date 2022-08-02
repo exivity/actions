@@ -7,6 +7,10 @@ import {
   ChangelogLinkCommon,
 } from '../common/types'
 
+function onlyUnique<T>(value: T, index: number, self: T[]) {
+  return self.indexOf(value) === index
+}
+
 export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
   const jiraKey = new RegExp(/\bEXVT-\d+\b/g)
   for (const item of changelog) {
@@ -17,7 +21,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
       ...(item.links.pr ? item.links.pr.description?.match(jiraKey) || [] : []),
       ...(item.links.commit.description?.match(jiraKey) || []),
       ...(item.links.commit.originalTitle.match(jiraKey) || []),
-    ]
+    ].filter(onlyUnique)
     item.links.issues = []
 
     for (const issueKey of issues) {
