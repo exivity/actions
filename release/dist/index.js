@@ -67997,6 +67997,9 @@ async function associatedPullRequestPlugin({
 
 // release/src/changelogPlugins/jira.ts
 var import_core7 = __toESM(require_core());
+function onlyUnique(value, index, self2) {
+  return self2.indexOf(value) === index;
+}
 async function jiraPlugin({ jiraClient, changelog }) {
   var _a, _b;
   const jiraKey = new RegExp(/\bEXVT-\d+\b/g);
@@ -68006,7 +68009,7 @@ async function jiraPlugin({ jiraClient, changelog }) {
       ...item.links.pr ? ((_a = item.links.pr.description) == null ? void 0 : _a.match(jiraKey)) || [] : [],
       ...((_b = item.links.commit.description) == null ? void 0 : _b.match(jiraKey)) || [],
       ...item.links.commit.originalTitle.match(jiraKey) || []
-    ];
+    ].filter(onlyUnique);
     item.links.issues = [];
     for (const issueKey of issues) {
       try {
