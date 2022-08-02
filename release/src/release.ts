@@ -39,15 +39,17 @@ export async function release({
     info(`Pushed tag ${lockfile.version} to ${repository.fqn}`)
   }
 
-  // Tag repositories in lockfile
-  await tagRepositories(dryRun, lockfile, octokit)
-
-  // Transition jira issues
+  // Get the Jira issue ids
   const jiraIssueIds = await getJiraIssues(
     octokit,
     jiraClient,
     repositoriesJsonPath
   )
+
+  // Tag repositories in lockfile
+  await tagRepositories(dryRun, lockfile, octokit)
+
+  // Transition jira issues
   await transitionIssues(dryRun, jiraIssueIds, jiraClient)
 
   // Update fixVersion of all issues
