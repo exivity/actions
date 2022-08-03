@@ -25,6 +25,14 @@ export async function release({
   repositoriesJsonPath: string
   dryRun: boolean
 }) {
+  // All jira issues from prev release to upcoming release
+  // (we need to do this before updating tag in next step)
+  const jiraIssueIds = await getJiraIssues(
+    octokit,
+    jiraClient,
+    repositoriesJsonPath
+  )
+
   // Variables
   const repository = getRepository()
 
@@ -38,13 +46,6 @@ export async function release({
     await gitPushTags()
     info(`Pushed tag ${lockfile.version} to ${repository.fqn}`)
   }
-
-  // Get the Jira issue ids
-  const jiraIssueIds = await getJiraIssues(
-    octokit,
-    jiraClient,
-    repositoriesJsonPath
-  )
 
   // Tag repositories in lockfile
   await tagRepositories(dryRun, lockfile, octokit)
