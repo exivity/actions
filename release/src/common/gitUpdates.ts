@@ -82,7 +82,6 @@ export async function updateMissingReleaseNotesWarningStatus(
 
 export async function updatePr(
   dryRun: boolean,
-  upcomingVersion: string,
   title: string,
   prTemplatePath: string,
   upcomingReleaseBranch: string,
@@ -95,7 +94,7 @@ export async function updatePr(
   if (dryRun) {
     info(`Dry run, not creating pull request`)
   } else {
-    const prChangelogContents = formatPrChangelog(upcomingVersion, changelog)
+    const prChangelogContents = formatPrChangelog(changelog)
     const pr = await createOrUpdatePullRequest({
       octokit,
       title,

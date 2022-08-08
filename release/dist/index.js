@@ -70117,12 +70117,12 @@ async function updateMissingReleaseNotesWarningStatus(dryRun, changelog, octokit
     });
   }
 }
-async function updatePr(dryRun, upcomingVersion, title, prTemplatePath, upcomingReleaseBranch, releaseBranch, changelog, octokit) {
+async function updatePr(dryRun, title, prTemplatePath, upcomingReleaseBranch, releaseBranch, changelog, octokit) {
   const prTemplate = await readTextFile(prTemplatePath);
   if (dryRun) {
     (0, import_console3.info)(`Dry run, not creating pull request`);
   } else {
-    const prChangelogContents = formatPrChangelog(upcomingVersion, changelog);
+    const prChangelogContents = formatPrChangelog(changelog);
     const pr = await createOrUpdatePullRequest({
       octokit,
       title,
@@ -70203,7 +70203,6 @@ async function prepare({
   await updateMissingReleaseNotesWarningStatus(dryRun, flatChangelog, octokit);
   await updatePr(
     dryRun,
-    upcomingVersion,
     title,
     prTemplatePath,
     upcomingReleaseBranch,

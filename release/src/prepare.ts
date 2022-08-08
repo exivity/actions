@@ -83,7 +83,6 @@ export async function prepare({
 
   await updatePr(
     dryRun,
-    upcomingVersion,
     title,
     prTemplatePath,
     upcomingReleaseBranch,
