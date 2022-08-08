@@ -70182,7 +70182,7 @@ async function prepare({
   );
   const flatChangelog = sortChangelogItems(flatten_default(changelogItems));
   if (isEmpty_default(flatChangelog)) {
-    (0, import_core13.info)(`Nothing to release`);
+    (0, import_core13.info)(`No features or fixes to release`);
     return;
   }
   logChangelogItems(flatChangelog);

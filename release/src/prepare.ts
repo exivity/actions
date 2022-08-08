@@ -54,7 +54,7 @@ export async function prepare({
   const flatChangelog = sortChangelogItems(flatten(changelogItems))
 
   if (isEmpty(flatChangelog)) {
-    info(`Nothing to release`)
+    info(`No features or fixes to release`)
     return
   }
 
