@@ -9,13 +9,8 @@ export const DEFAULT_REPOSITORY_RELEASE_BRANCH = 'main'
 
 type Octokit = ReturnType<typeof getOctokit>
 
-type GetRepoCommits = {
-  (octokit: Octokit, repository: string): Promise<Commit[]>
-  (octokit: Octokit): (repository: string) => Promise<Commit[]>
-}
-
-export const getRepoCommits: GetRepoCommits = curry(
-  async (octokit, repository) => {
+export const getRepoCommits =
+  (octokit: Octokit) => async (repository: string) => {
     const latestVersion = await getLatestVersion()
 
     info(`- exivity/${repository}`)
@@ -36,4 +31,3 @@ export const getRepoCommits: GetRepoCommits = curry(
       since: latestVersionCommit,
     })
   }
-)

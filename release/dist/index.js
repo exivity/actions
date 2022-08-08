@@ -761,12 +761,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info17 = this._prepareRequest(verb, parsedUrl, headers);
+          let info16 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info17, data);
+            response = yield this.requestRaw(info16, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -776,7 +776,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info17, data);
+                return authenticationHandler.handleAuthentication(this, info16, data);
               } else {
                 return response;
               }
@@ -799,8 +799,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info17 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info17, data);
+              info16 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info16, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -821,7 +821,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info17, data) {
+      requestRaw(info16, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject3) => {
             function callbackForResult(err, res) {
@@ -833,16 +833,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info17, data, callbackForResult);
+            this.requestRawWithCallback(info16, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info17, data, onResult) {
+      requestRawWithCallback(info16, data, onResult) {
         if (typeof data === "string") {
-          if (!info17.options.headers) {
-            info17.options.headers = {};
+          if (!info16.options.headers) {
+            info16.options.headers = {};
           }
-          info17.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info16.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -851,7 +851,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info17.httpModule.request(info17.options, (msg) => {
+        const req = info16.httpModule.request(info16.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -863,7 +863,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info17.options.path}`));
+          handleResult(new Error(`Request timeout: ${info16.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -885,27 +885,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info17 = {};
-        info17.parsedUrl = requestUrl;
-        const usingSsl = info17.parsedUrl.protocol === "https:";
-        info17.httpModule = usingSsl ? https : http;
+        const info16 = {};
+        info16.parsedUrl = requestUrl;
+        const usingSsl = info16.parsedUrl.protocol === "https:";
+        info16.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info17.options = {};
-        info17.options.host = info17.parsedUrl.hostname;
-        info17.options.port = info17.parsedUrl.port ? parseInt(info17.parsedUrl.port) : defaultPort;
-        info17.options.path = (info17.parsedUrl.pathname || "") + (info17.parsedUrl.search || "");
-        info17.options.method = method;
-        info17.options.headers = this._mergeHeaders(headers);
+        info16.options = {};
+        info16.options.host = info16.parsedUrl.hostname;
+        info16.options.port = info16.parsedUrl.port ? parseInt(info16.parsedUrl.port) : defaultPort;
+        info16.options.path = (info16.parsedUrl.pathname || "") + (info16.parsedUrl.search || "");
+        info16.options.method = method;
+        info16.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info17.options.headers["user-agent"] = this.userAgent;
+          info16.options.headers["user-agent"] = this.userAgent;
         }
-        info17.options.agent = this._getAgent(info17.parsedUrl);
+        info16.options.agent = this._getAgent(info16.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info17.options);
+            handler.prepareRequest(info16.options);
           }
         }
-        return info17;
+        return info16;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1609,10 +1609,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info17(message) {
+    function info16(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info17;
+    exports.info = info16;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -14981,10 +14981,10 @@ var require_lodash = __commonJS({
           }
           return createWrap(key, bitmask, object, partials, holders);
         });
-        function curry3(func, arity, guard) {
+        function curry(func, arity, guard) {
           arity = guard ? undefined2 : arity;
           var result2 = createWrap(func, WRAP_CURRY_FLAG, undefined2, undefined2, undefined2, undefined2, undefined2, arity);
-          result2.placeholder = curry3.placeholder;
+          result2.placeholder = curry.placeholder;
           return result2;
         }
         function curryRight(func, arity, guard) {
@@ -16185,7 +16185,7 @@ var require_lodash = __commonJS({
         lodash.constant = constant;
         lodash.countBy = countBy;
         lodash.create = create;
-        lodash.curry = curry3;
+        lodash.curry = curry;
         lodash.curryRight = curryRight;
         lodash.debounce = debounce;
         lodash.defaults = defaults;
@@ -69091,12 +69091,6 @@ var toString2 = /* @__PURE__ */ _curry1(function toString3(val) {
 });
 var toString_default = toString2;
 
-// node_modules/ramda/es/curry.js
-var curry = /* @__PURE__ */ _curry1(function curry2(fn) {
-  return curryN_default(fn.length, fn);
-});
-var curry_default = curry;
-
 // node_modules/ramda/es/defaultTo.js
 var defaultTo = /* @__PURE__ */ _curry2(function defaultTo2(d, v) {
   return v == null || v !== v ? d : v;
@@ -69637,28 +69631,23 @@ function createChangelogItem(commit) {
 // release/src/changelog/getRepoCommits.ts
 var import_console2 = require("console");
 var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
-var getRepoCommits = curry_default(
-  async (octokit, repository) => {
-    const latestVersion = await getLatestVersion();
-    (0, import_console2.info)(`- exivity/${repository}`);
-    const latestVersionCommit = await getCommitForTag({
-      octokit,
-      owner: "exivity",
-      repo: repository,
-      tag: latestVersion
-    });
-    return await getCommitsSince({
-      octokit,
-      owner: "exivity",
-      repo: repository,
-      branch: DEFAULT_REPOSITORY_RELEASE_BRANCH,
-      since: latestVersionCommit
-    });
-  }
-);
-
-// release/src/changelog/getChangelogItems.ts
-var import_console3 = require("console");
+var getRepoCommits = (octokit) => async (repository) => {
+  const latestVersion = await getLatestVersion();
+  (0, import_console2.info)(`- exivity/${repository}`);
+  const latestVersionCommit = await getCommitForTag({
+    octokit,
+    owner: "exivity",
+    repo: repository,
+    tag: latestVersion
+  });
+  return await getCommitsSince({
+    octokit,
+    owner: "exivity",
+    repo: repository,
+    branch: DEFAULT_REPOSITORY_RELEASE_BRANCH,
+    since: latestVersionCommit
+  });
+};
 
 // release/src/changelogPlugins/associatedPullRequest.ts
 async function associatedPullRequestPlugin({
@@ -69830,18 +69819,13 @@ function getChangelogItems(octokit, jiraClient, repositories) {
   const items = repositories.map(
     pipe(
       getRepoCommits(octokit),
-      andThen_default((changelog) => {
-        (0, import_console3.info)(JSON.stringify(changelog, null, 2));
-        return changelog;
-      }),
       andThen_default(map_default(createChangelogItem)),
-      andThen_default((changelog) => {
-        return runPlugins({ octokit, jiraClient, changelog });
+      andThen_default(async (changelog) => {
+        return await runPlugins({ octokit, jiraClient, changelog });
       }),
       andThen_default(reject_default(propEq_default("type", "chore")))
     )
   );
-  (0, import_console3.info)(JSON.stringify(items, null, 2));
   return Promise.all(items);
 }
 
@@ -70040,7 +70024,7 @@ async function writeLockFile(dryRun, octokit, version, repositories, lockfilePat
 }
 
 // release/src/common/gitUpdates.ts
-var import_console4 = require("console");
+var import_console3 = require("console");
 
 // release/src/common/pr.ts
 var import_core12 = __toESM(require_core());
@@ -70089,29 +70073,29 @@ async function createOrUpdatePullRequest({
 // release/src/common/gitUpdates.ts
 async function switchToReleaseBranch(dryRun, releaseBranch, upcomingReleaseBranch) {
   if (dryRun) {
-    (0, import_console4.info)(`Dry run, not switching branches`);
+    (0, import_console3.info)(`Dry run, not switching branches`);
   } else if (await gitHasChanges()) {
-    (0, import_console4.info)("Detected uncommitted changes, aborting");
+    (0, import_console3.info)("Detected uncommitted changes, aborting");
   } else {
     await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`);
   }
 }
 async function commitAndPush(dryRun, title, upcomingReleaseBranch) {
   if (dryRun) {
-    (0, import_console4.info)(`Dry run, not committing and pushing changes`);
+    (0, import_console3.info)(`Dry run, not committing and pushing changes`);
   } else {
     await gitAdd();
     await gitSetAuthor("Exivity bot", "bot@exivity.com");
     await gitCommit(title);
     await gitPush(true);
-    (0, import_console4.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
+    (0, import_console3.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
   }
   return title;
 }
 async function updateMissingReleaseNotesWarningStatus(dryRun, changelog, octokit) {
   const sha = await getCommitSha();
   if (dryRun) {
-    (0, import_console4.info)(`Dry run, no need to write commit status`);
+    (0, import_console3.info)(`Dry run, no need to write commit status`);
   } else {
     const state = changelog.some((item) => item.warnings.length > 0) ? "pending" : "success";
     await writeStatus({
@@ -70128,7 +70112,7 @@ async function updateMissingReleaseNotesWarningStatus(dryRun, changelog, octokit
 async function updatePr(dryRun, title, prTemplatePath, upcomingReleaseBranch, releaseBranch, changelog, octokit) {
   const prTemplate = await readTextFile(prTemplatePath);
   if (dryRun) {
-    (0, import_console4.info)(`Dry run, not creating pull request`);
+    (0, import_console3.info)(`Dry run, not creating pull request`);
   } else {
     const prChangelogContents = formatPrChangelog(changelog);
     const pr = await createOrUpdatePullRequest({
@@ -70139,13 +70123,13 @@ async function updatePr(dryRun, title, prTemplatePath, upcomingReleaseBranch, re
       upcomingReleaseBranch,
       releaseBranch
     });
-    (0, import_console4.info)(pr.html_url);
+    (0, import_console3.info)(pr.html_url);
   }
 }
 async function tagRepositories(dryRun, lockfile, octokit) {
   for (const [repository, sha] of Object.entries(lockfile.repositories)) {
     if (dryRun) {
-      (0, import_console4.info)(`Dry run, not tagging ${repository}`);
+      (0, import_console3.info)(`Dry run, not tagging ${repository}`);
     } else {
       await createLightweightTag({
         octokit,
@@ -70160,11 +70144,11 @@ async function tagRepositories(dryRun, lockfile, octokit) {
 async function tagAllRepositories(dryRun, lockfile, octokit) {
   const repository = getRepository();
   if (dryRun) {
-    (0, import_console4.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_console3.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_console4.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_console3.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
   await tagRepositories(dryRun, lockfile, octokit);
 }
@@ -70188,7 +70172,6 @@ async function prepare({
     jiraClient,
     repositories
   );
-  (0, import_core13.info)(JSON.stringify(changelogItems, null, 2));
   const flatChangelog = sortChangelogItems(flatten_default(changelogItems));
   if (isEmpty_default(flatChangelog)) {
     (0, import_core13.info)(`No features or fixes to release`);
