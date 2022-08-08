@@ -1,4 +1,5 @@
 import { getOctokit } from '@actions/github'
+import { info } from 'console'
 import { pipe, map, andThen, reject, propEq } from 'ramda'
 
 import { JiraClient, runPlugins } from '../changelogPlugins'
@@ -18,8 +19,11 @@ export function getChangelogItems(
       getRepoCommits(octokit),
       andThen(map(createChangelogItem)),
       andThen(async (changelog) => {
+        info(changelog.length.toString())
         // This step might change type so we filter chores out after
-        return await runPlugins({ octokit, jiraClient, changelog })
+        const result = await runPlugins({ octokit, jiraClient, changelog })
+        info(result.length.toString())
+        return result
       }),
       andThen(reject(propEq('type', 'chore')))
     )
