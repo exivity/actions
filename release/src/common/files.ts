@@ -1,5 +1,5 @@
 import { readFile } from 'fs/promises'
-import { Lockfile } from '../lockfile'
+import { Lockfile } from './lockfile'
 
 export async function readJson<Schema>(path: string) {
   try {

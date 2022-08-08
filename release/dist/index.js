@@ -69868,7 +69868,7 @@ var import_fs = require("fs");
 var import_promises2 = require("fs/promises");
 var import_core10 = __toESM(require_core());
 
-// release/src/changelogFormatters/prChangelog.ts
+// release/src/changelogFormatters/utils.ts
 function formatLinkType(type3) {
   switch (type3) {
     case "commit":
@@ -69883,7 +69883,9 @@ function formatLinkType(type3) {
       return "Unknown";
   }
 }
-function formatPrChangelog(version, changelog) {
+
+// release/src/changelogFormatters/prChangelog.ts
+function formatPrChangelog(changelog) {
   return [
     ...buildChangelogSection(
       "New features",
@@ -69927,20 +69929,6 @@ function buildChangelogItem(changelogItem) {
 }
 
 // release/src/changelogFormatters/publicChangelog.ts
-function formatLinkType2(type3) {
-  switch (type3) {
-    case "commit":
-      return "Commit";
-    case "pr":
-      return "Pull request";
-    case "issues":
-      return "Issue";
-    case "milestone":
-      return "Milestone";
-    default:
-      return "Unknown";
-  }
-}
 function formatPublicChangelog(version, changelog) {
   return [
     ...buildChangelogHeader(version),
@@ -69980,10 +69968,10 @@ function buildChangelogItem2(changelogItem) {
     ...Object.entries(changelogItem.links).flatMap(([type3, link]) => {
       if (Array.isArray(link)) {
         return link.map(
-          (linkItem) => `  - ${formatLinkType2(type3)}: [${linkItem.slug}](${linkItem.url})`
+          (linkItem) => `  - ${formatLinkType(type3)}: [${linkItem.slug}](${linkItem.url})`
         );
       }
-      return `  - ${formatLinkType2(type3)}: [${link.slug}](${link.url})`;
+      return `  - ${formatLinkType(type3)}: [${link.slug}](${link.url})`;
     }),
     "-->",
     ""

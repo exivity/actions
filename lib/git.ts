@@ -34,11 +34,6 @@ export async function getLatestSemverTag() {
   return semver.rsort(semvers)[0]
 }
 
-export async function getPreviousSemverTag() {
-  const semvers = await getAllSemverTags()
-  return semver.rsort(semvers)[1]
-}
-
 export async function gitFetch(remote: string, branch: string) {
   return exec('git fetch', [remote, branch])
 }
