@@ -69824,9 +69824,9 @@ function getChangelogItems(octokit, jiraClient, repositories) {
       getRepoCommits(octokit),
       andThen_default(map_default(createChangelogItem)),
       andThen_default(async (changelog) => {
-        (0, import_console3.info)(changelog.length.toString());
+        (0, import_console3.info)(JSON.stringify(changelog, null, 2));
         const result = await runPlugins({ octokit, jiraClient, changelog });
-        (0, import_console3.info)(result.length.toString());
+        (0, import_console3.info)(JSON.stringify(result, null, 2));
         return result;
       }),
       andThen_default(reject_default(propEq_default("type", "chore")))

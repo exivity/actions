@@ -19,10 +19,10 @@ export function getChangelogItems(
       getRepoCommits(octokit),
       andThen(map(createChangelogItem)),
       andThen(async (changelog) => {
-        info(changelog.length.toString())
+        info(JSON.stringify(changelog, null, 2))
         // This step might change type so we filter chores out after
         const result = await runPlugins({ octokit, jiraClient, changelog })
-        info(result.length.toString())
+        info(JSON.stringify(result, null, 2))
         return result
       }),
       andThen(reject(propEq('type', 'chore')))
