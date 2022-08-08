@@ -1,7 +1,8 @@
-import { formatLinkType } from '../common/changelog'
-import type { ChangelogItem } from '../common/types'
+import { ChangelogItem } from '../changelog'
 
-export function formatPrChangelog(version: string, changelog: ChangelogItem[]) {
+import { formatLinkType } from './utils'
+
+export function formatPrChangelog(changelog: ChangelogItem[]) {
   return [
     ...buildChangelogSection(
       'New features',

@@ -308,6 +308,8 @@ export async function getCommit({
   ).data
 }
 
+export type Commit = Awaited<ReturnType<typeof getCommit>>
+
 export async function getCommitForTag({
   octokit,
   owner,
@@ -362,6 +364,32 @@ export async function getCommits({
     since,
     until,
   })
+}
+
+export async function getLastCommitSha({
+  octokit,
+  owner,
+  repo,
+  sha,
+  since,
+  until,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  sha?: string
+  since?: string
+  until?: string
+}) {
+  return await octokit
+    .paginate(octokit.rest.repos.listCommits, {
+      owner,
+      repo,
+      sha,
+      since,
+      until,
+    })
+    .then((commits) => commits?.[0]?.sha)
 }
 
 export async function getCommitsSince({

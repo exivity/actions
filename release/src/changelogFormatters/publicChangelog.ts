@@ -1,5 +1,6 @@
-import { formatLinkType } from '../common/changelog'
-import type { ChangelogItem } from '../common/types'
+import { ChangelogItem } from '../changelog'
+
+import { formatLinkType } from './utils'
 
 export function formatPublicChangelog(
   version: string,

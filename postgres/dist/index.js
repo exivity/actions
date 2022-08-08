@@ -16,7 +16,10 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
@@ -369,7 +372,10 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug(
+            "tunneling socket could not be established, statusCode=%d",
+            res.statusCode
+          );
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -392,7 +398,11 @@ var require_tunnel = __commonJS({
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug(
+          "tunneling socket could not be established, cause=%s\n",
+          cause.message,
+          cause.stack
+        );
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
