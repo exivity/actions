@@ -1,4 +1,5 @@
 import { getOctokit } from '@actions/github'
+import { info } from 'console'
 import { pipe, map, andThen, reject, propEq } from 'ramda'
 
 import { JiraClient, runPlugins } from '../changelogPlugins'
@@ -24,6 +25,8 @@ export function getChangelogItems(
       andThen(reject(propEq('type', 'chore')))
     )
   )
+
+  info(JSON.stringify(items, null, 2))
 
   return Promise.all(items)
 }
