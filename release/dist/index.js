@@ -69830,6 +69830,10 @@ function getChangelogItems(octokit, jiraClient, repositories) {
   const items = repositories.map(
     pipe(
       getRepoCommits(octokit),
+      andThen_default((changelog) => {
+        (0, import_console3.info)(JSON.stringify(changelog, null, 2));
+        return changelog;
+      }),
       andThen_default(map_default(createChangelogItem)),
       andThen_default((changelog) => {
         return runPlugins({ octokit, jiraClient, changelog });

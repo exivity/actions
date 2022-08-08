@@ -17,6 +17,10 @@ export function getChangelogItems(
   const items = repositories.map(
     pipe(
       getRepoCommits(octokit),
+      andThen((changelog) => {
+        info(JSON.stringify(changelog, null, 2))
+        return changelog
+      }),
       andThen(map(createChangelogItem)),
       andThen((changelog) => {
         // This step might change type so we filter chores out after
