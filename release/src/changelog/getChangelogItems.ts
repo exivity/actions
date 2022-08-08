@@ -9,7 +9,7 @@ import { getRepoCommits } from './getRepoCommits'
 
 type Octokit = ReturnType<typeof getOctokit>
 
-export function getChangelogItems(
+export async function getChangelogItems(
   octokit: Octokit,
   jiraClient: JiraClient,
   repositories: string[]

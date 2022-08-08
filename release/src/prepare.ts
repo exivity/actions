@@ -18,6 +18,7 @@ import {
   sortChangelogItems,
   writeChangelog,
   logChangelogItems,
+  removeIssuesFromReleaseTestRepo,
 } from './changelog'
 
 interface Prepare {
@@ -52,12 +53,14 @@ export async function prepare({
     repositories
   )
 
-  const flatChangelog = sortChangelogItems(flatten(changelogItems))
+  let flatChangelog = sortChangelogItems(flatten(changelogItems))
 
   if (isEmpty(flatChangelog)) {
     info(`No features or fixes to release`)
     return
   }
+
+  flatChangelog = removeIssuesFromReleaseTestRepo(flatChangelog)
 
   logChangelogItems(flatChangelog)
 

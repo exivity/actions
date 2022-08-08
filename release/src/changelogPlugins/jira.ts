@@ -141,6 +141,20 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
         )
       }
 
+      info(
+        `first: ${JSON.stringify(
+          jiraIssues[0],
+          null,
+          2
+        )},coerced to ${JSON.stringify(
+          issuesTypeEqualsOneOf([JiraIssueType.Feature, JiraIssueType.Epic])
+            ? ('feat' as const)
+            : issuesTypeEqualsOneOf([JiraIssueType.Bug])
+            ? ('fix' as const)
+            : ('chore' as const)
+        )}`
+      )
+
       return {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),

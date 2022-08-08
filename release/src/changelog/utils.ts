@@ -95,3 +95,9 @@ export const getChangelogSlugs = pipe(
   map(pathOr([] as ChangelogLinkCommon[], ['links', 'issues'])),
   chain(map(prop('slug')))
 )
+
+export const removeIssuesFromReleaseTestRepo = (changelog: ChangelogItem[]) => {
+  return changelog.filter(
+    (item) => item.links.commit.repository !== 'release-test'
+  )
+}

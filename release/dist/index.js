@@ -69594,6 +69594,11 @@ var getChangelogSlugs = pipe(
   map_default(pathOr_default([], ["links", "issues"])),
   chain_default(map_default(prop_default("slug")))
 );
+var removeIssuesFromReleaseTestRepo = (changelog) => {
+  return changelog.filter(
+    (item) => item.links.commit.repository !== "release-test"
+  );
+};
 
 // release/src/changelog/changelogItem.ts
 var repoRgx = /(?<=exivity\/).*?(?=\/)/;
@@ -69759,6 +69764,15 @@ ${JSON.stringify(reason)}`);
           innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
         );
       };
+      (0, import_core8.info)(
+        `first: ${JSON.stringify(
+          jiraIssues[0],
+          null,
+          2
+        )},coerced to ${JSON.stringify(
+          issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore"
+        )}`
+      );
       return {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),
@@ -69818,7 +69832,7 @@ async function runPlugins({
 }
 
 // release/src/changelog/getChangelogItems.ts
-function getChangelogItems(octokit, jiraClient, repositories) {
+async function getChangelogItems(octokit, jiraClient, repositories) {
   const items = repositories.map(
     pipe(
       getRepoCommits(octokit),
@@ -70178,11 +70192,12 @@ async function prepare({
     jiraClient,
     repositories
   );
-  const flatChangelog = sortChangelogItems(flatten_default(changelogItems));
+  let flatChangelog = sortChangelogItems(flatten_default(changelogItems));
   if (isEmpty_default(flatChangelog)) {
     (0, import_core13.info)(`No features or fixes to release`);
     return;
   }
+  flatChangelog = removeIssuesFromReleaseTestRepo(flatChangelog);
   logChangelogItems(flatChangelog);
   const upcomingVersion = inferVersionFromChangelog(
     await getLatestVersion(),
