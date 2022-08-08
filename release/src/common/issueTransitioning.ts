@@ -62,7 +62,7 @@ export async function transitionIssuesAndUpdateFixVersion(
     info(`Transitioning ticket status of:`)
     info(
       `${
-        jiraIssueIds.length > 0 ? 'found no tickets' : jiraIssueIds.join('\n')
+        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n') : 'found no tickets'
       }`
     )
 

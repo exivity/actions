@@ -70251,7 +70251,7 @@ async function transitionIssuesAndUpdateFixVersion(dryRun, jiraIssueIds, upcomin
   } else {
     (0, import_core14.info)(`Transitioning ticket status of:`);
     (0, import_core14.info)(
-      `${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`
+      `${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n") : "found no tickets"}`
     );
     await Promise.all(
       jiraIssueIds.map((issueIdOrKey) => {
