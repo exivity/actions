@@ -1,5 +1,5 @@
 import { readFile } from 'fs/promises'
-import { Lockfile, Repositories } from './types'
+import { Lockfile } from '../lockfile'
 
 export async function readJson<Schema>(path: string) {
   try {
@@ -17,6 +17,10 @@ export async function readTextFile(path: string) {
   }
 }
 
-export const readLockfile = readJson<Lockfile>
+type Repositories = Record<string, string>
 
-export const readRepositories = readJson<Repositories>
+export async function getRepositories(repositoriesJsonPath: string) {
+  return Object.keys(await readJson<Repositories>(repositoriesJsonPath))
+}
+
+export const readLockfile = readJson<Lockfile>

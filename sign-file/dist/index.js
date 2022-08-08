@@ -16,7 +16,10 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
@@ -369,7 +372,10 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug2("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug2(
+            "tunneling socket could not be established, statusCode=%d",
+            res.statusCode
+          );
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -392,7 +398,11 @@ var require_tunnel = __commonJS({
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug2("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug2(
+          "tunneling socket could not be established, cause=%s\n",
+          cause.message,
+          cause.stack
+        );
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
@@ -3349,7 +3359,10 @@ var require_minimatch = __commonJS({
       }
       matchOne(file, pattern, partial) {
         var options = this.options;
-        this.debug("matchOne", { "this": this, file, pattern });
+        this.debug(
+          "matchOne",
+          { "this": this, file, pattern }
+        );
         this.debug("matchOne", file.length, pattern.length);
         for (var fi = 0, pi = 0, fl = file.length, pl = pattern.length; fi < fl && pi < pl; fi++, pi++) {
           this.debug("matchOne loop");
@@ -3654,7 +3667,9 @@ var require_minimatch = __commonJS({
         const twoStar = options.noglobstar ? star : options.dot ? twoStarDot : twoStarNoDot;
         const flags = options.nocase ? "i" : "";
         let re = set.map((pattern) => {
-          pattern = pattern.map((p) => typeof p === "string" ? regExpEscape(p) : p === GLOBSTAR ? GLOBSTAR : p._src).reduce((set2, p) => {
+          pattern = pattern.map(
+            (p) => typeof p === "string" ? regExpEscape(p) : p === GLOBSTAR ? GLOBSTAR : p._src
+          ).reduce((set2, p) => {
             if (!(set2[set2.length - 1] === GLOBSTAR && p === GLOBSTAR)) {
               set2.push(p);
             }
@@ -5069,7 +5084,10 @@ async function run() {
       }
       const tmpDir = await import_fs.promises.mkdtemp((0, import_path.join)((0, import_os.tmpdir)()));
       const certificatePath = (0, import_path.resolve)(tmpDir, "cert.pfx");
-      await import_fs.promises.writeFile(certificatePath, Buffer.from(encodedCertificate, "base64"));
+      await import_fs.promises.writeFile(
+        certificatePath,
+        Buffer.from(encodedCertificate, "base64")
+      );
       (0, import_core.debug)(`Written temporary pfx file to "${certificatePath}"`);
       const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
       (0, import_core.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);

@@ -7,9 +7,11 @@ import { ping } from './ping'
 import { prepare } from './prepare'
 import { release } from './release'
 
-const ModePing = 'ping'
-const ModePrepare = 'prepare'
-const ModeRelease = 'release'
+enum Mode {
+  Ping = 'ping',
+  Prepare = 'prepare',
+  Release = 'release',
+}
 
 async function run() {
   // Input
@@ -31,12 +33,12 @@ async function run() {
     jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null
 
   switch (mode) {
-    case ModePing:
-      // Act
+    case Mode.Ping:
+      // Triggers workflow in the exivity repo
       await ping({ octokit, dryRun })
       break
 
-    case ModePrepare:
+    case Mode.Prepare:
       // Assert
       if (!jiraClient) {
         throw new Error(
@@ -58,7 +60,7 @@ async function run() {
       })
       break
 
-    case ModeRelease:
+    case Mode.Release:
       // Assert
       if (!jiraClient) {
         throw new Error(

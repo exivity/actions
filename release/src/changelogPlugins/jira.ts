@@ -1,103 +1,170 @@
 import { info } from '@actions/core'
 import type { Version2Models } from 'jira.js'
-import type { PluginParams } from '.'
 import {
-  JiraCustomFields,
-  JiraIssueType,
-  ChangelogLinkCommon,
-} from '../common/types'
+  identity,
+  filter,
+  equals,
+  pipe,
+  chain,
+  uniq,
+  prop,
+  map,
+  complement,
+  isEmpty,
+  innerJoin,
+  path,
+  pathEq,
+  reject,
+} from 'ramda'
 
-function onlyUnique<T>(value: T, index: number, self: T[]) {
-  return self.indexOf(value) === index
+import type { PluginParams, JiraClient } from '.'
+
+export enum JiraCustomFields {
+  Epic = 'customfield_10005',
+  ReleaseNotesTitle = 'customfield_10529',
+  ReleaseNotesDescription = 'customfield_10530',
 }
 
-export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
-  const jiraKey = new RegExp(/\bEXVT-\d+\b/g)
-  for (const item of changelog) {
-    const issues = [
-      ...(item.links.pr
-        ? item.links.pr.originalTitle.match(jiraKey) || []
-        : []),
-      ...(item.links.pr ? item.links.pr.description?.match(jiraKey) || [] : []),
-      ...(item.links.commit.description?.match(jiraKey) || []),
-      ...(item.links.commit.originalTitle.match(jiraKey) || []),
-    ].filter(onlyUnique)
-    item.links.issues = []
+export enum JiraIssueType {
+  Chore = 'Chore',
+  Bug = 'Bug',
+  Feature = 'Feature',
+  Epic = 'Epic',
+}
 
-    for (const issueKey of issues) {
-      try {
-        const issue = await jiraClient.issues.getIssue({
-          issueIdOrKey: issueKey,
-        })
+const jiraKey = new RegExp(/\bEXVT-\d+\b/g)
 
-        const issueItem: ChangelogLinkCommon = {
-          title: issue.fields.summary,
-          description: issue.fields.description || null,
-          slug: issueKey,
-          url: `https://exivity.atlassian.net/browse/${issueKey}`,
-        }
+function isRegExpMatchArray(args: any): args is RegExpMatchArray {
+  return Array.isArray(args)
+}
 
-        const releaseNotesTitle = getReleaseNotesTitle(issue)
-        if (releaseNotesTitle) {
-          issueItem.title = releaseNotesTitle
-          issueItem.description = getReleaseNotesDescription(issue) || null
-        } else {
-          item.warnings.push(
-            `Please [provide release notes](https://exivity.atlassian.net/browse/${issueKey}) (title and an optional description) in Jira`
-          )
-        }
+function getReleaseNotesTitle(issue: Version2Models.Issue): string | null {
+  return issue.fields[JiraCustomFields.ReleaseNotesTitle] ?? null
+}
 
-        // Change item type
-        if (issue.fields.issuetype.name === JiraIssueType.Chore) {
-          item.type = 'chore'
-        }
-        if (issue.fields.issuetype.name === JiraIssueType.Bug) {
-          item.type = 'fix'
-        }
-        if (
-          issue.fields.issuetype.name === JiraIssueType.Feature ||
-          issue.fields.issuetype.name === JiraIssueType.Epic
-        ) {
-          item.type = 'feat'
-        }
+function getReleaseNotesDescription(
+  issue: Version2Models.Issue
+): string | null {
+  return issue.fields[JiraCustomFields.ReleaseNotesDescription] ?? null
+}
 
-        // Add epic as milestone if present
-        const epicKey = getEpic(issue)
-        if (epicKey) {
-          const epic = await jiraClient.issues.getIssue({
-            issueIdOrKey: epicKey,
-          })
-          item.links.milestone = {
-            title: getReleaseNotesTitle(epic) || epic.fields.summary,
-            description:
-              getReleaseNotesDescription(epic) ||
-              epic.fields.description ||
-              null,
-            slug: getReleaseNotesTitle(epic) || epic.fields.summary,
-            url: `https://exivity.atlassian.net/browse/${epicKey}`,
-          }
-        }
+function getEpic(issue: Version2Models.Issue): string | null {
+  return issue.fields[JiraCustomFields.Epic] ?? null
+}
 
-        item.links.issues.push(issueItem)
-      } catch (err) {
-        info(
-          `got error when getting issue ${issueKey}:\n${JSON.stringify(err)}`
-        )
+const cleanJiraKeyMatches = pipe(
+  identity<(RegExpMatchArray | null | undefined)[]>,
+  filter(isRegExpMatchArray),
+  chain(identity),
+  uniq
+)
+
+const getEpicMilestone = async (
+  jiraClient: JiraClient,
+  issue: Version2Models.Issue
+) => {
+  const epicKey = getEpic(issue)
+
+  if (epicKey) {
+    try {
+      const epic = await jiraClient.issues.getIssue({
+        issueIdOrKey: epicKey,
+      })
+
+      return {
+        title: getReleaseNotesTitle(epic) || epic.fields.summary,
+        description:
+          getReleaseNotesDescription(epic) || epic.fields.description || null,
+        slug: getReleaseNotesTitle(epic) || epic.fields.summary,
+        url: `https://exivity.atlassian.net/browse/${epicKey}`,
       }
+    } catch (e) {
+      info(`Failed to get epic milestone for ${epicKey}`)
     }
   }
-
-  return changelog
 }
 
-function getReleaseNotesTitle(issue: Version2Models.Issue) {
-  return issue.fields[JiraCustomFields.ReleaseNotesTitle] as string | null
+function isFulfilled<T>(arg: {
+  status: string
+  value?: T
+}): arg is PromiseFulfilledResult<T> {
+  return arg.status === 'fulfilled'
 }
 
-function getReleaseNotesDescription(issue: Version2Models.Issue) {
-  return issue.fields[JiraCustomFields.ReleaseNotesDescription] as string | null
+function isRejected(arg: any): arg is PromiseRejectedResult {
+  return arg.status === 'rejected'
 }
 
-function getEpic(issue: Version2Models.Issue) {
-  return issue.fields[JiraCustomFields.Epic] as string | null
+const isNotEmpty = complement(isEmpty)
+
+const issueTypePath = ['fields', 'issueType', 'name']
+
+const getWarnings = pipe(
+  identity<Version2Models.Issue[]>,
+  reject(pathEq(issueTypePath, JiraIssueType.Chore)),
+  filter((item: Version2Models.Issue) => !getReleaseNotesTitle(item)),
+  map(
+    ({ key }) =>
+      `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`
+  )
+)
+
+export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
+  return Promise.all(
+    changelog.map(async (changelogItem) => {
+      const jirakeys = cleanJiraKeyMatches([
+        changelogItem.links.pr?.originalTitle.match(jiraKey),
+        changelogItem.links.pr?.description?.match(jiraKey),
+        changelogItem.links.commit.description?.match(jiraKey),
+        changelogItem.links.commit.originalTitle.match(jiraKey),
+      ])
+
+      let wrappedJiraIssues = await Promise.allSettled(
+        jirakeys.map((issueIdOrKey) =>
+          jiraClient.issues.getIssue({
+            issueIdOrKey,
+          })
+        )
+      )
+
+      wrappedJiraIssues.filter(isRejected).forEach(({ reason }) => {
+        info(`got error when getting issue:\n${JSON.stringify(reason)}`)
+      })
+
+      const jiraIssues = wrappedJiraIssues
+        .filter(isFulfilled)
+        .map(prop('value'))
+
+      const issuesTypeEqualsOneOf = (oneOf: JiraIssueType[]) => {
+        return isNotEmpty(
+          innerJoin(equals, oneOf, map(path(issueTypePath), jiraIssues))
+        )
+      }
+
+      return {
+        ...changelogItem,
+        warnings: getWarnings(jiraIssues),
+        type: issuesTypeEqualsOneOf([JiraIssueType.Feature, JiraIssueType.Epic])
+          ? ('feat' as const)
+          : issuesTypeEqualsOneOf([JiraIssueType.Bug])
+          ? ('fix' as const)
+          : ('chore' as const),
+        links: {
+          ...changelogItem.links,
+          issues: jiraIssues.map((jiraIssue) => ({
+            title: getReleaseNotesTitle(jiraIssue) || jiraIssue.fields.summary,
+            description:
+              getReleaseNotesDescription(jiraIssue) ||
+              jiraIssue.fields.description ||
+              null,
+            slug: jiraIssue.key,
+            url: `https://exivity.atlassian.net/browse/${jiraIssue.key}`,
+          })),
+          milestone: jiraIssues[0]
+            ? await getEpicMilestone(jiraClient, jiraIssues[0])
+            : undefined,
+        },
+      }
+    })
+  )
 }

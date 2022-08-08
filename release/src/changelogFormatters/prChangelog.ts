@@ -1,5 +1,19 @@
-import { formatLinkType } from '../common/changelog'
-import type { ChangelogItem } from '../common/types'
+import { ChangelogItem } from '../changelog'
+
+export function formatLinkType(type: string) {
+  switch (type) {
+    case 'commit':
+      return 'Commit'
+    case 'pr':
+      return 'Pull request'
+    case 'issues':
+      return 'Issue'
+    case 'milestone':
+      return 'Milestone'
+    default:
+      return 'Unknown'
+  }
+}
 
 export function formatPrChangelog(version: string, changelog: ChangelogItem[]) {
   return [

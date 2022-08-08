@@ -1,13 +1,15 @@
 import { getOctokit } from '@actions/github'
 import type { getJiraClient } from '../common/jiraClient'
-import type { ChangelogItem } from '../common/types'
+import { ChangelogItem } from '../changelog/utils'
 import { associatedPullRequestPlugin } from './associatedPullRequest'
 import { jiraPlugin } from './jira'
 import { titleAndDescriptionPlugin } from './titleAndDescription'
 
+export type JiraClient = ReturnType<typeof getJiraClient>
+
 export type PluginParams = {
   octokit: ReturnType<typeof getOctokit>
-  jiraClient: ReturnType<typeof getJiraClient>
+  jiraClient: JiraClient
   changelog: ChangelogItem[]
 }
 
