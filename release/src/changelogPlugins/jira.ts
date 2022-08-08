@@ -15,6 +15,7 @@ import {
   path,
   pathEq,
   reject,
+  assocPath,
 } from 'ramda'
 
 import type { PluginParams, JiraClient } from '.'
@@ -141,7 +142,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
         )
       }
 
-      return {
+      changelogItem = {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),
         type: issuesTypeEqualsOneOf([JiraIssueType.Feature, JiraIssueType.Epic])
@@ -160,11 +161,15 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
             slug: jiraIssue.key,
             url: `https://exivity.atlassian.net/browse/${jiraIssue.key}`,
           })),
-          milestone: jiraIssues[0]
-            ? await getEpicMilestone(jiraClient, jiraIssues[0])
-            : undefined,
         },
       }
+
+      const milestone =
+        jiraIssues[0] && (await getEpicMilestone(jiraClient, jiraIssues[0]))
+
+      return milestone
+        ? assocPath(['links', 'milestone'], milestone, changelogItem)
+        : changelogItem
     })
   )
 }

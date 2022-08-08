@@ -15316,7 +15316,7 @@ var require_lodash = __commonJS({
         function isNull(value) {
           return value === null;
         }
-        function isNil(value) {
+        function isNil3(value) {
           return value == null;
         }
         function isNumber(value) {
@@ -16383,7 +16383,7 @@ var require_lodash = __commonJS({
         lodash.isMatchWith = isMatchWith;
         lodash.isNaN = isNaN2;
         lodash.isNative = isNative;
-        lodash.isNil = isNil;
+        lodash.isNil = isNil3;
         lodash.isNull = isNull;
         lodash.isNumber = isNumber;
         lodash.isObject = isObject;
@@ -68587,6 +68587,41 @@ var ap = /* @__PURE__ */ _curry2(function ap2(applyF, applyX) {
 });
 var ap_default = ap;
 
+// node_modules/ramda/es/internal/_assoc.js
+function _assoc(prop3, val, obj) {
+  if (isInteger_default(prop3) && isArray_default(obj)) {
+    var arr = [].concat(obj);
+    arr[prop3] = val;
+    return arr;
+  }
+  var result = {};
+  for (var p in obj) {
+    result[p] = obj[p];
+  }
+  result[prop3] = val;
+  return result;
+}
+
+// node_modules/ramda/es/isNil.js
+var isNil = /* @__PURE__ */ _curry1(function isNil2(x) {
+  return x == null;
+});
+var isNil_default = isNil;
+
+// node_modules/ramda/es/assocPath.js
+var assocPath = /* @__PURE__ */ _curry3(function assocPath2(path3, val, obj) {
+  if (path3.length === 0) {
+    return val;
+  }
+  var idx = path3[0];
+  if (path3.length > 1) {
+    var nextObj = !isNil_default(obj) && _has(idx, obj) ? obj[idx] : isInteger_default(path3[1]) ? [] : {};
+    val = assocPath2(Array.prototype.slice.call(path3, 1), val, nextObj);
+  }
+  return _assoc(idx, val, obj);
+});
+var assocPath_default = assocPath;
+
 // node_modules/ramda/es/internal/_isFunction.js
 function _isFunction(x) {
   var type3 = Object.prototype.toString.call(x);
@@ -69761,7 +69796,7 @@ ${JSON.stringify(reason)}`);
           innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
         );
       };
-      return {
+      changelogItem = {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),
         type: issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore",
@@ -69772,10 +69807,11 @@ ${JSON.stringify(reason)}`);
             description: getReleaseNotesDescription(jiraIssue) || jiraIssue.fields.description || null,
             slug: jiraIssue.key,
             url: `https://exivity.atlassian.net/browse/${jiraIssue.key}`
-          })),
-          milestone: jiraIssues[0] ? await getEpicMilestone(jiraClient, jiraIssues[0]) : void 0
+          }))
         }
       };
+      const milestone = jiraIssues[0] && await getEpicMilestone(jiraClient, jiraIssues[0]);
+      return milestone ? assocPath_default(["links", "milestone"], milestone, changelogItem) : changelogItem;
     })
   );
 }
