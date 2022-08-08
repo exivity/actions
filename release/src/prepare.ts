@@ -51,7 +51,6 @@ export async function prepare({
     jiraClient,
     repositories
   )
-  info(JSON.stringify(changelogItems, null, 2))
 
   const flatChangelog = sortChangelogItems(flatten(changelogItems))
 
