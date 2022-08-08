@@ -97,7 +97,7 @@ function isRejected(arg: any): arg is PromiseRejectedResult {
 
 const isNotEmpty = complement(isEmpty)
 
-const issueTypePath = ['fields', 'issueType', 'name']
+const issueTypePath = ['fields', 'issuetype', 'name']
 
 const getWarnings = pipe(
   identity<Version2Models.Issue[]>,
@@ -140,20 +140,6 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
           innerJoin(equals, oneOf, map(path(issueTypePath), jiraIssues))
         )
       }
-
-      info(
-        `first: ${JSON.stringify(
-          jiraIssues[0].fields.issuetype.name,
-          null,
-          2
-        )},coerced to ${JSON.stringify(
-          issuesTypeEqualsOneOf([JiraIssueType.Feature, JiraIssueType.Epic])
-            ? ('feat' as const)
-            : issuesTypeEqualsOneOf([JiraIssueType.Bug])
-            ? ('fix' as const)
-            : ('chore' as const)
-        )}`
-      )
 
       return {
         ...changelogItem,

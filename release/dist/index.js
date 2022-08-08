@@ -69725,7 +69725,7 @@ function isRejected(arg) {
   return arg.status === "rejected";
 }
 var isNotEmpty = complement_default(isEmpty_default);
-var issueTypePath = ["fields", "issueType", "name"];
+var issueTypePath = ["fields", "issuetype", "name"];
 var getWarnings = pipe(
   identity_default,
   reject_default(pathEq_default(issueTypePath, "Chore" /* Chore */)),
@@ -69761,15 +69761,6 @@ ${JSON.stringify(reason)}`);
           innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
         );
       };
-      (0, import_core8.info)(
-        `first: ${JSON.stringify(
-          jiraIssues[0].fields.issuetype.name,
-          null,
-          2
-        )},coerced to ${JSON.stringify(
-          issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore"
-        )}`
-      );
       return {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),
