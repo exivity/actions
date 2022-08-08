@@ -143,7 +143,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
 
       info(
         `first: ${JSON.stringify(
-          jiraIssues[0],
+          jiraIssues[0].fields.issuetype.name,
           null,
           2
         )},coerced to ${JSON.stringify(
