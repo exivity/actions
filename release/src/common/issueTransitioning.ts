@@ -20,7 +20,7 @@ export async function getChangelogItemsSlugs(
   return getChangelogSlugs(changelogItems)
 }
 
-export async function updateIssueReleaseVersion(
+export async function updateIssueFixVersion(
   dryRun: boolean,
   version: string,
   jiraIssueIds: string[],
@@ -32,7 +32,7 @@ export async function updateIssueReleaseVersion(
     info(`Setting release version of:`)
     info(
       `${
-        jiraIssueIds.length > 0 ? 'found no tickets' : jiraIssueIds.join('\n')
+        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n') : 'found no tickets'
       }`
     )
 
@@ -79,7 +79,7 @@ export async function transitionIssuesAndUpdateFixVersion(
 
   // Update fixVersion of all issues
   try {
-    await updateIssueReleaseVersion(
+    await updateIssueFixVersion(
       dryRun,
       upcomingVersion,
       jiraIssueIds,

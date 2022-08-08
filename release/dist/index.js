@@ -70224,13 +70224,13 @@ async function getChangelogItemsSlugs(octokit, jiraClient, repositoriesJsonPath)
   );
   return getChangelogSlugs(changelogItems);
 }
-async function updateIssueReleaseVersion(dryRun, version, jiraIssueIds, jiraClient) {
+async function updateIssueFixVersion(dryRun, version, jiraIssueIds, jiraClient) {
   if (dryRun) {
     (0, import_core14.info)(`Dry run, not setting release version of tickets`);
   } else {
     (0, import_core14.info)(`Setting release version of:`);
     (0, import_core14.info)(
-      `${jiraIssueIds.length > 0 ? "found no tickets" : jiraIssueIds.join("\n")}`
+      `${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n") : "found no tickets"}`
     );
     for (const issueIdOrKey of jiraIssueIds) {
       await jiraClient.issues.editIssue({
@@ -70264,7 +70264,7 @@ async function transitionIssuesAndUpdateFixVersion(dryRun, jiraIssueIds, upcomin
     });
   }
   try {
-    await updateIssueReleaseVersion(
+    await updateIssueFixVersion(
       dryRun,
       upcomingVersion,
       jiraIssueIds,
