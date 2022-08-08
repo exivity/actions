@@ -761,12 +761,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info16 = this._prepareRequest(verb, parsedUrl, headers);
+          let info17 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info16, data);
+            response = yield this.requestRaw(info17, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -776,7 +776,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info16, data);
+                return authenticationHandler.handleAuthentication(this, info17, data);
               } else {
                 return response;
               }
@@ -799,8 +799,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info16 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info16, data);
+              info17 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info17, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -821,7 +821,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info16, data) {
+      requestRaw(info17, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject3) => {
             function callbackForResult(err, res) {
@@ -833,16 +833,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info16, data, callbackForResult);
+            this.requestRawWithCallback(info17, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info16, data, onResult) {
+      requestRawWithCallback(info17, data, onResult) {
         if (typeof data === "string") {
-          if (!info16.options.headers) {
-            info16.options.headers = {};
+          if (!info17.options.headers) {
+            info17.options.headers = {};
           }
-          info16.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info17.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -851,7 +851,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info16.httpModule.request(info16.options, (msg) => {
+        const req = info17.httpModule.request(info17.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -863,7 +863,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info16.options.path}`));
+          handleResult(new Error(`Request timeout: ${info17.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -885,27 +885,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info16 = {};
-        info16.parsedUrl = requestUrl;
-        const usingSsl = info16.parsedUrl.protocol === "https:";
-        info16.httpModule = usingSsl ? https : http;
+        const info17 = {};
+        info17.parsedUrl = requestUrl;
+        const usingSsl = info17.parsedUrl.protocol === "https:";
+        info17.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info16.options = {};
-        info16.options.host = info16.parsedUrl.hostname;
-        info16.options.port = info16.parsedUrl.port ? parseInt(info16.parsedUrl.port) : defaultPort;
-        info16.options.path = (info16.parsedUrl.pathname || "") + (info16.parsedUrl.search || "");
-        info16.options.method = method;
-        info16.options.headers = this._mergeHeaders(headers);
+        info17.options = {};
+        info17.options.host = info17.parsedUrl.hostname;
+        info17.options.port = info17.parsedUrl.port ? parseInt(info17.parsedUrl.port) : defaultPort;
+        info17.options.path = (info17.parsedUrl.pathname || "") + (info17.parsedUrl.search || "");
+        info17.options.method = method;
+        info17.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info16.options.headers["user-agent"] = this.userAgent;
+          info17.options.headers["user-agent"] = this.userAgent;
         }
-        info16.options.agent = this._getAgent(info16.parsedUrl);
+        info17.options.agent = this._getAgent(info17.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info16.options);
+            handler.prepareRequest(info17.options);
           }
         }
-        return info16;
+        return info17;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1609,10 +1609,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info16(message) {
+    function info17(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info16;
+    exports.info = info17;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -69649,6 +69649,9 @@ var getRepoCommits = (octokit) => async (repository) => {
   });
 };
 
+// release/src/changelog/getChangelogItems.ts
+var import_console3 = require("console");
+
 // release/src/changelogPlugins/associatedPullRequest.ts
 async function associatedPullRequestPlugin({
   octokit,
@@ -69821,7 +69824,10 @@ function getChangelogItems(octokit, jiraClient, repositories) {
       getRepoCommits(octokit),
       andThen_default(map_default(createChangelogItem)),
       andThen_default(async (changelog) => {
-        return await runPlugins({ octokit, jiraClient, changelog });
+        (0, import_console3.info)(changelog.length.toString());
+        const result = await runPlugins({ octokit, jiraClient, changelog });
+        (0, import_console3.info)(result.length.toString());
+        return result;
       }),
       andThen_default(reject_default(propEq_default("type", "chore")))
     )
@@ -70024,7 +70030,7 @@ async function writeLockFile(dryRun, octokit, version, repositories, lockfilePat
 }
 
 // release/src/common/gitUpdates.ts
-var import_console3 = require("console");
+var import_console4 = require("console");
 
 // release/src/common/pr.ts
 var import_core12 = __toESM(require_core());
@@ -70073,29 +70079,29 @@ async function createOrUpdatePullRequest({
 // release/src/common/gitUpdates.ts
 async function switchToReleaseBranch(dryRun, releaseBranch, upcomingReleaseBranch) {
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, not switching branches`);
+    (0, import_console4.info)(`Dry run, not switching branches`);
   } else if (await gitHasChanges()) {
-    (0, import_console3.info)("Detected uncommitted changes, aborting");
+    (0, import_console4.info)("Detected uncommitted changes, aborting");
   } else {
     await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`);
   }
 }
 async function commitAndPush(dryRun, title, upcomingReleaseBranch) {
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, not committing and pushing changes`);
+    (0, import_console4.info)(`Dry run, not committing and pushing changes`);
   } else {
     await gitAdd();
     await gitSetAuthor("Exivity bot", "bot@exivity.com");
     await gitCommit(title);
     await gitPush(true);
-    (0, import_console3.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
+    (0, import_console4.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
   }
   return title;
 }
 async function updateMissingReleaseNotesWarningStatus(dryRun, changelog, octokit) {
   const sha = await getCommitSha();
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, no need to write commit status`);
+    (0, import_console4.info)(`Dry run, no need to write commit status`);
   } else {
     const state = changelog.some((item) => item.warnings.length > 0) ? "pending" : "success";
     await writeStatus({
@@ -70112,7 +70118,7 @@ async function updateMissingReleaseNotesWarningStatus(dryRun, changelog, octokit
 async function updatePr(dryRun, title, prTemplatePath, upcomingReleaseBranch, releaseBranch, changelog, octokit) {
   const prTemplate = await readTextFile(prTemplatePath);
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, not creating pull request`);
+    (0, import_console4.info)(`Dry run, not creating pull request`);
   } else {
     const prChangelogContents = formatPrChangelog(changelog);
     const pr = await createOrUpdatePullRequest({
@@ -70123,13 +70129,13 @@ async function updatePr(dryRun, title, prTemplatePath, upcomingReleaseBranch, re
       upcomingReleaseBranch,
       releaseBranch
     });
-    (0, import_console3.info)(pr.html_url);
+    (0, import_console4.info)(pr.html_url);
   }
 }
 async function tagRepositories(dryRun, lockfile, octokit) {
   for (const [repository, sha] of Object.entries(lockfile.repositories)) {
     if (dryRun) {
-      (0, import_console3.info)(`Dry run, not tagging ${repository}`);
+      (0, import_console4.info)(`Dry run, not tagging ${repository}`);
     } else {
       await createLightweightTag({
         octokit,
@@ -70144,11 +70150,11 @@ async function tagRepositories(dryRun, lockfile, octokit) {
 async function tagAllRepositories(dryRun, lockfile, octokit) {
   const repository = getRepository();
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_console4.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_console3.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_console4.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
   await tagRepositories(dryRun, lockfile, octokit);
 }
