@@ -72,13 +72,6 @@ async function run() {
   }
 
   if (isEvent(eventName, 'pull_request', eventData)) {
-    if (eventData['action'] !== 'review_requested') {
-      warning(
-        '[accept] Skipping: only the "pull_request.review_requested" event is supported'
-      )
-      return
-    }
-
     // We need to copy sha to correct commit if we received a pull_request
     // event, because it uses PR merge branch instead of PR branch
     // https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request

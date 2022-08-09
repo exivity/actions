@@ -37256,12 +37256,6 @@ async function run() {
     sha = eventData["workflow_run"]["head_commit"]["id"];
   }
   if (isEvent(eventName, "pull_request", eventData)) {
-    if (eventData["action"] !== "review_requested") {
-      (0, import_core4.warning)(
-        '[accept] Skipping: only the "pull_request.review_requested" event is supported'
-      );
-      return;
-    }
     ref = eventData["pull_request"]["head"]["ref"];
     sha = eventData["pull_request"]["head"]["sha"];
   }
