@@ -51,7 +51,7 @@
     "ramda": "0.28.0",
     "rcedit": "3.0.1",
     "semver": "7.3.7",
-    "zod": "3.17.10"
+    "zod": "3.18.0"
   },
   "devDependencies": {
     "@octokit/webhooks": "10.1.2",
