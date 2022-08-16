@@ -25,6 +25,12 @@ runs:
       if: runner.os == 'Windows'
       with:
         path: ${{ inputs.path }}
+    - uses: exivity/actions/sign-file@main
+      if: runner.os == 'DISABLED'
+      with:
+        path: ${{ inputs.path }}
+        certificate-base64: ${{ inputs.certificate-base64 }}
+        certificate-password: ${{ inputs.certificate-password }}
     - uses: exivity/actions/virustotal@main
       with:
         path: ${{ inputs.path }}
