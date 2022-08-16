@@ -26,7 +26,7 @@ runs:
       with:
         path: ${{ inputs.path }}
     - uses: exivity/actions/sign-file@main
-      if: runner.os == 'Windows'
+      if: runner.os == 'DISABLED'
       with:
         path: ${{ inputs.path }}
         certificate-base64: ${{ inputs.certificate-base64 }}
