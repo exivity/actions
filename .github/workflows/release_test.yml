@@ -59,6 +59,19 @@ jobs:
           mode: release
           dry-run: true
           lockfile: fixtures/release/exivity.lock
+          gh-token: ${{ secrets.GH_BOT_TOKEN }}
+
+  release_transition-issues-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ./release
+        with:
+          mode: transition-issues
+          dry-run: true
+          lockfile: fixtures/release/exivity.lock
           repositories: fixtures/release/repositories.json
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
           jira-username: ${{ secrets.JIRA_BOT_EMAIL }}

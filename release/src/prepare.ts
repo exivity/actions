@@ -2,7 +2,7 @@ import { getOctokit } from '@actions/github'
 import { info } from '@actions/core'
 import { flatten, isEmpty } from 'ramda'
 
-import { getLatestVersion } from '../../lib/git'
+import { getRecentVersion } from '../../lib/git'
 import type { getJiraClient } from './common/jiraClient'
 import { getRepositories } from './common/files'
 import { writeLockFile } from './common/lockfile'
@@ -65,7 +65,7 @@ export async function prepare({
   logChangelogItems(flatChangelog)
 
   const upcomingVersion = inferVersionFromChangelog(
-    await getLatestVersion(),
+    await getRecentVersion(0),
     flatChangelog
   )
 

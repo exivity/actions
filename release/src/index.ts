@@ -6,11 +6,13 @@ import { getJiraClient } from './common/jiraClient'
 import { ping } from './ping'
 import { prepare } from './prepare'
 import { release } from './release'
+import { transitionIssues } from './transitionIssues'
 
 enum Mode {
   Ping = 'ping',
   Prepare = 'prepare',
   Release = 'release',
+  TransitionIssues = 'transition-issues',
 }
 
 async function run() {
@@ -61,15 +63,23 @@ async function run() {
       break
 
     case Mode.Release:
+      // Act
+      await release({
+        octokit,
+        lockfilePath,
+        dryRun,
+      })
+      break
+
+    case Mode.TransitionIssues:
       // Assert
       if (!jiraClient) {
         throw new Error(
-          'jira-username and jira-token inputs are required in release mode'
+          'jira-username and jira-token inputs are required in transition-issues mode'
         )
       }
 
-      // Act
-      await release({
+      await transitionIssues({
         octokit,
         lockfilePath,
         jiraClient,

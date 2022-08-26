@@ -421,6 +421,38 @@ export async function getCommitsSince({
   return commits
 }
 
+export async function getCommitsBetween({
+  octokit,
+  owner,
+  repo,
+  branch,
+  since,
+  until,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  branch: string
+  since: { timestamp: string; tag: string; sha: string }
+  until: { timestamp: string; tag: string; sha: string }
+}) {
+  const commits = (
+    await getCommits({
+      octokit,
+      owner,
+      repo,
+      sha: branch,
+      since: since.timestamp,
+      until: until.timestamp,
+    })
+  ).filter((commit) => commit.sha !== since.sha && commit.sha !== until.sha)
+  info(
+    `  Found ${commits.length} commits between ${since.tag} and ${until.tag} in ${owner}/${repo}#${branch}`
+  )
+
+  return commits
+}
+
 export async function review({
   octokit,
   owner,

@@ -2,7 +2,7 @@ name: release
 description: Release related actions
 inputs:
   mode:
-    description: Ping, prepare or release
+    description: Ping, prepare, release or transition-issues
     required: false
     default: ping
   lockfile:

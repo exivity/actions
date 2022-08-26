@@ -29,9 +29,9 @@ export async function getAllSemverTags() {
   return tags.filter((tag) => semver.valid(tag))
 }
 
-export async function getLatestSemverTag() {
+export async function getSemverTag(position: number) {
   const semvers = await getAllSemverTags()
-  return semver.rsort(semvers)[0]
+  return semver.rsort(semvers)[position]
 }
 
 export async function gitFetch(remote: string, branch: string) {
@@ -84,13 +84,13 @@ export async function gitTag(tag: string) {
   return exec(`git tag`, [tag])
 }
 
-export async function getLatestVersion() {
+export async function getRecentVersion(versionsSince: number) {
   const repo = getRepository()
-  const latestVersionTag = await getLatestSemverTag()
-  if (typeof latestVersionTag === 'undefined') {
+  const versionTag = await getSemverTag(versionsSince)
+  if (typeof versionTag === 'undefined') {
     throw new Error('Could not determine latest version')
   }
-  info(`Latest version in ${repo.fqn}: ${latestVersionTag}`)
+  info(`Latest version in ${repo.fqn}: ${versionTag}`)
 
-  return latestVersionTag
+  return versionTag
 }

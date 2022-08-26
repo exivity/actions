@@ -3,7 +3,10 @@ import { getOctokit } from '@actions/github'
 
 import { getJiraClient, transitionToReleased, getVersion } from './jiraClient'
 import { getRepositories } from './files'
-import { getChangelogItems, getChangelogSlugs } from '../changelog'
+import {
+  getChangelogItemsOfOlderVersion,
+  getChangelogSlugs,
+} from '../changelog'
 
 export async function getChangelogItemsSlugs(
   octokit: ReturnType<typeof getOctokit>,
@@ -11,10 +14,11 @@ export async function getChangelogItemsSlugs(
   repositoriesJsonPath: string
 ) {
   const repositories = await getRepositories(repositoriesJsonPath)
-  const changelogItems = await getChangelogItems(
+  const changelogItems = await getChangelogItemsOfOlderVersion(
     octokit,
     jiraClient,
-    repositories
+    repositories,
+    1
   )
 
   return getChangelogSlugs(changelogItems)
@@ -37,14 +41,34 @@ export async function updateIssueFixVersion(
     )
 
     for (const issueIdOrKey of jiraIssueIds) {
-      await jiraClient.issues.editIssue({
-        issueIdOrKey,
-        fields: {
-          fixVersions: [
-            { id: await getVersion(dryRun, jiraClient, version, issueIdOrKey) },
-          ],
-        },
-      })
+      let versionId
+      try {
+        versionId = await getVersion(dryRun, jiraClient, version, issueIdOrKey)
+      } catch (err) {
+        warning(
+          `failed to get version ID for issue ${issueIdOrKey}: ${JSON.stringify(
+            err
+          )}`
+        )
+        continue
+      }
+
+      try {
+        await jiraClient.issues.editIssue({
+          issueIdOrKey,
+          fields: {
+            fixVersions: [{ id: versionId }],
+          },
+        })
+      } catch (err) {
+        warning(
+          `failed to set fixVersion for issue ${issueIdOrKey} to ${versionId}: ${JSON.stringify(
+            err
+          )}`
+        )
+        continue
+      }
+
       info(`Set release version of ${issueIdOrKey} to ${version}`)
     }
   }
@@ -57,7 +81,14 @@ export async function transitionIssuesAndUpdateFixVersion(
   jiraClient: ReturnType<typeof getJiraClient>
 ) {
   if (dryRun) {
-    info(`Dry run, not transitioning tickets`)
+    info(
+      `Dry run, not transitioning tickets, else would have transitioned the following:`
+    )
+    info(
+      `${
+        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n') : 'found no tickets'
+      }`
+    )
   } else {
     info(`Transitioning ticket status of:`)
     info(

@@ -68377,6 +68377,27 @@ async function getCommitsSince({
   );
   return commits;
 }
+async function getCommitsBetween({
+  octokit,
+  owner,
+  repo,
+  branch,
+  since,
+  until
+}) {
+  const commits = (await getCommits({
+    octokit,
+    owner,
+    repo,
+    sha: branch,
+    since: since.timestamp,
+    until: until.timestamp
+  })).filter((commit) => commit.sha !== since.sha && commit.sha !== until.sha);
+  (0, import_core2.info)(
+    `  Found ${commits.length} commits between ${since.tag} and ${until.tag} in ${owner}/${repo}#${branch}`
+  );
+  return commits;
+}
 async function writeStatus({
   octokit,
   owner,
@@ -70011,9 +70032,9 @@ async function getAllSemverTags() {
   const tags = await getAllTags();
   return tags.filter((tag) => import_semver.default.valid(tag));
 }
-async function getLatestSemverTag() {
+async function getSemverTag(position) {
   const semvers = await getAllSemverTags();
-  return import_semver.default.rsort(semvers)[0];
+  return import_semver.default.rsort(semvers)[position];
 }
 async function gitForceSwitchBranch(branch, startPoint) {
   return exec("git switch -C", [branch, startPoint || ""]);
@@ -70041,14 +70062,14 @@ async function gitHasChanges() {
 async function gitTag(tag) {
   return exec(`git tag`, [tag]);
 }
-async function getLatestVersion() {
+async function getRecentVersion(versionsSince) {
   const repo = getRepository();
-  const latestVersionTag = await getLatestSemverTag();
-  if (typeof latestVersionTag === "undefined") {
+  const versionTag = await getSemverTag(versionsSince);
+  if (typeof versionTag === "undefined") {
     throw new Error("Could not determine latest version");
   }
-  (0, import_core4.info)(`Latest version in ${repo.fqn}: ${latestVersionTag}`);
-  return latestVersionTag;
+  (0, import_core4.info)(`Latest version in ${repo.fqn}: ${versionTag}`);
+  return versionTag;
 }
 
 // release/src/common/files.ts
@@ -70222,7 +70243,7 @@ function createChangelogItem(commit) {
 var import_console2 = require("console");
 var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
 var getRepoCommits = (octokit) => async (repository) => {
-  const latestVersion = await getLatestVersion();
+  const latestVersion = await getRecentVersion(0);
   (0, import_console2.info)(`- exivity/${repository}`);
   const latestVersionCommit = await getCommitForTag({
     octokit,
@@ -70236,6 +70257,31 @@ var getRepoCommits = (octokit) => async (repository) => {
     repo: repository,
     branch: DEFAULT_REPOSITORY_RELEASE_BRANCH,
     since: latestVersionCommit
+  });
+};
+var getRepoCommitsForOlderVersion = (octokit, versionsSince) => async (repository) => {
+  const olderVersion = await getRecentVersion(versionsSince);
+  const versionAfter = await getRecentVersion(versionsSince - 1);
+  (0, import_console2.info)(`- exivity/${repository}`);
+  const olderVersionCommit = await getCommitForTag({
+    octokit,
+    owner: "exivity",
+    repo: repository,
+    tag: olderVersion
+  });
+  const versionAfterCommit = await getCommitForTag({
+    octokit,
+    owner: "exivity",
+    repo: repository,
+    tag: versionAfter
+  });
+  return await getCommitsBetween({
+    octokit,
+    owner: "exivity",
+    repo: repository,
+    branch: DEFAULT_REPOSITORY_RELEASE_BRANCH,
+    since: olderVersionCommit,
+    until: versionAfterCommit
   });
 };
 
@@ -70410,6 +70456,19 @@ async function getChangelogItems(octokit, jiraClient, repositories) {
   const items = repositories.map(
     pipe(
       getRepoCommits(octokit),
+      andThen_default(map_default(createChangelogItem)),
+      andThen_default(async (changelog) => {
+        return await runPlugins({ octokit, jiraClient, changelog });
+      }),
+      andThen_default(reject_default(propEq_default("type", "chore")))
+    )
+  );
+  return Promise.all(items);
+}
+async function getChangelogItemsOfOlderVersion(octokit, jiraClient, repositories, versionsSince) {
+  const items = repositories.map(
+    pipe(
+      getRepoCommitsForOlderVersion(octokit, versionsSince),
       andThen_default(map_default(createChangelogItem)),
       andThen_default(async (changelog) => {
         return await runPlugins({ octokit, jiraClient, changelog });
@@ -70771,7 +70830,7 @@ async function prepare({
   flatChangelog = removeIssuesFromReleaseTestRepo(flatChangelog);
   logChangelogItems(flatChangelog);
   const upcomingVersion = inferVersionFromChangelog(
-    await getLatestVersion(),
+    await getRecentVersion(0),
     flatChangelog
   );
   await writeLockFile(
@@ -70796,14 +70855,25 @@ async function prepare({
   );
 }
 
+// release/src/release.ts
+async function release({
+  octokit,
+  lockfilePath,
+  dryRun
+}) {
+  const lockfile = await readLockfile(lockfilePath);
+  await tagAllRepositories(dryRun, lockfile, octokit);
+}
+
 // release/src/common/issueTransitioning.ts
 var import_core14 = __toESM(require_core());
 async function getChangelogItemsSlugs(octokit, jiraClient, repositoriesJsonPath) {
   const repositories = await getRepositories(repositoriesJsonPath);
-  const changelogItems = await getChangelogItems(
+  const changelogItems = await getChangelogItemsOfOlderVersion(
     octokit,
     jiraClient,
-    repositories
+    repositories,
+    1
   );
   return getChangelogSlugs(changelogItems);
 }
@@ -70816,21 +70886,44 @@ async function updateIssueFixVersion(dryRun, version, jiraIssueIds, jiraClient) 
       `${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n") : "found no tickets"}`
     );
     for (const issueIdOrKey of jiraIssueIds) {
-      await jiraClient.issues.editIssue({
-        issueIdOrKey,
-        fields: {
-          fixVersions: [
-            { id: await getVersion(dryRun, jiraClient, version, issueIdOrKey) }
-          ]
-        }
-      });
+      let versionId;
+      try {
+        versionId = await getVersion(dryRun, jiraClient, version, issueIdOrKey);
+      } catch (err) {
+        (0, import_core14.warning)(
+          `failed to get version ID for issue ${issueIdOrKey}: ${JSON.stringify(
+            err
+          )}`
+        );
+        continue;
+      }
+      try {
+        await jiraClient.issues.editIssue({
+          issueIdOrKey,
+          fields: {
+            fixVersions: [{ id: versionId }]
+          }
+        });
+      } catch (err) {
+        (0, import_core14.warning)(
+          `failed to set fixVersion for issue ${issueIdOrKey} to ${versionId}: ${JSON.stringify(
+            err
+          )}`
+        );
+        continue;
+      }
       (0, import_core14.info)(`Set release version of ${issueIdOrKey} to ${version}`);
     }
   }
 }
 async function transitionIssuesAndUpdateFixVersion(dryRun, jiraIssueIds, upcomingVersion, jiraClient) {
   if (dryRun) {
-    (0, import_core14.info)(`Dry run, not transitioning tickets`);
+    (0, import_core14.info)(
+      `Dry run, not transitioning tickets, else would have transitioned the following:`
+    );
+    (0, import_core14.info)(
+      `${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n") : "found no tickets"}`
+    );
   } else {
     (0, import_core14.info)(`Transitioning ticket status of:`);
     (0, import_core14.info)(
@@ -70862,21 +70955,17 @@ async function transitionIssuesAndUpdateFixVersion(dryRun, jiraIssueIds, upcomin
   }
 }
 
-// release/src/release.ts
-async function release({
+// release/src/transitionIssues.ts
+var issueRegex = /^EXVT-\d+$/g;
+async function transitionIssues({
   octokit,
   lockfilePath,
   jiraClient,
   repositoriesJsonPath,
   dryRun
 }) {
-  const jiraIssueIds = await getChangelogItemsSlugs(
-    octokit,
-    jiraClient,
-    repositoriesJsonPath
-  );
+  const jiraIssueIds = (await getChangelogItemsSlugs(octokit, jiraClient, repositoriesJsonPath)).filter((issue, index, arr) => arr.findIndex((i) => issue === i) === index).map((issue) => issue.trim()).filter((issue) => typeof issue === "string" && issueRegex.test(issue));
   const lockfile = await readLockfile(lockfilePath);
-  await tagAllRepositories(dryRun, lockfile, octokit);
   await transitionIssuesAndUpdateFixVersion(
     dryRun,
     jiraIssueIds,
@@ -70923,12 +71012,19 @@ async function run() {
       });
       break;
     case "release" /* Release */:
+      await release({
+        octokit,
+        lockfilePath,
+        dryRun
+      });
+      break;
+    case "transition-issues" /* TransitionIssues */:
       if (!jiraClient) {
         throw new Error(
-          "jira-username and jira-token inputs are required in release mode"
+          "jira-username and jira-token inputs are required in transition-issues mode"
         );
       }
-      await release({
+      await transitionIssues({
         octokit,
         lockfilePath,
         jiraClient,
