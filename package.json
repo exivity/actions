@@ -59,7 +59,7 @@
     "@types/glob": "7.2.0",
     "@types/js-yaml": "4.0.5",
     "@types/mime": "3.0.1",
-    "@types/minimatch": "5.1.0",
+    "@types/minimatch": "5.1.1",
     "@types/ramda": "0.28.15",
     "@types/node": "18.7.13",
     "@types/semver": "7.3.12",

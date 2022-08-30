@@ -277,10 +277,10 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-3.0.1.tgz#5f8f2bca0a5863cb69bc0b0acd88c96cb1d4ae10"
   integrity sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==
 
-"@types/minimatch@*", "@types/minimatch@5.1.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-5.1.0.tgz#c3018161691376002f8a22ebb87f341e0dba3219"
-  integrity sha512-0RJHq5FqDWo17kdHe+SMDJLfxmLaqHbWnqZ6gNKzDvStUlrmx/eKIY17+ifLS1yybo7X86aUshQMlittDOVNnw==
+"@types/minimatch@*", "@types/minimatch@5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-5.1.1.tgz#b1429c0c016cd50e105f3166bf179f6918b7365f"
+  integrity sha512-v55NF6Dz0wrj14Rn8iEABTWrhYRmgkJYuokduunSiq++t3hZ9VZ6dvcDt+850Pm5sGJZk8RaHzkFCXPxVINZ+g==
 
 "@types/node@*", "@types/node@18.7.13", "@types/node@>= 8":
   version "18.7.13"
