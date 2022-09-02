@@ -35136,7 +35136,7 @@ async function run() {
     }
   }
   if (isDevelopBranch(ref)) {
-    (0, import_core4.info)("On a development branch, dispatching plain run");
+    (0, import_core4.info)(`On a ${ref} branch, dispatching plain run`);
     await dispatch({
       octokit,
       scaffoldWorkflowId,
@@ -35144,6 +35144,7 @@ async function run() {
       dryRun
     });
   } else {
+    (0, import_core4.info)(`On a ${ref} branch, dispatching component run`);
     await dispatch({
       octokit,
       scaffoldWorkflowId,

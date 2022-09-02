@@ -183,7 +183,7 @@ async function run() {
 
   // If we're on a development branch, scrub component and sha from dispatch
   if (isDevelopBranch(ref)) {
-    info('On a development branch, dispatching plain run')
+    info(`On a ${ref} branch, dispatching plain run`)
     await dispatch({
       octokit,
       scaffoldWorkflowId,
@@ -191,6 +191,7 @@ async function run() {
       dryRun,
     })
   } else {
+    info(`On a ${ref} branch, dispatching component run`)
     await dispatch({
       octokit,
       scaffoldWorkflowId,
