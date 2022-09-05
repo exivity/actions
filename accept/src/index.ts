@@ -151,12 +151,6 @@ async function run() {
     }
   }
 
-  // Skip accepting commits on non-develop branches without PR
-  if (!isDevelopBranch(ref) && !pull_request) {
-    warning('[accept] Skipping: non-develop branch without pull request')
-    return
-  }
-
   if (eventName === 'pull_request') {
     // We need to check if required workflow has finished
     info('Checking if workflow constraint is satisfied...')

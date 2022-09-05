@@ -35114,10 +35114,6 @@ async function run() {
       return;
     }
   }
-  if (!isDevelopBranch(ref) && !pull_request) {
-    (0, import_core4.warning)("[accept] Skipping: non-develop branch without pull request");
-    return;
-  }
   if (eventName === "pull_request") {
     (0, import_core4.info)("Checking if workflow constraint is satisfied...");
     if (!await isWorkflowDependencyDone(octokit, ghToken, sha, component)) {
