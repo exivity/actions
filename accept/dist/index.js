@@ -35055,10 +35055,6 @@ async function run() {
     ref = eventData["pull_request"]["head"]["ref"];
     sha = eventData["pull_request"]["head"]["sha"];
   }
-  if (isReleaseBranch(ref)) {
-    (0, import_core4.warning)(`[accept] Skipping: release branch "${ref}" is ignored`);
-    return;
-  }
   const pr = await getPrFromRef({
     octokit,
     owner: "exivity",
@@ -35135,12 +35131,12 @@ async function run() {
       return;
     }
   }
-  if (isDevelopBranch(ref)) {
+  if (isDevelopBranch(ref) || isReleaseBranch(ref)) {
     (0, import_core4.info)(`On a ${ref} branch, dispatching plain run`);
     await dispatch({
       octokit,
       scaffoldWorkflowId,
-      scaffoldBranch: defaultScaffoldBranch,
+      scaffoldBranch,
       dryRun
     });
   } else {

@@ -79,12 +79,6 @@ async function run() {
     sha = eventData['pull_request']['head']['sha']
   }
 
-  // Skip accepting commits on release branches
-  if (isReleaseBranch(ref)) {
-    warning(`[accept] Skipping: release branch "${ref}" is ignored`)
-    return
-  }
-
   const pr = await getPrFromRef({
     octokit,
     owner: 'exivity',
@@ -182,12 +176,12 @@ async function run() {
   }
 
   // If we're on a development branch, scrub component and sha from dispatch
-  if (isDevelopBranch(ref)) {
+  if (isDevelopBranch(ref) || isReleaseBranch(ref)) {
     info(`On a ${ref} branch, dispatching plain run`)
     await dispatch({
       octokit,
       scaffoldWorkflowId,
-      scaffoldBranch: defaultScaffoldBranch,
+      scaffoldBranch,
       dryRun,
     })
   } else {
