@@ -70068,7 +70068,9 @@ async function getRecentVersion(versionsSince) {
   if (typeof versionTag === "undefined") {
     throw new Error("Could not determine latest version");
   }
-  (0, import_core4.info)(`Latest version in ${repo.fqn}: ${versionTag}`);
+  (0, import_core4.info)(
+    versionsSince == 0 ? `Latest version in ${repo.fqn}: ${versionTag}` : `${versionsSince} versions ago in ${repo.fqn}: ${versionTag}`
+  );
   return versionTag;
 }
 
@@ -70879,11 +70881,14 @@ async function getChangelogItemsSlugs(octokit, jiraClient, repositoriesJsonPath)
 }
 async function updateIssueFixVersion(dryRun, version, jiraIssueIds, jiraClient) {
   if (dryRun) {
-    (0, import_core14.info)(`Dry run, not setting release version of tickets`);
-  } else {
-    (0, import_core14.info)(`Setting release version of:`);
     (0, import_core14.info)(
-      `${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n") : "found no tickets"}`
+      `Dry run, not setting release version of tickets, else would have set the release version of the following:
+- ${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n- ") : "found no tickets"}`
+    );
+  } else {
+    (0, import_core14.info)(
+      `Setting release version of:
+- ${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n- ") : "found no tickets"}`
     );
     for (const issueIdOrKey of jiraIssueIds) {
       let versionId;
@@ -70919,15 +70924,13 @@ async function updateIssueFixVersion(dryRun, version, jiraIssueIds, jiraClient) 
 async function transitionIssuesAndUpdateFixVersion(dryRun, jiraIssueIds, upcomingVersion, jiraClient) {
   if (dryRun) {
     (0, import_core14.info)(
-      `Dry run, not transitioning tickets, else would have transitioned the following:`
-    );
-    (0, import_core14.info)(
-      `${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n") : "found no tickets"}`
+      `Dry run, not transitioning tickets, else would have transitioned the following:
+- ${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n- ") : "found no tickets"}`
     );
   } else {
-    (0, import_core14.info)(`Transitioning ticket status of:`);
     (0, import_core14.info)(
-      `${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n") : "found no tickets"}`
+      `Transitioning ticket status of:
+- ${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n- ") : "found no tickets"}`
     );
     await Promise.all(
       jiraIssueIds.map((issueIdOrKey) => {

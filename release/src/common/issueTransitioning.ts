@@ -31,12 +31,15 @@ export async function updateIssueFixVersion(
   jiraClient: ReturnType<typeof getJiraClient>
 ) {
   if (dryRun) {
-    info(`Dry run, not setting release version of tickets`)
-  } else {
-    info(`Setting release version of:`)
     info(
-      `${
-        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n') : 'found no tickets'
+      `Dry run, not setting release version of tickets, else would have set the release version of the following:\n- ${
+        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n- ') : 'found no tickets'
+      }`
+    )
+  } else {
+    info(
+      `Setting release version of:\n- ${
+        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n- ') : 'found no tickets'
       }`
     )
 
@@ -82,18 +85,14 @@ export async function transitionIssuesAndUpdateFixVersion(
 ) {
   if (dryRun) {
     info(
-      `Dry run, not transitioning tickets, else would have transitioned the following:`
-    )
-    info(
-      `${
-        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n') : 'found no tickets'
+      `Dry run, not transitioning tickets, else would have transitioned the following:\n- ${
+        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n- ') : 'found no tickets'
       }`
     )
   } else {
-    info(`Transitioning ticket status of:`)
     info(
-      `${
-        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n') : 'found no tickets'
+      `Transitioning ticket status of:\n- ${
+        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n- ') : 'found no tickets'
       }`
     )
 

@@ -90,7 +90,11 @@ export async function getRecentVersion(versionsSince: number) {
   if (typeof versionTag === 'undefined') {
     throw new Error('Could not determine latest version')
   }
-  info(`Latest version in ${repo.fqn}: ${versionTag}`)
+  info(
+    versionsSince == 0
+      ? `Latest version in ${repo.fqn}: ${versionTag}`
+      : `${versionsSince} versions ago in ${repo.fqn}: ${versionTag}`
+  )
 
   return versionTag
 }
