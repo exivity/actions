@@ -68254,6 +68254,7 @@ async function exec(command, args) {
 // lib/github.ts
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
+var STANDARD_BRANCH = "main";
 async function getPrFromRef({
   octokit,
   owner,
@@ -70073,383 +70074,81 @@ async function getRepositories(repositoriesJsonPath) {
 var readLockfile = readJson;
 
 // release/src/common/lockfile.ts
-var import_core11 = __toESM(require_core());
-var import_promises3 = require("fs/promises");
-
-// lib/conventionalCommits.ts
 var import_core6 = __toESM(require_core());
-var types = {
-  feat: {
-    description: "A new feature",
-    title: "Features"
-  },
-  fix: {
-    description: "A bug fix",
-    title: "Bug Fixes"
-  },
-  docs: {
-    description: "Documentation only changes",
-    title: "Documentation"
-  },
-  style: {
-    description: "Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)",
-    title: "Styles"
-  },
-  refactor: {
-    description: "A code change that neither fixes a bug nor adds a feature",
-    title: "Code Refactoring"
-  },
-  perf: {
-    description: "A code change that improves performance",
-    title: "Performance Improvements"
-  },
-  test: {
-    description: "Adding missing tests or correcting existing tests",
-    title: "Tests"
-  },
-  build: {
-    description: "Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)",
-    title: "Builds"
-  },
-  ci: {
-    description: "Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)",
-    title: "Continuous Integrations"
-  },
-  chore: {
-    description: "Other changes that don't modify src or test files",
-    title: "Chores"
-  },
-  revert: {
-    description: "Reverts a previous commit",
-    title: "Reverts"
-  }
-};
-var availableTypes = Object.keys(types);
-function parseCommitMessage(message) {
-  const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/);
-  if (!matches) {
-    return {
-      description: message
-    };
-  }
-  const [, type3, component, breaking, description2] = matches;
-  return {
-    type: type3,
-    component,
-    breaking: breaking === "!",
-    description: description2
-  };
-}
-
-// release/src/changelog/utils.ts
-var import_core7 = __toESM(require_core());
-var equalsChangelogType = pipe(propOr_default("", "type"), toLower_default, equals_default);
-var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
-var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
-var rejectChores = reject_default(propEq_default("type", "chore"));
-function byDate(a, b) {
-  if (a.links.commit.date < b.links.commit.date) {
-    return -1;
-  }
-  if (a.links.commit.date > b.links.commit.date) {
-    return 1;
-  }
-  return 0;
-}
-function byType(a, b) {
-  if (a.type < b.type) {
-    return -1;
-  }
-  if (a.type > b.type) {
-    return 1;
-  }
-  return 0;
-}
-var sortChangelogItems = (changelog) => changelog.sort(byType).sort(byDate);
-var logChangelogItems = (changelog) => {
-  (0, import_core7.info)(`Changelog:`);
-  changelog.forEach((item) => {
-    (0, import_core7.info)(
-      `- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`
-    );
-  });
-};
-var getChangelogSlugs = pipe(
-  flatten_default,
-  map_default(pathOr_default([], ["links", "issues"])),
-  chain_default(map_default(prop_default("slug")))
-);
-var removeIssuesFromReleaseTestRepo = (changelog) => {
-  return changelog.filter(
-    (item) => item.links.commit.repository !== "release-test"
-  );
-};
-
-// release/src/changelog/changelogItem.ts
-var repoRgx = /(?<=exivity\/).*?(?=\/)/;
-function createChangelogItem(commit) {
-  var _a, _b, _c, _d, _e, _f;
-  const commitTitle = getFirstLine(commit.commit.message);
-  const commitDescription = removeFirstLine(commit.commit.message);
-  const parsed = parseCommitMessage(commitTitle);
-  const typeEqualsOneOf = any_default(equalsChangelogType(parsed));
-  const type3 = typeEqualsOneOf(["feat", "feature"]) ? "feat" : typeEqualsOneOf(["fix", "bugfix"]) ? "fix" : "chore";
-  const repository = ((_a = commit.html_url.match(repoRgx)) == null ? void 0 : _a[0]) ?? "";
-  return {
-    title: parsed.description || commitTitle,
-    description: null,
-    type: type3,
-    breaking: parsed.breaking || false,
-    warnings: [],
-    links: {
-      commit: {
-        repository,
-        sha: commit.sha,
-        originalTitle: commitTitle,
-        title: parsed.description || commitTitle,
-        description: commitDescription,
-        author: ((_b = commit.author) == null ? void 0 : _b.login) || ((_c = commit.author) == null ? void 0 : _c.name) || ((_d = commit.author) == null ? void 0 : _d.login) || "unknown author",
-        date: ((_e = commit.commit.author) == null ? void 0 : _e.date) || ((_f = commit.commit.committer) == null ? void 0 : _f.date) || "unknown date",
-        slug: `exivity/${repository}@${commit.sha.substring(0, 7)}`,
-        url: commit.html_url
-      },
-      issues: []
-    }
-  };
-}
-
-// release/src/changelog/getRepoCommits.ts
-var import_console2 = require("console");
-var REPOSITORY_RELEASE_BRANCH = "main";
-var getRepoCommits = (octokit) => async (repository) => {
-  const latestVersion = await getLatestVersion();
-  (0, import_console2.info)(`- exivity/${repository}`);
-  const latestVersionCommit = await getCommitForTag({
-    octokit,
-    owner: "exivity",
-    repo: repository,
-    tag: latestVersion
-  });
-  return await getCommitsSince({
-    octokit,
-    owner: "exivity",
-    repo: repository,
-    branch: REPOSITORY_RELEASE_BRANCH,
-    since: latestVersionCommit
-  });
-};
-
-// release/src/changelogPlugins/associatedPullRequest.ts
-async function associatedPullRequestPlugin({
-  octokit,
-  changelog
-}) {
-  for (const item of changelog) {
-    const associatedPullRequest = await getAssociatedPullRequest({
+var import_promises2 = require("fs/promises");
+async function getRepositoriesLastSha(octokit, repositories) {
+  const shas = repositories.map(
+    (repository) => getLastCommitSha({
       octokit,
       owner: "exivity",
-      repo: item.links.commit.repository,
-      sha: item.links.commit.sha
-    });
-    if (typeof associatedPullRequest !== "undefined") {
-      item.links.pr = {
-        title: parseCommitMessage(associatedPullRequest.title).description,
-        originalTitle: associatedPullRequest.title,
-        description: associatedPullRequest.body,
-        slug: `exivity/${item.links.commit.repository}#${associatedPullRequest.number}`,
-        url: associatedPullRequest.url
-      };
-    }
-  }
-  return changelog;
-}
-
-// release/src/changelogPlugins/jira.ts
-var import_core8 = __toESM(require_core());
-var jiraKey = new RegExp(/\bEXVT-\d+\b/g);
-function isRegExpMatchArray(args) {
-  return Array.isArray(args);
-}
-function getReleaseNotesTitle(issue) {
-  return issue.fields["customfield_10529" /* ReleaseNotesTitle */] ?? null;
-}
-function getReleaseNotesDescription(issue) {
-  return issue.fields["customfield_10530" /* ReleaseNotesDescription */] ?? null;
-}
-function getEpic(issue) {
-  return issue.fields["customfield_10005" /* Epic */] ?? null;
-}
-var cleanJiraKeyMatches = pipe(
-  identity_default,
-  filter_default(isRegExpMatchArray),
-  chain_default(identity_default),
-  uniq_default
-);
-var getEpicMilestone = async (jiraClient, issue) => {
-  const epicKey = getEpic(issue);
-  if (epicKey) {
-    try {
-      const epic = await jiraClient.issues.getIssue({
-        issueIdOrKey: epicKey
-      });
-      return {
-        title: getReleaseNotesTitle(epic) || epic.fields.summary,
-        description: getReleaseNotesDescription(epic) || epic.fields.description || null,
-        slug: getReleaseNotesTitle(epic) || epic.fields.summary,
-        url: `https://exivity.atlassian.net/browse/${epicKey}`
-      };
-    } catch (e) {
-      (0, import_core8.info)(`Failed to get epic milestone for ${epicKey}`);
-    }
-  }
-};
-function isFulfilled(arg) {
-  return arg.status === "fulfilled";
-}
-function isRejected(arg) {
-  return arg.status === "rejected";
-}
-var isNotEmpty = complement_default(isEmpty_default);
-var issueTypePath = ["fields", "issuetype", "name"];
-var getWarnings = pipe(
-  identity_default,
-  reject_default(pathEq_default(issueTypePath, "Chore" /* Chore */)),
-  filter_default((item) => !getReleaseNotesTitle(item)),
-  map_default(
-    ({ key }) => `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`
-  )
-);
-async function jiraPlugin({ jiraClient, changelog }) {
-  return Promise.all(
-    changelog.map(async (changelogItem) => {
-      var _a, _b, _c, _d;
-      const jirakeys = cleanJiraKeyMatches([
-        (_a = changelogItem.links.pr) == null ? void 0 : _a.originalTitle.match(jiraKey),
-        (_c = (_b = changelogItem.links.pr) == null ? void 0 : _b.description) == null ? void 0 : _c.match(jiraKey),
-        (_d = changelogItem.links.commit.description) == null ? void 0 : _d.match(jiraKey),
-        changelogItem.links.commit.originalTitle.match(jiraKey)
-      ]);
-      let wrappedJiraIssues = await Promise.allSettled(
-        jirakeys.map(
-          (issueIdOrKey) => jiraClient.issues.getIssue({
-            issueIdOrKey
-          })
-        )
-      );
-      wrappedJiraIssues.filter(isRejected).forEach(({ reason }) => {
-        (0, import_core8.info)(`got error when getting issue:
-${JSON.stringify(reason)}`);
-      });
-      const jiraIssues = wrappedJiraIssues.filter(isFulfilled).map(prop_default("value"));
-      const issuesTypeEqualsOneOf = (oneOf) => {
-        return isNotEmpty(
-          innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
-        );
-      };
-      changelogItem = {
-        ...changelogItem,
-        warnings: getWarnings(jiraIssues),
-        type: issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore",
-        links: {
-          ...changelogItem.links,
-          issues: jiraIssues.map((jiraIssue) => ({
-            title: getReleaseNotesTitle(jiraIssue) || jiraIssue.fields.summary,
-            description: getReleaseNotesDescription(jiraIssue) || jiraIssue.fields.description || null,
-            slug: jiraIssue.key,
-            url: `https://exivity.atlassian.net/browse/${jiraIssue.key}`
-          }))
-        }
-      };
-      const milestone = jiraIssues[0] && await getEpicMilestone(jiraClient, jiraIssues[0]);
-      return milestone ? assocPath_default(["links", "milestone"], milestone, changelogItem) : changelogItem;
+      repo: repository,
+      sha: STANDARD_BRANCH
     })
   );
+  return Promise.all(shas);
 }
-
-// release/src/changelogPlugins/titleAndDescription.ts
-function formatTitle(changelogItem) {
-  var _a;
-  return capitalizeFirstLetter(
-    changelogItem.links.issues && ((_a = changelogItem.links.issues) == null ? void 0 : _a.length) > 0 ? changelogItem.links.issues[0].title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title
-  );
-}
-function formatDescription(changelogItem) {
-  var _a, _b;
-  return ((_b = (_a = changelogItem.links.issues) == null ? void 0 : _a[0]) == null ? void 0 : _b.description) || null;
-}
-function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-async function titleAndDescriptionPlugin({ changelog }) {
-  for (const item of changelog) {
-    item.title = formatTitle(item);
-    item.description = formatDescription(item);
+async function writeLockFile(dryRun, octokit, version, repositories, lockfilePath) {
+  if (dryRun) {
+    (0, import_core6.info)(`Dry run, not writing lockfile`);
+  } else {
+    const lockfile = {
+      version,
+      repositories: zipObj_default(
+        repositories,
+        await getRepositoriesLastSha(octokit, repositories)
+      )
+    };
+    await (0, import_promises2.writeFile)(lockfilePath, JSON.stringify(lockfile, null, 2) + "\n");
+    (0, import_core6.info)(`Written lockfile to: ${lockfilePath}`);
   }
-  return changelog;
 }
 
-// release/src/changelogPlugins/index.ts
-var plugins = [
-  associatedPullRequestPlugin,
-  jiraPlugin,
-  titleAndDescriptionPlugin
-];
-async function runPlugins({
+// release/src/common/gitUpdates.ts
+var import_console2 = require("console");
+
+// release/src/common/pr.ts
+var import_core7 = __toESM(require_core());
+async function createOrUpdatePullRequest({
   octokit,
-  jiraClient,
-  changelog
+  title,
+  prTemplate,
+  changelogContents,
+  upcomingReleaseBranch,
+  releaseBranch
 }) {
-  for (const plugin of plugins) {
-    changelog = await plugin({ octokit, jiraClient, changelog });
-  }
-  return changelog;
-}
-
-// release/src/changelog/getChangelogItems.ts
-async function getChangelogItems(octokit, jiraClient, repositories) {
-  const items = repositories.map(
-    pipe(
-      getRepoCommits(octokit),
-      andThen_default(map_default(createChangelogItem)),
-      andThen_default(async (changelog) => {
-        return await runPlugins({ octokit, jiraClient, changelog });
-      }),
-      andThen_default(reject_default(propEq_default("type", "chore")))
-    )
+  const existingPullRequest = await getPrFromRef({
+    octokit,
+    owner: "exivity",
+    repo: getRepository().repo,
+    ref: upcomingReleaseBranch
+  });
+  const body = prTemplate.replace(
+    "<!-- CHANGELOG_CONTENTS -->",
+    changelogContents
   );
-  return Promise.all(items);
-}
-
-// release/src/changelog/inferVersionFromChangelog.ts
-var import_core9 = __toESM(require_core());
-var import_semver2 = __toESM(require_semver2());
-var containsFeature = any_default(propEq_default("type", "feat"));
-var containsBreakingChange = any_default(propEq_default("breaking", true));
-var description = {
-  major: "major: breaking change detected",
-  minor: "minor: new feature detected",
-  patch: "patch: only fixes and/or chores detected"
-};
-function inferVersionFromChangelog(from, changelog) {
-  const upcomingVersionIncrement = containsBreakingChange(
-    changelog
-  ) ? "major" : containsFeature(changelog) ? "minor" : "patch";
-  const upcomingVersion = import_semver2.default.inc(from, upcomingVersionIncrement);
-  if (upcomingVersion === null) {
-    throw new Error(
-      `Could not calculate new version (incrementing ${from} to ${upcomingVersionIncrement})`
-    );
+  if (existingPullRequest) {
+    const pr = await octokit.rest.pulls.update({
+      owner: "exivity",
+      repo: getRepository().repo,
+      pull_number: existingPullRequest.number,
+      title,
+      body
+    });
+    (0, import_core7.info)(`Updated pull request #${pr.data.number}`);
+    return pr.data;
+  } else {
+    const pr = await octokit.rest.pulls.create({
+      owner: "exivity",
+      repo: getRepository().repo,
+      title,
+      body,
+      head: upcomingReleaseBranch,
+      base: releaseBranch
+    });
+    (0, import_core7.info)(`Opened pull request #${pr.data.number}`);
+    return pr.data;
   }
-  (0, import_core9.info)(
-    `Version increment (${description[upcomingVersionIncrement]}): ${from} -> v${upcomingVersion}`
-  );
-  return `v${upcomingVersion}`;
 }
-
-// release/src/changelog/writeChangelog.ts
-var import_fs = require("fs");
-var import_promises2 = require("fs/promises");
-var import_core10 = __toESM(require_core());
 
 // release/src/changelogFormatters/utils.ts
 function formatLinkType(type3) {
@@ -70561,132 +70260,32 @@ function buildChangelogItem2(changelogItem) {
   ].join("\n");
 }
 
-// release/src/changelog/writeChangelog.ts
-async function writeChangelog(changelogPath, changelog, upcomingVersion, dryRun) {
-  const currentPublicChangelogContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises2.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
-  const publicChangelogContents = formatPublicChangelog(
-    upcomingVersion,
-    changelog
-  );
-  if (dryRun) {
-    (0, import_core10.info)(`Dry run, not writing changelog`);
-  } else {
-    await (0, import_promises2.writeFile)(
-      changelogPath,
-      currentPublicChangelogContents.replace(
-        "# Changelog\n\n",
-        `# Changelog
-
-${publicChangelogContents}
-
-`
-      )
-    );
-    (0, import_core10.info)(`Written changelog to: ${changelogPath}`);
-  }
-}
-
-// release/src/common/lockfile.ts
-async function getRepositoriesLastSha(octokit, repositories) {
-  const shas = repositories.map(
-    (repository) => getLastCommitSha({
-      octokit,
-      owner: "exivity",
-      repo: repository,
-      sha: REPOSITORY_RELEASE_BRANCH
-    })
-  );
-  return Promise.all(shas);
-}
-async function writeLockFile(dryRun, octokit, version, repositories, lockfilePath) {
-  if (dryRun) {
-    (0, import_core11.info)(`Dry run, not writing lockfile`);
-  } else {
-    const lockfile = {
-      version,
-      repositories: zipObj_default(
-        repositories,
-        await getRepositoriesLastSha(octokit, repositories)
-      )
-    };
-    await (0, import_promises3.writeFile)(lockfilePath, JSON.stringify(lockfile, null, 2) + "\n");
-    (0, import_core11.info)(`Written lockfile to: ${lockfilePath}`);
-  }
-}
-
-// release/src/common/gitUpdates.ts
-var import_console3 = require("console");
-
-// release/src/common/pr.ts
-var import_core12 = __toESM(require_core());
-async function createOrUpdatePullRequest({
-  octokit,
-  title,
-  prTemplate,
-  changelogContents,
-  upcomingReleaseBranch,
-  releaseBranch
-}) {
-  const existingPullRequest = await getPrFromRef({
-    octokit,
-    owner: "exivity",
-    repo: getRepository().repo,
-    ref: upcomingReleaseBranch
-  });
-  const body = prTemplate.replace(
-    "<!-- CHANGELOG_CONTENTS -->",
-    changelogContents
-  );
-  if (existingPullRequest) {
-    const pr = await octokit.rest.pulls.update({
-      owner: "exivity",
-      repo: getRepository().repo,
-      pull_number: existingPullRequest.number,
-      title,
-      body
-    });
-    (0, import_core12.info)(`Updated pull request #${pr.data.number}`);
-    return pr.data;
-  } else {
-    const pr = await octokit.rest.pulls.create({
-      owner: "exivity",
-      repo: getRepository().repo,
-      title,
-      body,
-      head: upcomingReleaseBranch,
-      base: releaseBranch
-    });
-    (0, import_core12.info)(`Opened pull request #${pr.data.number}`);
-    return pr.data;
-  }
-}
-
 // release/src/common/gitUpdates.ts
 async function switchToReleaseBranch(dryRun, releaseBranch, upcomingReleaseBranch) {
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, not switching branches`);
+    (0, import_console2.info)(`Dry run, not switching branches`);
   } else if (await gitHasChanges()) {
-    (0, import_console3.info)("Detected uncommitted changes, aborting");
+    (0, import_console2.info)("Detected uncommitted changes, aborting");
   } else {
     await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`);
   }
 }
 async function commitAndPush(dryRun, title, upcomingReleaseBranch) {
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, not committing and pushing changes`);
+    (0, import_console2.info)(`Dry run, not committing and pushing changes`);
   } else {
     await gitAdd();
     await gitSetAuthor("Exivity bot", "bot@exivity.com");
     await gitCommit(title);
     await gitPush(true);
-    (0, import_console3.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
+    (0, import_console2.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
   }
   return title;
 }
 async function updateMissingReleaseNotesWarningStatus(dryRun, changelog, octokit) {
   const sha = await getCommitSha();
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, no need to write commit status`);
+    (0, import_console2.info)(`Dry run, no need to write commit status`);
   } else {
     const state = changelog.some((item) => item.warnings.length > 0) ? "pending" : "success";
     await writeStatus({
@@ -70703,7 +70302,7 @@ async function updateMissingReleaseNotesWarningStatus(dryRun, changelog, octokit
 async function updatePr(dryRun, title, prTemplatePath, upcomingReleaseBranch, releaseBranch, changelog, octokit) {
   const prTemplate = await readTextFile(prTemplatePath);
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, not creating pull request`);
+    (0, import_console2.info)(`Dry run, not creating pull request`);
   } else {
     const prChangelogContents = formatPrChangelog(changelog);
     const pr = await createOrUpdatePullRequest({
@@ -70714,13 +70313,13 @@ async function updatePr(dryRun, title, prTemplatePath, upcomingReleaseBranch, re
       upcomingReleaseBranch,
       releaseBranch
     });
-    (0, import_console3.info)(pr.html_url);
+    (0, import_console2.info)(pr.html_url);
   }
 }
 async function tagRepositories(dryRun, lockfile, octokit) {
   for (const [repository, sha] of Object.entries(lockfile.repositories)) {
     if (dryRun) {
-      (0, import_console3.info)(`Dry run, not tagging ${repository}`);
+      (0, import_console2.info)(`Dry run, not tagging ${repository}`);
     } else {
       await createLightweightTag({
         octokit,
@@ -70735,13 +70334,410 @@ async function tagRepositories(dryRun, lockfile, octokit) {
 async function tagAllRepositories(dryRun, lockfile, octokit) {
   const repository = getRepository();
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_console2.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_console3.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_console2.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
   await tagRepositories(dryRun, lockfile, octokit);
+}
+
+// lib/conventionalCommits.ts
+var import_core8 = __toESM(require_core());
+var types = {
+  feat: {
+    description: "A new feature",
+    title: "Features"
+  },
+  fix: {
+    description: "A bug fix",
+    title: "Bug Fixes"
+  },
+  docs: {
+    description: "Documentation only changes",
+    title: "Documentation"
+  },
+  style: {
+    description: "Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)",
+    title: "Styles"
+  },
+  refactor: {
+    description: "A code change that neither fixes a bug nor adds a feature",
+    title: "Code Refactoring"
+  },
+  perf: {
+    description: "A code change that improves performance",
+    title: "Performance Improvements"
+  },
+  test: {
+    description: "Adding missing tests or correcting existing tests",
+    title: "Tests"
+  },
+  build: {
+    description: "Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)",
+    title: "Builds"
+  },
+  ci: {
+    description: "Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)",
+    title: "Continuous Integrations"
+  },
+  chore: {
+    description: "Other changes that don't modify src or test files",
+    title: "Chores"
+  },
+  revert: {
+    description: "Reverts a previous commit",
+    title: "Reverts"
+  }
+};
+var availableTypes = Object.keys(types);
+function parseCommitMessage(message) {
+  const matches = message.match(/^(\w+)(?:\(([\w_-]+)\))?(!)?:\s+(.*)/);
+  if (!matches) {
+    return {
+      description: message
+    };
+  }
+  const [, type3, component, breaking, description2] = matches;
+  return {
+    type: type3,
+    component,
+    breaking: breaking === "!",
+    description: description2
+  };
+}
+
+// release/src/changelog/utils.ts
+var import_core9 = __toESM(require_core());
+var equalsChangelogType = pipe(propOr_default("", "type"), toLower_default, equals_default);
+var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
+var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
+var rejectChores = reject_default(propEq_default("type", "chore"));
+function byDate(a, b) {
+  if (a.links.commit.date < b.links.commit.date) {
+    return -1;
+  }
+  if (a.links.commit.date > b.links.commit.date) {
+    return 1;
+  }
+  return 0;
+}
+function byType(a, b) {
+  if (a.type < b.type) {
+    return -1;
+  }
+  if (a.type > b.type) {
+    return 1;
+  }
+  return 0;
+}
+var sortChangelogItems = (changelog) => changelog.sort(byType).sort(byDate);
+var logChangelogItems = (changelog) => {
+  (0, import_core9.info)(`Changelog:`);
+  changelog.forEach((item) => {
+    (0, import_core9.info)(
+      `- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`
+    );
+  });
+};
+var getChangelogSlugs = pipe(
+  flatten_default,
+  map_default(pathOr_default([], ["links", "issues"])),
+  chain_default(map_default(prop_default("slug")))
+);
+var removeIssuesFromReleaseTestRepo = (changelog) => {
+  return changelog.filter(
+    (item) => item.links.commit.repository !== "release-test"
+  );
+};
+
+// release/src/changelog/changelogItem.ts
+var repoRgx = /(?<=exivity\/).*?(?=\/)/;
+function createChangelogItem(commit) {
+  var _a, _b, _c, _d, _e, _f;
+  const commitTitle = getFirstLine(commit.commit.message);
+  const commitDescription = removeFirstLine(commit.commit.message);
+  const parsed = parseCommitMessage(commitTitle);
+  const typeEqualsOneOf = any_default(equalsChangelogType(parsed));
+  const type3 = typeEqualsOneOf(["feat", "feature"]) ? "feat" : typeEqualsOneOf(["fix", "bugfix"]) ? "fix" : "chore";
+  const repository = ((_a = commit.html_url.match(repoRgx)) == null ? void 0 : _a[0]) ?? "";
+  return {
+    title: parsed.description || commitTitle,
+    description: null,
+    type: type3,
+    breaking: parsed.breaking || false,
+    warnings: [],
+    links: {
+      commit: {
+        repository,
+        sha: commit.sha,
+        originalTitle: commitTitle,
+        title: parsed.description || commitTitle,
+        description: commitDescription,
+        author: ((_b = commit.author) == null ? void 0 : _b.login) || ((_c = commit.author) == null ? void 0 : _c.name) || ((_d = commit.author) == null ? void 0 : _d.login) || "unknown author",
+        date: ((_e = commit.commit.author) == null ? void 0 : _e.date) || ((_f = commit.commit.committer) == null ? void 0 : _f.date) || "unknown date",
+        slug: `exivity/${repository}@${commit.sha.substring(0, 7)}`,
+        url: commit.html_url
+      },
+      issues: []
+    }
+  };
+}
+
+// release/src/changelog/getRepoCommits.ts
+var import_console3 = require("console");
+var getRepoCommits = (octokit) => async (repository) => {
+  const latestVersion = await getLatestVersion();
+  (0, import_console3.info)(`- exivity/${repository}`);
+  const latestVersionCommit = await getCommitForTag({
+    octokit,
+    owner: "exivity",
+    repo: repository,
+    tag: latestVersion
+  });
+  return await getCommitsSince({
+    octokit,
+    owner: "exivity",
+    repo: repository,
+    branch: STANDARD_BRANCH,
+    since: latestVersionCommit
+  });
+};
+
+// release/src/changelogPlugins/associatedPullRequest.ts
+async function associatedPullRequestPlugin({
+  octokit,
+  changelog
+}) {
+  for (const item of changelog) {
+    const associatedPullRequest = await getAssociatedPullRequest({
+      octokit,
+      owner: "exivity",
+      repo: item.links.commit.repository,
+      sha: item.links.commit.sha
+    });
+    if (typeof associatedPullRequest !== "undefined") {
+      item.links.pr = {
+        title: parseCommitMessage(associatedPullRequest.title).description,
+        originalTitle: associatedPullRequest.title,
+        description: associatedPullRequest.body,
+        slug: `exivity/${item.links.commit.repository}#${associatedPullRequest.number}`,
+        url: associatedPullRequest.url
+      };
+    }
+  }
+  return changelog;
+}
+
+// release/src/changelogPlugins/jira.ts
+var import_core10 = __toESM(require_core());
+var jiraKey = new RegExp(/\bEXVT-\d+\b/g);
+function isRegExpMatchArray(args) {
+  return Array.isArray(args);
+}
+function getReleaseNotesTitle(issue) {
+  return issue.fields["customfield_10529" /* ReleaseNotesTitle */] ?? null;
+}
+function getReleaseNotesDescription(issue) {
+  return issue.fields["customfield_10530" /* ReleaseNotesDescription */] ?? null;
+}
+function getEpic(issue) {
+  return issue.fields["customfield_10005" /* Epic */] ?? null;
+}
+var cleanJiraKeyMatches = pipe(
+  identity_default,
+  filter_default(isRegExpMatchArray),
+  chain_default(identity_default),
+  uniq_default
+);
+var getEpicMilestone = async (jiraClient, issue) => {
+  const epicKey = getEpic(issue);
+  if (epicKey) {
+    try {
+      const epic = await jiraClient.issues.getIssue({
+        issueIdOrKey: epicKey
+      });
+      return {
+        title: getReleaseNotesTitle(epic) || epic.fields.summary,
+        description: getReleaseNotesDescription(epic) || epic.fields.description || null,
+        slug: getReleaseNotesTitle(epic) || epic.fields.summary,
+        url: `https://exivity.atlassian.net/browse/${epicKey}`
+      };
+    } catch (e) {
+      (0, import_core10.info)(`Failed to get epic milestone for ${epicKey}`);
+    }
+  }
+};
+function isFulfilled(arg) {
+  return arg.status === "fulfilled";
+}
+function isRejected(arg) {
+  return arg.status === "rejected";
+}
+var isNotEmpty = complement_default(isEmpty_default);
+var issueTypePath = ["fields", "issuetype", "name"];
+var getWarnings = pipe(
+  identity_default,
+  reject_default(pathEq_default(issueTypePath, "Chore" /* Chore */)),
+  filter_default((item) => !getReleaseNotesTitle(item)),
+  map_default(
+    ({ key }) => `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`
+  )
+);
+async function jiraPlugin({ jiraClient, changelog }) {
+  return Promise.all(
+    changelog.map(async (changelogItem) => {
+      var _a, _b, _c, _d;
+      const jirakeys = cleanJiraKeyMatches([
+        (_a = changelogItem.links.pr) == null ? void 0 : _a.originalTitle.match(jiraKey),
+        (_c = (_b = changelogItem.links.pr) == null ? void 0 : _b.description) == null ? void 0 : _c.match(jiraKey),
+        (_d = changelogItem.links.commit.description) == null ? void 0 : _d.match(jiraKey),
+        changelogItem.links.commit.originalTitle.match(jiraKey)
+      ]);
+      let wrappedJiraIssues = await Promise.allSettled(
+        jirakeys.map(
+          (issueIdOrKey) => jiraClient.issues.getIssue({
+            issueIdOrKey
+          })
+        )
+      );
+      wrappedJiraIssues.filter(isRejected).forEach(({ reason }) => {
+        (0, import_core10.info)(`got error when getting issue:
+${JSON.stringify(reason)}`);
+      });
+      const jiraIssues = wrappedJiraIssues.filter(isFulfilled).map(prop_default("value"));
+      const issuesTypeEqualsOneOf = (oneOf) => {
+        return isNotEmpty(
+          innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
+        );
+      };
+      changelogItem = {
+        ...changelogItem,
+        warnings: getWarnings(jiraIssues),
+        type: issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore",
+        links: {
+          ...changelogItem.links,
+          issues: jiraIssues.map((jiraIssue) => ({
+            title: getReleaseNotesTitle(jiraIssue) || jiraIssue.fields.summary,
+            description: getReleaseNotesDescription(jiraIssue) || jiraIssue.fields.description || null,
+            slug: jiraIssue.key,
+            url: `https://exivity.atlassian.net/browse/${jiraIssue.key}`
+          }))
+        }
+      };
+      const milestone = jiraIssues[0] && await getEpicMilestone(jiraClient, jiraIssues[0]);
+      return milestone ? assocPath_default(["links", "milestone"], milestone, changelogItem) : changelogItem;
+    })
+  );
+}
+
+// release/src/changelogPlugins/titleAndDescription.ts
+function formatTitle(changelogItem) {
+  var _a;
+  return capitalizeFirstLetter(
+    changelogItem.links.issues && ((_a = changelogItem.links.issues) == null ? void 0 : _a.length) > 0 ? changelogItem.links.issues[0].title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title
+  );
+}
+function formatDescription(changelogItem) {
+  var _a, _b;
+  return ((_b = (_a = changelogItem.links.issues) == null ? void 0 : _a[0]) == null ? void 0 : _b.description) || null;
+}
+function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+async function titleAndDescriptionPlugin({ changelog }) {
+  for (const item of changelog) {
+    item.title = formatTitle(item);
+    item.description = formatDescription(item);
+  }
+  return changelog;
+}
+
+// release/src/changelogPlugins/index.ts
+var plugins = [
+  associatedPullRequestPlugin,
+  jiraPlugin,
+  titleAndDescriptionPlugin
+];
+async function runPlugins({
+  octokit,
+  jiraClient,
+  changelog
+}) {
+  for (const plugin of plugins) {
+    changelog = await plugin({ octokit, jiraClient, changelog });
+  }
+  return changelog;
+}
+
+// release/src/changelog/getChangelogItems.ts
+async function getChangelogItems(octokit, jiraClient, repositories) {
+  const items = repositories.map(
+    pipe(
+      getRepoCommits(octokit),
+      andThen_default(map_default(createChangelogItem)),
+      andThen_default(async (changelog) => {
+        return await runPlugins({ octokit, jiraClient, changelog });
+      }),
+      andThen_default(reject_default(propEq_default("type", "chore")))
+    )
+  );
+  return Promise.all(items);
+}
+
+// release/src/changelog/inferVersionFromChangelog.ts
+var import_core11 = __toESM(require_core());
+var import_semver2 = __toESM(require_semver2());
+var containsFeature = any_default(propEq_default("type", "feat"));
+var containsBreakingChange = any_default(propEq_default("breaking", true));
+var description = {
+  major: "major: breaking change detected",
+  minor: "minor: new feature detected",
+  patch: "patch: only fixes and/or chores detected"
+};
+function inferVersionFromChangelog(from, changelog) {
+  const upcomingVersionIncrement = containsBreakingChange(
+    changelog
+  ) ? "major" : containsFeature(changelog) ? "minor" : "patch";
+  const upcomingVersion = import_semver2.default.inc(from, upcomingVersionIncrement);
+  if (upcomingVersion === null) {
+    throw new Error(
+      `Could not calculate new version (incrementing ${from} to ${upcomingVersionIncrement})`
+    );
+  }
+  (0, import_core11.info)(
+    `Version increment (${description[upcomingVersionIncrement]}): ${from} -> v${upcomingVersion}`
+  );
+  return `v${upcomingVersion}`;
+}
+
+// release/src/changelog/writeChangelog.ts
+var import_fs = require("fs");
+var import_promises3 = require("fs/promises");
+var import_core12 = __toESM(require_core());
+async function writeChangelog(changelogPath, changelog, upcomingVersion, dryRun) {
+  const currentPublicChangelogContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises3.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
+  const publicChangelogContents = formatPublicChangelog(
+    upcomingVersion,
+    changelog
+  );
+  if (dryRun) {
+    (0, import_core12.info)(`Dry run, not writing changelog`);
+  } else {
+    await (0, import_promises3.writeFile)(
+      changelogPath,
+      currentPublicChangelogContents.replace(
+        "# Changelog\n\n",
+        `# Changelog
+
+${publicChangelogContents}
+
+`
+      )
+    );
+    (0, import_core12.info)(`Written changelog to: ${changelogPath}`);
+  }
 }
 
 // release/src/prepare.ts
