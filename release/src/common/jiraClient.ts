@@ -1,4 +1,4 @@
-import { info } from '@actions/core'
+import { info, warning } from '@actions/core'
 import { Version2Client } from 'jira.js'
 
 const transitionIds = {
@@ -63,7 +63,8 @@ export async function transitionToReleased(
         status = 'Done'
         break
       default:
-        throw new Error(`Unknown status ${status}`)
+        warning(`${issueIdOrKey} has unknown status ${status}`)
+        return
     }
 
     return await jiraClient.issues.doTransition({

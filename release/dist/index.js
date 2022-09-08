@@ -2099,10 +2099,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning5(message, properties = {}) {
+    function warning6(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning5;
+    exports.warning = warning6;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -68562,7 +68562,8 @@ async function transitionToReleased(issueIdOrKey, jiraClient) {
         status = "Done";
         break;
       default:
-        throw new Error(`Unknown status ${status}`);
+        (0, import_core3.warning)(`${issueIdOrKey} has unknown status ${status}`);
+        return;
     }
     return await jiraClient.issues.doTransition({
       issueIdOrKey,
