@@ -24,7 +24,7 @@ type Options = {
   useFallback?: boolean
 }
 
-export const ReleaseBranches = ['master', 'main']
+export const ReleaseBranches = ['main']
 export const DevelopBranches = ['develop']
 
 export async function getShaFromRef({

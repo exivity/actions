@@ -19274,7 +19274,7 @@ var import_glob_promise = __toESM(require_lib4());
 var import_core = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 var import_console = require("console");
-var ReleaseBranches = ["master", "main"];
+var ReleaseBranches = ["main"];
 var DevelopBranches = ["develop"];
 async function getShaFromRef({
   octokit,

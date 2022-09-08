@@ -28,7 +28,7 @@ import {
 import { isWorkflowDependencyDone } from './checks'
 import { dispatch } from './dispatch'
 
-const supportedEvents = ['push', 'pull_request', 'workflow_run'] as const
+const supportedEvents = ['workflow_run', 'pull_request'] as const
 
 // id for exivity/scaffold/.github/workflows/build.yaml
 // obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
@@ -151,9 +151,14 @@ async function run() {
     }
   }
 
-  if (eventName === 'pull_request') {
+  if (isEvent(eventName, 'pull_request', eventData)) {
     // We need to check if required workflow has finished
     info('Checking if workflow constraint is satisfied...')
+
+    if (eventData['action'] !== 'ready_for_review') {
+      warning(`[accept] Skipping: workflow constraint not satisfied`)
+      return
+    }
 
     if (!(await isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
       warning(`[accept] Skipping: workflow constraint not satisfied`)

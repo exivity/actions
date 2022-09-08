@@ -70220,7 +70220,7 @@ function createChangelogItem(commit) {
 
 // release/src/changelog/getRepoCommits.ts
 var import_console2 = require("console");
-var DEFAULT_REPOSITORY_RELEASE_BRANCH = "main";
+var REPOSITORY_RELEASE_BRANCH = "main";
 var getRepoCommits = (octokit) => async (repository) => {
   const latestVersion = await getLatestVersion();
   (0, import_console2.info)(`- exivity/${repository}`);
@@ -70234,7 +70234,7 @@ var getRepoCommits = (octokit) => async (repository) => {
     octokit,
     owner: "exivity",
     repo: repository,
-    branch: DEFAULT_REPOSITORY_RELEASE_BRANCH,
+    branch: REPOSITORY_RELEASE_BRANCH,
     since: latestVersionCommit
   });
 };
@@ -70593,7 +70593,7 @@ async function getRepositoriesLastSha(octokit, repositories) {
       octokit,
       owner: "exivity",
       repo: repository,
-      sha: DEFAULT_REPOSITORY_RELEASE_BRANCH
+      sha: REPOSITORY_RELEASE_BRANCH
     })
   );
   return Promise.all(shas);

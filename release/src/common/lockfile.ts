@@ -4,7 +4,7 @@ import { writeFile } from 'fs/promises'
 import { zipObj } from 'ramda'
 
 import { getLastCommitSha } from '../../../lib/github'
-import { DEFAULT_REPOSITORY_RELEASE_BRANCH } from '../changelog'
+import { REPOSITORY_RELEASE_BRANCH } from '../changelog'
 
 type Octokit = ReturnType<typeof getOctokit>
 
@@ -17,7 +17,7 @@ export async function getRepositoriesLastSha(
       octokit,
       owner: 'exivity',
       repo: repository,
-      sha: DEFAULT_REPOSITORY_RELEASE_BRANCH,
+      sha: REPOSITORY_RELEASE_BRANCH,
     })
   )
 

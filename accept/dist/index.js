@@ -30552,7 +30552,7 @@ function table(key, value) {
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 var import_console = require("console");
-var ReleaseBranches = ["master", "main"];
+var ReleaseBranches = ["main"];
 var DevelopBranches = ["develop"];
 async function getPrFromRef({
   octokit,
@@ -35022,7 +35022,7 @@ async function dispatch({
 }
 
 // accept/src/index.ts
-var supportedEvents = ["push", "pull_request", "workflow_run"];
+var supportedEvents = ["workflow_run", "pull_request"];
 var scaffoldWorkflowId = 514379;
 var defaultScaffoldBranch = "develop";
 function detectIssueKey(input) {
@@ -35114,8 +35114,12 @@ async function run() {
       return;
     }
   }
-  if (eventName === "pull_request") {
+  if (isEvent(eventName, "pull_request", eventData)) {
     (0, import_core4.info)("Checking if workflow constraint is satisfied...");
+    if (eventData["action"] !== "ready_for_review") {
+      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
+      return;
+    }
     if (!await isWorkflowDependencyDone(octokit, ghToken, sha, component)) {
       (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
       return;
