@@ -8626,26 +8626,8 @@ async function exec(command, args) {
 // lib/github.ts
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
-async function getShaFromRef({
-  octokit,
-  owner,
-  repo,
-  ref,
-  useFallback = true
-}) {
-  if (useFallback && ref === "develop") {
-    const availableBranches = (await octokit.rest.repos.listBranches({
-      owner,
-      repo
-    })).data.map((branch) => branch.name);
-    if (!availableBranches.includes("develop")) {
-      const fallback = availableBranches.includes("main") ? "main" : "master";
-      (0, import_core2.warning)(
-        `Branch "develop" not available in repository "${owner}/${repo}", falling back to "${fallback}".`
-      );
-      ref = fallback;
-    }
-  }
+var STANDARD_BRANCH = "main";
+async function getShaFromRef({ octokit, owner, repo, ref }) {
   const sha = (await octokit.rest.repos.getBranch({
     owner,
     repo,
@@ -8716,7 +8698,7 @@ function getAWSCredentials() {
 async function run() {
   const component = (0, import_core4.getInput)("component", { required: true });
   let sha = (0, import_core4.getInput)("sha");
-  const branch = (0, import_core4.getInput)("branch") || (import_github2.context.ref === "refs/heads/main" ? "main" : import_github2.context.ref === "refs/heads/master" ? "master" : "develop");
+  const branch = (0, import_core4.getInput)("branch") || STANDARD_BRANCH;
   const usePlatformPrefix = getBooleanInput("use-platform-prefix", false);
   const prefix = (0, import_core4.getInput)("prefix") || void 0;
   const path = (0, import_core4.getInput)("path") || `../${component}/build`;

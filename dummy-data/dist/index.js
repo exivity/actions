@@ -8616,26 +8616,8 @@ async function exec(command, args) {
 // lib/github.ts
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
-async function getShaFromRef({
-  octokit,
-  owner,
-  repo,
-  ref,
-  useFallback = true
-}) {
-  if (useFallback && ref === "develop") {
-    const availableBranches = (await octokit.rest.repos.listBranches({
-      owner,
-      repo
-    })).data.map((branch) => branch.name);
-    if (!availableBranches.includes("develop")) {
-      const fallback = availableBranches.includes("main") ? "main" : "master";
-      (0, import_core2.warning)(
-        `Branch "develop" not available in repository "${owner}/${repo}", falling back to "${fallback}".`
-      );
-      ref = fallback;
-    }
-  }
+var STANDARD_BRANCH = "main";
+async function getShaFromRef({ octokit, owner, repo, ref }) {
   const sha = (await octokit.rest.repos.getBranch({
     owner,
     repo,
@@ -8752,7 +8734,7 @@ async function installComponent(component, octokit) {
     octokit,
     owner: "exivity",
     repo: component,
-    ref: "master"
+    ref: STANDARD_BRANCH
   });
   await downloadS3object({
     component,

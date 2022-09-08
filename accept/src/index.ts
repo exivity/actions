@@ -19,7 +19,6 @@ import {
   getRepository,
   getSha,
   getToken,
-  isDevelopBranch,
   isEvent,
   isReleaseBranch,
   review,
@@ -175,7 +174,7 @@ async function run() {
   }
 
   // If we're on a development branch, scrub component and sha from dispatch
-  if (isDevelopBranch(ref) || isReleaseBranch(ref)) {
+  if (isReleaseBranch(ref)) {
     info(`On a ${ref} branch, dispatching plain run`)
     await dispatch({
       octokit,

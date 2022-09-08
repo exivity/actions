@@ -19274,28 +19274,8 @@ var import_glob_promise = __toESM(require_lib4());
 var import_core = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 var import_console = require("console");
-var ReleaseBranches = ["main"];
-var DevelopBranches = ["develop"];
-async function getShaFromRef({
-  octokit,
-  owner,
-  repo,
-  ref,
-  useFallback = true
-}) {
-  if (useFallback && ref === "develop") {
-    const availableBranches = (await octokit.rest.repos.listBranches({
-      owner,
-      repo
-    })).data.map((branch) => branch.name);
-    if (!availableBranches.includes("develop")) {
-      const fallback = availableBranches.includes("main") ? "main" : "master";
-      (0, import_core.warning)(
-        `Branch "develop" not available in repository "${owner}/${repo}", falling back to "${fallback}".`
-      );
-      ref = fallback;
-    }
-  }
+var STANDARD_BRANCH = "main";
+async function getShaFromRef({ octokit, owner, repo, ref }) {
   const sha = (await octokit.rest.repos.getBranch({
     owner,
     repo,
@@ -19371,13 +19351,7 @@ function isReleaseBranch(ref) {
   if (!ref) {
     ref = getRef();
   }
-  return ReleaseBranches.includes(ref);
-}
-function isDevelopBranch(ref) {
-  if (!ref) {
-    ref = getRef();
-  }
-  return DevelopBranches.includes(ref);
+  return ref === STANDARD_BRANCH;
 }
 async function writeStatus({
   octokit,
@@ -22453,46 +22427,43 @@ function mimeOrDefault(path) {
 
 // virustotal/src/status.ts
 async function getPendingVirusTotalStatuses(octokit) {
-  const refs = [...ReleaseBranches, ...DevelopBranches];
+  const ref = STANDARD_BRANCH;
   const statuses = [];
-  for (const ref of refs) {
-    (0, import_core3.info)(`Checking all statuses for ${ref}`);
-    try {
-      const { owner, repo } = getRepository();
-      const sha = await getShaFromRef({
-        octokit,
-        owner,
-        repo,
-        ref,
-        useFallback: false
-      });
-      const { data } = await octokit.rest.repos.listCommitStatusesForRef({
-        owner,
-        repo,
-        ref: sha
-      });
-      (0, import_core3.debug)(`Total statuses: ${data.length}`);
-      const uniqueStatuses = data.filter(
-        (status, i, arr) => arr.findIndex((s) => s.context === status.context) === i
-      );
-      (0, import_core3.debug)(`Total unique statuses: ${uniqueStatuses.length}`);
-      if (!uniqueStatuses.length) {
-        (0, import_core3.info)(`No pending virustotal statuses found`);
-      } else {
-        for (const status of uniqueStatuses) {
-          if (status.context.startsWith("virustotal") && status.state === "pending") {
-            (0, import_core3.info)(`Found pending virustotal status "${status.context}"`);
-            statuses.push({ ...status, sha });
-          }
+  (0, import_core3.info)(`Checking all statuses for ${ref}`);
+  try {
+    const { owner, repo } = getRepository();
+    const sha = await getShaFromRef({
+      octokit,
+      owner,
+      repo,
+      ref
+    });
+    const { data } = await octokit.rest.repos.listCommitStatusesForRef({
+      owner,
+      repo,
+      ref: sha
+    });
+    (0, import_core3.debug)(`Total statuses: ${data.length}`);
+    const uniqueStatuses = data.filter(
+      (status, i, arr) => arr.findIndex((s) => s.context === status.context) === i
+    );
+    (0, import_core3.debug)(`Total unique statuses: ${uniqueStatuses.length}`);
+    if (!uniqueStatuses.length) {
+      (0, import_core3.info)(`No pending virustotal statuses found`);
+    } else {
+      for (const status of uniqueStatuses) {
+        if (status.context.startsWith("virustotal") && status.state === "pending") {
+          (0, import_core3.info)(`Found pending virustotal status "${status.context}"`);
+          statuses.push({ ...status, sha });
         }
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes("Not Found") || error.message.includes("Branch not found")) {
-          (0, import_core3.info)(`No commits found for branch ${ref}`);
-        } else {
-          throw error;
-        }
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.includes("Not Found") || error.message.includes("Branch not found")) {
+        (0, import_core3.info)(`No commits found for branch ${ref}`);
+      } else {
+        throw error;
       }
     }
   }
@@ -22543,7 +22514,7 @@ async function run() {
   switch (mode) {
     case ModeAnalyse:
       const path = (0, import_core4.getInput)("path", { required: true });
-      if (!Debug && !isReleaseBranch() && !isDevelopBranch()) {
+      if (!Debug && !isReleaseBranch()) {
         (0, import_core4.info)(`Skipping: feature branch "${getRef()}" is ignored`);
         return;
       }

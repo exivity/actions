@@ -30552,8 +30552,7 @@ function table(key, value) {
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 var import_console = require("console");
-var ReleaseBranches = ["main"];
-var DevelopBranches = ["develop"];
+var STANDARD_BRANCH = "main";
 async function getPrFromRef({
   octokit,
   owner,
@@ -30654,13 +30653,7 @@ function isReleaseBranch(ref) {
   if (!ref) {
     ref = getRef();
   }
-  return ReleaseBranches.includes(ref);
-}
-function isDevelopBranch(ref) {
-  if (!ref) {
-    ref = getRef();
-  }
-  return DevelopBranches.includes(ref);
+  return ref === STANDARD_BRANCH;
 }
 async function getCommit({
   octokit,
@@ -35131,7 +35124,7 @@ async function run() {
       return;
     }
   }
-  if (isDevelopBranch(ref) || isReleaseBranch(ref)) {
+  if (isReleaseBranch(ref)) {
     (0, import_core4.info)(`On a ${ref} branch, dispatching plain run`);
     await dispatch({
       octokit,

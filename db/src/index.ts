@@ -1,22 +1,21 @@
 import { getInput, info, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
-import { context, getOctokit } from '@actions/github'
+import { getOctokit } from '@actions/github'
 import { platform } from 'os'
 import path from 'path'
 import { startDocker } from '../../lib/docker'
-import { getShaFromRef, getToken, getWorkspacePath } from '../../lib/github'
+import {
+  getShaFromRef,
+  getToken,
+  getWorkspacePath,
+  STANDARD_BRANCH,
+} from '../../lib/github'
 import { defaultVersion, image, startPostgres } from '../../lib/postgres'
 import { downloadS3object, getAWSCredentials } from '../../lib/s3'
 
 async function run() {
   // Input
-  const branch =
-    getInput('branch') ||
-    (context.ref === 'refs/heads/main'
-      ? 'main'
-      : context.ref === 'refs/heads/master'
-      ? 'master'
-      : 'develop')
+  const branch = getInput('branch') || STANDARD_BRANCH
   const dbName = getInput('db-name') || 'exdb-test'
   const mode = getInput('mode') || 'host'
   const password = getInput('password') || 'postgres'
