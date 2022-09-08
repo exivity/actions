@@ -70354,6 +70354,9 @@ var getEpicMilestone = async (jiraClient, issue) => {
 function isFulfilled(arg) {
   return arg.status === "fulfilled";
 }
+function isNotEpic(issue) {
+  return issue.fields.issuetype.name !== "Epic" /* Epic */;
+}
 function isRejected(arg) {
   return arg.status === "rejected";
 }
@@ -70388,7 +70391,7 @@ async function jiraPlugin({ jiraClient, changelog }) {
         (0, import_core8.info)(`got error when getting issue:
 ${JSON.stringify(reason)}`);
       });
-      const jiraIssues = wrappedJiraIssues.filter(isFulfilled).map(prop_default("value"));
+      const jiraIssues = wrappedJiraIssues.filter(isFulfilled).map(prop_default("value")).filter(isNotEpic);
       const issuesTypeEqualsOneOf = (oneOf) => {
         return isNotEmpty(
           innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
@@ -70397,7 +70400,7 @@ ${JSON.stringify(reason)}`);
       changelogItem = {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),
-        type: issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore",
+        type: issuesTypeEqualsOneOf(["Feature" /* Feature */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore",
         links: {
           ...changelogItem.links,
           issues: jiraIssues.map((jiraIssue) => ({

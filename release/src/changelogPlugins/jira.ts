@@ -92,6 +92,10 @@ function isFulfilled<T>(arg: {
   return arg.status === 'fulfilled'
 }
 
+function isNotEpic(issue: Version2Models.Issue) {
+  return issue.fields.issuetype.name !== JiraIssueType.Epic
+}
+
 function isRejected(arg: any): arg is PromiseRejectedResult {
   return arg.status === 'rejected'
 }
@@ -135,6 +139,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
       const jiraIssues = wrappedJiraIssues
         .filter(isFulfilled)
         .map(prop('value'))
+        .filter(isNotEpic)
 
       const issuesTypeEqualsOneOf = (oneOf: JiraIssueType[]) => {
         return isNotEmpty(
@@ -145,7 +150,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
       changelogItem = {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),
-        type: issuesTypeEqualsOneOf([JiraIssueType.Feature, JiraIssueType.Epic])
+        type: issuesTypeEqualsOneOf([JiraIssueType.Feature])
           ? ('feat' as const)
           : issuesTypeEqualsOneOf([JiraIssueType.Bug])
           ? ('fix' as const)
