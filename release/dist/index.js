@@ -68649,16 +68649,30 @@ async function getVersion(dryRun, jiraClient, version, issueIdOrKey) {
     throw new Error("Cannot get version data");
   }
   if (versionData.length > 0) {
+    if (typeof versionData[0].id !== "string") {
+      throw new Error(
+        `returned version id is not a string, but: ${JSON.stringify(
+          versionData[0].id
+        )}`
+      );
+    }
     return versionData[0].id;
   } else if (dryRun) {
     (0, import_core3.info)("dry run, not creating new version id, returning that of 'next'");
-    return 10456;
+    return "10456";
   }
   const newData = await jiraClient.projectVersions.createVersion({
     name: version,
     projectId: 10002,
     releaseDate: toDateString(new Date())
   });
+  if (typeof newData.id !== "string") {
+    throw new Error(
+      `newly created version id is not a string, but: ${JSON.stringify(
+        versionData[0].id
+      )}`
+    );
+  }
   return newData.id;
 }
 
@@ -70944,28 +70958,36 @@ async function getChangelogItemsSlugs(octokit, jiraClient, repositoriesJsonPath)
   return getChangelogSlugs(changelogItems);
 }
 async function updateIssueFixVersion(dryRun, version, jiraIssueIds, jiraClient) {
-  if (dryRun) {
-    (0, import_core14.info)(
-      `Dry run, not setting release version of tickets, else would have set the release version of the following:
-- ${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n- ") : "found no tickets"}`
-    );
-  } else {
-    (0, import_core14.info)(
-      `Setting release version of:
-- ${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n- ") : "found no tickets"}`
-    );
-    for (const issueIdOrKey of jiraIssueIds) {
-      let versionId;
+  const jiraIssues = (await Promise.all(
+    jiraIssueIds.map(async (issueIdOrKey) => {
       try {
-        versionId = await getVersion(dryRun, jiraClient, version, issueIdOrKey);
+        return [
+          [
+            issueIdOrKey,
+            await getVersion(dryRun, jiraClient, version, issueIdOrKey)
+          ]
+        ];
       } catch (err) {
         (0, import_core14.warning)(
           `failed to get version ID for issue ${issueIdOrKey}: ${JSON.stringify(
             err
           )}`
         );
-        continue;
+        return [];
       }
+    })
+  )).flat();
+  if (dryRun) {
+    (0, import_core14.info)(
+      `Dry run, not setting release version of tickets, else would have set the release version of the following:
+- ${jiraIssues.length > 0 ? jiraIssues.map(([id, _]) => id).join("\n- ") : "found no tickets"}`
+    );
+  } else {
+    (0, import_core14.info)(
+      `Setting release version of:
+- ${jiraIssues.length > 0 ? jiraIssues.map(([id, _]) => id).join("\n- ") : "found no tickets"}`
+    );
+    for (const [issueIdOrKey, versionId] of jiraIssues) {
       try {
         await jiraClient.issues.editIssue({
           issueIdOrKey,

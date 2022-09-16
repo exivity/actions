@@ -30,32 +30,46 @@ export async function updateIssueFixVersion(
   jiraIssueIds: string[],
   jiraClient: ReturnType<typeof getJiraClient>
 ) {
+  const jiraIssues = (
+    await Promise.all(
+      jiraIssueIds.map(async (issueIdOrKey) => {
+        try {
+          return [
+            [
+              issueIdOrKey,
+              await getVersion(dryRun, jiraClient, version, issueIdOrKey),
+            ],
+          ]
+        } catch (err) {
+          warning(
+            `failed to get version ID for issue ${issueIdOrKey}: ${JSON.stringify(
+              err
+            )}`
+          )
+          return []
+        }
+      })
+    )
+  ).flat()
+
   if (dryRun) {
     info(
       `Dry run, not setting release version of tickets, else would have set the release version of the following:\n- ${
-        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n- ') : 'found no tickets'
+        jiraIssues.length > 0
+          ? jiraIssues.map(([id, _]) => id).join('\n- ')
+          : 'found no tickets'
       }`
     )
   } else {
     info(
       `Setting release version of:\n- ${
-        jiraIssueIds.length > 0 ? jiraIssueIds.join('\n- ') : 'found no tickets'
+        jiraIssues.length > 0
+          ? jiraIssues.map(([id, _]) => id).join('\n- ')
+          : 'found no tickets'
       }`
     )
 
-    for (const issueIdOrKey of jiraIssueIds) {
-      let versionId
-      try {
-        versionId = await getVersion(dryRun, jiraClient, version, issueIdOrKey)
-      } catch (err) {
-        warning(
-          `failed to get version ID for issue ${issueIdOrKey}: ${JSON.stringify(
-            err
-          )}`
-        )
-        continue
-      }
-
+    for (const [issueIdOrKey, versionId] of jiraIssues) {
       try {
         await jiraClient.issues.editIssue({
           issueIdOrKey,

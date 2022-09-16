@@ -87,7 +87,7 @@ export async function getVersion(
   jiraClient: ReturnType<typeof getJiraClient>,
   version: string,
   issueIdOrKey: string
-) {
+): Promise<string> {
   const { fields } = (await jiraClient.issues.getEditIssueMeta({
     issueIdOrKey,
   })) as any
@@ -103,10 +103,18 @@ export async function getVersion(
   }
 
   if (versionData.length > 0) {
+    if (typeof versionData[0].id !== 'string') {
+      throw new Error(
+        `returned version id is not a string, but: ${JSON.stringify(
+          versionData[0].id
+        )}`
+      )
+    }
+
     return versionData[0].id
   } else if (dryRun) {
     info("dry run, not creating new version id, returning that of 'next'")
-    return 10456 // the 'next' version
+    return '10456' // the 'next' version
   }
 
   const newData = await jiraClient.projectVersions.createVersion({
@@ -114,6 +122,14 @@ export async function getVersion(
     projectId: 10002,
     releaseDate: toDateString(new Date()),
   })
+
+  if (typeof newData.id !== 'string') {
+    throw new Error(
+      `newly created version id is not a string, but: ${JSON.stringify(
+        versionData[0].id
+      )}`
+    )
+  }
 
   return newData.id
 }
