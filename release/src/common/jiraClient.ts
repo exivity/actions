@@ -63,8 +63,7 @@ export async function transitionToReleased(
         status = 'Done'
         break
       default:
-        warning(`${issueIdOrKey} has unknown status ${status}`)
-        return
+        throw new Error(`${issueIdOrKey} has unknown status ${status}`)
     }
 
     return await jiraClient.issues.doTransition({

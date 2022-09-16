@@ -68622,8 +68622,7 @@ async function transitionToReleased(issueIdOrKey, jiraClient) {
         status = "Done";
         break;
       default:
-        (0, import_core3.warning)(`${issueIdOrKey} has unknown status ${status}`);
-        return;
+        throw new Error(`${issueIdOrKey} has unknown status ${status}`);
     }
     return await jiraClient.issues.doTransition({
       issueIdOrKey,
