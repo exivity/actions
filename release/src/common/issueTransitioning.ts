@@ -99,12 +99,24 @@ export async function transitionIssuesAndUpdateFixVersion(
     await Promise.all(
       jiraIssueIds.map((issueIdOrKey) => {
         return transitionToReleased(issueIdOrKey, jiraClient)
+          .then(() => [issueIdOrKey])
+          .catch((e) => {
+            warning(
+              `Got error while transitioning issue to released: ${JSON.stringify(
+                e
+              )}`
+            )
+            return [] as string[]
+          })
       })
-    ).then(() => {
-      jiraIssueIds.forEach((issueIdOrKey) => {
-        info(`Transitioned issue ${issueIdOrKey} to released`)
+    ).then((ids) =>
+      ids.flatMap((id) => {
+        id.forEach((issueIdOrKey) => {
+          info(`Transitioned issue ${issueIdOrKey} to released`)
+        })
+        return id
       })
-    })
+    )
   }
 
   // Update fixVersion of all issues

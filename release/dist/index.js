@@ -33084,6 +33084,18 @@ var require_issuePriorities = __commonJS({
           return this.client.sendRequest(config, callback);
         });
       }
+      setDefaultPriority(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/priority/default",
+            method: "PUT",
+            data: {
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
       searchPriorities(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
@@ -41249,6 +41261,14 @@ var require_serverInformation = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/setDefaultPriorityRequest.js
+var require_setDefaultPriorityRequest = __commonJS({
+  "node_modules/jira.js/out/version2/models/setDefaultPriorityRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/sharePermission.js
 var require_sharePermission = __commonJS({
   "node_modules/jira.js/out/version2/models/sharePermission.js"(exports) {
@@ -42416,6 +42436,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_securityScheme(), exports);
     tslib_1.__exportStar(require_securitySchemes(), exports);
     tslib_1.__exportStar(require_serverInformation(), exports);
+    tslib_1.__exportStar(require_setDefaultPriorityRequest(), exports);
     tslib_1.__exportStar(require_sharePermission(), exports);
     tslib_1.__exportStar(require_sharePermissionInput(), exports);
     tslib_1.__exportStar(require_simpleApplicationProperty(), exports);
@@ -45601,6 +45622,14 @@ var require_setDashboardItemProperty = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/setDefaultPriority.js
+var require_setDefaultPriority = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/setDefaultPriority.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/setDefaultShareScope.js
 var require_setDefaultShareScope = __commonJS({
   "node_modules/jira.js/out/version2/parameters/setDefaultShareScope.js"(exports) {
@@ -46513,6 +46542,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_setColumns(), exports);
     tslib_1.__exportStar(require_setCommentProperty(), exports);
     tslib_1.__exportStar(require_setDashboardItemProperty(), exports);
+    tslib_1.__exportStar(require_setDefaultPriority(), exports);
     tslib_1.__exportStar(require_setDefaultShareScope(), exports);
     tslib_1.__exportStar(require_setDefaultValues(), exports);
     tslib_1.__exportStar(require_setFavouriteForFilter(), exports);
@@ -49292,6 +49322,18 @@ var require_issuePriorities2 = __commonJS({
               description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
               iconUrl: parameters === null || parameters === void 0 ? void 0 : parameters.iconUrl,
               statusColor: parameters === null || parameters === void 0 ? void 0 : parameters.statusColor
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      setDefaultPriority(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/priority/default",
+            method: "PUT",
+            data: {
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id
             }
           };
           return this.client.sendRequest(config, callback);
@@ -57753,6 +57795,14 @@ var require_serverInformation2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/setDefaultPriorityRequest.js
+var require_setDefaultPriorityRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/setDefaultPriorityRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/sharePermission.js
 var require_sharePermission2 = __commonJS({
   "node_modules/jira.js/out/version3/models/sharePermission.js"(exports) {
@@ -58914,6 +58964,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_securityScheme2(), exports);
     tslib_1.__exportStar(require_securitySchemes2(), exports);
     tslib_1.__exportStar(require_serverInformation2(), exports);
+    tslib_1.__exportStar(require_setDefaultPriorityRequest2(), exports);
     tslib_1.__exportStar(require_sharePermission2(), exports);
     tslib_1.__exportStar(require_sharePermissionInput2(), exports);
     tslib_1.__exportStar(require_simpleApplicationProperty2(), exports);
@@ -62080,6 +62131,14 @@ var require_setDashboardItemProperty2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/setDefaultPriority.js
+var require_setDefaultPriority2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/setDefaultPriority.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/setDefaultShareScope.js
 var require_setDefaultShareScope2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/setDefaultShareScope.js"(exports) {
@@ -62998,6 +63057,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_setColumns2(), exports);
     tslib_1.__exportStar(require_setCommentProperty2(), exports);
     tslib_1.__exportStar(require_setDashboardItemProperty2(), exports);
+    tslib_1.__exportStar(require_setDefaultPriority2(), exports);
     tslib_1.__exportStar(require_setDefaultShareScope2(), exports);
     tslib_1.__exportStar(require_setDefaultValues2(), exports);
     tslib_1.__exportStar(require_setFavouriteForFilter2(), exports);
@@ -70938,13 +70998,23 @@ async function transitionIssuesAndUpdateFixVersion(dryRun, jiraIssueIds, upcomin
     );
     await Promise.all(
       jiraIssueIds.map((issueIdOrKey) => {
-        return transitionToReleased(issueIdOrKey, jiraClient);
+        return transitionToReleased(issueIdOrKey, jiraClient).then(() => [issueIdOrKey]).catch((e) => {
+          (0, import_core14.warning)(
+            `Got error while transitioning issue to released: ${JSON.stringify(
+              e
+            )}`
+          );
+          return [];
+        });
       })
-    ).then(() => {
-      jiraIssueIds.forEach((issueIdOrKey) => {
-        (0, import_core14.info)(`Transitioned issue ${issueIdOrKey} to released`);
-      });
-    });
+    ).then(
+      (ids) => ids.flatMap((id) => {
+        id.forEach((issueIdOrKey) => {
+          (0, import_core14.info)(`Transitioned issue ${issueIdOrKey} to released`);
+        });
+        return id;
+      })
+    );
   }
   try {
     await updateIssueFixVersion(
