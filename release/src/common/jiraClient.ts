@@ -113,7 +113,9 @@ export async function getVersion(
 
     return versionData[0].id
   } else if (dryRun) {
-    info("dry run, not creating new version id, returning that of 'next'")
+    info(
+      `Dry run, not creating new version id for ${issueIdOrKey}, returning that of 'next'`
+    )
     return '10456' // the 'next' version
   }
 

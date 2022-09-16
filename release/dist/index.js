@@ -68658,7 +68658,9 @@ async function getVersion(dryRun, jiraClient, version, issueIdOrKey) {
     }
     return versionData[0].id;
   } else if (dryRun) {
-    (0, import_core3.info)("dry run, not creating new version id, returning that of 'next'");
+    (0, import_core3.info)(
+      `Dry run, not creating new version id for ${issueIdOrKey}, returning that of 'next'`
+    );
     return "10456";
   }
   const newData = await jiraClient.projectVersions.createVersion({
