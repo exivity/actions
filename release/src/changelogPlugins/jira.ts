@@ -16,6 +16,7 @@ import {
   pathEq,
   reject,
   assocPath,
+  pathSatisfies,
 } from 'ramda'
 
 import type { PluginParams, JiraClient } from '.'
@@ -96,6 +97,10 @@ function isRejected(arg: any): arg is PromiseRejectedResult {
   return arg.status === 'rejected'
 }
 
+function hasLabel(issue: Version2Models.Issue, label: string) {
+  return issue.fields.labels.includes(label)
+}
+
 const isNotEmpty = complement(isEmpty)
 
 const issueTypePath = ['fields', 'issuetype', 'name']
@@ -103,7 +108,10 @@ const issueTypePath = ['fields', 'issuetype', 'name']
 const getWarnings = pipe(
   identity<Version2Models.Issue[]>,
   reject(pathEq(issueTypePath, JiraIssueType.Chore)),
-  filter((item: Version2Models.Issue) => !getReleaseNotesTitle(item)),
+  filter(
+    (item: Version2Models.Issue) =>
+      !getReleaseNotesTitle(item) && !hasLabel(item, 'no-release-notes-needed')
+  ),
   map(
     ({ key }) =>
       `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`

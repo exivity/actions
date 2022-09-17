@@ -19464,6 +19464,12 @@ var util;
     return array.map((val) => typeof val === "string" ? `'${val}'` : val).join(separator);
   }
   util2.joinValues = joinValues;
+  util2.jsonStringifyReplacer = (_, value) => {
+    if (typeof value === "bigint") {
+      return value.toString();
+    }
+    return value;
+  };
 })(util || (util = {}));
 var ZodParsedType = util.arrayToEnum([
   "string",
@@ -19609,7 +19615,7 @@ var ZodError = class extends Error {
     return this.message;
   }
   get message() {
-    return JSON.stringify(this.issues, jsonStringifyReplacer, 2);
+    return JSON.stringify(this.issues, util.jsonStringifyReplacer, 2);
   }
   get isEmpty() {
     return this.issues.length === 0;
@@ -19635,7 +19641,7 @@ ZodError.create = (issues) => {
   const error = new ZodError(issues);
   return error;
 };
-var defaultErrorMap = (issue, _ctx) => {
+var errorMap = (issue, _ctx) => {
   let message;
   switch (issue.code) {
     case ZodIssueCode.invalid_type:
@@ -19646,7 +19652,7 @@ var defaultErrorMap = (issue, _ctx) => {
       }
       break;
     case ZodIssueCode.invalid_literal:
-      message = `Invalid literal value, expected ${JSON.stringify(issue.expected, jsonStringifyReplacer)}`;
+      message = `Invalid literal value, expected ${JSON.stringify(issue.expected, util.jsonStringifyReplacer)}`;
       break;
     case ZodIssueCode.unrecognized_keys:
       message = `Unrecognized key(s) in object: ${util.joinValues(issue.keys, ", ")}`;
@@ -19723,7 +19729,7 @@ var defaultErrorMap = (issue, _ctx) => {
   }
   return { message };
 };
-var overrideErrorMap = defaultErrorMap;
+var overrideErrorMap = errorMap;
 function setErrorMap(map) {
   overrideErrorMap = map;
 }
@@ -19758,7 +19764,7 @@ function addIssueToContext(ctx, issueData) {
       ctx.common.contextualErrorMap,
       ctx.schemaErrorMap,
       getErrorMap(),
-      defaultErrorMap
+      errorMap
     ].filter((x) => !!x)
   });
   ctx.common.issues.push(issue);
@@ -19824,12 +19830,6 @@ var isAborted = (x) => x.status === "aborted";
 var isDirty = (x) => x.status === "dirty";
 var isValid = (x) => x.status === "valid";
 var isAsync = (x) => typeof Promise !== void 0 && x instanceof Promise;
-var jsonStringifyReplacer = (_, value) => {
-  if (typeof value === "bigint") {
-    return value.toString();
-  }
-  return value;
-};
 var errorUtil;
 (function(errorUtil2) {
   errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
@@ -19860,12 +19860,12 @@ var handleResult = (ctx, result) => {
 function processCreateParams(params) {
   if (!params)
     return {};
-  const { errorMap, invalid_type_error, required_error, description } = params;
-  if (errorMap && (invalid_type_error || required_error)) {
-    throw new Error(`Can't use "invalid" or "required" in conjunction with custom error map.`);
+  const { errorMap: errorMap2, invalid_type_error, required_error, description } = params;
+  if (errorMap2 && (invalid_type_error || required_error)) {
+    throw new Error(`Can't use "invalid_type_error" or "required_error" in conjunction with custom error map.`);
   }
-  if (errorMap)
-    return { errorMap, description };
+  if (errorMap2)
+    return { errorMap: errorMap2, description };
   const customMap = (iss, ctx) => {
     if (iss.code !== "invalid_type")
       return { message: ctx.defaultError };
@@ -21448,6 +21448,9 @@ var ZodTuple = class extends ZodType {
   }
 };
 ZodTuple.create = (schemas, params) => {
+  if (!Array.isArray(schemas)) {
+    throw new Error("You must pass an array of schemas to z.tuple([ ... ])");
+  }
   return new ZodTuple({
     items: schemas,
     typeName: ZodFirstPartyTypeKind.ZodTuple,
@@ -21673,7 +21676,7 @@ var ZodFunction = class extends ZodType {
           ctx.common.contextualErrorMap,
           ctx.schemaErrorMap,
           getErrorMap(),
-          defaultErrorMap
+          errorMap
         ].filter((x) => !!x),
         issueData: {
           code: ZodIssueCode.invalid_arguments,
@@ -21689,7 +21692,7 @@ var ZodFunction = class extends ZodType {
           ctx.common.contextualErrorMap,
           ctx.schemaErrorMap,
           getErrorMap(),
-          defaultErrorMap
+          errorMap
         ].filter((x) => !!x),
         issueData: {
           code: ZodIssueCode.invalid_return_type,
@@ -21754,14 +21757,14 @@ var ZodFunction = class extends ZodType {
     const validatedFunc = this.parse(func);
     return validatedFunc;
   }
-};
-ZodFunction.create = (args, returns, params) => {
-  return new ZodFunction({
-    args: args ? args.rest(ZodUnknown.create()) : ZodTuple.create([]).rest(ZodUnknown.create()),
-    returns: returns || ZodUnknown.create(),
-    typeName: ZodFirstPartyTypeKind.ZodFunction,
-    ...processCreateParams(params)
-  });
+  static create(args, returns, params) {
+    return new ZodFunction({
+      args: args ? args : ZodTuple.create([]).rest(ZodUnknown.create()),
+      returns: returns || ZodUnknown.create(),
+      typeName: ZodFirstPartyTypeKind.ZodFunction,
+      ...processCreateParams(params)
+    });
+  }
 };
 var ZodLazy = class extends ZodType {
   get schema() {
@@ -22222,10 +22225,14 @@ var preprocessType = ZodEffects.createWithPreprocess;
 var ostring = () => stringType().optional();
 var onumber = () => numberType().optional();
 var oboolean = () => booleanType().optional();
+var NEVER = INVALID;
 var mod = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   getParsedType,
   ZodParsedType,
+  defaultErrorMap: errorMap,
+  setErrorMap,
+  getErrorMap,
   makeIssue,
   EMPTY_PATH,
   addIssueToContext,
@@ -22237,7 +22244,6 @@ var mod = /* @__PURE__ */ Object.freeze({
   isDirty,
   isValid,
   isAsync,
-  jsonStringifyReplacer,
   ZodType,
   ZodString,
   ZodNumber,
@@ -22320,12 +22326,10 @@ var mod = /* @__PURE__ */ Object.freeze({
   union: unionType,
   unknown: unknownType,
   "void": voidType,
+  NEVER,
   ZodIssueCode,
   quotelessJson,
-  ZodError,
-  defaultErrorMap,
-  setErrorMap,
-  getErrorMap
+  ZodError
 });
 
 // virustotal/src/virustotal.ts
