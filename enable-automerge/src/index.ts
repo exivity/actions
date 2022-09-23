@@ -7,7 +7,8 @@ import {
   getToken,
 } from '../../lib/github'
 
-const supportedEvents = ['pull_request'] as const
+// push for enable-automerge__test
+const supportedEvents = ['push', 'pull_request'] as const
 
 const validMergeMethods = ['MERGE', 'SQUASH', 'REBASE'] as const
 

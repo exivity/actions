@@ -7563,7 +7563,7 @@ function getEventData(eventName) {
 }
 
 // enable-automerge/src/index.ts
-var supportedEvents = ["pull_request"];
+var supportedEvents = ["push", "pull_request"];
 var validMergeMethods = ["MERGE", "SQUASH", "REBASE"];
 async function getMergeMethod(client, repo) {
   var _a;
