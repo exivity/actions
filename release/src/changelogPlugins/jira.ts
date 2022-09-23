@@ -16,7 +16,6 @@ import {
   pathEq,
   reject,
   assocPath,
-  pathSatisfies,
 } from 'ramda'
 
 import type { PluginParams, JiraClient } from '.'
