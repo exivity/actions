@@ -24,32 +24,9 @@ type Options = {
   useFallback?: boolean
 }
 
-export const ReleaseBranches = ['master', 'main']
-export const DevelopBranches = ['develop']
+export const STANDARD_BRANCH = 'main'
 
-export async function getShaFromRef({
-  octokit,
-  owner,
-  repo,
-  ref,
-  useFallback = true,
-}: Options) {
-  if (useFallback && ref === 'develop') {
-    const availableBranches = (
-      await octokit.rest.repos.listBranches({
-        owner,
-        repo,
-      })
-    ).data.map((branch) => branch.name)
-    if (!availableBranches.includes('develop')) {
-      const fallback = availableBranches.includes('main') ? 'main' : 'master'
-      warning(
-        `Branch "develop" not available in repository "${owner}/${repo}", falling back to "${fallback}".`
-      )
-      ref = fallback
-    }
-  }
-
+export async function getShaFromRef({ octokit, owner, repo, ref }: Options) {
   const sha = (
     await octokit.rest.repos.getBranch({
       owner,
@@ -277,15 +254,7 @@ export function isReleaseBranch(ref?: string) {
     ref = getRef()
   }
 
-  return ReleaseBranches.includes(ref)
-}
-
-export function isDevelopBranch(ref?: string) {
-  if (!ref) {
-    ref = getRef()
-  }
-
-  return DevelopBranches.includes(ref)
+  return ref === STANDARD_BRANCH
 }
 
 export async function getCommit({

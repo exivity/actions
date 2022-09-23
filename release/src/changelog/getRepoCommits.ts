@@ -1,11 +1,12 @@
 import { getOctokit } from '@actions/github'
 import { info } from 'console'
-import { curry } from 'ramda'
 
 import { getLatestVersion } from '../../../lib/git'
-import { getCommitForTag, getCommitsSince, Commit } from '../../../lib/github'
-
-export const DEFAULT_REPOSITORY_RELEASE_BRANCH = 'main'
+import {
+  getCommitForTag,
+  getCommitsSince,
+  STANDARD_BRANCH,
+} from '../../../lib/github'
 
 type Octokit = ReturnType<typeof getOctokit>
 
@@ -27,7 +28,7 @@ export const getRepoCommits =
       octokit,
       owner: 'exivity',
       repo: repository,
-      branch: DEFAULT_REPOSITORY_RELEASE_BRANCH,
+      branch: STANDARD_BRANCH,
       since: latestVersionCommit,
     })
   }

@@ -1,5 +1,4 @@
 import { getOctokit } from '@actions/github'
-import { info } from 'console'
 import { pipe, map, andThen, reject, propEq } from 'ramda'
 
 import { JiraClient, runPlugins } from '../changelogPlugins'
