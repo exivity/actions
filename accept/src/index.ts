@@ -27,7 +27,7 @@ import {
 import { isWorkflowDependencyDone } from './checks'
 import { dispatch } from './dispatch'
 
-const supportedEvents = ['workflow_run', 'pull_request'] as const
+const supportedEvents = ['workflow_run', 'pull_request', 'push'] as const
 
 // id for exivity/scaffold/.github/workflows/build.yaml
 // obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
