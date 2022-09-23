@@ -35110,17 +35110,21 @@ async function run() {
   if (isEvent(eventName, "pull_request", eventData)) {
     (0, import_core4.info)("Checking if workflow constraint is satisfied...");
     if (eventData["action"] !== "ready_for_review") {
-      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
+      (0, import_core4.warning)(
+        `[accept] Skipping: the pull request is not ready for review (it's a draft).`
+      );
       return;
     }
     if (!await isWorkflowDependencyDone(octokit, ghToken, sha, component)) {
-      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
+      (0, import_core4.warning)(
+        `[accept] Skipping: build artifacts are not ready yet, waiting for "build" workflow to finish.`
+      );
       return;
     }
   }
   if (isEvent(eventName, "workflow_run", eventData)) {
     if (eventData["workflow_run"]["conclusion"] !== "success") {
-      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
+      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied.`);
       return;
     }
   }

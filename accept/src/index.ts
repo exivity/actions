@@ -155,12 +155,16 @@ async function run() {
     info('Checking if workflow constraint is satisfied...')
 
     if (eventData['action'] !== 'ready_for_review') {
-      warning(`[accept] Skipping: workflow constraint not satisfied`)
+      warning(
+        `[accept] Skipping: the pull request is not ready for review (it's a draft).`
+      )
       return
     }
 
     if (!(await isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
-      warning(`[accept] Skipping: workflow constraint not satisfied`)
+      warning(
+        `[accept] Skipping: build artifacts are not ready yet, waiting for "build" workflow to finish.`
+      )
       return
     }
   }
@@ -168,7 +172,7 @@ async function run() {
   if (isEvent(eventName, 'workflow_run', eventData)) {
     // We need to check if conclusion was successful
     if (eventData['workflow_run']['conclusion'] !== 'success') {
-      warning(`[accept] Skipping: workflow constraint not satisfied`)
+      warning(`[accept] Skipping: workflow constraint not satisfied.`)
       return
     }
   }
