@@ -35015,7 +35015,11 @@ async function dispatch({
 }
 
 // accept/src/index.ts
-var supportedEvents = ["workflow_run", "pull_request"];
+var supportedEvents = [
+  "workflow_run",
+  "pull_request",
+  "ready_for_review"
+];
 var scaffoldWorkflowId = 514379;
 var defaultScaffoldBranch = "develop";
 function detectIssueKey(input) {
