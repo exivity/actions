@@ -70575,12 +70575,17 @@ function isFulfilled(arg) {
 function isRejected(arg) {
   return arg.status === "rejected";
 }
+function hasLabel(issue, label) {
+  return issue.fields.labels.includes(label);
+}
 var isNotEmpty = complement_default(isEmpty_default);
 var issueTypePath = ["fields", "issuetype", "name"];
 var getWarnings = pipe(
   identity_default,
   reject_default(pathEq_default(issueTypePath, "Chore" /* Chore */)),
-  filter_default((item) => !getReleaseNotesTitle(item)),
+  filter_default(
+    (item) => !getReleaseNotesTitle(item) && !hasLabel(item, "no-release-notes-needed")
+  ),
   map_default(
     ({ key }) => `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`
   )

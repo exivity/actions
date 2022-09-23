@@ -25,7 +25,7 @@ jobs:
           mkdir -p ${{ env.EXIVITY_PROGRAM_PATH }}
       - uses: ./db
         with:
-          branch: develop
+          branch: main
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
