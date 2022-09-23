@@ -5,7 +5,7 @@ import { promises as fs } from 'fs'
 import os from 'os'
 import path from 'path'
 import { unzipAll } from '../../lib/core'
-import { getShaFromRef, getToken } from '../../lib/github'
+import { getShaFromRef, getToken, STANDARD_BRANCH } from '../../lib/github'
 import { downloadS3object, getAWSCredentials } from '../../lib/s3'
 
 async function run() {
@@ -80,7 +80,7 @@ async function installComponent(
     octokit,
     owner: 'exivity',
     repo: component,
-    ref: 'master',
+    ref: STANDARD_BRANCH,
   })
 
   await downloadS3object({

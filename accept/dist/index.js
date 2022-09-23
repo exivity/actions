@@ -30552,8 +30552,7 @@ function table(key, value) {
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 var import_console = require("console");
-var ReleaseBranches = ["master", "main"];
-var DevelopBranches = ["develop"];
+var STANDARD_BRANCH = "main";
 async function getPrFromRef({
   octokit,
   owner,
@@ -30654,13 +30653,7 @@ function isReleaseBranch(ref) {
   if (!ref) {
     ref = getRef();
   }
-  return ReleaseBranches.includes(ref);
-}
-function isDevelopBranch(ref) {
-  if (!ref) {
-    ref = getRef();
-  }
-  return DevelopBranches.includes(ref);
+  return ref === STANDARD_BRANCH;
 }
 async function getCommit({
   octokit,
@@ -35022,7 +35015,7 @@ async function dispatch({
 }
 
 // accept/src/index.ts
-var supportedEvents = ["push", "pull_request", "workflow_run"];
+var supportedEvents = ["workflow_run", "pull_request", "push"];
 var scaffoldWorkflowId = 514379;
 var defaultScaffoldBranch = "develop";
 function detectIssueKey(input) {
@@ -35114,20 +35107,28 @@ async function run() {
       return;
     }
   }
-  if (eventName === "pull_request") {
+  if (isEvent(eventName, "pull_request", eventData)) {
     (0, import_core4.info)("Checking if workflow constraint is satisfied...");
+    if (eventData["action"] !== "ready_for_review") {
+      (0, import_core4.warning)(
+        `[accept] Skipping: the pull request is not ready for review (it's a draft).`
+      );
+      return;
+    }
     if (!await isWorkflowDependencyDone(octokit, ghToken, sha, component)) {
-      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
+      (0, import_core4.warning)(
+        `[accept] Skipping: build artifacts are not ready yet, waiting for "build" workflow to finish.`
+      );
       return;
     }
   }
   if (isEvent(eventName, "workflow_run", eventData)) {
     if (eventData["workflow_run"]["conclusion"] !== "success") {
-      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied`);
+      (0, import_core4.warning)(`[accept] Skipping: workflow constraint not satisfied.`);
       return;
     }
   }
-  if (isDevelopBranch(ref) || isReleaseBranch(ref)) {
+  if (isReleaseBranch(ref)) {
     (0, import_core4.info)(`On a ${ref} branch, dispatching plain run`);
     await dispatch({
       octokit,

@@ -3632,8 +3632,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context3, operator, key, modifier) {
-      var value = context3[key], result = [];
+    function getValues(context2, operator, key, modifier) {
+      var value = context2[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -3693,7 +3693,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context3) {
+    function expand(template, context2) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -3705,7 +3705,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context3, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -8609,26 +8609,8 @@ async function startDocker({ defaultVersion: defaultVersion2, image: image2, por
 // lib/github.ts
 var import_core2 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
-async function getShaFromRef({
-  octokit,
-  owner,
-  repo,
-  ref,
-  useFallback = true
-}) {
-  if (useFallback && ref === "develop") {
-    const availableBranches = (await octokit.rest.repos.listBranches({
-      owner,
-      repo
-    })).data.map((branch) => branch.name);
-    if (!availableBranches.includes("develop")) {
-      const fallback = availableBranches.includes("main") ? "main" : "master";
-      (0, import_core2.warning)(
-        `Branch "develop" not available in repository "${owner}/${repo}", falling back to "${fallback}".`
-      );
-      ref = fallback;
-    }
-  }
+var STANDARD_BRANCH = "main";
+async function getShaFromRef({ octokit, owner, repo, ref }) {
   const sha = (await octokit.rest.repos.getBranch({
     owner,
     repo,
@@ -8715,7 +8697,7 @@ function getAWSCredentials() {
 
 // db/src/index.ts
 async function run() {
-  const branch = (0, import_core4.getInput)("branch") || (import_github2.context.ref === "refs/heads/main" ? "main" : import_github2.context.ref === "refs/heads/master" ? "master" : "develop");
+  const branch = (0, import_core4.getInput)("branch") || STANDARD_BRANCH;
   const dbName = (0, import_core4.getInput)("db-name") || "exdb-test";
   const mode = (0, import_core4.getInput)("mode") || "host";
   const password = (0, import_core4.getInput)("password") || "postgres";

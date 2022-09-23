@@ -1,12 +1,7 @@
 import { debug, getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import glob from 'glob-promise'
-import {
-  getRef,
-  getToken,
-  isDevelopBranch,
-  isReleaseBranch,
-} from '../../lib/github'
+import { getRef, getToken, isReleaseBranch } from '../../lib/github'
 import {
   CommitStatus,
   getPendingVirusTotalStatuses,
@@ -56,7 +51,7 @@ async function run() {
 
       // Do not run on non-release and non-develop branches
       // Also check for a debug flag, so we can test this in a PR
-      if (!Debug && !isReleaseBranch() && !isDevelopBranch()) {
+      if (!Debug && !isReleaseBranch()) {
         info(`Skipping: feature branch "${getRef()}" is ignored`)
         return
       }

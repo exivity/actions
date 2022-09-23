@@ -1,20 +1,14 @@
 import { getInput, setFailed } from '@actions/core'
 import { context, getOctokit } from '@actions/github'
 import { getBooleanInput, unzipAll } from '../../lib/core'
-import { getShaFromRef, getToken } from '../../lib/github'
+import { getShaFromRef, getToken, STANDARD_BRANCH } from '../../lib/github'
 import { downloadS3object, getAWSCredentials } from '../../lib/s3'
 
 async function run() {
   // Input
   const component = getInput('component', { required: true })
   let sha = getInput('sha')
-  const branch =
-    getInput('branch') ||
-    (context.ref === 'refs/heads/main'
-      ? 'main'
-      : context.ref === 'refs/heads/master'
-      ? 'master'
-      : 'develop')
+  const branch = getInput('branch') || STANDARD_BRANCH
   const usePlatformPrefix = getBooleanInput('use-platform-prefix', false)
   const prefix = getInput('prefix') || undefined
   const path = getInput('path') || `../${component}/build`

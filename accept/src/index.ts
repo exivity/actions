@@ -19,7 +19,6 @@ import {
   getRepository,
   getSha,
   getToken,
-  isDevelopBranch,
   isEvent,
   isReleaseBranch,
   review,
@@ -28,7 +27,7 @@ import {
 import { isWorkflowDependencyDone } from './checks'
 import { dispatch } from './dispatch'
 
-const supportedEvents = ['push', 'pull_request', 'workflow_run'] as const
+const supportedEvents = ['workflow_run', 'pull_request', 'push'] as const
 
 // id for exivity/scaffold/.github/workflows/build.yaml
 // obtain with GET https://api.github.com/repos/exivity/scaffold/actions/workflows
@@ -151,12 +150,21 @@ async function run() {
     }
   }
 
-  if (eventName === 'pull_request') {
+  if (isEvent(eventName, 'pull_request', eventData)) {
     // We need to check if required workflow has finished
     info('Checking if workflow constraint is satisfied...')
 
+    if (eventData['action'] !== 'ready_for_review') {
+      warning(
+        `[accept] Skipping: the pull request is not ready for review (it's a draft).`
+      )
+      return
+    }
+
     if (!(await isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
-      warning(`[accept] Skipping: workflow constraint not satisfied`)
+      warning(
+        `[accept] Skipping: build artifacts are not ready yet, waiting for "build" workflow to finish.`
+      )
       return
     }
   }
@@ -164,13 +172,13 @@ async function run() {
   if (isEvent(eventName, 'workflow_run', eventData)) {
     // We need to check if conclusion was successful
     if (eventData['workflow_run']['conclusion'] !== 'success') {
-      warning(`[accept] Skipping: workflow constraint not satisfied`)
+      warning(`[accept] Skipping: workflow constraint not satisfied.`)
       return
     }
   }
 
   // If we're on a development branch, scrub component and sha from dispatch
-  if (isDevelopBranch(ref) || isReleaseBranch(ref)) {
+  if (isReleaseBranch(ref)) {
     info(`On a ${ref} branch, dispatching plain run`)
     await dispatch({
       octokit,
