@@ -150,7 +150,16 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
       }
 
       jiraIssues.forEach((issue) => {
-        info(`got error when getting issue:\n${JSON.stringify(issue, null, 4)}`)
+        info(`got error when getting issue:\n${issue?.fields?.issuetype?.name}`)
+        info(
+          `got error when getting issue:\n${
+            issuesTypeEqualsOneOf([JiraIssueType.Feature, JiraIssueType.Epic])
+              ? ('feat' as const)
+              : issuesTypeEqualsOneOf([JiraIssueType.Bug])
+              ? ('fix' as const)
+              : ('chore' as const)
+          }`
+        )
       })
 
       changelogItem = {

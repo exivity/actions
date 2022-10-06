@@ -70618,8 +70618,13 @@ ${JSON.stringify(reason)}`);
         );
       };
       jiraIssues.forEach((issue) => {
+        var _a2, _b2;
         (0, import_core10.info)(`got error when getting issue:
-${JSON.stringify(issue, null, 4)}`);
+${(_b2 = (_a2 = issue == null ? void 0 : issue.fields) == null ? void 0 : _a2.issuetype) == null ? void 0 : _b2.name}`);
+        (0, import_core10.info)(
+          `got error when getting issue:
+${issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore"}`
+        );
       });
       changelogItem = {
         ...changelogItem,
