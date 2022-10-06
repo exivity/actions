@@ -70631,14 +70631,6 @@ ${JSON.stringify(reason)}`);
           }))
         }
       };
-      (0, import_core10.info)(
-        `got error when getting issue:
-${JSON.stringify(
-          changelogItem,
-          null,
-          4
-        )}`
-      );
       const milestone = jiraIssues[0] && await getEpicMilestone(jiraClient, jiraIssues[0]);
       return milestone ? assocPath_default(["links", "milestone"], milestone, changelogItem) : changelogItem;
     })
@@ -70777,12 +70769,12 @@ async function prepare({
     (0, import_core13.info)(`No features or fixes to release`);
     return;
   }
-  flatChangelog = removeIssuesFromReleaseTestRepo(flatChangelog);
-  logChangelogItems(flatChangelog);
   const upcomingVersion = inferVersionFromChangelog(
     await getLatestVersion(),
     flatChangelog
   );
+  flatChangelog = removeIssuesFromReleaseTestRepo(flatChangelog);
+  logChangelogItems(flatChangelog);
   await writeLockFile(
     dryRun,
     octokit,

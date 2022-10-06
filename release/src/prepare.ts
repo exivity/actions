@@ -60,14 +60,16 @@ export async function prepare({
     return
   }
 
-  flatChangelog = removeIssuesFromReleaseTestRepo(flatChangelog)
-
-  logChangelogItems(flatChangelog)
-
   const upcomingVersion = inferVersionFromChangelog(
     await getLatestVersion(),
     flatChangelog
   )
+
+  // We can use release-test repo to trigger partiicular version bump and release
+  // but we might come up with something better and remove this
+  flatChangelog = removeIssuesFromReleaseTestRepo(flatChangelog)
+
+  logChangelogItems(flatChangelog)
 
   await writeLockFile(
     dryRun,

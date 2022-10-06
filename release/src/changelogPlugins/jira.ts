@@ -171,14 +171,6 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
         },
       }
 
-      info(
-        `got error when getting issue:\n${JSON.stringify(
-          changelogItem,
-          null,
-          4
-        )}`
-      )
-
       const milestone =
         jiraIssues[0] && (await getEpicMilestone(jiraClient, jiraIssues[0]))
 
