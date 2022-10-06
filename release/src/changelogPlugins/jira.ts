@@ -149,6 +149,10 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
         )
       }
 
+      jiraIssues.forEach((issue) => {
+        info(`got error when getting issue:\n${JSON.stringify(issue, null, 4)}`)
+      })
+
       changelogItem = {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),

@@ -70617,6 +70617,10 @@ ${JSON.stringify(reason)}`);
           innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
         );
       };
+      jiraIssues.forEach((issue) => {
+        (0, import_core10.info)(`got error when getting issue:
+${JSON.stringify(issue, null, 4)}`);
+      });
       changelogItem = {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),
