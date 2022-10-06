@@ -149,19 +149,6 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
         )
       }
 
-      jiraIssues.forEach((issue) => {
-        info(`got error when getting issue:\n${issue?.fields?.issuetype?.name}`)
-        info(
-          `got error when getting issue:\n${
-            issuesTypeEqualsOneOf([JiraIssueType.Feature, JiraIssueType.Epic])
-              ? ('feat' as const)
-              : issuesTypeEqualsOneOf([JiraIssueType.Bug])
-              ? ('fix' as const)
-              : ('chore' as const)
-          }`
-        )
-      })
-
       changelogItem = {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),
@@ -183,6 +170,14 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
           })),
         },
       }
+
+      info(
+        `got error when getting issue:\n${JSON.stringify(
+          changelogItem,
+          null,
+          4
+        )}`
+      )
 
       const milestone =
         jiraIssues[0] && (await getEpicMilestone(jiraClient, jiraIssues[0]))

@@ -70617,15 +70617,6 @@ ${JSON.stringify(reason)}`);
           innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
         );
       };
-      jiraIssues.forEach((issue) => {
-        var _a2, _b2;
-        (0, import_core10.info)(`got error when getting issue:
-${(_b2 = (_a2 = issue == null ? void 0 : issue.fields) == null ? void 0 : _a2.issuetype) == null ? void 0 : _b2.name}`);
-        (0, import_core10.info)(
-          `got error when getting issue:
-${issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore"}`
-        );
-      });
       changelogItem = {
         ...changelogItem,
         warnings: getWarnings(jiraIssues),
@@ -70640,6 +70631,14 @@ ${issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" :
           }))
         }
       };
+      (0, import_core10.info)(
+        `got error when getting issue:
+${JSON.stringify(
+          changelogItem,
+          null,
+          4
+        )}`
+      );
       const milestone = jiraIssues[0] && await getEpicMilestone(jiraClient, jiraIssues[0]);
       return milestone ? assocPath_default(["links", "milestone"], milestone, changelogItem) : changelogItem;
     })
