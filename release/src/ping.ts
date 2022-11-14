@@ -4,14 +4,14 @@ import { dispatchWorkflow } from '../../lib/github'
 
 const prepareWorkflowId = 'prepare-on-demand.yml'
 
-const defaultExivityRepoBranch = 'main'
-
 export async function ping({
   octokit,
   dryRun,
+  releaserRepo
 }: {
   octokit: ReturnType<typeof getOctokit>
   dryRun: boolean
+  releaserRepo: 'exivity'|'cls-releaser'
 }) {
   if (dryRun) {
     info(
@@ -23,8 +23,8 @@ export async function ping({
   return dispatchWorkflow({
     octokit,
     owner: 'exivity',
-    repo: 'exivity',
-    ref: defaultExivityRepoBranch,
+    repo: releaserRepo,
+    ref: 'main',
     workflow_id: prepareWorkflowId,
   })
 }
