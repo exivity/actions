@@ -15,6 +15,7 @@ enum Mode {
 
 async function run() {
   // Input
+  const releaserRepo = getInput('releaserRepo')|| 'exivity'
   const mode = getInput('mode')
   const lockfilePath = getInput('lockfile')
   const changelogPath = getInput('changelog')
@@ -35,7 +36,7 @@ async function run() {
   switch (mode) {
     case Mode.Ping:
       // Triggers workflow in the exivity repo
-      await ping({ octokit, dryRun })
+      await ping({ octokit, releaserRepo, dryRun })
       break
 
     case Mode.Prepare:

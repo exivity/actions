@@ -33,7 +33,7 @@ export enum JiraIssueType {
   Epic = 'Epic',
 }
 
-const jiraKey = new RegExp(/\bEXVT-\d+\b/g)
+const jiraKey = new RegExp(/\bEXVT-\d+\b|\bCLS-\d+\b/g)
 
 function isRegExpMatchArray(args: any): args is RegExpMatchArray {
   return Array.isArray(args)
