@@ -54,7 +54,7 @@ export async function commitAndPush(
 
 export async function updateMissingReleaseNotesWarningStatus(
   dryRun: boolean,
-  changelog: ChangelogItem[],
+  changelog: ChangelogItem[] = [],
   octokit: ReturnType<typeof getOctokit>
 ) {
   const sha = await getCommitSha()

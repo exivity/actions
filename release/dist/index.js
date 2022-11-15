@@ -70886,7 +70886,7 @@ async function commitAndPush(dryRun, title, upcomingReleaseBranch) {
   }
   return title;
 }
-async function updateMissingReleaseNotesWarningStatus(dryRun, changelog, octokit) {
+async function updateMissingReleaseNotesWarningStatus(dryRun, changelog = [], octokit) {
   const sha = await getCommitSha();
   if (dryRun) {
     (0, import_console2.info)(`Dry run, no need to write commit status`);
