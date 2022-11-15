@@ -7,6 +7,18 @@ import { getRepositories } from './common/files'
 import { ping } from './ping'
 import { prepare } from './prepare'
 import { release } from './release'
+import { info } from 'console'
+
+type RateLimitResponse = {
+  resources: {
+    core: {
+      limit: number
+      remaining: number
+      reset: number
+      used: number
+    }
+  }
+}
 
 enum Mode {
   Ping = 'ping',
@@ -32,6 +44,15 @@ async function run() {
   const octokit = getOctokit(ghToken)
   const jiraClient =
     jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null
+
+  const core = (await octokit.request('GET /rate_limit', {})).data.resources
+    .core
+
+  info(
+    `Rate limit: ${core.remaining}. Will reset at ${new Date(
+      core.reset * 1000
+    ).toISOString()}.`
+  )
 
   switch (mode) {
     case Mode.Ping:

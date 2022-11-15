@@ -1265,12 +1265,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info17 = this._prepareRequest(verb, parsedUrl, headers);
+          let info18 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info17, data);
+            response = yield this.requestRaw(info18, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -1280,7 +1280,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info17, data);
+                return authenticationHandler.handleAuthentication(this, info18, data);
               } else {
                 return response;
               }
@@ -1303,8 +1303,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info17 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info17, data);
+              info18 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info18, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -1325,7 +1325,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info17, data) {
+      requestRaw(info18, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject3) => {
             function callbackForResult(err, res) {
@@ -1337,16 +1337,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info17, data, callbackForResult);
+            this.requestRawWithCallback(info18, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info17, data, onResult) {
+      requestRawWithCallback(info18, data, onResult) {
         if (typeof data === "string") {
-          if (!info17.options.headers) {
-            info17.options.headers = {};
+          if (!info18.options.headers) {
+            info18.options.headers = {};
           }
-          info17.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info18.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -1355,7 +1355,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info17.httpModule.request(info17.options, (msg) => {
+        const req = info18.httpModule.request(info18.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -1367,7 +1367,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info17.options.path}`));
+          handleResult(new Error(`Request timeout: ${info18.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -1389,27 +1389,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info17 = {};
-        info17.parsedUrl = requestUrl;
-        const usingSsl = info17.parsedUrl.protocol === "https:";
-        info17.httpModule = usingSsl ? https : http;
+        const info18 = {};
+        info18.parsedUrl = requestUrl;
+        const usingSsl = info18.parsedUrl.protocol === "https:";
+        info18.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info17.options = {};
-        info17.options.host = info17.parsedUrl.hostname;
-        info17.options.port = info17.parsedUrl.port ? parseInt(info17.parsedUrl.port) : defaultPort;
-        info17.options.path = (info17.parsedUrl.pathname || "") + (info17.parsedUrl.search || "");
-        info17.options.method = method;
-        info17.options.headers = this._mergeHeaders(headers);
+        info18.options = {};
+        info18.options.host = info18.parsedUrl.hostname;
+        info18.options.port = info18.parsedUrl.port ? parseInt(info18.parsedUrl.port) : defaultPort;
+        info18.options.path = (info18.parsedUrl.pathname || "") + (info18.parsedUrl.search || "");
+        info18.options.method = method;
+        info18.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info17.options.headers["user-agent"] = this.userAgent;
+          info18.options.headers["user-agent"] = this.userAgent;
         }
-        info17.options.agent = this._getAgent(info17.parsedUrl);
+        info18.options.agent = this._getAgent(info18.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info17.options);
+            handler.prepareRequest(info18.options);
           }
         }
-        return info17;
+        return info18;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -2117,10 +2117,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info17(message) {
+    function info18(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info17;
+    exports.info = info18;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -71495,6 +71495,7 @@ async function release({
 }
 
 // release/src/index.ts
+var import_console4 = require("console");
 async function run() {
   const releaserRepo = (0, import_core16.getInput)("releaser-repo");
   const mode = (0, import_core16.getInput)("mode");
@@ -71509,6 +71510,12 @@ async function run() {
   const jiraToken = (0, import_core16.getInput)("jira-token");
   const octokit = (0, import_github9.getOctokit)(ghToken);
   const jiraClient = jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null;
+  const core = (await octokit.request("GET /rate_limit", {})).data.resources.core;
+  (0, import_console4.info)(
+    `Rate limit: ${core.remaining}. Will reset at ${new Date(
+      core.reset * 1e3
+    ).toISOString()}.`
+  );
   switch (mode) {
     case "ping" /* Ping */:
       await ping({ octokit, releaserRepo, dryRun });
