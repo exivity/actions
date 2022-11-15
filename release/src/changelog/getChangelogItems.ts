@@ -5,6 +5,7 @@ import { JiraClient, runPlugins } from '../changelogPlugins'
 
 import { createChangelogItem } from './changelogItem'
 import { getRepoCommits } from './getRepoCommits'
+import { getLatestVersion } from '../../../lib/git'
 
 type Octokit = ReturnType<typeof getOctokit>
 
@@ -13,9 +14,11 @@ export async function getChangelogItems(
   jiraClient: JiraClient,
   repositories: string[]
 ) {
+  const latestVersion = await getLatestVersion()
+
   const items = repositories.map(
     pipe(
-      getRepoCommits(octokit),
+      getRepoCommits(octokit, latestVersion),
       andThen(map(createChangelogItem)),
       andThen(async (changelog) => {
         // This step might change type so we filter chores out after

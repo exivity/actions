@@ -1,7 +1,6 @@
 import { getOctokit } from '@actions/github'
 import { info } from 'console'
 
-import { getLatestVersion } from '../../../lib/git'
 import {
   getCommitForTag,
   getCommitsSince,
@@ -11,9 +10,7 @@ import {
 type Octokit = ReturnType<typeof getOctokit>
 
 export const getRepoCommits =
-  (octokit: Octokit) => async (repository: string) => {
-    const latestVersion = await getLatestVersion()
-
+  (octokit: Octokit, latestVersion: string) => async (repository: string) => {
     info(`- exivity/${repository}`)
     // Find commit for latest version tag in target repository
     const latestVersionCommit = await getCommitForTag({

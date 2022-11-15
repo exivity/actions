@@ -24,10 +24,5 @@ export async function getRepositories(lockfilePath: string) {
   const lockfile = await readLockfile(lockfilePath)
   const repositories = Object.keys(lockfile.repositories)
 
-  info(`Repositories from lockfile:`)
-  repositories.forEach((repo) => {
-    info(`- ${repo}`)
-  })
-
   return repositories
 }
