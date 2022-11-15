@@ -49,9 +49,9 @@ async function run() {
     .core
 
   info(
-    `Rate limit: ${core.remaining}. Will reset at ${new Date(
-      core.reset * 1000
-    ).toISOString()}.`
+    `Remaining github API calls: ${
+      core.remaining
+    }. Rate limit will reset at ${new Date(core.reset * 1000).toISOString()}.`
   )
 
   switch (mode) {

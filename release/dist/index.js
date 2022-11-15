@@ -69199,8 +69199,8 @@ var readLockfile = readJson;
 async function getRepositories(lockfilePath) {
   const lockfile = await readLockfile(lockfilePath);
   const repositories = Object.keys(lockfile.repositories);
+  (0, import_core4.info)(`Repositories from lockfile:`);
   repositories.forEach((repo) => {
-    (0, import_core4.info)(`Repositories from lockfile:`);
     (0, import_core4.info)(`- ${repo}`);
   });
   return repositories;
@@ -71512,9 +71512,7 @@ async function run() {
   const jiraClient = jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null;
   const core = (await octokit.request("GET /rate_limit", {})).data.resources.core;
   (0, import_console4.info)(
-    `Rate limit: ${core.remaining}. Will reset at ${new Date(
-      core.reset * 1e3
-    ).toISOString()}.`
+    `Remaining github API calls: ${core.remaining}. Rate limit will reset at ${new Date(core.reset * 1e3).toISOString()}.`
   );
   switch (mode) {
     case "ping" /* Ping */:
