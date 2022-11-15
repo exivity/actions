@@ -11,7 +11,6 @@ type Octokit = ReturnType<typeof getOctokit>
 
 export const getRepoCommits =
   (octokit: Octokit, latestVersion: string) => async (repository: string) => {
-    info(`- exivity/${repository}`)
     // Find commit for latest version tag in target repository
     const latestVersionCommit = await getCommitForTag({
       octokit,
