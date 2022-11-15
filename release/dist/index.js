@@ -70891,7 +70891,6 @@ async function updateMissingReleaseNotesWarningStatus(dryRun, changelog = [], oc
   if (dryRun) {
     (0, import_console2.info)(`Dry run, no need to write commit status`);
   } else {
-    (0, import_console2.info)(JSON.stringify(changelog));
     const state = changelog.some((item) => item.warnings.length > 0) ? "pending" : "success";
     await writeStatus({
       octokit,

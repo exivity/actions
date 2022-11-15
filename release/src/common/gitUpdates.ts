@@ -61,8 +61,6 @@ export async function updateMissingReleaseNotesWarningStatus(
   if (dryRun) {
     info(`Dry run, no need to write commit status`)
   } else {
-    info(JSON.stringify(changelog))
-
     const state = changelog.some((item) => item.warnings.length > 0)
       ? 'pending'
       : 'success'
