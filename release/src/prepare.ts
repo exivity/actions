@@ -4,7 +4,6 @@ import { flatten, isEmpty } from 'ramda'
 
 import { getLatestVersion } from '../../lib/git'
 import type { getJiraClient } from './common/jiraClient'
-import { getRepositories } from './common/files'
 import { writeLockFile } from './common/lockfile'
 import {
   switchToReleaseBranch,
@@ -29,6 +28,7 @@ interface Prepare {
   repositories: string[]
   prTemplatePath: string
   upcomingReleaseBranch: string
+  releaserRepo: string
   releaseBranch: string
   dryRun: boolean
 }
@@ -41,6 +41,7 @@ export async function prepare({
   repositories,
   prTemplatePath,
   upcomingReleaseBranch,
+  releaserRepo,
   releaseBranch,
   dryRun,
 }: Prepare) {
@@ -84,7 +85,12 @@ export async function prepare({
 
   await commitAndPush(dryRun, title, upcomingReleaseBranch)
 
-  await updateMissingReleaseNotesWarningStatus(dryRun, flatChangelog, octokit)
+  await updateMissingReleaseNotesWarningStatus(
+    dryRun,
+    releaserRepo,
+    flatChangelog,
+    octokit
+  )
 
   await updatePr(
     dryRun,

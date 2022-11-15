@@ -2,7 +2,6 @@ import { info, warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 
 import { getJiraClient, transitionToReleased, getVersion } from './jiraClient'
-import { getRepositories } from './files'
 import { getChangelogItems, getChangelogSlugs } from '../changelog'
 
 export async function getChangelogItemsSlugs(
