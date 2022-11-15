@@ -1,6 +1,10 @@
 name: release
 description: Release related actions
 inputs:
+  releaser-repo:
+    description: The release coordinator that needs to be used
+    required: false
+    default: exivity
   mode:
     description: Ping, prepare or release
     required: false
