@@ -71527,6 +71527,7 @@ async function run() {
         repositories: await getRepositories(lockfilePath),
         prTemplatePath,
         upcomingReleaseBranch,
+        releaserRepo,
         releaseBranch,
         dryRun
       });
