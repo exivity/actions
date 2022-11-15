@@ -4,7 +4,6 @@ import { flatten, isEmpty } from 'ramda'
 
 import { getLatestVersion } from '../../lib/git'
 import type { getJiraClient } from './common/jiraClient'
-import { getRepositories } from './common/files'
 import { writeLockFile } from './common/lockfile'
 import {
   switchToReleaseBranch,
