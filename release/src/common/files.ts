@@ -17,10 +17,9 @@ export async function readTextFile(path: string) {
   }
 }
 
-type Repositories = Record<string, string>
-
-export async function getRepositories(repositoriesJsonPath: string) {
-  return Object.keys(await readJson<Repositories>(repositoriesJsonPath))
-}
-
 export const readLockfile = readJson<Lockfile>
+
+export async function getRepositories(lockfilePath: string) {
+  const lockfile = await readLockfile(lockfilePath)
+  return Object.keys(lockfile.repositories)
+}

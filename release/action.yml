@@ -17,10 +17,6 @@ inputs:
     description: Location of changelog (markdown)
     required: false
     default: CHANGELOG.md
-  repositories:
-    description: Location of repositories manifest (json)
-    required: false
-    default: repositories.json
   pr-template:
     description: Location of new release PR template (markdown)
     required: false

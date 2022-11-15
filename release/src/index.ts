@@ -3,6 +3,7 @@ import { getOctokit } from '@actions/github'
 import { getBooleanInput } from '../../lib/core'
 import { getToken } from '../../lib/github'
 import { getJiraClient } from './common/jiraClient'
+import { getRepositories } from './common/files'
 import { ping } from './ping'
 import { prepare } from './prepare'
 import { release } from './release'
@@ -19,7 +20,6 @@ async function run() {
   const mode = getInput('mode')
   const lockfilePath = getInput('lockfile')
   const changelogPath = getInput('changelog')
-  const repositoriesJsonPath = getInput('repositories')
   const prTemplatePath = getInput('pr-template')
   const upcomingReleaseBranch = getInput('upcoming-release-branch')
   const releaseBranch = getInput('release-branch')
@@ -53,7 +53,7 @@ async function run() {
         jiraClient,
         lockfilePath,
         changelogPath,
-        repositoriesJsonPath,
+        repositories: await getRepositories(lockfilePath),
         prTemplatePath,
         upcomingReleaseBranch,
         releaseBranch,
@@ -74,7 +74,7 @@ async function run() {
         octokit,
         lockfilePath,
         jiraClient,
-        repositoriesJsonPath,
+        repositories: await getRepositories(lockfilePath),
         dryRun,
       })
       break

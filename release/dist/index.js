@@ -69178,6 +69178,28 @@ async function getVersion(dryRun, jiraClient, version, issueIdOrKey) {
   return newData.id;
 }
 
+// release/src/common/files.ts
+var import_promises = require("fs/promises");
+async function readJson(path3) {
+  try {
+    return JSON.parse(await (0, import_promises.readFile)(path3, "utf8"));
+  } catch (error) {
+    throw new Error(`Can't read "${path3}" or it's not valid JSON`);
+  }
+}
+async function readTextFile(path3) {
+  try {
+    return (0, import_promises.readFile)(path3, "utf8");
+  } catch (error) {
+    throw new Error(`Can't read "${path3}"`);
+  }
+}
+var readLockfile = readJson;
+async function getRepositories(lockfilePath) {
+  const lockfile = await readLockfile(lockfilePath);
+  return Object.keys(lockfile.repositories);
+}
+
 // release/src/ping.ts
 var import_console = require("console");
 var prepareWorkflowId = "prepare-on-demand.yml";
@@ -70649,27 +70671,6 @@ async function getLatestVersion() {
   return latestVersionTag;
 }
 
-// release/src/common/files.ts
-var import_promises = require("fs/promises");
-async function readJson(path3) {
-  try {
-    return JSON.parse(await (0, import_promises.readFile)(path3, "utf8"));
-  } catch (error) {
-    throw new Error(`Can't read "${path3}" or it's not valid JSON`);
-  }
-}
-async function readTextFile(path3) {
-  try {
-    return (0, import_promises.readFile)(path3, "utf8");
-  } catch (error) {
-    throw new Error(`Can't read "${path3}"`);
-  }
-}
-async function getRepositories(repositoriesJsonPath) {
-  return Object.keys(await readJson(repositoriesJsonPath));
-}
-var readLockfile = readJson;
-
 // release/src/common/lockfile.ts
 var import_core6 = __toESM(require_core());
 var import_promises2 = require("fs/promises");
@@ -71348,14 +71349,13 @@ async function prepare({
   jiraClient,
   lockfilePath,
   changelogPath,
-  repositoriesJsonPath,
+  repositories,
   prTemplatePath,
   upcomingReleaseBranch,
   releaseBranch,
   dryRun
 }) {
   await switchToReleaseBranch(dryRun, releaseBranch, upcomingReleaseBranch);
-  const repositories = await getRepositories(repositoriesJsonPath);
   const changelogItems = await getChangelogItems(
     octokit,
     jiraClient,
@@ -71396,8 +71396,7 @@ async function prepare({
 
 // release/src/common/issueTransitioning.ts
 var import_core14 = __toESM(require_core());
-async function getChangelogItemsSlugs(octokit, jiraClient, repositoriesJsonPath) {
-  const repositories = await getRepositories(repositoriesJsonPath);
+async function getChangelogItemsSlugs(octokit, jiraClient, repositories) {
   const changelogItems = await getChangelogItems(
     octokit,
     jiraClient,
@@ -71465,13 +71464,13 @@ async function release({
   octokit,
   lockfilePath,
   jiraClient,
-  repositoriesJsonPath,
+  repositories,
   dryRun
 }) {
   const jiraIssueIds = await getChangelogItemsSlugs(
     octokit,
     jiraClient,
-    repositoriesJsonPath
+    repositories
   );
   const lockfile = await readLockfile(lockfilePath);
   await tagAllRepositories(dryRun, lockfile, octokit);
@@ -71489,7 +71488,6 @@ async function run() {
   const mode = (0, import_core15.getInput)("mode");
   const lockfilePath = (0, import_core15.getInput)("lockfile");
   const changelogPath = (0, import_core15.getInput)("changelog");
-  const repositoriesJsonPath = (0, import_core15.getInput)("repositories");
   const prTemplatePath = (0, import_core15.getInput)("pr-template");
   const upcomingReleaseBranch = (0, import_core15.getInput)("upcoming-release-branch");
   const releaseBranch = (0, import_core15.getInput)("release-branch");
@@ -71514,7 +71512,7 @@ async function run() {
         jiraClient,
         lockfilePath,
         changelogPath,
-        repositoriesJsonPath,
+        repositories: await getRepositories(lockfilePath),
         prTemplatePath,
         upcomingReleaseBranch,
         releaseBranch,
@@ -71531,7 +71529,7 @@ async function run() {
         octokit,
         lockfilePath,
         jiraClient,
-        repositoriesJsonPath,
+        repositories: await getRepositories(lockfilePath),
         dryRun
       });
       break;

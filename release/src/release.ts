@@ -12,13 +12,13 @@ export async function release({
   octokit,
   lockfilePath,
   jiraClient,
-  repositoriesJsonPath,
+  repositories,
   dryRun,
 }: {
   octokit: ReturnType<typeof getOctokit>
   lockfilePath: string
   jiraClient: ReturnType<typeof getJiraClient>
-  repositoriesJsonPath: string
+  repositories: string[]
   dryRun: boolean
 }) {
   // All jira issues from prev release to upcoming release
@@ -26,7 +26,7 @@ export async function release({
   const jiraIssueIds = await getChangelogItemsSlugs(
     octokit,
     jiraClient,
-    repositoriesJsonPath
+    repositories
   )
 
   const lockfile = await readLockfile(lockfilePath)
