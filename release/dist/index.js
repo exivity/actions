@@ -71389,12 +71389,7 @@ async function prepare({
   await writeChangelog(changelogPath, flatChangelog, upcomingVersion, dryRun);
   const title = `chore: release ${upcomingVersion}`;
   await commitAndPush(dryRun, title, upcomingReleaseBranch);
-  await updateMissingReleaseNotesWarningStatus(
-    dryRun,
-    releaserRepo,
-    flatChangelog,
-    octokit
-  );
+  await updateMissingReleaseNotesWarningStatus(dryRun, flatChangelog, octokit);
   await updatePr(
     dryRun,
     title,
