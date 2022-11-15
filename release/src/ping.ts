@@ -7,11 +7,11 @@ const prepareWorkflowId = 'prepare-on-demand.yml'
 export async function ping({
   octokit,
   dryRun,
-  releaserRepo
+  releaserRepo,
 }: {
   octokit: ReturnType<typeof getOctokit>
   dryRun: boolean
-  releaserRepo: 'exivity'|'cls-releaser'
+  releaserRepo: string
 }) {
   if (dryRun) {
     info(
