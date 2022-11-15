@@ -85,7 +85,12 @@ export async function prepare({
 
   await commitAndPush(dryRun, title, upcomingReleaseBranch)
 
-  await updateMissingReleaseNotesWarningStatus(dryRun, flatChangelog, octokit)
+  await updateMissingReleaseNotesWarningStatus(
+    dryRun,
+    releaserRepo,
+    flatChangelog,
+    octokit
+  )
 
   await updatePr(
     dryRun,

@@ -70886,7 +70886,7 @@ async function commitAndPush(dryRun, title, upcomingReleaseBranch) {
   }
   return title;
 }
-async function updateMissingReleaseNotesWarningStatus(dryRun, changelog = [], octokit) {
+async function updateMissingReleaseNotesWarningStatus(dryRun, releaserRepo, changelog = [], octokit) {
   const sha = await getCommitSha();
   if (dryRun) {
     (0, import_console2.info)(`Dry run, no need to write commit status`);
@@ -70895,7 +70895,7 @@ async function updateMissingReleaseNotesWarningStatus(dryRun, changelog = [], oc
     await writeStatus({
       octokit,
       owner: "exivity",
-      repo: "exivity",
+      repo: releaserRepo,
       sha,
       state,
       context: "changelog",
@@ -71389,7 +71389,12 @@ async function prepare({
   await writeChangelog(changelogPath, flatChangelog, upcomingVersion, dryRun);
   const title = `chore: release ${upcomingVersion}`;
   await commitAndPush(dryRun, title, upcomingReleaseBranch);
-  await updateMissingReleaseNotesWarningStatus(dryRun, flatChangelog, octokit);
+  await updateMissingReleaseNotesWarningStatus(
+    dryRun,
+    releaserRepo,
+    flatChangelog,
+    octokit
+  );
   await updatePr(
     dryRun,
     title,

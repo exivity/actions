@@ -54,6 +54,7 @@ export async function commitAndPush(
 
 export async function updateMissingReleaseNotesWarningStatus(
   dryRun: boolean,
+  releaserRepo: string,
   changelog: ChangelogItem[] = [],
   octokit: ReturnType<typeof getOctokit>
 ) {
@@ -68,7 +69,7 @@ export async function updateMissingReleaseNotesWarningStatus(
     await writeStatus({
       octokit,
       owner: 'exivity',
-      repo: 'exivity',
+      repo: releaserRepo,
       sha,
       state,
       context: 'changelog',
