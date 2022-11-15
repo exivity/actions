@@ -8,9 +8,8 @@ import { getChangelogItems, getChangelogSlugs } from '../changelog'
 export async function getChangelogItemsSlugs(
   octokit: ReturnType<typeof getOctokit>,
   jiraClient: ReturnType<typeof getJiraClient>,
-  repositoriesJsonPath: string
+  repositories: string[]
 ) {
-  const repositories = await getRepositories(repositoriesJsonPath)
   const changelogItems = await getChangelogItems(
     octokit,
     jiraClient,

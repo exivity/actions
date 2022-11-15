@@ -26,7 +26,7 @@ interface Prepare {
   jiraClient: ReturnType<typeof getJiraClient>
   lockfilePath: string
   changelogPath: string
-  repositoriesJsonPath: string
+  repositories: string[]
   prTemplatePath: string
   upcomingReleaseBranch: string
   releaseBranch: string
@@ -38,7 +38,7 @@ export async function prepare({
   jiraClient,
   lockfilePath,
   changelogPath,
-  repositoriesJsonPath,
+  repositories,
   prTemplatePath,
   upcomingReleaseBranch,
   releaseBranch,
@@ -46,7 +46,6 @@ export async function prepare({
 }: Prepare) {
   await switchToReleaseBranch(dryRun, releaseBranch, upcomingReleaseBranch)
 
-  const repositories = await getRepositories(repositoriesJsonPath)
   const changelogItems = await getChangelogItems(
     octokit,
     jiraClient,
