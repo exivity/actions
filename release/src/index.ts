@@ -15,7 +15,7 @@ enum Mode {
 
 async function run() {
   // Input
-  const releaserRepo = getInput('releaser-repo') || 'exivity'
+  const releaserRepo = getInput('releaser-repo')
   const mode = getInput('mode')
   const lockfilePath = getInput('lockfile')
   const changelogPath = getInput('changelog')

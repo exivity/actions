@@ -71485,7 +71485,7 @@ async function release({
 
 // release/src/index.ts
 async function run() {
-  const releaserRepo = (0, import_core15.getInput)("releaser-repo") || "exivity";
+  const releaserRepo = (0, import_core15.getInput)("releaser-repo");
   const mode = (0, import_core15.getInput)("mode");
   const lockfilePath = (0, import_core15.getInput)("lockfile");
   const changelogPath = (0, import_core15.getInput)("changelog");
