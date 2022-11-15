@@ -1,3 +1,4 @@
+import { info } from '@actions/core'
 import { readFile } from 'fs/promises'
 import { Lockfile } from './lockfile'
 
@@ -21,5 +22,12 @@ export const readLockfile = readJson<Lockfile>
 
 export async function getRepositories(lockfilePath: string) {
   const lockfile = await readLockfile(lockfilePath)
-  return Object.keys(lockfile.repositories)
+  const repositories = Object.keys(lockfile.repositories)
+
+  repositories.forEach((repo) => {
+    info(`Repositories from lockfile:`)
+    info(`- ${repo}`)
+  })
+
+  return repositories
 }
