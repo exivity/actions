@@ -7,7 +7,6 @@ import {
   pipe,
   chain,
   uniq,
-  prop,
   map,
   complement,
   isEmpty,
@@ -141,7 +140,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
 
       const jiraIssues = wrappedJiraIssues
         .filter(isFulfilled)
-        .map(prop('value'))
+        .map((i) => i.value)
 
       const issuesTypeEqualsOneOf = (oneOf: JiraIssueType[]) => {
         return isNotEmpty(
@@ -161,10 +160,7 @@ export async function jiraPlugin({ jiraClient, changelog }: PluginParams) {
           ...changelogItem.links,
           issues: jiraIssues.map((jiraIssue) => ({
             title: getReleaseNotesTitle(jiraIssue) || jiraIssue.fields.summary,
-            description:
-              getReleaseNotesDescription(jiraIssue) ||
-              jiraIssue.fields.description ||
-              null,
+            description: getReleaseNotesDescription(jiraIssue) || null,
             slug: jiraIssue.key,
             url: `https://exivity.atlassian.net/browse/${jiraIssue.key}`,
           })),

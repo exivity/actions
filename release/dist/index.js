@@ -71207,7 +71207,7 @@ async function jiraPlugin({ jiraClient, changelog }) {
         (0, import_core10.info)(`got error when getting issue:
 ${JSON.stringify(reason)}`);
       });
-      const jiraIssues = wrappedJiraIssues.filter(isFulfilled).map(prop_default("value"));
+      const jiraIssues = wrappedJiraIssues.filter(isFulfilled).map((i) => i.value);
       const issuesTypeEqualsOneOf = (oneOf) => {
         return isNotEmpty(
           innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
@@ -71221,7 +71221,7 @@ ${JSON.stringify(reason)}`);
           ...changelogItem.links,
           issues: jiraIssues.map((jiraIssue) => ({
             title: getReleaseNotesTitle(jiraIssue) || jiraIssue.fields.summary,
-            description: getReleaseNotesDescription(jiraIssue) || jiraIssue.fields.description || null,
+            description: getReleaseNotesDescription(jiraIssue) || null,
             slug: jiraIssue.key,
             url: `https://exivity.atlassian.net/browse/${jiraIssue.key}`
           }))
