@@ -15,7 +15,7 @@ export async function ping({
 }) {
   if (dryRun) {
     info(
-      `Would have dispatched workflow ${prepareWorkflowId} of exivity/exivity#main`
+      `Would have dispatched workflow ${prepareWorkflowId} of exivity/${releaserRepo}#main`
     )
     return
   }

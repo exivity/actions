@@ -49,8 +49,6 @@ export type ChangelogItem = {
   }
 }
 
-export const equalsChangelogType = pipe(propOr('', 'type'), toLower, equals)
-
 export const getFirstLine = pipe(split('\n'), pathOr('', [0]))
 
 export const removeFirstLine = pipe(split('\n'), tail, join('\n'))

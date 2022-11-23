@@ -16376,7 +16376,7 @@ var require_lodash = __commonJS({
           }
           return result2;
         }
-        function toLower2(value) {
+        function toLower3(value) {
           return toString4(value).toLowerCase();
         }
         function toUpper(value) {
@@ -16967,7 +16967,7 @@ var require_lodash = __commonJS({
         lodash.toFinite = toFinite;
         lodash.toInteger = toInteger;
         lodash.toLength = toLength;
-        lodash.toLower = toLower2;
+        lodash.toLower = toLower3;
         lodash.toNumber = toNumber;
         lodash.toSafeInteger = toSafeInteger;
         lodash.toString = toString4;
@@ -69211,7 +69211,7 @@ async function ping({
 }) {
   if (dryRun) {
     (0, import_console.info)(
-      `Would have dispatched workflow ${prepareWorkflowId} of exivity/exivity#main`
+      `Would have dispatched workflow ${prepareWorkflowId} of exivity/${releaserRepo}#main`
     );
     return;
   }
@@ -70581,12 +70581,6 @@ var propEq = /* @__PURE__ */ _curry3(function propEq2(name, val, obj) {
 });
 var propEq_default = propEq;
 
-// node_modules/ramda/es/propOr.js
-var propOr = /* @__PURE__ */ _curry3(function propOr2(val, p, obj) {
-  return defaultTo_default(val, prop_default(p, obj));
-});
-var propOr_default = propOr;
-
 // node_modules/ramda/es/split.js
 var split = /* @__PURE__ */ invoker_default(1, "split");
 var split_default = split;
@@ -71009,7 +71003,6 @@ function parseCommitMessage(message) {
 
 // release/src/changelog/utils.ts
 var import_core9 = __toESM(require_core());
-var equalsChangelogType = pipe(propOr_default("", "type"), toLower_default, equals_default);
 var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
 var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
 var rejectChores = reject_default(propEq_default("type", "chore"));
@@ -71053,26 +71046,26 @@ var removeIssuesFromReleaseTestRepo = (changelog) => {
 
 // release/src/changelog/changelogItem.ts
 var repoRgx = /(?<=exivity\/).*?(?=\/)/;
+var toLowerEquals = pipe(toLower_default, equals_default);
 function createChangelogItem(commit) {
   var _a, _b, _c, _d, _e, _f;
   const commitTitle = getFirstLine(commit.commit.message);
   const commitDescription = removeFirstLine(commit.commit.message);
-  const parsed = parseCommitMessage(commitTitle);
-  const typeEqualsOneOf = any_default(equalsChangelogType(parsed));
-  const type3 = typeEqualsOneOf(["feat", "feature"]) ? "feat" : typeEqualsOneOf(["fix", "bugfix"]) ? "fix" : "chore";
+  const { type: type3, description: description2, breaking } = parseCommitMessage(commitTitle);
+  const typeEqualsOneOf = any_default(toLowerEquals(type3 ?? ""));
   const repository = ((_a = commit.html_url.match(repoRgx)) == null ? void 0 : _a[0]) ?? "";
   return {
-    title: parsed.description || commitTitle,
+    title: description2 || commitTitle,
     description: null,
-    type: type3,
-    breaking: parsed.breaking || false,
+    type: typeEqualsOneOf(["feat", "feature"]) ? "feat" : typeEqualsOneOf(["fix", "bugfix"]) ? "fix" : "chore",
+    breaking: breaking || false,
     warnings: [],
     links: {
       commit: {
         repository,
         sha: commit.sha,
         originalTitle: commitTitle,
-        title: parsed.description || commitTitle,
+        title: description2 || commitTitle,
         description: commitDescription,
         author: ((_b = commit.author) == null ? void 0 : _b.login) || ((_c = commit.author) == null ? void 0 : _c.name) || ((_d = commit.author) == null ? void 0 : _d.login) || "unknown author",
         date: ((_e = commit.commit.author) == null ? void 0 : _e.date) || ((_f = commit.commit.committer) == null ? void 0 : _f.date) || "unknown date",
