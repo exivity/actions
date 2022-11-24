@@ -68812,8 +68812,15 @@ var require_exec = __commonJS({
 // release/src/index.ts
 var import_core10 = __toESM(require_core());
 
-// release/src/ping.ts
+// release/src/common/utils.ts
 var import_console = require("console");
+
+// release/src/common/inputs.ts
+var import_github = __toESM(require_github());
+var import_core2 = __toESM(require_core());
+var import_jira = __toESM(require_out());
+var import_fs = require("fs");
+var import_promises = require("fs/promises");
 
 // lib/github.ts
 var import_core = __toESM(require_core());
@@ -69028,11 +69035,6 @@ query ($sha: String!, $repo: String!, $owner: String!) {
 }
 
 // release/src/common/inputs.ts
-var import_github = __toESM(require_github());
-var import_core2 = __toESM(require_core());
-var import_jira = __toESM(require_out());
-var import_fs = require("fs");
-var import_promises = require("fs/promises");
 async function readTextFile(path3) {
   try {
     return (0, import_promises.readFile)(path3, "utf8");
@@ -69094,12 +69096,30 @@ var getJiraClient = () => {
   return jiraClient;
 };
 
+// release/src/common/utils.ts
+var logIssues = (issues) => {
+  (0, import_console.info)(`Issues:`);
+  issues.forEach(({ issue }) => {
+    (0, import_console.info)(issue);
+  });
+};
+var logAvailableRequests = async () => {
+  const octokit = getOctoKitClient();
+  const core = (await octokit.request("GET /rate_limit", {})).data.resources.core;
+  (0, import_console.info)(
+    `Remaining github API calls: ${core.remaining}. Rate limit will reset at ${new Date(
+      core.reset * 1e3
+    ).toLocaleDateString()}.`
+  );
+};
+
 // release/src/ping.ts
+var import_console2 = require("console");
 var prepareWorkflowId = "prepare-on-demand.yml";
 async function ping() {
   const repo = getReleaseRepo();
   if (isDryRun()) {
-    (0, import_console.info)(
+    (0, import_console2.info)(
       `Would have dispatched workflow ${prepareWorkflowId} of exivity/${repo}#main`
     );
     return;
@@ -70711,7 +70731,7 @@ var getRepoJiraIssues = async (repo) => {
 };
 
 // release/src/common/gitActions.ts
-var import_console2 = require("console");
+var import_console3 = require("console");
 
 // release/src/common/formatPrChangelog.ts
 var features = filter_default(
@@ -70766,22 +70786,22 @@ var releaseBranch = "main";
 var upcomingReleaseBranch = "chore/upcoming-release";
 async function switchToReleaseBranch() {
   if (isDryRun()) {
-    (0, import_console2.info)(`Dry run, not switching branches`);
+    (0, import_console3.info)(`Dry run, not switching branches`);
   } else if (await gitHasChanges()) {
-    (0, import_console2.info)("Detected uncommitted changes, aborting");
+    (0, import_console3.info)("Detected uncommitted changes, aborting");
   } else {
     await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`);
   }
 }
 async function commitAndPush(title) {
   if (isDryRun()) {
-    (0, import_console2.info)(`Dry run, not committing and pushing changes`);
+    (0, import_console3.info)(`Dry run, not committing and pushing changes`);
   } else {
     await gitAdd();
     await gitSetAuthor("Exivity bot", "bot@exivity.com");
     await gitCommit(title);
     await gitPush(true);
-    (0, import_console2.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
+    (0, import_console3.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
   }
   return title;
 }
@@ -70789,7 +70809,7 @@ async function tagRepositories(lockfile) {
   const octokit = getOctoKitClient();
   for (const [repository, sha] of Object.entries(lockfile.repositories)) {
     if (isDryRun()) {
-      (0, import_console2.info)(`Dry run, not tagging ${repository}`);
+      (0, import_console3.info)(`Dry run, not tagging ${repository}`);
     } else {
       await createLightweightTag({
         octokit,
@@ -70806,11 +70826,11 @@ async function tagAllRepositories() {
   const dryRun = isDryRun();
   const lockfile = await getLockFile();
   if (dryRun) {
-    (0, import_console2.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_console3.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_console2.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_console3.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
   await tagRepositories(lockfile);
 }
@@ -70840,7 +70860,7 @@ async function createOrUpdatePullRequest({
       title,
       body
     });
-    (0, import_console2.info)(`Updated pull request #${pr.data.number}`);
+    (0, import_console3.info)(`Updated pull request #${pr.data.number}`);
     return pr.data;
   } else {
     const pr = await octokit.rest.pulls.create({
@@ -70851,7 +70871,7 @@ async function createOrUpdatePullRequest({
       head: upcomingReleaseBranch2,
       base: releaseBranch2
     });
-    (0, import_console2.info)(`Opened pull request #${pr.data.number}`);
+    (0, import_console3.info)(`Opened pull request #${pr.data.number}`);
     return pr.data;
   }
 }
@@ -70859,7 +70879,7 @@ async function updatePr(title, issues) {
   const octokit = getOctoKitClient();
   const prTemplate = await getPrTemplate();
   if (isDryRun()) {
-    (0, import_console2.info)(`Dry run, not creating pull request`);
+    (0, import_console3.info)(`Dry run, not creating pull request`);
   } else {
     const prChangelogContents = formatPrChangelog(issues);
     const pr = await createOrUpdatePullRequest({
@@ -70870,7 +70890,7 @@ async function updatePr(title, issues) {
       upcomingReleaseBranch,
       releaseBranch
     });
-    (0, import_console2.info)(pr.html_url);
+    (0, import_console3.info)(pr.html_url);
   }
 }
 
@@ -70899,15 +70919,6 @@ function inferVersionFromJiraIssues(from, issues) {
   );
   return `v${upcomingVersion}`;
 }
-
-// release/src/common/utils.ts
-var import_console3 = require("console");
-var logIssues = (issues) => {
-  (0, import_console3.info)(`Issues:`);
-  issues.forEach(({ issue }) => {
-    (0, import_console3.info)(issue);
-  });
-};
 
 // release/src/common/writeChangelog.ts
 var import_promises2 = require("fs/promises");
@@ -71178,6 +71189,7 @@ async function run() {
   const mode = (0, import_core10.getInput)("mode");
   if (!runModes[mode])
     throw new Error(`Unknown mode "${mode}"`);
+  logAvailableRequests();
   return runModes[mode]();
 }
 run().catch(import_core10.setFailed);
