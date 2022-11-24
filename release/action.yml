@@ -1,6 +1,10 @@
 name: release
 description: Release related actions
 inputs:
+  jira-project-id:
+    description: The id of the jira project associated with the release
+    required: false
+    default: '10002'
   releaser-repo:
     description: The release coordinator that needs to be used
     required: false

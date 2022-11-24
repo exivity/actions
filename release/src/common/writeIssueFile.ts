@@ -15,7 +15,8 @@ export async function writeIssueFile(jiraIssueKeys: string[]) {
 
 export async function getIssuesFromIssueFile() {
   if (isDryRun()) {
-    info(`Dry run, not writing release jira keys.`)
+    info(`Dry run, not reading release jira keys.`)
+    return []
   } else {
     const content = await readFile('releaseJiraKeys.md', 'utf8')
     return content.split('\n')

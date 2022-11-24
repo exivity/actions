@@ -29,6 +29,8 @@ export type Lockfile = {
   }
 }
 
+export const getJiraProjectId = () => getInput('jira-project-id') ?? false
+
 export const isDryRun = () => getBooleanInput('dry-run') ?? false
 
 export const getReleaseBranch = () => getInput('release-branch')
@@ -64,13 +66,21 @@ export const getOctoKitClient = () => {
   return getOctokit(getToken())
 }
 
+let jiraClient: Version2Client | null = null
+
 export const getJiraClient = () => {
   const username = getInput('jira-username')
   const password = getInput('jira-token')
 
-  if (!username || !password) return null
+  if (jiraClient) return jiraClient
 
-  return new Version2Client({
+  if (!username || !password) {
+    throw new Error(
+      'jira-username and jira-token inputs are required in prepare mode'
+    )
+  }
+
+  jiraClient = new Version2Client({
     host: 'https://exivity.atlassian.net',
     authentication: {
       basic: {
@@ -80,4 +90,12 @@ export const getJiraClient = () => {
     },
     newErrorHandling: true,
   })
+
+  if (!jiraClient) {
+    throw new Error(
+      'jira-username and jira-token inputs are required in prepare mode'
+    )
+  }
+
+  return jiraClient
 }

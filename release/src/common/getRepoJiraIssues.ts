@@ -113,7 +113,7 @@ export const getRepoJiraIssues = async (repo: string) => {
 
         return Promise.all(
           jiraKeys.map((key) =>
-            jiraClient?.issues.getIssue({ issueIdOrKey: key })
+            jiraClient.issues.getIssue({ issueIdOrKey: key })
           )
         ).then((tickets) =>
           tickets.flatMap((issue) => {

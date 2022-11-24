@@ -1,43 +1,5 @@
-import { getOctokit } from '@actions/github'
+import { tagAllRepositories } from './common/gitActions'
 
-import { readLockfile } from './common/files'
-import { getJiraClient } from './common/jiraClient'
-import { tagAllRepositories } from './common/gitUpdates'
-import {
-  getChangelogItemsSlugs,
-  transitionIssuesAndUpdateFixVersion,
-} from './common/issueTransitioning'
-
-export async function release({
-  octokit,
-  lockfilePath,
-  jiraClient,
-  repositories,
-  dryRun,
-}: {
-  octokit: ReturnType<typeof getOctokit>
-  lockfilePath: string
-  jiraClient: ReturnType<typeof getJiraClient>
-  repositories: string[]
-  dryRun: boolean
-}) {
-  // All jira issues from prev release to upcoming release
-  // (we need to do this before updating tag in next step)
-  const jiraIssueIds = await getChangelogItemsSlugs(
-    octokit,
-    jiraClient,
-    repositories
-  )
-
-  const lockfile = await readLockfile(lockfilePath)
-
-  await tagAllRepositories(dryRun, lockfile, octokit)
-
-  // Transition jira issues
-  await transitionIssuesAndUpdateFixVersion(
-    dryRun,
-    jiraIssueIds,
-    lockfile.version,
-    jiraClient
-  )
+export async function release() {
+  await tagAllRepositories()
 }

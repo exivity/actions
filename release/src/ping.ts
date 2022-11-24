@@ -1,29 +1,23 @@
-import { getOctokit } from '@actions/github'
 import { info } from 'console'
 import { dispatchWorkflow } from '../../lib/github'
+import { isDryRun, getReleaseRepo, getOctoKitClient } from './common/inputs'
 
 const prepareWorkflowId = 'prepare-on-demand.yml'
 
-export async function ping({
-  octokit,
-  dryRun,
-  releaserRepo,
-}: {
-  octokit: ReturnType<typeof getOctokit>
-  dryRun: boolean
-  releaserRepo: string
-}) {
-  if (dryRun) {
+export async function ping() {
+  const repo = getReleaseRepo()
+
+  if (isDryRun()) {
     info(
-      `Would have dispatched workflow ${prepareWorkflowId} of exivity/${releaserRepo}#main`
+      `Would have dispatched workflow ${prepareWorkflowId} of exivity/${repo}#main`
     )
     return
   }
 
   return dispatchWorkflow({
-    octokit,
+    octokit: getOctoKitClient(),
     owner: 'exivity',
-    repo: releaserRepo,
+    repo,
     ref: 'main',
     workflow_id: prepareWorkflowId,
   })
