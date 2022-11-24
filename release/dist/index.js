@@ -71174,15 +71174,18 @@ async function getReleaseVersion() {
   );
   if (version)
     return version;
-  const newVersion = await jiraClient2.projectVersions.createVersion({
-    name: version,
-    projectId: Number(getJiraProjectId()),
-    releaseDate: toDateString(new Date())
-  });
-  if (!newVersion) {
-    throw new Error("Could not create new release version in Jira");
+  try {
+    const newVersion = await jiraClient2.projectVersions.createVersion({
+      name: lockfile.version,
+      projectId: Number(getJiraProjectId()),
+      releaseDate: toDateString(new Date())
+    });
+    return newVersion;
+  } catch (err) {
+    throw new Error(
+      `Could not create new release version in Jira: ${JSON.stringify(err)}`
+    );
   }
-  return newVersion;
 }
 async function updateIssueFixVersion(jiraIssueIds) {
   const jiraClient2 = getJiraClient();

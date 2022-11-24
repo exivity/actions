@@ -89,17 +89,19 @@ async function getReleaseVersion() {
 
   if (version) return version
 
-  const newVersion = await jiraClient.projectVersions.createVersion({
-    name: version,
-    projectId: Number(getJiraProjectId()),
-    releaseDate: toDateString(new Date()),
-  })
+  try {
+    const newVersion = await jiraClient.projectVersions.createVersion({
+      name: lockfile.version,
+      projectId: Number(getJiraProjectId()),
+      releaseDate: toDateString(new Date()),
+    })
 
-  if (!newVersion) {
-    throw new Error('Could not create new release version in Jira')
+    return newVersion
+  } catch (err) {
+    throw new Error(
+      `Could not create new release version in Jira: ${JSON.stringify(err)}`
+    )
   }
-
-  return newVersion
 }
 
 export async function updateIssueFixVersion(jiraIssueIds: string[]) {
