@@ -71201,9 +71201,11 @@ async function getReleaseVersion() {
 }
 async function updateIssueFixVersion(jiraIssueIds) {
   const jiraClient2 = getJiraClient();
+  (0, import_console7.info)("Create project release version...");
   const version = await getReleaseVersion();
   if (!version)
     return;
+  (0, import_console7.info)("Update issues with version...");
   jiraIssueIds.forEach((issueIdOrKey) => {
     jiraClient2.issues.editIssue({
       issueIdOrKey,

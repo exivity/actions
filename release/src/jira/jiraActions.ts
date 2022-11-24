@@ -113,9 +113,11 @@ async function getReleaseVersion() {
 export async function updateIssueFixVersion(jiraIssueIds: string[]) {
   const jiraClient = getJiraClient()
 
+  info('Create project release version...')
   const version = await getReleaseVersion()
   if (!version) return
 
+  info('Update issues with version...')
   jiraIssueIds.forEach((issueIdOrKey) => {
     jiraClient.issues
       .editIssue({
