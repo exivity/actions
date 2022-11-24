@@ -1,5 +1,5 @@
 import { info } from 'console'
-import { isEmpty, chain, prop } from 'ramda'
+import { isEmpty } from 'ramda'
 import { getLatestVersion } from '../../lib/git'
 import { getRepoJiraIssues } from './jira/getRepoJiraIssues'
 import {

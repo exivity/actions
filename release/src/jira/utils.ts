@@ -25,11 +25,11 @@ const isFeatOrFix = (type: string = JiraIssueType.Chore) => {
   )
 }
 
-export function getIssueType(issue: Version2Models.Issue) {
+export function getIssueType(issue: Version2Models.Issue): string {
   return issue.fields.issuetype.name === JiraIssueType.Feature
-    ? ('feat' as const)
+    ? 'feat'
     : issue.fields.issuetype.name === JiraIssueType.Bug
-    ? ('bug' as const)
+    ? 'bug'
     : 'chore'
 }
 

@@ -15,7 +15,7 @@ const description = {
 
 export function inferVersionFromJiraIssues(
   from: string,
-  issues: { type: 'feat' | 'fix'; breaking: boolean }[]
+  issues: { type: string; breaking: boolean }[]
 ) {
   const upcomingVersionIncrement: VersionIncrement = containsBreakingChange(
     issues
