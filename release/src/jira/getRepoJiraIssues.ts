@@ -29,6 +29,7 @@ import {
   getEpic,
   getIssueType,
 } from './utils'
+import { info } from 'console'
 
 export const getFirstLine = pipe(split('\n'), pathOr('', [0]))
 export const removeFirstLine = pipe(split('\n'), tail, join('\n'))
@@ -85,6 +86,7 @@ export const getRepoJiraIssues = async (repo: string) => {
         ).then((tickets) =>
           tickets.flatMap((issue) => {
             const issueType = getIssueType(issue)
+            info(`${issue.key}-${issueType}`)
             if (!issue || none(equals(issueType), ['feat', 'fix'])) return []
 
             const epic = getEpic(issue)
