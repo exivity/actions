@@ -1,12 +1,16 @@
 name: release
 description: Release related actions
 inputs:
+  jira-project-id:
+    description: The id of the jira project associated with the release
+    required: false
+    default: '10002'
   releaser-repo:
     description: The release coordinator that needs to be used
     required: false
     default: exivity
   mode:
-    description: Ping, prepare or release
+    description: Ping, prepare, release or update-jira-issues
     required: false
     default: ping
   lockfile:
@@ -21,14 +25,6 @@ inputs:
     description: Location of new release PR template (markdown)
     required: false
     default: NEW_RELEASE_PR_TEMPLATE.md
-  upcoming-release-branch:
-    description: Upcoming release branch name
-    required: false
-    default: chore/upcoming-release
-  release-branch:
-    description: Release branch name
-    required: false
-    default: main
   dry-run:
     description: If `true`, running this action will have no side-effects
     required: false

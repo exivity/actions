@@ -1265,12 +1265,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info16 = this._prepareRequest(verb, parsedUrl, headers);
+          let info13 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info16, data);
+            response = yield this.requestRaw(info13, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -1280,7 +1280,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info16, data);
+                return authenticationHandler.handleAuthentication(this, info13, data);
               } else {
                 return response;
               }
@@ -1303,8 +1303,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info16 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info16, data);
+              info13 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info13, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -1325,7 +1325,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info16, data) {
+      requestRaw(info13, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject3) => {
             function callbackForResult(err, res) {
@@ -1337,16 +1337,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info16, data, callbackForResult);
+            this.requestRawWithCallback(info13, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info16, data, onResult) {
+      requestRawWithCallback(info13, data, onResult) {
         if (typeof data === "string") {
-          if (!info16.options.headers) {
-            info16.options.headers = {};
+          if (!info13.options.headers) {
+            info13.options.headers = {};
           }
-          info16.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info13.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -1355,7 +1355,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info16.httpModule.request(info16.options, (msg) => {
+        const req = info13.httpModule.request(info13.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -1367,7 +1367,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info16.options.path}`));
+          handleResult(new Error(`Request timeout: ${info13.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -1389,27 +1389,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info16 = {};
-        info16.parsedUrl = requestUrl;
-        const usingSsl = info16.parsedUrl.protocol === "https:";
-        info16.httpModule = usingSsl ? https : http;
+        const info13 = {};
+        info13.parsedUrl = requestUrl;
+        const usingSsl = info13.parsedUrl.protocol === "https:";
+        info13.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info16.options = {};
-        info16.options.host = info16.parsedUrl.hostname;
-        info16.options.port = info16.parsedUrl.port ? parseInt(info16.parsedUrl.port) : defaultPort;
-        info16.options.path = (info16.parsedUrl.pathname || "") + (info16.parsedUrl.search || "");
-        info16.options.method = method;
-        info16.options.headers = this._mergeHeaders(headers);
+        info13.options = {};
+        info13.options.host = info13.parsedUrl.hostname;
+        info13.options.port = info13.parsedUrl.port ? parseInt(info13.parsedUrl.port) : defaultPort;
+        info13.options.path = (info13.parsedUrl.pathname || "") + (info13.parsedUrl.search || "");
+        info13.options.method = method;
+        info13.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info16.options.headers["user-agent"] = this.userAgent;
+          info13.options.headers["user-agent"] = this.userAgent;
         }
-        info16.options.agent = this._getAgent(info16.parsedUrl);
+        info13.options.agent = this._getAgent(info13.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info16.options);
+            handler.prepareRequest(info13.options);
           }
         }
-        return info16;
+        return info13;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1772,7 +1772,7 @@ var require_summary = __commonJS({
     exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
     var os_1 = require("os");
     var fs_1 = require("fs");
-    var { access, appendFile, writeFile: writeFile3 } = fs_1.promises;
+    var { access, appendFile, writeFile: writeFile4 } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
     exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
     var Summary = class {
@@ -1808,7 +1808,7 @@ var require_summary = __commonJS({
         return __awaiter(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
           const filePath = yield this.filePath();
-          const writeFunc = overwrite ? writeFile3 : appendFile;
+          const writeFunc = overwrite ? writeFile4 : appendFile;
           yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
           return this.emptyBuffer();
         });
@@ -2048,7 +2048,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path3.delimiter}${process.env["PATH"]}`;
     }
     exports.addPath = addPath;
-    function getInput4(name, options) {
+    function getInput5(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -2058,9 +2058,9 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports.getInput = getInput4;
+    exports.getInput = getInput5;
     function getMultilineInput(name, options) {
-      const inputs = getInput4(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput5(name, options).split("\n").filter((x) => x !== "");
       if (options && options.trimWhitespace === false) {
         return inputs;
       }
@@ -2070,7 +2070,7 @@ var require_core = __commonJS({
     function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput4(name, options);
+      const val = getInput5(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -2117,10 +2117,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info16(message) {
+    function info13(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info16;
+    exports.info = info13;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -7535,1056 +7535,6 @@ var require_github = __commonJS({
       return new GitHubWithPlugins(utils_1.getOctokitOptions(token, options));
     }
     exports.getOctokit = getOctokit2;
-  }
-});
-
-// node_modules/@actions/io/lib/io-util.js
-var require_io_util = __commonJS({
-  "node_modules/@actions/io/lib/io-util.js"(exports) {
-    "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      o[k2] = m[k];
-    });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
-      Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
-      o["default"] = v;
-    });
-    var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
-      var result = {};
-      if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
-      }
-      __setModuleDefault(result, mod);
-      return result;
-    };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
-      function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
-          resolve(value);
-        });
-      }
-      return new (P || (P = Promise))(function(resolve, reject3) {
-        function fulfilled(value) {
-          try {
-            step(generator.next(value));
-          } catch (e) {
-            reject3(e);
-          }
-        }
-        function rejected(value) {
-          try {
-            step(generator["throw"](value));
-          } catch (e) {
-            reject3(e);
-          }
-        }
-        function step(result) {
-          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-      });
-    };
-    var _a;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rename = exports.readlink = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
-    var fs = __importStar(require("fs"));
-    var path3 = __importStar(require("path"));
-    _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
-    exports.IS_WINDOWS = process.platform === "win32";
-    function exists(fsPath) {
-      return __awaiter(this, void 0, void 0, function* () {
-        try {
-          yield exports.stat(fsPath);
-        } catch (err) {
-          if (err.code === "ENOENT") {
-            return false;
-          }
-          throw err;
-        }
-        return true;
-      });
-    }
-    exports.exists = exists;
-    function isDirectory(fsPath, useStat = false) {
-      return __awaiter(this, void 0, void 0, function* () {
-        const stats = useStat ? yield exports.stat(fsPath) : yield exports.lstat(fsPath);
-        return stats.isDirectory();
-      });
-    }
-    exports.isDirectory = isDirectory;
-    function isRooted(p) {
-      p = normalizeSeparators(p);
-      if (!p) {
-        throw new Error('isRooted() parameter "p" cannot be empty');
-      }
-      if (exports.IS_WINDOWS) {
-        return p.startsWith("\\") || /^[A-Z]:/i.test(p);
-      }
-      return p.startsWith("/");
-    }
-    exports.isRooted = isRooted;
-    function tryGetExecutablePath(filePath, extensions) {
-      return __awaiter(this, void 0, void 0, function* () {
-        let stats = void 0;
-        try {
-          stats = yield exports.stat(filePath);
-        } catch (err) {
-          if (err.code !== "ENOENT") {
-            console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
-          }
-        }
-        if (stats && stats.isFile()) {
-          if (exports.IS_WINDOWS) {
-            const upperExt = path3.extname(filePath).toUpperCase();
-            if (extensions.some((validExt) => validExt.toUpperCase() === upperExt)) {
-              return filePath;
-            }
-          } else {
-            if (isUnixExecutable(stats)) {
-              return filePath;
-            }
-          }
-        }
-        const originalFilePath = filePath;
-        for (const extension of extensions) {
-          filePath = originalFilePath + extension;
-          stats = void 0;
-          try {
-            stats = yield exports.stat(filePath);
-          } catch (err) {
-            if (err.code !== "ENOENT") {
-              console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
-            }
-          }
-          if (stats && stats.isFile()) {
-            if (exports.IS_WINDOWS) {
-              try {
-                const directory = path3.dirname(filePath);
-                const upperName = path3.basename(filePath).toUpperCase();
-                for (const actualName of yield exports.readdir(directory)) {
-                  if (upperName === actualName.toUpperCase()) {
-                    filePath = path3.join(directory, actualName);
-                    break;
-                  }
-                }
-              } catch (err) {
-                console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err}`);
-              }
-              return filePath;
-            } else {
-              if (isUnixExecutable(stats)) {
-                return filePath;
-              }
-            }
-          }
-        }
-        return "";
-      });
-    }
-    exports.tryGetExecutablePath = tryGetExecutablePath;
-    function normalizeSeparators(p) {
-      p = p || "";
-      if (exports.IS_WINDOWS) {
-        p = p.replace(/\//g, "\\");
-        return p.replace(/\\\\+/g, "\\");
-      }
-      return p.replace(/\/\/+/g, "/");
-    }
-    function isUnixExecutable(stats) {
-      return (stats.mode & 1) > 0 || (stats.mode & 8) > 0 && stats.gid === process.getgid() || (stats.mode & 64) > 0 && stats.uid === process.getuid();
-    }
-    function getCmdPath() {
-      var _a2;
-      return (_a2 = process.env["COMSPEC"]) !== null && _a2 !== void 0 ? _a2 : `cmd.exe`;
-    }
-    exports.getCmdPath = getCmdPath;
-  }
-});
-
-// node_modules/@actions/io/lib/io.js
-var require_io = __commonJS({
-  "node_modules/@actions/io/lib/io.js"(exports) {
-    "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      o[k2] = m[k];
-    });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
-      Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
-      o["default"] = v;
-    });
-    var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
-      var result = {};
-      if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
-      }
-      __setModuleDefault(result, mod);
-      return result;
-    };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
-      function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
-          resolve(value);
-        });
-      }
-      return new (P || (P = Promise))(function(resolve, reject3) {
-        function fulfilled(value) {
-          try {
-            step(generator.next(value));
-          } catch (e) {
-            reject3(e);
-          }
-        }
-        function rejected(value) {
-          try {
-            step(generator["throw"](value));
-          } catch (e) {
-            reject3(e);
-          }
-        }
-        function step(result) {
-          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-      });
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.findInPath = exports.which = exports.mkdirP = exports.rmRF = exports.mv = exports.cp = void 0;
-    var assert_1 = require("assert");
-    var childProcess = __importStar(require("child_process"));
-    var path3 = __importStar(require("path"));
-    var util_1 = require("util");
-    var ioUtil = __importStar(require_io_util());
-    var exec2 = util_1.promisify(childProcess.exec);
-    var execFile = util_1.promisify(childProcess.execFile);
-    function cp(source, dest, options = {}) {
-      return __awaiter(this, void 0, void 0, function* () {
-        const { force, recursive, copySourceDirectory } = readCopyOptions(options);
-        const destStat = (yield ioUtil.exists(dest)) ? yield ioUtil.stat(dest) : null;
-        if (destStat && destStat.isFile() && !force) {
-          return;
-        }
-        const newDest = destStat && destStat.isDirectory() && copySourceDirectory ? path3.join(dest, path3.basename(source)) : dest;
-        if (!(yield ioUtil.exists(source))) {
-          throw new Error(`no such file or directory: ${source}`);
-        }
-        const sourceStat = yield ioUtil.stat(source);
-        if (sourceStat.isDirectory()) {
-          if (!recursive) {
-            throw new Error(`Failed to copy. ${source} is a directory, but tried to copy without recursive flag.`);
-          } else {
-            yield cpDirRecursive(source, newDest, 0, force);
-          }
-        } else {
-          if (path3.relative(source, newDest) === "") {
-            throw new Error(`'${newDest}' and '${source}' are the same file`);
-          }
-          yield copyFile(source, newDest, force);
-        }
-      });
-    }
-    exports.cp = cp;
-    function mv(source, dest, options = {}) {
-      return __awaiter(this, void 0, void 0, function* () {
-        if (yield ioUtil.exists(dest)) {
-          let destExists = true;
-          if (yield ioUtil.isDirectory(dest)) {
-            dest = path3.join(dest, path3.basename(source));
-            destExists = yield ioUtil.exists(dest);
-          }
-          if (destExists) {
-            if (options.force == null || options.force) {
-              yield rmRF(dest);
-            } else {
-              throw new Error("Destination already exists");
-            }
-          }
-        }
-        yield mkdirP(path3.dirname(dest));
-        yield ioUtil.rename(source, dest);
-      });
-    }
-    exports.mv = mv;
-    function rmRF(inputPath) {
-      return __awaiter(this, void 0, void 0, function* () {
-        if (ioUtil.IS_WINDOWS) {
-          if (/[*"<>|]/.test(inputPath)) {
-            throw new Error('File path must not contain `*`, `"`, `<`, `>` or `|` on Windows');
-          }
-          try {
-            const cmdPath = ioUtil.getCmdPath();
-            if (yield ioUtil.isDirectory(inputPath, true)) {
-              yield exec2(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
-                env: { inputPath }
-              });
-            } else {
-              yield exec2(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
-                env: { inputPath }
-              });
-            }
-          } catch (err) {
-            if (err.code !== "ENOENT")
-              throw err;
-          }
-          try {
-            yield ioUtil.unlink(inputPath);
-          } catch (err) {
-            if (err.code !== "ENOENT")
-              throw err;
-          }
-        } else {
-          let isDir = false;
-          try {
-            isDir = yield ioUtil.isDirectory(inputPath);
-          } catch (err) {
-            if (err.code !== "ENOENT")
-              throw err;
-            return;
-          }
-          if (isDir) {
-            yield execFile(`rm`, [`-rf`, `${inputPath}`]);
-          } else {
-            yield ioUtil.unlink(inputPath);
-          }
-        }
-      });
-    }
-    exports.rmRF = rmRF;
-    function mkdirP(fsPath) {
-      return __awaiter(this, void 0, void 0, function* () {
-        assert_1.ok(fsPath, "a path argument must be provided");
-        yield ioUtil.mkdir(fsPath, { recursive: true });
-      });
-    }
-    exports.mkdirP = mkdirP;
-    function which(tool, check) {
-      return __awaiter(this, void 0, void 0, function* () {
-        if (!tool) {
-          throw new Error("parameter 'tool' is required");
-        }
-        if (check) {
-          const result = yield which(tool, false);
-          if (!result) {
-            if (ioUtil.IS_WINDOWS) {
-              throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also verify the file has a valid extension for an executable file.`);
-            } else {
-              throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also check the file mode to verify the file is executable.`);
-            }
-          }
-          return result;
-        }
-        const matches = yield findInPath(tool);
-        if (matches && matches.length > 0) {
-          return matches[0];
-        }
-        return "";
-      });
-    }
-    exports.which = which;
-    function findInPath(tool) {
-      return __awaiter(this, void 0, void 0, function* () {
-        if (!tool) {
-          throw new Error("parameter 'tool' is required");
-        }
-        const extensions = [];
-        if (ioUtil.IS_WINDOWS && process.env["PATHEXT"]) {
-          for (const extension of process.env["PATHEXT"].split(path3.delimiter)) {
-            if (extension) {
-              extensions.push(extension);
-            }
-          }
-        }
-        if (ioUtil.isRooted(tool)) {
-          const filePath = yield ioUtil.tryGetExecutablePath(tool, extensions);
-          if (filePath) {
-            return [filePath];
-          }
-          return [];
-        }
-        if (tool.includes(path3.sep)) {
-          return [];
-        }
-        const directories = [];
-        if (process.env.PATH) {
-          for (const p of process.env.PATH.split(path3.delimiter)) {
-            if (p) {
-              directories.push(p);
-            }
-          }
-        }
-        const matches = [];
-        for (const directory of directories) {
-          const filePath = yield ioUtil.tryGetExecutablePath(path3.join(directory, tool), extensions);
-          if (filePath) {
-            matches.push(filePath);
-          }
-        }
-        return matches;
-      });
-    }
-    exports.findInPath = findInPath;
-    function readCopyOptions(options) {
-      const force = options.force == null ? true : options.force;
-      const recursive = Boolean(options.recursive);
-      const copySourceDirectory = options.copySourceDirectory == null ? true : Boolean(options.copySourceDirectory);
-      return { force, recursive, copySourceDirectory };
-    }
-    function cpDirRecursive(sourceDir, destDir, currentDepth, force) {
-      return __awaiter(this, void 0, void 0, function* () {
-        if (currentDepth >= 255)
-          return;
-        currentDepth++;
-        yield mkdirP(destDir);
-        const files = yield ioUtil.readdir(sourceDir);
-        for (const fileName of files) {
-          const srcFile = `${sourceDir}/${fileName}`;
-          const destFile = `${destDir}/${fileName}`;
-          const srcFileStat = yield ioUtil.lstat(srcFile);
-          if (srcFileStat.isDirectory()) {
-            yield cpDirRecursive(srcFile, destFile, currentDepth, force);
-          } else {
-            yield copyFile(srcFile, destFile, force);
-          }
-        }
-        yield ioUtil.chmod(destDir, (yield ioUtil.stat(sourceDir)).mode);
-      });
-    }
-    function copyFile(srcFile, destFile, force) {
-      return __awaiter(this, void 0, void 0, function* () {
-        if ((yield ioUtil.lstat(srcFile)).isSymbolicLink()) {
-          try {
-            yield ioUtil.lstat(destFile);
-            yield ioUtil.unlink(destFile);
-          } catch (e) {
-            if (e.code === "EPERM") {
-              yield ioUtil.chmod(destFile, "0666");
-              yield ioUtil.unlink(destFile);
-            }
-          }
-          const symlinkFull = yield ioUtil.readlink(srcFile);
-          yield ioUtil.symlink(symlinkFull, destFile, ioUtil.IS_WINDOWS ? "junction" : null);
-        } else if (!(yield ioUtil.exists(destFile)) || force) {
-          yield ioUtil.copyFile(srcFile, destFile);
-        }
-      });
-    }
-  }
-});
-
-// node_modules/@actions/exec/lib/toolrunner.js
-var require_toolrunner = __commonJS({
-  "node_modules/@actions/exec/lib/toolrunner.js"(exports) {
-    "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      o[k2] = m[k];
-    });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
-      Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
-      o["default"] = v;
-    });
-    var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
-      var result = {};
-      if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
-      }
-      __setModuleDefault(result, mod);
-      return result;
-    };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
-      function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
-          resolve(value);
-        });
-      }
-      return new (P || (P = Promise))(function(resolve, reject3) {
-        function fulfilled(value) {
-          try {
-            step(generator.next(value));
-          } catch (e) {
-            reject3(e);
-          }
-        }
-        function rejected(value) {
-          try {
-            step(generator["throw"](value));
-          } catch (e) {
-            reject3(e);
-          }
-        }
-        function step(result) {
-          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-      });
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.argStringToArray = exports.ToolRunner = void 0;
-    var os = __importStar(require("os"));
-    var events = __importStar(require("events"));
-    var child = __importStar(require("child_process"));
-    var path3 = __importStar(require("path"));
-    var io = __importStar(require_io());
-    var ioUtil = __importStar(require_io_util());
-    var timers_1 = require("timers");
-    var IS_WINDOWS = process.platform === "win32";
-    var ToolRunner = class extends events.EventEmitter {
-      constructor(toolPath, args, options) {
-        super();
-        if (!toolPath) {
-          throw new Error("Parameter 'toolPath' cannot be null or empty.");
-        }
-        this.toolPath = toolPath;
-        this.args = args || [];
-        this.options = options || {};
-      }
-      _debug(message) {
-        if (this.options.listeners && this.options.listeners.debug) {
-          this.options.listeners.debug(message);
-        }
-      }
-      _getCommandString(options, noPrefix) {
-        const toolPath = this._getSpawnFileName();
-        const args = this._getSpawnArgs(options);
-        let cmd = noPrefix ? "" : "[command]";
-        if (IS_WINDOWS) {
-          if (this._isCmdFile()) {
-            cmd += toolPath;
-            for (const a of args) {
-              cmd += ` ${a}`;
-            }
-          } else if (options.windowsVerbatimArguments) {
-            cmd += `"${toolPath}"`;
-            for (const a of args) {
-              cmd += ` ${a}`;
-            }
-          } else {
-            cmd += this._windowsQuoteCmdArg(toolPath);
-            for (const a of args) {
-              cmd += ` ${this._windowsQuoteCmdArg(a)}`;
-            }
-          }
-        } else {
-          cmd += toolPath;
-          for (const a of args) {
-            cmd += ` ${a}`;
-          }
-        }
-        return cmd;
-      }
-      _processLineBuffer(data, strBuffer, onLine) {
-        try {
-          let s = strBuffer + data.toString();
-          let n = s.indexOf(os.EOL);
-          while (n > -1) {
-            const line = s.substring(0, n);
-            onLine(line);
-            s = s.substring(n + os.EOL.length);
-            n = s.indexOf(os.EOL);
-          }
-          return s;
-        } catch (err) {
-          this._debug(`error processing line. Failed with error ${err}`);
-          return "";
-        }
-      }
-      _getSpawnFileName() {
-        if (IS_WINDOWS) {
-          if (this._isCmdFile()) {
-            return process.env["COMSPEC"] || "cmd.exe";
-          }
-        }
-        return this.toolPath;
-      }
-      _getSpawnArgs(options) {
-        if (IS_WINDOWS) {
-          if (this._isCmdFile()) {
-            let argline = `/D /S /C "${this._windowsQuoteCmdArg(this.toolPath)}`;
-            for (const a of this.args) {
-              argline += " ";
-              argline += options.windowsVerbatimArguments ? a : this._windowsQuoteCmdArg(a);
-            }
-            argline += '"';
-            return [argline];
-          }
-        }
-        return this.args;
-      }
-      _endsWith(str, end) {
-        return str.endsWith(end);
-      }
-      _isCmdFile() {
-        const upperToolPath = this.toolPath.toUpperCase();
-        return this._endsWith(upperToolPath, ".CMD") || this._endsWith(upperToolPath, ".BAT");
-      }
-      _windowsQuoteCmdArg(arg) {
-        if (!this._isCmdFile()) {
-          return this._uvQuoteCmdArg(arg);
-        }
-        if (!arg) {
-          return '""';
-        }
-        const cmdSpecialChars = [
-          " ",
-          "	",
-          "&",
-          "(",
-          ")",
-          "[",
-          "]",
-          "{",
-          "}",
-          "^",
-          "=",
-          ";",
-          "!",
-          "'",
-          "+",
-          ",",
-          "`",
-          "~",
-          "|",
-          "<",
-          ">",
-          '"'
-        ];
-        let needsQuotes = false;
-        for (const char of arg) {
-          if (cmdSpecialChars.some((x) => x === char)) {
-            needsQuotes = true;
-            break;
-          }
-        }
-        if (!needsQuotes) {
-          return arg;
-        }
-        let reverse = '"';
-        let quoteHit = true;
-        for (let i = arg.length; i > 0; i--) {
-          reverse += arg[i - 1];
-          if (quoteHit && arg[i - 1] === "\\") {
-            reverse += "\\";
-          } else if (arg[i - 1] === '"') {
-            quoteHit = true;
-            reverse += '"';
-          } else {
-            quoteHit = false;
-          }
-        }
-        reverse += '"';
-        return reverse.split("").reverse().join("");
-      }
-      _uvQuoteCmdArg(arg) {
-        if (!arg) {
-          return '""';
-        }
-        if (!arg.includes(" ") && !arg.includes("	") && !arg.includes('"')) {
-          return arg;
-        }
-        if (!arg.includes('"') && !arg.includes("\\")) {
-          return `"${arg}"`;
-        }
-        let reverse = '"';
-        let quoteHit = true;
-        for (let i = arg.length; i > 0; i--) {
-          reverse += arg[i - 1];
-          if (quoteHit && arg[i - 1] === "\\") {
-            reverse += "\\";
-          } else if (arg[i - 1] === '"') {
-            quoteHit = true;
-            reverse += "\\";
-          } else {
-            quoteHit = false;
-          }
-        }
-        reverse += '"';
-        return reverse.split("").reverse().join("");
-      }
-      _cloneExecOptions(options) {
-        options = options || {};
-        const result = {
-          cwd: options.cwd || process.cwd(),
-          env: options.env || process.env,
-          silent: options.silent || false,
-          windowsVerbatimArguments: options.windowsVerbatimArguments || false,
-          failOnStdErr: options.failOnStdErr || false,
-          ignoreReturnCode: options.ignoreReturnCode || false,
-          delay: options.delay || 1e4
-        };
-        result.outStream = options.outStream || process.stdout;
-        result.errStream = options.errStream || process.stderr;
-        return result;
-      }
-      _getSpawnOptions(options, toolPath) {
-        options = options || {};
-        const result = {};
-        result.cwd = options.cwd;
-        result.env = options.env;
-        result["windowsVerbatimArguments"] = options.windowsVerbatimArguments || this._isCmdFile();
-        if (options.windowsVerbatimArguments) {
-          result.argv0 = `"${toolPath}"`;
-        }
-        return result;
-      }
-      exec() {
-        return __awaiter(this, void 0, void 0, function* () {
-          if (!ioUtil.isRooted(this.toolPath) && (this.toolPath.includes("/") || IS_WINDOWS && this.toolPath.includes("\\"))) {
-            this.toolPath = path3.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
-          }
-          this.toolPath = yield io.which(this.toolPath, true);
-          return new Promise((resolve, reject3) => __awaiter(this, void 0, void 0, function* () {
-            this._debug(`exec tool: ${this.toolPath}`);
-            this._debug("arguments:");
-            for (const arg of this.args) {
-              this._debug(`   ${arg}`);
-            }
-            const optionsNonNull = this._cloneExecOptions(this.options);
-            if (!optionsNonNull.silent && optionsNonNull.outStream) {
-              optionsNonNull.outStream.write(this._getCommandString(optionsNonNull) + os.EOL);
-            }
-            const state = new ExecState(optionsNonNull, this.toolPath);
-            state.on("debug", (message) => {
-              this._debug(message);
-            });
-            if (this.options.cwd && !(yield ioUtil.exists(this.options.cwd))) {
-              return reject3(new Error(`The cwd: ${this.options.cwd} does not exist!`));
-            }
-            const fileName = this._getSpawnFileName();
-            const cp = child.spawn(fileName, this._getSpawnArgs(optionsNonNull), this._getSpawnOptions(this.options, fileName));
-            let stdbuffer = "";
-            if (cp.stdout) {
-              cp.stdout.on("data", (data) => {
-                if (this.options.listeners && this.options.listeners.stdout) {
-                  this.options.listeners.stdout(data);
-                }
-                if (!optionsNonNull.silent && optionsNonNull.outStream) {
-                  optionsNonNull.outStream.write(data);
-                }
-                stdbuffer = this._processLineBuffer(data, stdbuffer, (line) => {
-                  if (this.options.listeners && this.options.listeners.stdline) {
-                    this.options.listeners.stdline(line);
-                  }
-                });
-              });
-            }
-            let errbuffer = "";
-            if (cp.stderr) {
-              cp.stderr.on("data", (data) => {
-                state.processStderr = true;
-                if (this.options.listeners && this.options.listeners.stderr) {
-                  this.options.listeners.stderr(data);
-                }
-                if (!optionsNonNull.silent && optionsNonNull.errStream && optionsNonNull.outStream) {
-                  const s = optionsNonNull.failOnStdErr ? optionsNonNull.errStream : optionsNonNull.outStream;
-                  s.write(data);
-                }
-                errbuffer = this._processLineBuffer(data, errbuffer, (line) => {
-                  if (this.options.listeners && this.options.listeners.errline) {
-                    this.options.listeners.errline(line);
-                  }
-                });
-              });
-            }
-            cp.on("error", (err) => {
-              state.processError = err.message;
-              state.processExited = true;
-              state.processClosed = true;
-              state.CheckComplete();
-            });
-            cp.on("exit", (code) => {
-              state.processExitCode = code;
-              state.processExited = true;
-              this._debug(`Exit code ${code} received from tool '${this.toolPath}'`);
-              state.CheckComplete();
-            });
-            cp.on("close", (code) => {
-              state.processExitCode = code;
-              state.processExited = true;
-              state.processClosed = true;
-              this._debug(`STDIO streams have closed for tool '${this.toolPath}'`);
-              state.CheckComplete();
-            });
-            state.on("done", (error, exitCode) => {
-              if (stdbuffer.length > 0) {
-                this.emit("stdline", stdbuffer);
-              }
-              if (errbuffer.length > 0) {
-                this.emit("errline", errbuffer);
-              }
-              cp.removeAllListeners();
-              if (error) {
-                reject3(error);
-              } else {
-                resolve(exitCode);
-              }
-            });
-            if (this.options.input) {
-              if (!cp.stdin) {
-                throw new Error("child process missing stdin");
-              }
-              cp.stdin.end(this.options.input);
-            }
-          }));
-        });
-      }
-    };
-    exports.ToolRunner = ToolRunner;
-    function argStringToArray(argString) {
-      const args = [];
-      let inQuotes = false;
-      let escaped = false;
-      let arg = "";
-      function append(c) {
-        if (escaped && c !== '"') {
-          arg += "\\";
-        }
-        arg += c;
-        escaped = false;
-      }
-      for (let i = 0; i < argString.length; i++) {
-        const c = argString.charAt(i);
-        if (c === '"') {
-          if (!escaped) {
-            inQuotes = !inQuotes;
-          } else {
-            append(c);
-          }
-          continue;
-        }
-        if (c === "\\" && escaped) {
-          append(c);
-          continue;
-        }
-        if (c === "\\" && inQuotes) {
-          escaped = true;
-          continue;
-        }
-        if (c === " " && !inQuotes) {
-          if (arg.length > 0) {
-            args.push(arg);
-            arg = "";
-          }
-          continue;
-        }
-        append(c);
-      }
-      if (arg.length > 0) {
-        args.push(arg.trim());
-      }
-      return args;
-    }
-    exports.argStringToArray = argStringToArray;
-    var ExecState = class extends events.EventEmitter {
-      constructor(options, toolPath) {
-        super();
-        this.processClosed = false;
-        this.processError = "";
-        this.processExitCode = 0;
-        this.processExited = false;
-        this.processStderr = false;
-        this.delay = 1e4;
-        this.done = false;
-        this.timeout = null;
-        if (!toolPath) {
-          throw new Error("toolPath must not be empty");
-        }
-        this.options = options;
-        this.toolPath = toolPath;
-        if (options.delay) {
-          this.delay = options.delay;
-        }
-      }
-      CheckComplete() {
-        if (this.done) {
-          return;
-        }
-        if (this.processClosed) {
-          this._setResult();
-        } else if (this.processExited) {
-          this.timeout = timers_1.setTimeout(ExecState.HandleTimeout, this.delay, this);
-        }
-      }
-      _debug(message) {
-        this.emit("debug", message);
-      }
-      _setResult() {
-        let error;
-        if (this.processExited) {
-          if (this.processError) {
-            error = new Error(`There was an error when attempting to execute the process '${this.toolPath}'. This may indicate the process failed to start. Error: ${this.processError}`);
-          } else if (this.processExitCode !== 0 && !this.options.ignoreReturnCode) {
-            error = new Error(`The process '${this.toolPath}' failed with exit code ${this.processExitCode}`);
-          } else if (this.processStderr && this.options.failOnStdErr) {
-            error = new Error(`The process '${this.toolPath}' failed because one or more lines were written to the STDERR stream`);
-          }
-        }
-        if (this.timeout) {
-          clearTimeout(this.timeout);
-          this.timeout = null;
-        }
-        this.done = true;
-        this.emit("done", error, this.processExitCode);
-      }
-      static HandleTimeout(state) {
-        if (state.done) {
-          return;
-        }
-        if (!state.processClosed && state.processExited) {
-          const message = `The STDIO streams did not close within ${state.delay / 1e3} seconds of the exit event from process '${state.toolPath}'. This may indicate a child process inherited the STDIO streams and has not yet exited.`;
-          state._debug(message);
-        }
-        state._setResult();
-      }
-    };
-  }
-});
-
-// node_modules/@actions/exec/lib/exec.js
-var require_exec = __commonJS({
-  "node_modules/@actions/exec/lib/exec.js"(exports) {
-    "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      o[k2] = m[k];
-    });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
-      Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
-      o["default"] = v;
-    });
-    var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
-      var result = {};
-      if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
-      }
-      __setModuleDefault(result, mod);
-      return result;
-    };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
-      function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
-          resolve(value);
-        });
-      }
-      return new (P || (P = Promise))(function(resolve, reject3) {
-        function fulfilled(value) {
-          try {
-            step(generator.next(value));
-          } catch (e) {
-            reject3(e);
-          }
-        }
-        function rejected(value) {
-          try {
-            step(generator["throw"](value));
-          } catch (e) {
-            reject3(e);
-          }
-        }
-        function step(result) {
-          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-      });
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getExecOutput = exports.exec = void 0;
-    var string_decoder_1 = require("string_decoder");
-    var tr = __importStar(require_toolrunner());
-    function exec2(commandLine, args, options) {
-      return __awaiter(this, void 0, void 0, function* () {
-        const commandArgs = tr.argStringToArray(commandLine);
-        if (commandArgs.length === 0) {
-          throw new Error(`Parameter 'commandLine' cannot be null or empty.`);
-        }
-        const toolPath = commandArgs[0];
-        args = commandArgs.slice(1).concat(args || []);
-        const runner = new tr.ToolRunner(toolPath, args, options);
-        return runner.exec();
-      });
-    }
-    exports.exec = exec2;
-    function getExecOutput2(commandLine, args, options) {
-      var _a, _b;
-      return __awaiter(this, void 0, void 0, function* () {
-        let stdout = "";
-        let stderr = "";
-        const stdoutDecoder = new string_decoder_1.StringDecoder("utf8");
-        const stderrDecoder = new string_decoder_1.StringDecoder("utf8");
-        const originalStdoutListener = (_a = options === null || options === void 0 ? void 0 : options.listeners) === null || _a === void 0 ? void 0 : _a.stdout;
-        const originalStdErrListener = (_b = options === null || options === void 0 ? void 0 : options.listeners) === null || _b === void 0 ? void 0 : _b.stderr;
-        const stdErrListener = (data) => {
-          stderr += stderrDecoder.write(data);
-          if (originalStdErrListener) {
-            originalStdErrListener(data);
-          }
-        };
-        const stdOutListener = (data) => {
-          stdout += stdoutDecoder.write(data);
-          if (originalStdoutListener) {
-            originalStdoutListener(data);
-          }
-        };
-        const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
-        const exitCode = yield exec2(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
-        stdout += stdoutDecoder.end();
-        stderr += stderrDecoder.end();
-        return {
-          exitCode,
-          stdout,
-          stderr
-        };
-      });
-    }
-    exports.getExecOutput = getExecOutput2;
   }
 });
 
@@ -14382,7 +13332,7 @@ var require_lodash = __commonJS({
           return result2;
         }
         function flatRest(func) {
-          return setToString(overRest(func, undefined2, flatten2), func + "");
+          return setToString(overRest(func, undefined2, flatten), func + "");
         }
         function getAllKeys(object) {
           return baseGetAllKeys(object, keys4, getSymbols);
@@ -14929,7 +13879,7 @@ var require_lodash = __commonJS({
           }
           return baseFindIndex(array, getIteratee(predicate, 3), index, true);
         }
-        function flatten2(array) {
+        function flatten(array) {
           var length = array == null ? 0 : array.length;
           return length ? baseFlatten(array, 1) : [];
         }
@@ -15829,7 +14779,7 @@ var require_lodash = __commonJS({
         function isNull(value) {
           return value === null;
         }
-        function isNil3(value) {
+        function isNil(value) {
           return value == null;
         }
         function isNumber(value) {
@@ -16376,7 +15326,7 @@ var require_lodash = __commonJS({
           }
           return result2;
         }
-        function toLower2(value) {
+        function toLower(value) {
           return toString4(value).toLowerCase();
         }
         function toUpper(value) {
@@ -16717,7 +15667,7 @@ var require_lodash = __commonJS({
         lodash.flatMap = flatMap;
         lodash.flatMapDeep = flatMapDeep;
         lodash.flatMapDepth = flatMapDepth;
-        lodash.flatten = flatten2;
+        lodash.flatten = flatten;
         lodash.flattenDeep = flattenDeep;
         lodash.flattenDepth = flattenDepth;
         lodash.flip = flip;
@@ -16896,7 +15846,7 @@ var require_lodash = __commonJS({
         lodash.isMatchWith = isMatchWith;
         lodash.isNaN = isNaN2;
         lodash.isNative = isNative;
-        lodash.isNil = isNil3;
+        lodash.isNil = isNil;
         lodash.isNull = isNull;
         lodash.isNumber = isNumber;
         lodash.isObject = isObject;
@@ -16967,7 +15917,7 @@ var require_lodash = __commonJS({
         lodash.toFinite = toFinite;
         lodash.toInteger = toInteger;
         lodash.toLength = toLength;
-        lodash.toLower = toLower2;
+        lodash.toLower = toLower;
         lodash.toNumber = toNumber;
         lodash.toSafeInteger = toSafeInteger;
         lodash.toString = toString4;
@@ -30469,7 +29419,7 @@ var require_axios = __commonJS({
     axios.toFormData = require_toFormData();
     axios.AxiosError = require_AxiosError();
     axios.Cancel = axios.CanceledError;
-    axios.all = function all(promises) {
+    axios.all = function all3(promises) {
       return Promise.all(promises);
     };
     axios.spread = require_spread();
@@ -68809,47 +67759,1071 @@ var require_semver2 = __commonJS({
   }
 });
 
-// release/src/index.ts
-var import_core15 = __toESM(require_core());
-var import_github9 = __toESM(require_github());
+// node_modules/@actions/io/lib/io-util.js
+var require_io_util = __commonJS({
+  "node_modules/@actions/io/lib/io-util.js"(exports) {
+    "use strict";
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m[k];
+      } });
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports && exports.__importStar || function(mod) {
+      if (mod && mod.__esModule)
+        return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject3) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e) {
+            reject3(e);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e) {
+            reject3(e);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    var _a;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rename = exports.readlink = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
+    var fs = __importStar(require("fs"));
+    var path3 = __importStar(require("path"));
+    _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
+    exports.IS_WINDOWS = process.platform === "win32";
+    function exists(fsPath) {
+      return __awaiter(this, void 0, void 0, function* () {
+        try {
+          yield exports.stat(fsPath);
+        } catch (err) {
+          if (err.code === "ENOENT") {
+            return false;
+          }
+          throw err;
+        }
+        return true;
+      });
+    }
+    exports.exists = exists;
+    function isDirectory(fsPath, useStat = false) {
+      return __awaiter(this, void 0, void 0, function* () {
+        const stats = useStat ? yield exports.stat(fsPath) : yield exports.lstat(fsPath);
+        return stats.isDirectory();
+      });
+    }
+    exports.isDirectory = isDirectory;
+    function isRooted(p) {
+      p = normalizeSeparators(p);
+      if (!p) {
+        throw new Error('isRooted() parameter "p" cannot be empty');
+      }
+      if (exports.IS_WINDOWS) {
+        return p.startsWith("\\") || /^[A-Z]:/i.test(p);
+      }
+      return p.startsWith("/");
+    }
+    exports.isRooted = isRooted;
+    function tryGetExecutablePath(filePath, extensions) {
+      return __awaiter(this, void 0, void 0, function* () {
+        let stats = void 0;
+        try {
+          stats = yield exports.stat(filePath);
+        } catch (err) {
+          if (err.code !== "ENOENT") {
+            console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
+          }
+        }
+        if (stats && stats.isFile()) {
+          if (exports.IS_WINDOWS) {
+            const upperExt = path3.extname(filePath).toUpperCase();
+            if (extensions.some((validExt) => validExt.toUpperCase() === upperExt)) {
+              return filePath;
+            }
+          } else {
+            if (isUnixExecutable(stats)) {
+              return filePath;
+            }
+          }
+        }
+        const originalFilePath = filePath;
+        for (const extension of extensions) {
+          filePath = originalFilePath + extension;
+          stats = void 0;
+          try {
+            stats = yield exports.stat(filePath);
+          } catch (err) {
+            if (err.code !== "ENOENT") {
+              console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
+            }
+          }
+          if (stats && stats.isFile()) {
+            if (exports.IS_WINDOWS) {
+              try {
+                const directory = path3.dirname(filePath);
+                const upperName = path3.basename(filePath).toUpperCase();
+                for (const actualName of yield exports.readdir(directory)) {
+                  if (upperName === actualName.toUpperCase()) {
+                    filePath = path3.join(directory, actualName);
+                    break;
+                  }
+                }
+              } catch (err) {
+                console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err}`);
+              }
+              return filePath;
+            } else {
+              if (isUnixExecutable(stats)) {
+                return filePath;
+              }
+            }
+          }
+        }
+        return "";
+      });
+    }
+    exports.tryGetExecutablePath = tryGetExecutablePath;
+    function normalizeSeparators(p) {
+      p = p || "";
+      if (exports.IS_WINDOWS) {
+        p = p.replace(/\//g, "\\");
+        return p.replace(/\\\\+/g, "\\");
+      }
+      return p.replace(/\/\/+/g, "/");
+    }
+    function isUnixExecutable(stats) {
+      return (stats.mode & 1) > 0 || (stats.mode & 8) > 0 && stats.gid === process.getgid() || (stats.mode & 64) > 0 && stats.uid === process.getuid();
+    }
+    function getCmdPath() {
+      var _a2;
+      return (_a2 = process.env["COMSPEC"]) !== null && _a2 !== void 0 ? _a2 : `cmd.exe`;
+    }
+    exports.getCmdPath = getCmdPath;
+  }
+});
 
-// lib/core.ts
-var import_core = __toESM(require_core());
-var import_exec = __toESM(require_exec());
-var TRUE_VALUES = [true, "true", "TRUE", "True"];
-var FALSE_VALUES = [false, "false", "FALSE", "False"];
-function getBooleanInput(name, defaultValue) {
-  let inputValue = (0, import_core.getInput)(name) || defaultValue;
-  if (TRUE_VALUES.includes(inputValue)) {
-    return true;
+// node_modules/@actions/io/lib/io.js
+var require_io = __commonJS({
+  "node_modules/@actions/io/lib/io.js"(exports) {
+    "use strict";
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m[k];
+      } });
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports && exports.__importStar || function(mod) {
+      if (mod && mod.__esModule)
+        return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject3) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e) {
+            reject3(e);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e) {
+            reject3(e);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.findInPath = exports.which = exports.mkdirP = exports.rmRF = exports.mv = exports.cp = void 0;
+    var assert_1 = require("assert");
+    var childProcess = __importStar(require("child_process"));
+    var path3 = __importStar(require("path"));
+    var util_1 = require("util");
+    var ioUtil = __importStar(require_io_util());
+    var exec2 = util_1.promisify(childProcess.exec);
+    var execFile = util_1.promisify(childProcess.execFile);
+    function cp(source, dest, options = {}) {
+      return __awaiter(this, void 0, void 0, function* () {
+        const { force, recursive, copySourceDirectory } = readCopyOptions(options);
+        const destStat = (yield ioUtil.exists(dest)) ? yield ioUtil.stat(dest) : null;
+        if (destStat && destStat.isFile() && !force) {
+          return;
+        }
+        const newDest = destStat && destStat.isDirectory() && copySourceDirectory ? path3.join(dest, path3.basename(source)) : dest;
+        if (!(yield ioUtil.exists(source))) {
+          throw new Error(`no such file or directory: ${source}`);
+        }
+        const sourceStat = yield ioUtil.stat(source);
+        if (sourceStat.isDirectory()) {
+          if (!recursive) {
+            throw new Error(`Failed to copy. ${source} is a directory, but tried to copy without recursive flag.`);
+          } else {
+            yield cpDirRecursive(source, newDest, 0, force);
+          }
+        } else {
+          if (path3.relative(source, newDest) === "") {
+            throw new Error(`'${newDest}' and '${source}' are the same file`);
+          }
+          yield copyFile(source, newDest, force);
+        }
+      });
+    }
+    exports.cp = cp;
+    function mv(source, dest, options = {}) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (yield ioUtil.exists(dest)) {
+          let destExists = true;
+          if (yield ioUtil.isDirectory(dest)) {
+            dest = path3.join(dest, path3.basename(source));
+            destExists = yield ioUtil.exists(dest);
+          }
+          if (destExists) {
+            if (options.force == null || options.force) {
+              yield rmRF(dest);
+            } else {
+              throw new Error("Destination already exists");
+            }
+          }
+        }
+        yield mkdirP(path3.dirname(dest));
+        yield ioUtil.rename(source, dest);
+      });
+    }
+    exports.mv = mv;
+    function rmRF(inputPath) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (ioUtil.IS_WINDOWS) {
+          if (/[*"<>|]/.test(inputPath)) {
+            throw new Error('File path must not contain `*`, `"`, `<`, `>` or `|` on Windows');
+          }
+          try {
+            const cmdPath = ioUtil.getCmdPath();
+            if (yield ioUtil.isDirectory(inputPath, true)) {
+              yield exec2(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
+                env: { inputPath }
+              });
+            } else {
+              yield exec2(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
+                env: { inputPath }
+              });
+            }
+          } catch (err) {
+            if (err.code !== "ENOENT")
+              throw err;
+          }
+          try {
+            yield ioUtil.unlink(inputPath);
+          } catch (err) {
+            if (err.code !== "ENOENT")
+              throw err;
+          }
+        } else {
+          let isDir = false;
+          try {
+            isDir = yield ioUtil.isDirectory(inputPath);
+          } catch (err) {
+            if (err.code !== "ENOENT")
+              throw err;
+            return;
+          }
+          if (isDir) {
+            yield execFile(`rm`, [`-rf`, `${inputPath}`]);
+          } else {
+            yield ioUtil.unlink(inputPath);
+          }
+        }
+      });
+    }
+    exports.rmRF = rmRF;
+    function mkdirP(fsPath) {
+      return __awaiter(this, void 0, void 0, function* () {
+        assert_1.ok(fsPath, "a path argument must be provided");
+        yield ioUtil.mkdir(fsPath, { recursive: true });
+      });
+    }
+    exports.mkdirP = mkdirP;
+    function which(tool, check) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (!tool) {
+          throw new Error("parameter 'tool' is required");
+        }
+        if (check) {
+          const result = yield which(tool, false);
+          if (!result) {
+            if (ioUtil.IS_WINDOWS) {
+              throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also verify the file has a valid extension for an executable file.`);
+            } else {
+              throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also check the file mode to verify the file is executable.`);
+            }
+          }
+          return result;
+        }
+        const matches = yield findInPath(tool);
+        if (matches && matches.length > 0) {
+          return matches[0];
+        }
+        return "";
+      });
+    }
+    exports.which = which;
+    function findInPath(tool) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (!tool) {
+          throw new Error("parameter 'tool' is required");
+        }
+        const extensions = [];
+        if (ioUtil.IS_WINDOWS && process.env["PATHEXT"]) {
+          for (const extension of process.env["PATHEXT"].split(path3.delimiter)) {
+            if (extension) {
+              extensions.push(extension);
+            }
+          }
+        }
+        if (ioUtil.isRooted(tool)) {
+          const filePath = yield ioUtil.tryGetExecutablePath(tool, extensions);
+          if (filePath) {
+            return [filePath];
+          }
+          return [];
+        }
+        if (tool.includes(path3.sep)) {
+          return [];
+        }
+        const directories = [];
+        if (process.env.PATH) {
+          for (const p of process.env.PATH.split(path3.delimiter)) {
+            if (p) {
+              directories.push(p);
+            }
+          }
+        }
+        const matches = [];
+        for (const directory of directories) {
+          const filePath = yield ioUtil.tryGetExecutablePath(path3.join(directory, tool), extensions);
+          if (filePath) {
+            matches.push(filePath);
+          }
+        }
+        return matches;
+      });
+    }
+    exports.findInPath = findInPath;
+    function readCopyOptions(options) {
+      const force = options.force == null ? true : options.force;
+      const recursive = Boolean(options.recursive);
+      const copySourceDirectory = options.copySourceDirectory == null ? true : Boolean(options.copySourceDirectory);
+      return { force, recursive, copySourceDirectory };
+    }
+    function cpDirRecursive(sourceDir, destDir, currentDepth, force) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (currentDepth >= 255)
+          return;
+        currentDepth++;
+        yield mkdirP(destDir);
+        const files = yield ioUtil.readdir(sourceDir);
+        for (const fileName of files) {
+          const srcFile = `${sourceDir}/${fileName}`;
+          const destFile = `${destDir}/${fileName}`;
+          const srcFileStat = yield ioUtil.lstat(srcFile);
+          if (srcFileStat.isDirectory()) {
+            yield cpDirRecursive(srcFile, destFile, currentDepth, force);
+          } else {
+            yield copyFile(srcFile, destFile, force);
+          }
+        }
+        yield ioUtil.chmod(destDir, (yield ioUtil.stat(sourceDir)).mode);
+      });
+    }
+    function copyFile(srcFile, destFile, force) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if ((yield ioUtil.lstat(srcFile)).isSymbolicLink()) {
+          try {
+            yield ioUtil.lstat(destFile);
+            yield ioUtil.unlink(destFile);
+          } catch (e) {
+            if (e.code === "EPERM") {
+              yield ioUtil.chmod(destFile, "0666");
+              yield ioUtil.unlink(destFile);
+            }
+          }
+          const symlinkFull = yield ioUtil.readlink(srcFile);
+          yield ioUtil.symlink(symlinkFull, destFile, ioUtil.IS_WINDOWS ? "junction" : null);
+        } else if (!(yield ioUtil.exists(destFile)) || force) {
+          yield ioUtil.copyFile(srcFile, destFile);
+        }
+      });
+    }
   }
-  if (FALSE_VALUES.includes(inputValue)) {
-    return false;
+});
+
+// node_modules/@actions/exec/lib/toolrunner.js
+var require_toolrunner = __commonJS({
+  "node_modules/@actions/exec/lib/toolrunner.js"(exports) {
+    "use strict";
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m[k];
+      } });
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports && exports.__importStar || function(mod) {
+      if (mod && mod.__esModule)
+        return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject3) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e) {
+            reject3(e);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e) {
+            reject3(e);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.argStringToArray = exports.ToolRunner = void 0;
+    var os = __importStar(require("os"));
+    var events = __importStar(require("events"));
+    var child = __importStar(require("child_process"));
+    var path3 = __importStar(require("path"));
+    var io = __importStar(require_io());
+    var ioUtil = __importStar(require_io_util());
+    var timers_1 = require("timers");
+    var IS_WINDOWS = process.platform === "win32";
+    var ToolRunner = class extends events.EventEmitter {
+      constructor(toolPath, args, options) {
+        super();
+        if (!toolPath) {
+          throw new Error("Parameter 'toolPath' cannot be null or empty.");
+        }
+        this.toolPath = toolPath;
+        this.args = args || [];
+        this.options = options || {};
+      }
+      _debug(message) {
+        if (this.options.listeners && this.options.listeners.debug) {
+          this.options.listeners.debug(message);
+        }
+      }
+      _getCommandString(options, noPrefix) {
+        const toolPath = this._getSpawnFileName();
+        const args = this._getSpawnArgs(options);
+        let cmd = noPrefix ? "" : "[command]";
+        if (IS_WINDOWS) {
+          if (this._isCmdFile()) {
+            cmd += toolPath;
+            for (const a of args) {
+              cmd += ` ${a}`;
+            }
+          } else if (options.windowsVerbatimArguments) {
+            cmd += `"${toolPath}"`;
+            for (const a of args) {
+              cmd += ` ${a}`;
+            }
+          } else {
+            cmd += this._windowsQuoteCmdArg(toolPath);
+            for (const a of args) {
+              cmd += ` ${this._windowsQuoteCmdArg(a)}`;
+            }
+          }
+        } else {
+          cmd += toolPath;
+          for (const a of args) {
+            cmd += ` ${a}`;
+          }
+        }
+        return cmd;
+      }
+      _processLineBuffer(data, strBuffer, onLine) {
+        try {
+          let s = strBuffer + data.toString();
+          let n = s.indexOf(os.EOL);
+          while (n > -1) {
+            const line = s.substring(0, n);
+            onLine(line);
+            s = s.substring(n + os.EOL.length);
+            n = s.indexOf(os.EOL);
+          }
+          return s;
+        } catch (err) {
+          this._debug(`error processing line. Failed with error ${err}`);
+          return "";
+        }
+      }
+      _getSpawnFileName() {
+        if (IS_WINDOWS) {
+          if (this._isCmdFile()) {
+            return process.env["COMSPEC"] || "cmd.exe";
+          }
+        }
+        return this.toolPath;
+      }
+      _getSpawnArgs(options) {
+        if (IS_WINDOWS) {
+          if (this._isCmdFile()) {
+            let argline = `/D /S /C "${this._windowsQuoteCmdArg(this.toolPath)}`;
+            for (const a of this.args) {
+              argline += " ";
+              argline += options.windowsVerbatimArguments ? a : this._windowsQuoteCmdArg(a);
+            }
+            argline += '"';
+            return [argline];
+          }
+        }
+        return this.args;
+      }
+      _endsWith(str, end) {
+        return str.endsWith(end);
+      }
+      _isCmdFile() {
+        const upperToolPath = this.toolPath.toUpperCase();
+        return this._endsWith(upperToolPath, ".CMD") || this._endsWith(upperToolPath, ".BAT");
+      }
+      _windowsQuoteCmdArg(arg) {
+        if (!this._isCmdFile()) {
+          return this._uvQuoteCmdArg(arg);
+        }
+        if (!arg) {
+          return '""';
+        }
+        const cmdSpecialChars = [
+          " ",
+          "	",
+          "&",
+          "(",
+          ")",
+          "[",
+          "]",
+          "{",
+          "}",
+          "^",
+          "=",
+          ";",
+          "!",
+          "'",
+          "+",
+          ",",
+          "`",
+          "~",
+          "|",
+          "<",
+          ">",
+          '"'
+        ];
+        let needsQuotes = false;
+        for (const char of arg) {
+          if (cmdSpecialChars.some((x) => x === char)) {
+            needsQuotes = true;
+            break;
+          }
+        }
+        if (!needsQuotes) {
+          return arg;
+        }
+        let reverse = '"';
+        let quoteHit = true;
+        for (let i = arg.length; i > 0; i--) {
+          reverse += arg[i - 1];
+          if (quoteHit && arg[i - 1] === "\\") {
+            reverse += "\\";
+          } else if (arg[i - 1] === '"') {
+            quoteHit = true;
+            reverse += '"';
+          } else {
+            quoteHit = false;
+          }
+        }
+        reverse += '"';
+        return reverse.split("").reverse().join("");
+      }
+      _uvQuoteCmdArg(arg) {
+        if (!arg) {
+          return '""';
+        }
+        if (!arg.includes(" ") && !arg.includes("	") && !arg.includes('"')) {
+          return arg;
+        }
+        if (!arg.includes('"') && !arg.includes("\\")) {
+          return `"${arg}"`;
+        }
+        let reverse = '"';
+        let quoteHit = true;
+        for (let i = arg.length; i > 0; i--) {
+          reverse += arg[i - 1];
+          if (quoteHit && arg[i - 1] === "\\") {
+            reverse += "\\";
+          } else if (arg[i - 1] === '"') {
+            quoteHit = true;
+            reverse += "\\";
+          } else {
+            quoteHit = false;
+          }
+        }
+        reverse += '"';
+        return reverse.split("").reverse().join("");
+      }
+      _cloneExecOptions(options) {
+        options = options || {};
+        const result = {
+          cwd: options.cwd || process.cwd(),
+          env: options.env || process.env,
+          silent: options.silent || false,
+          windowsVerbatimArguments: options.windowsVerbatimArguments || false,
+          failOnStdErr: options.failOnStdErr || false,
+          ignoreReturnCode: options.ignoreReturnCode || false,
+          delay: options.delay || 1e4
+        };
+        result.outStream = options.outStream || process.stdout;
+        result.errStream = options.errStream || process.stderr;
+        return result;
+      }
+      _getSpawnOptions(options, toolPath) {
+        options = options || {};
+        const result = {};
+        result.cwd = options.cwd;
+        result.env = options.env;
+        result["windowsVerbatimArguments"] = options.windowsVerbatimArguments || this._isCmdFile();
+        if (options.windowsVerbatimArguments) {
+          result.argv0 = `"${toolPath}"`;
+        }
+        return result;
+      }
+      exec() {
+        return __awaiter(this, void 0, void 0, function* () {
+          if (!ioUtil.isRooted(this.toolPath) && (this.toolPath.includes("/") || IS_WINDOWS && this.toolPath.includes("\\"))) {
+            this.toolPath = path3.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
+          }
+          this.toolPath = yield io.which(this.toolPath, true);
+          return new Promise((resolve, reject3) => __awaiter(this, void 0, void 0, function* () {
+            this._debug(`exec tool: ${this.toolPath}`);
+            this._debug("arguments:");
+            for (const arg of this.args) {
+              this._debug(`   ${arg}`);
+            }
+            const optionsNonNull = this._cloneExecOptions(this.options);
+            if (!optionsNonNull.silent && optionsNonNull.outStream) {
+              optionsNonNull.outStream.write(this._getCommandString(optionsNonNull) + os.EOL);
+            }
+            const state = new ExecState(optionsNonNull, this.toolPath);
+            state.on("debug", (message) => {
+              this._debug(message);
+            });
+            if (this.options.cwd && !(yield ioUtil.exists(this.options.cwd))) {
+              return reject3(new Error(`The cwd: ${this.options.cwd} does not exist!`));
+            }
+            const fileName = this._getSpawnFileName();
+            const cp = child.spawn(fileName, this._getSpawnArgs(optionsNonNull), this._getSpawnOptions(this.options, fileName));
+            let stdbuffer = "";
+            if (cp.stdout) {
+              cp.stdout.on("data", (data) => {
+                if (this.options.listeners && this.options.listeners.stdout) {
+                  this.options.listeners.stdout(data);
+                }
+                if (!optionsNonNull.silent && optionsNonNull.outStream) {
+                  optionsNonNull.outStream.write(data);
+                }
+                stdbuffer = this._processLineBuffer(data, stdbuffer, (line) => {
+                  if (this.options.listeners && this.options.listeners.stdline) {
+                    this.options.listeners.stdline(line);
+                  }
+                });
+              });
+            }
+            let errbuffer = "";
+            if (cp.stderr) {
+              cp.stderr.on("data", (data) => {
+                state.processStderr = true;
+                if (this.options.listeners && this.options.listeners.stderr) {
+                  this.options.listeners.stderr(data);
+                }
+                if (!optionsNonNull.silent && optionsNonNull.errStream && optionsNonNull.outStream) {
+                  const s = optionsNonNull.failOnStdErr ? optionsNonNull.errStream : optionsNonNull.outStream;
+                  s.write(data);
+                }
+                errbuffer = this._processLineBuffer(data, errbuffer, (line) => {
+                  if (this.options.listeners && this.options.listeners.errline) {
+                    this.options.listeners.errline(line);
+                  }
+                });
+              });
+            }
+            cp.on("error", (err) => {
+              state.processError = err.message;
+              state.processExited = true;
+              state.processClosed = true;
+              state.CheckComplete();
+            });
+            cp.on("exit", (code) => {
+              state.processExitCode = code;
+              state.processExited = true;
+              this._debug(`Exit code ${code} received from tool '${this.toolPath}'`);
+              state.CheckComplete();
+            });
+            cp.on("close", (code) => {
+              state.processExitCode = code;
+              state.processExited = true;
+              state.processClosed = true;
+              this._debug(`STDIO streams have closed for tool '${this.toolPath}'`);
+              state.CheckComplete();
+            });
+            state.on("done", (error, exitCode) => {
+              if (stdbuffer.length > 0) {
+                this.emit("stdline", stdbuffer);
+              }
+              if (errbuffer.length > 0) {
+                this.emit("errline", errbuffer);
+              }
+              cp.removeAllListeners();
+              if (error) {
+                reject3(error);
+              } else {
+                resolve(exitCode);
+              }
+            });
+            if (this.options.input) {
+              if (!cp.stdin) {
+                throw new Error("child process missing stdin");
+              }
+              cp.stdin.end(this.options.input);
+            }
+          }));
+        });
+      }
+    };
+    exports.ToolRunner = ToolRunner;
+    function argStringToArray(argString) {
+      const args = [];
+      let inQuotes = false;
+      let escaped = false;
+      let arg = "";
+      function append(c) {
+        if (escaped && c !== '"') {
+          arg += "\\";
+        }
+        arg += c;
+        escaped = false;
+      }
+      for (let i = 0; i < argString.length; i++) {
+        const c = argString.charAt(i);
+        if (c === '"') {
+          if (!escaped) {
+            inQuotes = !inQuotes;
+          } else {
+            append(c);
+          }
+          continue;
+        }
+        if (c === "\\" && escaped) {
+          append(c);
+          continue;
+        }
+        if (c === "\\" && inQuotes) {
+          escaped = true;
+          continue;
+        }
+        if (c === " " && !inQuotes) {
+          if (arg.length > 0) {
+            args.push(arg);
+            arg = "";
+          }
+          continue;
+        }
+        append(c);
+      }
+      if (arg.length > 0) {
+        args.push(arg.trim());
+      }
+      return args;
+    }
+    exports.argStringToArray = argStringToArray;
+    var ExecState = class extends events.EventEmitter {
+      constructor(options, toolPath) {
+        super();
+        this.processClosed = false;
+        this.processError = "";
+        this.processExitCode = 0;
+        this.processExited = false;
+        this.processStderr = false;
+        this.delay = 1e4;
+        this.done = false;
+        this.timeout = null;
+        if (!toolPath) {
+          throw new Error("toolPath must not be empty");
+        }
+        this.options = options;
+        this.toolPath = toolPath;
+        if (options.delay) {
+          this.delay = options.delay;
+        }
+      }
+      CheckComplete() {
+        if (this.done) {
+          return;
+        }
+        if (this.processClosed) {
+          this._setResult();
+        } else if (this.processExited) {
+          this.timeout = timers_1.setTimeout(ExecState.HandleTimeout, this.delay, this);
+        }
+      }
+      _debug(message) {
+        this.emit("debug", message);
+      }
+      _setResult() {
+        let error;
+        if (this.processExited) {
+          if (this.processError) {
+            error = new Error(`There was an error when attempting to execute the process '${this.toolPath}'. This may indicate the process failed to start. Error: ${this.processError}`);
+          } else if (this.processExitCode !== 0 && !this.options.ignoreReturnCode) {
+            error = new Error(`The process '${this.toolPath}' failed with exit code ${this.processExitCode}`);
+          } else if (this.processStderr && this.options.failOnStdErr) {
+            error = new Error(`The process '${this.toolPath}' failed because one or more lines were written to the STDERR stream`);
+          }
+        }
+        if (this.timeout) {
+          clearTimeout(this.timeout);
+          this.timeout = null;
+        }
+        this.done = true;
+        this.emit("done", error, this.processExitCode);
+      }
+      static HandleTimeout(state) {
+        if (state.done) {
+          return;
+        }
+        if (!state.processClosed && state.processExited) {
+          const message = `The STDIO streams did not close within ${state.delay / 1e3} seconds of the exit event from process '${state.toolPath}'. This may indicate a child process inherited the STDIO streams and has not yet exited.`;
+          state._debug(message);
+        }
+        state._setResult();
+      }
+    };
   }
-  throw new Error(
-    `Can't parse input value (${JSON.stringify(inputValue)}) as boolean`
-  );
-}
-async function exec(command, args) {
-  const result = await (0, import_exec.getExecOutput)(command, args, {
-    silent: true,
-    ignoreReturnCode: true
-  });
-  if (result.exitCode !== 0) {
-    (0, import_core.warning)(
-      [
-        result.stdout.trim(),
-        result.stdout.trim() && result.stderr.trim() ? "\n" : "",
-        result.stderr.trim()
-      ].join("")
-    );
-    throw new Error(`Process completed with exit code ${result.exitCode}`);
+});
+
+// node_modules/@actions/exec/lib/exec.js
+var require_exec = __commonJS({
+  "node_modules/@actions/exec/lib/exec.js"(exports) {
+    "use strict";
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m[k];
+      } });
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports && exports.__importStar || function(mod) {
+      if (mod && mod.__esModule)
+        return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject3) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e) {
+            reject3(e);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e) {
+            reject3(e);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getExecOutput = exports.exec = void 0;
+    var string_decoder_1 = require("string_decoder");
+    var tr = __importStar(require_toolrunner());
+    function exec2(commandLine, args, options) {
+      return __awaiter(this, void 0, void 0, function* () {
+        const commandArgs = tr.argStringToArray(commandLine);
+        if (commandArgs.length === 0) {
+          throw new Error(`Parameter 'commandLine' cannot be null or empty.`);
+        }
+        const toolPath = commandArgs[0];
+        args = commandArgs.slice(1).concat(args || []);
+        const runner = new tr.ToolRunner(toolPath, args, options);
+        return runner.exec();
+      });
+    }
+    exports.exec = exec2;
+    function getExecOutput2(commandLine, args, options) {
+      var _a, _b;
+      return __awaiter(this, void 0, void 0, function* () {
+        let stdout = "";
+        let stderr = "";
+        const stdoutDecoder = new string_decoder_1.StringDecoder("utf8");
+        const stderrDecoder = new string_decoder_1.StringDecoder("utf8");
+        const originalStdoutListener = (_a = options === null || options === void 0 ? void 0 : options.listeners) === null || _a === void 0 ? void 0 : _a.stdout;
+        const originalStdErrListener = (_b = options === null || options === void 0 ? void 0 : options.listeners) === null || _b === void 0 ? void 0 : _b.stderr;
+        const stdErrListener = (data) => {
+          stderr += stderrDecoder.write(data);
+          if (originalStdErrListener) {
+            originalStdErrListener(data);
+          }
+        };
+        const stdOutListener = (data) => {
+          stdout += stdoutDecoder.write(data);
+          if (originalStdoutListener) {
+            originalStdoutListener(data);
+          }
+        };
+        const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
+        const exitCode = yield exec2(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+        stdout += stdoutDecoder.end();
+        stderr += stderrDecoder.end();
+        return {
+          exitCode,
+          stdout,
+          stderr
+        };
+      });
+    }
+    exports.getExecOutput = getExecOutput2;
   }
-  return result.stdout;
-}
+});
+
+// release/src/index.ts
+var import_core10 = __toESM(require_core());
+
+// release/src/common/utils.ts
+var import_console = require("console");
+
+// release/src/common/inputs.ts
+var import_github = __toESM(require_github());
+var import_core2 = __toESM(require_core());
+var import_jira = __toESM(require_out());
+var import_fs = require("fs");
+var import_promises = require("fs/promises");
 
 // lib/github.ts
-var import_core2 = __toESM(require_core());
+var import_core = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 var STANDARD_BRANCH = "main";
 async function getPrFromRef({
@@ -68876,7 +68850,7 @@ function getRepository() {
   return { owner, repo, fqn: `${owner}/${repo}` };
 }
 function getToken(inputName = "gh-token") {
-  const ghToken = (0, import_core2.getInput)(inputName);
+  const ghToken = (0, import_core.getInput)(inputName);
   if (!ghToken) {
     throw new Error("The GitHub token is missing");
   }
@@ -68970,31 +68944,10 @@ async function getCommitsSince({
     sha: branch,
     since: since.timestamp
   })).filter((commit) => commit.sha !== since.sha);
-  (0, import_core2.info)(
+  (0, import_core.info)(
     `  Found ${commits.length} commits since ${since.tag} in ${owner}/${repo}#${branch}`
   );
   return commits;
-}
-async function writeStatus({
-  octokit,
-  owner,
-  repo,
-  sha,
-  state,
-  context: context2,
-  description: description2,
-  target_url
-}) {
-  (0, import_core2.info)(`Writing ${state} commit status for ${sha} of repo ${repo}`);
-  return (await octokit.rest.repos.createCommitStatus({
-    owner,
-    repo,
-    sha,
-    state,
-    context: context2,
-    description: description2,
-    target_url
-  })).data;
 }
 async function dispatchWorkflow({
   octokit,
@@ -69004,7 +68957,7 @@ async function dispatchWorkflow({
   ref,
   inputs
 }) {
-  (0, import_core2.info)(
+  (0, import_core.info)(
     `Dispatching workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:
 ${JSON.stringify(
       inputs,
@@ -69030,7 +68983,7 @@ async function createLightweightTag({
   tag,
   sha
 }) {
-  (0, import_core2.info)(`Creating lightweight tag "${tag}" on ${owner}:${repo}@${sha}...`);
+  (0, import_core.info)(`Creating lightweight tag "${tag}" on ${owner}:${repo}@${sha}...`);
   return octokit.rest.git.createRef({
     owner,
     repo,
@@ -69081,112 +69034,7 @@ query ($sha: String!, $repo: String!, $owner: String!) {
   }
 }
 
-// release/src/common/jiraClient.ts
-var import_core3 = __toESM(require_core());
-var import_jira = __toESM(require_out());
-var transitionIds = {
-  "Done->Released": "211",
-  "New->Accepted": "171",
-  "Accepted->InProgress": "71",
-  "InProgress->Done": "91",
-  "NoActionNeeded->New": "201",
-  "InReview->Done": "91"
-};
-function getJiraClient(username, token) {
-  return new import_jira.Version2Client({
-    host: "https://exivity.atlassian.net",
-    authentication: {
-      basic: {
-        username,
-        password: token
-      }
-    },
-    newErrorHandling: true
-  });
-}
-async function transitionToReleased(issueIdOrKey, jiraClient) {
-  const issue = await jiraClient.issues.getIssue({
-    issueIdOrKey,
-    fields: ["status"],
-    expand: ["transitions"]
-  });
-  let status = issue.fields.status.name;
-  while (status !== "Released") {
-    let flowKey;
-    switch (status) {
-      case "Done":
-        flowKey = "Done->Released";
-        status = "Released";
-        break;
-      case "New":
-        flowKey = "New->Accepted";
-        status = "Accepted";
-        break;
-      case "Accepted":
-        flowKey = "Accepted->InProgress";
-        status = "InProgress";
-        break;
-      case "In Progress":
-        flowKey = "InProgress->Done";
-        status = "Done";
-        break;
-      case "No action needed":
-        flowKey = "NoActionNeeded->New";
-        status = "New";
-        break;
-      case "In review":
-        flowKey = "InReview->Done";
-        status = "Done";
-        break;
-      default:
-        throw new Error(`Unknown status ${status}`);
-    }
-    return await jiraClient.issues.doTransition({
-      issueIdOrKey,
-      transition: {
-        id: transitionIds[flowKey]
-      }
-    });
-  }
-}
-function toDateString(date) {
-  return `${date.getUTCFullYear()}-${("0" + date.getUTCMonth()).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}`;
-}
-async function getVersion(dryRun, jiraClient, version, issueIdOrKey) {
-  var _a;
-  const { fields } = await jiraClient.issues.getEditIssueMeta({
-    issueIdOrKey
-  });
-  const field = fields == null ? void 0 : fields.fixVersions;
-  const versionData = (_a = field == null ? void 0 : field.allowedValues) == null ? void 0 : _a.filter(
-    (data) => data.name === version
-  );
-  if (typeof versionData === "undefined") {
-    throw new Error("Cannot get version data");
-  }
-  if (versionData.length > 0) {
-    return versionData[0].id;
-  } else if (dryRun) {
-    (0, import_core3.info)("dry run, not creating new version id, returning that of 'next'");
-    return 10456;
-  }
-  const newData = await jiraClient.projectVersions.createVersion({
-    name: version,
-    projectId: 10002,
-    releaseDate: toDateString(new Date())
-  });
-  return newData.id;
-}
-
-// release/src/common/files.ts
-var import_promises = require("fs/promises");
-async function readJson(path3) {
-  try {
-    return JSON.parse(await (0, import_promises.readFile)(path3, "utf8"));
-  } catch (error) {
-    throw new Error(`Can't read "${path3}" or it's not valid JSON`);
-  }
-}
+// release/src/common/inputs.ts
 async function readTextFile(path3) {
   try {
     return (0, import_promises.readFile)(path3, "utf8");
@@ -69194,38 +69042,99 @@ async function readTextFile(path3) {
     throw new Error(`Can't read "${path3}"`);
   }
 }
-var readLockfile = readJson;
-async function getRepositories(lockfilePath) {
-  const lockfile = await readLockfile(lockfilePath);
-  const repositories = Object.keys(lockfile.repositories);
-  return repositories;
+async function readJson(path3) {
+  try {
+    return JSON.parse(await (0, import_promises.readFile)(path3, "utf8"));
+  } catch (error) {
+    throw new Error(`Can't read "${path3}" or it's not valid JSON`);
+  }
 }
+var getJiraProjectId = () => (0, import_core2.getInput)("jira-project-id") ?? false;
+var isDryRun = () => (0, import_core2.getBooleanInput)("dry-run") ?? false;
+var getReleaseRepo = () => (0, import_core2.getInput)("releaser-repo");
+var getLockFile = async () => readJson((0, import_core2.getInput)("lockfile"));
+var getLockFilePath = () => (0, import_core2.getInput)("lockfile");
+var getRepositories = async () => {
+  const lockfile = await getLockFile();
+  return Object.keys(lockfile.repositories);
+};
+var getChangeLogPath = () => (0, import_core2.getInput)("changelog");
+var getChangeLog = async () => {
+  const changelogPath = getChangeLogPath();
+  return (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
+};
+var getPrTemplate = async () => await readTextFile((0, import_core2.getInput)("pr-template"));
+var getOctoKitClient = () => {
+  return (0, import_github.getOctokit)(getToken());
+};
+var jiraClient = null;
+var getJiraClient = () => {
+  const username = (0, import_core2.getInput)("jira-username");
+  const password = (0, import_core2.getInput)("jira-token");
+  if (jiraClient)
+    return jiraClient;
+  if (!username || !password) {
+    throw new Error(
+      "jira-username and jira-token inputs are required in prepare mode"
+    );
+  }
+  jiraClient = new import_jira.Version2Client({
+    host: "https://exivity.atlassian.net",
+    authentication: {
+      basic: {
+        username,
+        password
+      }
+    },
+    newErrorHandling: true
+  });
+  if (!jiraClient) {
+    throw new Error(
+      "jira-username and jira-token inputs are required in prepare mode"
+    );
+  }
+  return jiraClient;
+};
+
+// release/src/common/utils.ts
+var logIssues = (issues) => {
+  (0, import_console.info)(`Issues:`);
+  issues.forEach(({ issue }) => {
+    (0, import_console.info)(issue);
+  });
+};
+var logAvailableRequests = async () => {
+  const octokit = getOctoKitClient();
+  const core = (await octokit.request("GET /rate_limit", {})).data.resources.core;
+  (0, import_console.info)(
+    `Remaining github API calls: ${core.remaining}. Rate limit will reset at ${new Date(
+      core.reset * 1e3
+    ).toLocaleDateString()}.`
+  );
+};
 
 // release/src/ping.ts
-var import_console = require("console");
+var import_console2 = require("console");
 var prepareWorkflowId = "prepare-on-demand.yml";
-async function ping({
-  octokit,
-  dryRun,
-  releaserRepo
-}) {
-  if (dryRun) {
-    (0, import_console.info)(
-      `Would have dispatched workflow ${prepareWorkflowId} of exivity/exivity#main`
+async function ping() {
+  const repo = getReleaseRepo();
+  if (isDryRun()) {
+    (0, import_console2.info)(
+      `Would have dispatched workflow ${prepareWorkflowId} of exivity/${repo}#main`
     );
     return;
   }
   return dispatchWorkflow({
-    octokit,
+    octokit: getOctoKitClient(),
     owner: "exivity",
-    repo: releaserRepo,
+    repo,
     ref: "main",
     workflow_id: prepareWorkflowId
   });
 }
 
 // release/src/prepare.ts
-var import_core13 = __toESM(require_core());
+var import_console6 = require("console");
 
 // node_modules/ramda/es/internal/_isPlaceholder.js
 function _isPlaceholder(a) {
@@ -69457,6 +69366,49 @@ var xfBase_default = {
     return this.xf["@@transducer/result"](result);
   }
 };
+
+// node_modules/ramda/es/internal/_xall.js
+var XAll = /* @__PURE__ */ function() {
+  function XAll2(f, xf) {
+    this.xf = xf;
+    this.f = f;
+    this.all = true;
+  }
+  XAll2.prototype["@@transducer/init"] = xfBase_default.init;
+  XAll2.prototype["@@transducer/result"] = function(result) {
+    if (this.all) {
+      result = this.xf["@@transducer/step"](result, true);
+    }
+    return this.xf["@@transducer/result"](result);
+  };
+  XAll2.prototype["@@transducer/step"] = function(result, input) {
+    if (!this.f(input)) {
+      this.all = false;
+      result = _reduced(this.xf["@@transducer/step"](result, false));
+    }
+    return result;
+  };
+  return XAll2;
+}();
+var _xall = /* @__PURE__ */ _curry2(function _xall2(f, xf) {
+  return new XAll(f, xf);
+});
+var xall_default = _xall;
+
+// node_modules/ramda/es/all.js
+var all = /* @__PURE__ */ _curry2(
+  /* @__PURE__ */ _dispatchable(["all"], xall_default, function all2(fn, list) {
+    var idx = 0;
+    while (idx < list.length) {
+      if (!fn(list[idx])) {
+        return false;
+      }
+      idx += 1;
+    }
+    return true;
+  })
+);
+var all_default = all;
 
 // node_modules/ramda/es/internal/_map.js
 function _map(fn, functor) {
@@ -69705,6 +69657,12 @@ var prop_default = prop;
 var reduce = /* @__PURE__ */ _curry3(_reduce);
 var reduce_default = reduce;
 
+// node_modules/ramda/es/and.js
+var and = /* @__PURE__ */ _curry2(function and2(a, b) {
+  return a && b;
+});
+var and_default = and;
+
 // node_modules/ramda/es/internal/_xany.js
 var XAny = /* @__PURE__ */ function() {
   function XAny2(f, xf) {
@@ -69758,41 +69716,6 @@ var ap = /* @__PURE__ */ _curry2(function ap2(applyF, applyX) {
 });
 var ap_default = ap;
 
-// node_modules/ramda/es/internal/_assoc.js
-function _assoc(prop3, val, obj) {
-  if (isInteger_default(prop3) && isArray_default(obj)) {
-    var arr = [].concat(obj);
-    arr[prop3] = val;
-    return arr;
-  }
-  var result = {};
-  for (var p in obj) {
-    result[p] = obj[p];
-  }
-  result[prop3] = val;
-  return result;
-}
-
-// node_modules/ramda/es/isNil.js
-var isNil = /* @__PURE__ */ _curry1(function isNil2(x) {
-  return x == null;
-});
-var isNil_default = isNil;
-
-// node_modules/ramda/es/assocPath.js
-var assocPath = /* @__PURE__ */ _curry3(function assocPath2(path3, val, obj) {
-  if (path3.length === 0) {
-    return val;
-  }
-  var idx = path3[0];
-  if (path3.length > 1) {
-    var nextObj = !isNil_default(obj) && _has(idx, obj) ? obj[idx] : isInteger_default(path3[1]) ? [] : {};
-    val = assocPath2(Array.prototype.slice.call(path3, 1), val, nextObj);
-  }
-  return _assoc(idx, val, obj);
-});
-var assocPath_default = assocPath;
-
 // node_modules/ramda/es/internal/_isFunction.js
 function _isFunction(x) {
   var type3 = Object.prototype.toString.call(x);
@@ -69813,6 +69736,14 @@ var lift = /* @__PURE__ */ _curry1(function lift2(fn) {
   return liftN_default(fn.length, fn);
 });
 var lift_default = lift;
+
+// node_modules/ramda/es/both.js
+var both = /* @__PURE__ */ _curry2(function both2(f, g) {
+  return _isFunction(f) ? function _both() {
+    return f.apply(this, arguments) && g.apply(this, arguments);
+  } : lift_default(and_default)(f, g);
+});
+var both_default = both;
 
 // node_modules/ramda/es/internal/_makeFlat.js
 function _makeFlat(recursive) {
@@ -69898,16 +69829,6 @@ var type = /* @__PURE__ */ _curry1(function type2(val) {
   return val === null ? "Null" : val === void 0 ? "Undefined" : Object.prototype.toString.call(val).slice(8, -1);
 });
 var type_default = type;
-
-// node_modules/ramda/es/not.js
-var not = /* @__PURE__ */ _curry1(function not2(a) {
-  return !a;
-});
-var not_default = not;
-
-// node_modules/ramda/es/complement.js
-var complement = /* @__PURE__ */ lift_default(not_default);
-var complement_default = complement;
 
 // node_modules/ramda/es/internal/_pipe.js
 function _pipe(f, g) {
@@ -70452,20 +70373,6 @@ var empty = /* @__PURE__ */ _curry1(function empty2(x) {
 });
 var empty_default = empty;
 
-// node_modules/ramda/es/flatten.js
-var flatten = /* @__PURE__ */ _curry1(
-  /* @__PURE__ */ _makeFlat(true)
-);
-var flatten_default = flatten;
-
-// node_modules/ramda/es/innerJoin.js
-var innerJoin = /* @__PURE__ */ _curry3(function innerJoin2(pred, xs, ys) {
-  return _filter(function(x) {
-    return _includesWith(pred, x, ys);
-  }, xs);
-});
-var innerJoin_default = innerJoin;
-
 // node_modules/ramda/es/internal/_xuniqBy.js
 var XUniqBy = /* @__PURE__ */ function() {
   function XUniqBy2(f, xf) {
@@ -70556,18 +70463,11 @@ var path = /* @__PURE__ */ _curry2(function path2(pathAr, obj) {
 });
 var path_default = path;
 
-// node_modules/ramda/es/internal/_assertPromise.js
-function _assertPromise(name, p) {
-  if (p == null || !_isFunction(p.then)) {
-    throw new TypeError("`" + name + "` expected a Promise, received " + _toString(p, []));
-  }
-}
-
-// node_modules/ramda/es/pathEq.js
-var pathEq = /* @__PURE__ */ _curry3(function pathEq2(_path, val, obj) {
-  return equals_default(path_default(_path, obj), val);
+// node_modules/ramda/es/none.js
+var none = /* @__PURE__ */ _curry2(function none2(fn, input) {
+  return all_default(_complement(fn), input);
 });
-var pathEq_default = pathEq;
+var none_default = none;
 
 // node_modules/ramda/es/pathOr.js
 var pathOr = /* @__PURE__ */ _curry3(function pathOr2(d, p, obj) {
@@ -70581,26 +70481,9 @@ var propEq = /* @__PURE__ */ _curry3(function propEq2(name, val, obj) {
 });
 var propEq_default = propEq;
 
-// node_modules/ramda/es/propOr.js
-var propOr = /* @__PURE__ */ _curry3(function propOr2(val, p, obj) {
-  return defaultTo_default(val, prop_default(p, obj));
-});
-var propOr_default = propOr;
-
 // node_modules/ramda/es/split.js
 var split = /* @__PURE__ */ invoker_default(1, "split");
 var split_default = split;
-
-// node_modules/ramda/es/andThen.js
-var andThen = /* @__PURE__ */ _curry2(function andThen2(f, p) {
-  _assertPromise("andThen", p);
-  return p.then(f);
-});
-var andThen_default = andThen;
-
-// node_modules/ramda/es/toLower.js
-var toLower = /* @__PURE__ */ invoker_default(0, "toLowerCase");
-var toLower_default = toLower;
 
 // node_modules/ramda/es/trim.js
 var hasProtoTrim = typeof String.prototype.trim === "function";
@@ -70622,9 +70505,29 @@ var zipObj_default = zipObj;
 var import_core4 = __toESM(require_core());
 var import_os = require("os");
 var import_semver = __toESM(require_semver2());
-async function getCommitSha() {
-  return exec('git log -1 --pretty=format:"%H"');
+
+// lib/core.ts
+var import_core3 = __toESM(require_core());
+var import_exec = __toESM(require_exec());
+async function exec(command, args) {
+  const result = await (0, import_exec.getExecOutput)(command, args, {
+    silent: true,
+    ignoreReturnCode: true
+  });
+  if (result.exitCode !== 0) {
+    (0, import_core3.warning)(
+      [
+        result.stdout.trim(),
+        result.stdout.trim() && result.stderr.trim() ? "\n" : "",
+        result.stderr.trim()
+      ].join("")
+    );
+    throw new Error(`Process completed with exit code ${result.exitCode}`);
+  }
+  return result.stdout;
 }
+
+// lib/git.ts
 async function getAllTags() {
   return (await exec("git tag")).split(import_os.EOL).filter((item) => item);
 }
@@ -70672,278 +70575,8 @@ async function getLatestVersion() {
   return latestVersionTag;
 }
 
-// release/src/common/lockfile.ts
-var import_core6 = __toESM(require_core());
-var import_promises2 = require("fs/promises");
-async function getRepositoriesLastSha(octokit, repositories) {
-  const shas = repositories.map(
-    (repository) => getLastCommitSha({
-      octokit,
-      owner: "exivity",
-      repo: repository,
-      sha: STANDARD_BRANCH
-    })
-  );
-  return Promise.all(shas);
-}
-async function writeLockFile(dryRun, octokit, version, repositories, lockfilePath) {
-  if (dryRun) {
-    (0, import_core6.info)(`Dry run, not writing lockfile`);
-  } else {
-    const lockfile = {
-      version,
-      repositories: zipObj_default(
-        repositories,
-        await getRepositoriesLastSha(octokit, repositories)
-      )
-    };
-    await (0, import_promises2.writeFile)(lockfilePath, JSON.stringify(lockfile, null, 2) + "\n");
-    (0, import_core6.info)(`Written lockfile to: ${lockfilePath}`);
-  }
-}
-
-// release/src/common/gitUpdates.ts
-var import_console2 = require("console");
-
-// release/src/common/pr.ts
-var import_core7 = __toESM(require_core());
-async function createOrUpdatePullRequest({
-  octokit,
-  title,
-  prTemplate,
-  changelogContents,
-  upcomingReleaseBranch,
-  releaseBranch
-}) {
-  const existingPullRequest = await getPrFromRef({
-    octokit,
-    owner: "exivity",
-    repo: getRepository().repo,
-    ref: upcomingReleaseBranch
-  });
-  const body = prTemplate.replace(
-    "<!-- CHANGELOG_CONTENTS -->",
-    changelogContents
-  );
-  if (existingPullRequest) {
-    const pr = await octokit.rest.pulls.update({
-      owner: "exivity",
-      repo: getRepository().repo,
-      pull_number: existingPullRequest.number,
-      title,
-      body
-    });
-    (0, import_core7.info)(`Updated pull request #${pr.data.number}`);
-    return pr.data;
-  } else {
-    const pr = await octokit.rest.pulls.create({
-      owner: "exivity",
-      repo: getRepository().repo,
-      title,
-      body,
-      head: upcomingReleaseBranch,
-      base: releaseBranch
-    });
-    (0, import_core7.info)(`Opened pull request #${pr.data.number}`);
-    return pr.data;
-  }
-}
-
-// release/src/changelogFormatters/utils.ts
-function formatLinkType(type3) {
-  switch (type3) {
-    case "commit":
-      return "Commit";
-    case "pr":
-      return "Pull request";
-    case "issues":
-      return "Issue";
-    case "milestone":
-      return "Milestone";
-    default:
-      return "Unknown";
-  }
-}
-
-// release/src/changelogFormatters/prChangelog.ts
-function formatPrChangelog(changelog) {
-  return [
-    ...buildChangelogSection(
-      "New features",
-      changelog.filter((item) => item.type === "feat")
-    ),
-    "",
-    ...buildChangelogSection(
-      "Bug fixes",
-      changelog.filter((item) => item.type === "fix")
-    ),
-    "",
-    ""
-  ].join("\n");
-}
-function buildChangelogSection(header, changelogItems) {
-  if (changelogItems.length === 0) {
-    return [];
-  }
-  return [`### ${header}`, "", ...changelogItems.map(buildChangelogItem)];
-}
-function buildChangelogItem(changelogItem) {
-  return [
-    `- **${changelogItem.title}**`,
-    ...changelogItem.description ? [`  ${changelogItem.description.split("\n").join("\n  ")}`] : [],
-    ...changelogItem.warnings.length > 0 ? [`\u26A0\uFE0F _WARNING:_ ${changelogItem.warnings.join("\n")}`] : [],
-    "",
-    "  <details>",
-    "    <summary>Show details</summary>",
-    "",
-    ...Object.entries(changelogItem.links).flatMap(([type3, link]) => {
-      if (Array.isArray(link)) {
-        return link.map(
-          (linkItem) => `    - ${formatLinkType(type3)}: [${linkItem.slug}](${linkItem.url})`
-        );
-      }
-      return `    - ${formatLinkType(type3)}: [${link.slug}](${link.url})`;
-    }),
-    "  </details>",
-    ""
-  ].join("\n");
-}
-
-// release/src/changelogFormatters/publicChangelog.ts
-function formatPublicChangelog(version, changelog) {
-  return [
-    ...buildChangelogHeader(version),
-    ...buildChangelogItems(changelog)
-  ].join("\n");
-}
-function buildChangelogHeader(version) {
-  return [`## ${version}`, ""];
-}
-function buildChangelogItems(changelogItems) {
-  return [
-    ...buildChangelogSection2(
-      "New features",
-      changelogItems.filter((item) => item.type === "feat")
-    ),
-    "",
-    ...buildChangelogSection2(
-      "Bug fixes",
-      changelogItems.filter((item) => item.type === "fix")
-    ),
-    "",
-    ""
-  ];
-}
-function buildChangelogSection2(header, changelogItems) {
-  if (changelogItems.length === 0) {
-    return [];
-  }
-  return [`### ${header}`, "", ...changelogItems.map(buildChangelogItem2)];
-}
-function buildChangelogItem2(changelogItem) {
-  return [
-    `- **${changelogItem.title}**`,
-    ...changelogItem.description ? [`  ${changelogItem.description.split("\n").join("\n  ")}`] : [],
-    "",
-    "<!--",
-    ...Object.entries(changelogItem.links).flatMap(([type3, link]) => {
-      if (Array.isArray(link)) {
-        return link.map(
-          (linkItem) => `  - ${formatLinkType(type3)}: [${linkItem.slug}](${linkItem.url})`
-        );
-      }
-      return `  - ${formatLinkType(type3)}: [${link.slug}](${link.url})`;
-    }),
-    "-->",
-    ""
-  ].join("\n");
-}
-
-// release/src/common/gitUpdates.ts
-async function switchToReleaseBranch(dryRun, releaseBranch, upcomingReleaseBranch) {
-  if (dryRun) {
-    (0, import_console2.info)(`Dry run, not switching branches`);
-  } else if (await gitHasChanges()) {
-    (0, import_console2.info)("Detected uncommitted changes, aborting");
-  } else {
-    await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`);
-  }
-}
-async function commitAndPush(dryRun, title, upcomingReleaseBranch) {
-  if (dryRun) {
-    (0, import_console2.info)(`Dry run, not committing and pushing changes`);
-  } else {
-    await gitAdd();
-    await gitSetAuthor("Exivity bot", "bot@exivity.com");
-    await gitCommit(title);
-    await gitPush(true);
-    (0, import_console2.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
-  }
-  return title;
-}
-async function updateMissingReleaseNotesWarningStatus(dryRun, releaserRepo, changelog = [], octokit) {
-  const sha = await getCommitSha();
-  if (dryRun) {
-    (0, import_console2.info)(`Dry run, no need to write commit status`);
-  } else {
-    const state = changelog.some((item) => item.warnings.length > 0) ? "pending" : "success";
-    await writeStatus({
-      octokit,
-      owner: "exivity",
-      repo: releaserRepo,
-      sha,
-      state,
-      context: "changelog",
-      description: state === "pending" ? "Changelog contains warnings" : "Changelog is good to go!"
-    });
-  }
-}
-async function updatePr(dryRun, title, prTemplatePath, upcomingReleaseBranch, releaseBranch, changelog, octokit) {
-  const prTemplate = await readTextFile(prTemplatePath);
-  if (dryRun) {
-    (0, import_console2.info)(`Dry run, not creating pull request`);
-  } else {
-    const prChangelogContents = formatPrChangelog(changelog);
-    const pr = await createOrUpdatePullRequest({
-      octokit,
-      title,
-      prTemplate,
-      changelogContents: prChangelogContents,
-      upcomingReleaseBranch,
-      releaseBranch
-    });
-    (0, import_console2.info)(pr.html_url);
-  }
-}
-async function tagRepositories(dryRun, lockfile, octokit) {
-  for (const [repository, sha] of Object.entries(lockfile.repositories)) {
-    if (dryRun) {
-      (0, import_console2.info)(`Dry run, not tagging ${repository}`);
-    } else {
-      await createLightweightTag({
-        octokit,
-        owner: "exivity",
-        repo: repository,
-        tag: lockfile.version,
-        sha
-      });
-    }
-  }
-}
-async function tagAllRepositories(dryRun, lockfile, octokit) {
-  const repository = getRepository();
-  if (dryRun) {
-    (0, import_console2.info)(`Dry run, not tagging ${repository.fqn}`);
-  } else {
-    await gitTag(lockfile.version);
-    await gitPushTags();
-    (0, import_console2.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
-  }
-  await tagRepositories(dryRun, lockfile, octokit);
-}
-
 // lib/conventionalCommits.ts
-var import_core8 = __toESM(require_core());
+var import_core6 = __toESM(require_core());
 var types = {
   feat: {
     description: "A new feature",
@@ -71007,139 +70640,16 @@ function parseCommitMessage(message) {
   };
 }
 
-// release/src/changelog/utils.ts
-var import_core9 = __toESM(require_core());
-var equalsChangelogType = pipe(propOr_default("", "type"), toLower_default, equals_default);
-var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
-var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
-var rejectChores = reject_default(propEq_default("type", "chore"));
-function byDate(a, b) {
-  if (a.links.commit.date < b.links.commit.date) {
-    return -1;
-  }
-  if (a.links.commit.date > b.links.commit.date) {
-    return 1;
-  }
-  return 0;
-}
-function byType(a, b) {
-  if (a.type < b.type) {
-    return -1;
-  }
-  if (a.type > b.type) {
-    return 1;
-  }
-  return 0;
-}
-var sortChangelogItems = (changelog) => changelog.sort(byType).sort(byDate);
-var logChangelogItems = (changelog) => {
-  (0, import_core9.info)(`Changelog:`);
-  changelog.forEach((item) => {
-    (0, import_core9.info)(
-      `- [${item.links.commit.repository}] ${item.type}: ${item.title} (${item.links.commit.sha})`
-    );
-  });
+// release/src/jira/utils.ts
+var JIRA_KEY_RGX = new RegExp(/\bEXVT-\d+\b|\bCLS-\d+\b/g);
+var isFeatOrFix = (type3 = "Chore" /* Chore */) => {
+  return type3 === "Feature" /* Feature */ || type3 === "Bug" /* Bug */ || type3 === "Epic" /* Epic */;
 };
-var getChangelogSlugs = pipe(
-  flatten_default,
-  map_default(pathOr_default([], ["links", "issues"])),
-  chain_default(map_default(prop_default("slug")))
-);
-var removeIssuesFromReleaseTestRepo = (changelog) => {
-  return changelog.filter(
-    (item) => item.links.commit.repository !== "release-test"
-  );
-};
-
-// release/src/changelog/changelogItem.ts
-var repoRgx = /(?<=exivity\/).*?(?=\/)/;
-function createChangelogItem(commit) {
-  var _a, _b, _c, _d, _e, _f;
-  const commitTitle = getFirstLine(commit.commit.message);
-  const commitDescription = removeFirstLine(commit.commit.message);
-  const parsed = parseCommitMessage(commitTitle);
-  const typeEqualsOneOf = any_default(equalsChangelogType(parsed));
-  const type3 = typeEqualsOneOf(["feat", "feature"]) ? "feat" : typeEqualsOneOf(["fix", "bugfix"]) ? "fix" : "chore";
-  const repository = ((_a = commit.html_url.match(repoRgx)) == null ? void 0 : _a[0]) ?? "";
-  return {
-    title: parsed.description || commitTitle,
-    description: null,
-    type: type3,
-    breaking: parsed.breaking || false,
-    warnings: [],
-    links: {
-      commit: {
-        repository,
-        sha: commit.sha,
-        originalTitle: commitTitle,
-        title: parsed.description || commitTitle,
-        description: commitDescription,
-        author: ((_b = commit.author) == null ? void 0 : _b.login) || ((_c = commit.author) == null ? void 0 : _c.name) || ((_d = commit.author) == null ? void 0 : _d.login) || "unknown author",
-        date: ((_e = commit.commit.author) == null ? void 0 : _e.date) || ((_f = commit.commit.committer) == null ? void 0 : _f.date) || "unknown date",
-        slug: `exivity/${repository}@${commit.sha.substring(0, 7)}`,
-        url: commit.html_url
-      },
-      issues: []
-    }
-  };
+function getIssueType(issue) {
+  return issue.fields.issuetype.name === "Feature" /* Feature */ ? "feat" : issue.fields.issuetype.name === "Bug" /* Bug */ ? "bug" : "chore";
 }
-
-// release/src/changelog/getRepoCommits.ts
-var getRepoCommits = (octokit, latestVersion) => async (repository) => {
-  const latestVersionCommit = await getCommitForTag({
-    octokit,
-    owner: "exivity",
-    repo: repository,
-    tag: latestVersion
-  });
-  return await getCommitsSince({
-    octokit,
-    owner: "exivity",
-    repo: repository,
-    branch: STANDARD_BRANCH,
-    since: latestVersionCommit
-  });
-};
-
-// release/src/changelogPlugins/associatedPullRequest.ts
-async function associatedPullRequestPlugin({
-  octokit,
-  changelog
-}) {
-  for (const item of changelog) {
-    const associatedPullRequest = await getAssociatedPullRequest({
-      octokit,
-      owner: "exivity",
-      repo: item.links.commit.repository,
-      sha: item.links.commit.sha
-    });
-    if (typeof associatedPullRequest !== "undefined") {
-      item.links.pr = {
-        title: parseCommitMessage(associatedPullRequest.title).description,
-        originalTitle: associatedPullRequest.title,
-        description: associatedPullRequest.body,
-        slug: `exivity/${item.links.commit.repository}#${associatedPullRequest.number}`,
-        url: associatedPullRequest.url
-      };
-    }
-  }
-  return changelog;
-}
-
-// release/src/changelogPlugins/jira.ts
-var import_core10 = __toESM(require_core());
-var jiraKey = new RegExp(/\bEXVT-\d+\b|\bCLS-\d+\b/g);
 function isRegExpMatchArray(args) {
   return Array.isArray(args);
-}
-function getReleaseNotesTitle(issue) {
-  return issue.fields["customfield_10529" /* ReleaseNotesTitle */] ?? null;
-}
-function getReleaseNotesDescription(issue) {
-  return issue.fields["customfield_10530" /* ReleaseNotesDescription */] ?? null;
-}
-function getEpic(issue) {
-  return issue.fields["customfield_10005" /* Epic */] ?? null;
 }
 var cleanJiraKeyMatches = pipe(
   identity_default,
@@ -71147,149 +70657,267 @@ var cleanJiraKeyMatches = pipe(
   chain_default(identity_default),
   uniq_default
 );
-var getEpicMilestone = async (jiraClient, issue) => {
-  const epicKey = getEpic(issue);
-  if (epicKey) {
-    try {
-      const epic = await jiraClient.issues.getIssue({
-        issueIdOrKey: epicKey
-      });
-      return {
-        title: getReleaseNotesTitle(epic) || epic.fields.summary,
-        description: getReleaseNotesDescription(epic) || epic.fields.description || null,
-        slug: getReleaseNotesTitle(epic) || epic.fields.summary,
-        url: `https://exivity.atlassian.net/browse/${epicKey}`
-      };
-    } catch (e) {
-      (0, import_core10.info)(`Failed to get epic milestone for ${epicKey}`);
-    }
-  }
-};
-function isFulfilled(arg) {
-  return arg.status === "fulfilled";
+function getReleaseNotesTitle(issue) {
+  return issue.fields["customfield_10529" /* ReleaseNotesTitle */] ?? "";
 }
-function isRejected(arg) {
-  return arg.status === "rejected";
+function noReleaseNotesTitlePresent(issue) {
+  return typeof issue.fields["customfield_10529" /* ReleaseNotesTitle */] === "string" && isEmpty_default(issue.fields["customfield_10529" /* ReleaseNotesTitle */]);
 }
-function hasLabel(issue, label) {
-  return issue.fields.labels.includes(label);
+function getReleaseNotesDescription(issue) {
+  return issue.fields["customfield_10530" /* ReleaseNotesDescription */] ?? "";
 }
-var isNotEmpty = complement_default(isEmpty_default);
-var issueTypePath = ["fields", "issuetype", "name"];
-var getWarnings = pipe(
-  identity_default,
-  reject_default(pathEq_default(issueTypePath, "Chore" /* Chore */)),
+function noReleaseNotesNeeded(issue) {
+  return issue.fields.labels.includes("no-release-notes-needed");
+}
+function releaseNotesAreMissing(issue) {
+  return noReleaseNotesTitlePresent(issue) && !noReleaseNotesNeeded(issue);
+}
+function getEpic(issue) {
+  return issue.fields["customfield_10005" /* Epic */] ?? null;
+}
+var getMissingReleaseNotes = pipe(
   filter_default(
-    (item) => !getReleaseNotesTitle(item) && !hasLabel(item, "no-release-notes-needed")
+    (issue) => isFeatOrFix(issue.fields.issuetype.name) || releaseNotesAreMissing(issue)
   ),
   map_default(
     ({ key }) => `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`
   )
 );
-async function jiraPlugin({ jiraClient, changelog }) {
-  return Promise.all(
-    changelog.map(async (changelogItem) => {
-      var _a, _b, _c, _d;
-      const jirakeys = cleanJiraKeyMatches([
-        (_a = changelogItem.links.pr) == null ? void 0 : _a.originalTitle.match(jiraKey),
-        (_c = (_b = changelogItem.links.pr) == null ? void 0 : _b.description) == null ? void 0 : _c.match(jiraKey),
-        (_d = changelogItem.links.commit.description) == null ? void 0 : _d.match(jiraKey),
-        changelogItem.links.commit.originalTitle.match(jiraKey)
-      ]);
-      let wrappedJiraIssues = await Promise.allSettled(
-        jirakeys.map(
-          (issueIdOrKey) => jiraClient.issues.getIssue({
-            issueIdOrKey
-          })
-        )
-      );
-      wrappedJiraIssues.filter(isRejected).forEach(({ reason }) => {
-        (0, import_core10.info)(`got error when getting issue:
-${JSON.stringify(reason)}`);
-      });
-      const jiraIssues = wrappedJiraIssues.filter(isFulfilled).map((i) => i.value);
-      const issuesTypeEqualsOneOf = (oneOf) => {
-        return isNotEmpty(
-          innerJoin_default(equals_default, oneOf, map_default(path_default(issueTypePath), jiraIssues))
-        );
-      };
-      changelogItem = {
-        ...changelogItem,
-        warnings: getWarnings(jiraIssues),
-        type: issuesTypeEqualsOneOf(["Feature" /* Feature */, "Epic" /* Epic */]) ? "feat" : issuesTypeEqualsOneOf(["Bug" /* Bug */]) ? "fix" : "chore",
-        links: {
-          ...changelogItem.links,
-          issues: jiraIssues.map((jiraIssue) => ({
-            title: getReleaseNotesTitle(jiraIssue) || jiraIssue.fields.summary,
-            description: getReleaseNotesDescription(jiraIssue) || null,
-            slug: jiraIssue.key,
-            url: `https://exivity.atlassian.net/browse/${jiraIssue.key}`
-          }))
-        }
-      };
-      const milestone = jiraIssues[0] && await getEpicMilestone(jiraClient, jiraIssues[0]);
-      return milestone ? assocPath_default(["links", "milestone"], milestone, changelogItem) : changelogItem;
-    })
-  );
-}
 
-// release/src/changelogPlugins/titleAndDescription.ts
-function formatTitle(changelogItem) {
-  var _a;
-  return capitalizeFirstLetter(
-    changelogItem.links.issues && ((_a = changelogItem.links.issues) == null ? void 0 : _a.length) > 0 ? changelogItem.links.issues[0].title : changelogItem.links.pr ? changelogItem.links.pr.title : changelogItem.links.commit.title
-  );
-}
-function formatDescription(changelogItem) {
-  var _a, _b;
-  return ((_b = (_a = changelogItem.links.issues) == null ? void 0 : _a[0]) == null ? void 0 : _b.description) || null;
-}
-function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-async function titleAndDescriptionPlugin({ changelog }) {
-  for (const item of changelog) {
-    item.title = formatTitle(item);
-    item.description = formatDescription(item);
-  }
-  return changelog;
-}
-
-// release/src/changelogPlugins/index.ts
-var plugins = [
-  associatedPullRequestPlugin,
-  jiraPlugin,
-  titleAndDescriptionPlugin
-];
-async function runPlugins({
-  octokit,
-  jiraClient,
-  changelog
-}) {
-  for (const plugin of plugins) {
-    changelog = await plugin({ octokit, jiraClient, changelog });
-  }
-  return changelog;
-}
-
-// release/src/changelog/getChangelogItems.ts
-async function getChangelogItems(octokit, jiraClient, repositories) {
+// release/src/jira/getRepoJiraIssues.ts
+var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
+var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
+var getRepoJiraIssues = async (repo) => {
+  const jiraClient2 = getJiraClient();
+  const octokit = getOctoKitClient();
   const latestVersion = await getLatestVersion();
-  const items = repositories.map(
-    pipe(
-      getRepoCommits(octokit, latestVersion),
-      andThen_default(map_default(createChangelogItem)),
-      andThen_default(async (changelog) => {
-        return await runPlugins({ octokit, jiraClient, changelog });
-      }),
-      andThen_default(reject_default(propEq_default("type", "chore")))
+  const latestVersionCommit = await getCommitForTag({
+    octokit,
+    owner: "exivity",
+    repo,
+    tag: latestVersion
+  });
+  const commits = await getCommitsSince({
+    octokit,
+    owner: "exivity",
+    repo,
+    branch: STANDARD_BRANCH,
+    since: latestVersionCommit
+  });
+  const jiraIssueKeys = [];
+  return {
+    jiraIssueKeys,
+    issues: await Promise.all(
+      commits.map(async (commit) => {
+        const associatedPullRequest = await getAssociatedPullRequest({
+          octokit,
+          owner: "exivity",
+          repo,
+          sha: commit.sha
+        });
+        const jiraKeys = cleanJiraKeyMatches([
+          commit.commit.message.match(JIRA_KEY_RGX),
+          associatedPullRequest == null ? void 0 : associatedPullRequest.title.match(JIRA_KEY_RGX),
+          associatedPullRequest == null ? void 0 : associatedPullRequest.body.match(JIRA_KEY_RGX)
+        ]);
+        jiraIssueKeys.push(...jiraKeys);
+        const { breaking = false } = parseCommitMessage(commit.commit.message);
+        return Promise.all(
+          jiraKeys.map(
+            (key) => jiraClient2.issues.getIssue({ issueIdOrKey: key })
+          )
+        ).then(
+          (tickets) => tickets.flatMap((issue) => {
+            const issueType = getIssueType(issue);
+            if (!issue || none_default(equals_default(issueType), ["feat", "fix"]))
+              return [];
+            const epic = getEpic(issue);
+            return {
+              title: getReleaseNotesTitle(issue),
+              description: getReleaseNotesDescription(issue),
+              type: issueType,
+              breaking,
+              noReleaseNotesNeeded: noReleaseNotesNeeded(issue),
+              commit: `[exivity/${repo}@${commit.sha.substring(0, 7)}](${commit.html_url})`,
+              issue: `[${issue.key}](https://exivity.atlassian.net/browse/${issue.key})`,
+              pullRequest: `[exivity/${repo}#${associatedPullRequest == null ? void 0 : associatedPullRequest.number}](${associatedPullRequest == null ? void 0 : associatedPullRequest.url})`,
+              milestone: epic ? `[${getEpic(
+                issue
+              )}](https://exivity.atlassian.net/browse/${getEpic(issue)})` : "No milestone"
+            };
+          })
+        );
+      })
+    ).then(chain_default(identity_default))
+  };
+};
+
+// release/src/common/gitActions.ts
+var import_console3 = require("console");
+
+// release/src/common/formatPrChangelog.ts
+var features = filter_default(
+  both_default(
+    propEq_default("type", "feat"),
+    propEq_default("noReleaseNotesNeeded", false)
+  )
+);
+var fixes = filter_default(
+  both_default(
+    propEq_default("type", "fix"),
+    propEq_default("noReleaseNotesNeeded", false)
+  )
+);
+function formatPrChangelog(issues) {
+  return [
+    ...buildChangelogSection("New features", features(issues)),
+    "",
+    ...buildChangelogSection("Bug fixes", fixes(issues)),
+    "",
+    ...buildChangelogSection("No release notes needed", fixes(issues)),
+    ""
+  ].join("\n");
+}
+function buildChangelogSection(header, issues) {
+  if (isEmpty_default(issues))
+    return [];
+  return [
+    `### ${header}`,
+    "",
+    ...issues.map(
+      (issue) => [
+        `- **${issue.title}**`,
+        `  ${issue.description.split("\n").join("\n  ")}`,
+        "",
+        "  <details>",
+        "    <summary>Show details</summary>",
+        "",
+        `    - Commit: ${issue.commit}`,
+        `    - Issue: ${issue.issue}`,
+        `    - Pull request: ${issue.pullRequest}`,
+        `    - Milestone: ${issue.milestone}`,
+        "  </details>",
+        ""
+      ].join("\n")
     )
-  );
-  return Promise.all(items);
+  ];
 }
 
-// release/src/changelog/inferVersionFromChangelog.ts
-var import_core11 = __toESM(require_core());
+// release/src/common/gitActions.ts
+var releaseBranch = "main";
+var upcomingReleaseBranch = "chore/upcoming-release";
+async function switchToReleaseBranch() {
+  if (isDryRun()) {
+    (0, import_console3.info)(`Dry run, not switching branches`);
+  } else if (await gitHasChanges()) {
+    (0, import_console3.info)("Detected uncommitted changes, aborting");
+  } else {
+    await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`);
+  }
+}
+async function commitAndPush(title) {
+  if (isDryRun()) {
+    (0, import_console3.info)(`Dry run, not committing and pushing changes`);
+  } else {
+    await gitAdd();
+    await gitSetAuthor("Exivity bot", "bot@exivity.com");
+    await gitCommit(title);
+    await gitPush(true);
+    (0, import_console3.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
+  }
+  return title;
+}
+async function tagRepositories(lockfile) {
+  const octokit = getOctoKitClient();
+  for (const [repository, sha] of Object.entries(lockfile.repositories)) {
+    if (isDryRun()) {
+      (0, import_console3.info)(`Dry run, not tagging ${repository}`);
+    } else {
+      await createLightweightTag({
+        octokit,
+        owner: "exivity",
+        repo: repository,
+        tag: lockfile.version,
+        sha
+      });
+    }
+  }
+}
+async function tagAllRepositories() {
+  const repository = getRepository();
+  const dryRun = isDryRun();
+  const lockfile = await getLockFile();
+  if (dryRun) {
+    (0, import_console3.info)(`Dry run, not tagging ${repository.fqn}`);
+  } else {
+    await gitTag(lockfile.version);
+    await gitPushTags();
+    (0, import_console3.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+  }
+  await tagRepositories(lockfile);
+}
+async function createOrUpdatePullRequest({
+  octokit,
+  title,
+  prTemplate,
+  changelogContents,
+  upcomingReleaseBranch: upcomingReleaseBranch2,
+  releaseBranch: releaseBranch2
+}) {
+  const existingPullRequest = await getPrFromRef({
+    octokit,
+    owner: "exivity",
+    repo: getRepository().repo,
+    ref: upcomingReleaseBranch2
+  });
+  const body = prTemplate.replace(
+    "<!-- CHANGELOG_CONTENTS -->",
+    changelogContents
+  );
+  if (existingPullRequest) {
+    const pr = await octokit.rest.pulls.update({
+      owner: "exivity",
+      repo: getRepository().repo,
+      pull_number: existingPullRequest.number,
+      title,
+      body
+    });
+    (0, import_console3.info)(`Updated pull request #${pr.data.number}`);
+    return pr.data;
+  } else {
+    const pr = await octokit.rest.pulls.create({
+      owner: "exivity",
+      repo: getRepository().repo,
+      title,
+      body,
+      head: upcomingReleaseBranch2,
+      base: releaseBranch2
+    });
+    (0, import_console3.info)(`Opened pull request #${pr.data.number}`);
+    return pr.data;
+  }
+}
+async function updatePr(title, issues) {
+  const octokit = getOctoKitClient();
+  const prTemplate = await getPrTemplate();
+  if (isDryRun()) {
+    (0, import_console3.info)(`Dry run, not creating pull request`);
+  } else {
+    const prChangelogContents = formatPrChangelog(issues);
+    const pr = await createOrUpdatePullRequest({
+      octokit,
+      title,
+      prTemplate,
+      changelogContents: prChangelogContents,
+      upcomingReleaseBranch,
+      releaseBranch
+    });
+    (0, import_console3.info)(pr.html_url);
+  }
+}
+
+// release/src/common/inferVersionFromJiraIssues.ts
+var import_core7 = __toESM(require_core());
 var import_semver2 = __toESM(require_semver2());
 var containsFeature = any_default(propEq_default("type", "feat"));
 var containsBreakingChange = any_default(propEq_default("breaking", true));
@@ -71298,36 +70926,71 @@ var description = {
   minor: "minor: new feature detected",
   patch: "patch: only fixes and/or chores detected"
 };
-function inferVersionFromChangelog(from, changelog) {
+function inferVersionFromJiraIssues(from, issues) {
   const upcomingVersionIncrement = containsBreakingChange(
-    changelog
-  ) ? "major" : containsFeature(changelog) ? "minor" : "patch";
+    issues
+  ) ? "major" : containsFeature(issues) ? "minor" : "patch";
   const upcomingVersion = import_semver2.default.inc(from, upcomingVersionIncrement);
   if (upcomingVersion === null) {
     throw new Error(
       `Could not calculate new version (incrementing ${from} to ${upcomingVersionIncrement})`
     );
   }
-  (0, import_core11.info)(
+  (0, import_core7.info)(
     `Version increment (${description[upcomingVersionIncrement]}): ${from} -> v${upcomingVersion}`
   );
   return `v${upcomingVersion}`;
 }
 
-// release/src/changelog/writeChangelog.ts
-var import_fs = require("fs");
-var import_promises3 = require("fs/promises");
-var import_core12 = __toESM(require_core());
-async function writeChangelog(changelogPath, changelog, upcomingVersion, dryRun) {
-  const currentPublicChangelogContents = (0, import_fs.existsSync)(changelogPath) ? await (0, import_promises3.readFile)(changelogPath, "utf8") : "# Changelog\n\n";
-  const publicChangelogContents = formatPublicChangelog(
-    upcomingVersion,
-    changelog
-  );
-  if (dryRun) {
-    (0, import_core12.info)(`Dry run, not writing changelog`);
+// release/src/common/writeChangelog.ts
+var import_promises2 = require("fs/promises");
+var import_core8 = __toESM(require_core());
+
+// release/src/common/formatChangelog.ts
+function formatPublicChangelog(version, issues) {
+  return [
+    `## ${version}`,
+    "",
+    ...buildChangelogSection2("New features", features(issues)),
+    "",
+    ...buildChangelogSection2("Bug fixes", fixes(issues)),
+    "",
+    ""
+  ].join("\n");
+}
+function buildChangelogSection2(header, issues) {
+  if (isEmpty_default(issues))
+    return [];
+  return [
+    `### ${header}`,
+    "",
+    ...issues.map(
+      (issue) => [
+        `- **${issue.title}**`,
+        "",
+        `  ${issue.description.split("\n").join("\n  ")}`,
+        "",
+        "<!--",
+        `    - Commit: ${issue.commit}`,
+        `    - Issue: ${issue.issue}`,
+        `    - Pull request: ${issue.pullRequest}`,
+        `    - Milestone: ${issue.milestone}`,
+        "-->",
+        ""
+      ].join("\n")
+    )
+  ];
+}
+
+// release/src/common/writeChangelog.ts
+async function writeChangelog(upcomingVersion, issues) {
+  const changelogPath = getChangeLogPath();
+  const currentPublicChangelogContents = await getChangeLog();
+  const publicChangelogContents = formatPublicChangelog(upcomingVersion, issues);
+  if (isDryRun()) {
+    (0, import_core8.info)(`Dry run, not writing changelog`);
   } else {
-    await (0, import_promises3.writeFile)(
+    await (0, import_promises2.writeFile)(
       changelogPath,
       currentPublicChangelogContents.replace(
         "# Changelog\n\n",
@@ -71338,217 +71001,220 @@ ${publicChangelogContents}
 `
       )
     );
-    (0, import_core12.info)(`Written changelog to: ${changelogPath}`);
+    (0, import_core8.info)(`Written changelog to: ${changelogPath}`);
+  }
+}
+
+// release/src/common/writeIssueFile.ts
+var import_console4 = require("console");
+var import_promises3 = require("fs/promises");
+async function writeIssueFile(jiraIssueKeys) {
+  if (isDryRun()) {
+    (0, import_console4.info)(`Dry run, not writing release jira keys.`);
+  } else {
+    await (0, import_promises3.writeFile)("releaseJiraKeys.md", jiraIssueKeys.join("\n"));
+    (0, import_console4.info)(`Written jira keys to: releaseJiraKeys.md`);
+  }
+}
+async function getIssuesFromIssueFile() {
+  if (isDryRun()) {
+    (0, import_console4.info)(`Dry run, not reading release jira keys.`);
+    return [];
+  } else {
+    const content = await (0, import_promises3.readFile)("releaseJiraKeys.md", "utf8");
+    return content.split("\n");
+  }
+}
+
+// release/src/common/writeLockFile.ts
+var import_console5 = require("console");
+var import_promises4 = require("fs/promises");
+async function writeLockFile(version) {
+  if (isDryRun()) {
+    (0, import_console5.info)(`Dry run, not writing lockfile`);
+  } else {
+    const repositories = await getRepositories();
+    const octokit = getOctoKitClient();
+    const lockFilePath = getLockFilePath();
+    const lockfile = {
+      version,
+      repositories: zipObj_default(
+        repositories,
+        await Promise.all(
+          repositories.map(
+            (repository) => getLastCommitSha({
+              octokit,
+              owner: "exivity",
+              repo: repository,
+              sha: STANDARD_BRANCH
+            })
+          )
+        )
+      )
+    };
+    await (0, import_promises4.writeFile)(lockFilePath, JSON.stringify(lockfile, null, 2) + "\n");
+    (0, import_console5.info)(`Written lockfile to: ${lockFilePath}`);
   }
 }
 
 // release/src/prepare.ts
-async function prepare({
-  octokit,
-  jiraClient,
-  lockfilePath,
-  changelogPath,
-  repositories,
-  prTemplatePath,
-  upcomingReleaseBranch,
-  releaserRepo,
-  releaseBranch,
-  dryRun
-}) {
-  await switchToReleaseBranch(dryRun, releaseBranch, upcomingReleaseBranch);
-  const changelogItems = await getChangelogItems(
-    octokit,
-    jiraClient,
-    repositories
-  );
-  let flatChangelog = sortChangelogItems(flatten_default(changelogItems));
-  if (isEmpty_default(flatChangelog)) {
-    (0, import_core13.info)(`No features or fixes to release`);
+var issuesProp = ({ issues }) => issues;
+var jiraIssueKeysProp = ({ jiraIssueKeys }) => jiraIssueKeys;
+async function prepare() {
+  await switchToReleaseBranch();
+  const repositories = await getRepositories();
+  const issuesPerRepo = await Promise.all(repositories.map(getRepoJiraIssues));
+  const issues = issuesPerRepo.flatMap(issuesProp);
+  if (isEmpty_default(issues)) {
+    (0, import_console6.info)(`No features or fixes to release`);
     return;
   }
-  const upcomingVersion = inferVersionFromChangelog(
+  logIssues(issues);
+  const upcomingVersion = inferVersionFromJiraIssues(
     await getLatestVersion(),
-    flatChangelog
+    issues
   );
-  flatChangelog = removeIssuesFromReleaseTestRepo(flatChangelog);
-  logChangelogItems(flatChangelog);
-  await writeLockFile(
-    dryRun,
-    octokit,
-    upcomingVersion,
-    repositories,
-    lockfilePath
-  );
-  await writeChangelog(changelogPath, flatChangelog, upcomingVersion, dryRun);
+  await writeIssueFile(issuesPerRepo.flatMap(jiraIssueKeysProp));
+  await writeLockFile(upcomingVersion);
+  await writeChangelog(upcomingVersion, issues);
   const title = `chore: release ${upcomingVersion}`;
-  await commitAndPush(dryRun, title, upcomingReleaseBranch);
-  await updateMissingReleaseNotesWarningStatus(
-    dryRun,
-    releaserRepo,
-    flatChangelog,
-    octokit
-  );
-  await updatePr(
-    dryRun,
-    title,
-    prTemplatePath,
-    upcomingReleaseBranch,
-    releaseBranch,
-    flatChangelog,
-    octokit
-  );
-}
-
-// release/src/common/issueTransitioning.ts
-var import_core14 = __toESM(require_core());
-async function getChangelogItemsSlugs(octokit, jiraClient, repositories) {
-  const changelogItems = await getChangelogItems(
-    octokit,
-    jiraClient,
-    repositories
-  );
-  return getChangelogSlugs(changelogItems);
-}
-async function updateIssueFixVersion(dryRun, version, jiraIssueIds, jiraClient) {
-  if (dryRun) {
-    (0, import_core14.info)(`Dry run, not setting release version of tickets`);
-  } else {
-    (0, import_core14.info)(`Setting release version of:`);
-    (0, import_core14.info)(
-      `${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n") : "found no tickets"}`
-    );
-    for (const issueIdOrKey of jiraIssueIds) {
-      await jiraClient.issues.editIssue({
-        issueIdOrKey,
-        fields: {
-          fixVersions: [
-            { id: await getVersion(dryRun, jiraClient, version, issueIdOrKey) }
-          ]
-        }
-      });
-      (0, import_core14.info)(`Set release version of ${issueIdOrKey} to ${version}`);
-    }
-  }
-}
-async function transitionIssuesAndUpdateFixVersion(dryRun, jiraIssueIds, upcomingVersion, jiraClient) {
-  if (dryRun) {
-    (0, import_core14.info)(`Dry run, not transitioning tickets`);
-  } else {
-    (0, import_core14.info)(`Transitioning ticket status of:`);
-    (0, import_core14.info)(
-      `${jiraIssueIds.length > 0 ? jiraIssueIds.join("\n") : "found no tickets"}`
-    );
-    await Promise.all(
-      jiraIssueIds.map((issueIdOrKey) => {
-        return transitionToReleased(issueIdOrKey, jiraClient);
-      })
-    ).then(() => {
-      jiraIssueIds.forEach((issueIdOrKey) => {
-        (0, import_core14.info)(`Transitioned issue ${issueIdOrKey} to released`);
-      });
-    });
-  }
-  try {
-    await updateIssueFixVersion(
-      dryRun,
-      upcomingVersion,
-      jiraIssueIds,
-      jiraClient
-    );
-  } catch (e) {
-    (0, import_core14.warning)(
-      `Got error while trying to update release version of tickets: ${JSON.stringify(
-        e
-      )}`
-    );
-  }
+  await commitAndPush(title);
+  await updatePr(title, issues);
 }
 
 // release/src/release.ts
-async function release({
-  octokit,
-  lockfilePath,
-  jiraClient,
-  repositories,
-  dryRun
-}) {
-  const jiraIssueIds = await getChangelogItemsSlugs(
-    octokit,
-    jiraClient,
-    repositories
+async function release() {
+  await tagAllRepositories();
+}
+
+// release/src/jira/jiraActions.ts
+var import_core9 = __toESM(require_core());
+var import_console7 = require("console");
+var transitionIds = {
+  "NoActionNeeded->New": "201",
+  "New->Accepted": "171",
+  "Accepted->InProgress": "71",
+  "InProgress->Done": "91",
+  "InReview->Done": "91",
+  "Done->Released": "211"
+};
+async function transitionToReleased(issueIdOrKey) {
+  const jiraClient2 = getJiraClient();
+  const issue = await jiraClient2.issues.getIssue({
+    issueIdOrKey,
+    fields: ["status"],
+    expand: ["transitions"]
+  });
+  let status = issue.fields.status.name;
+  while (status !== "Released") {
+    let flowKey;
+    switch (status) {
+      case "Done":
+        flowKey = "Done->Released";
+        status = "Released";
+        break;
+      case "New":
+        flowKey = "New->Accepted";
+        status = "Accepted";
+        break;
+      case "Accepted":
+        flowKey = "Accepted->InProgress";
+        status = "InProgress";
+        break;
+      case "In Progress":
+        flowKey = "InProgress->Done";
+        status = "Done";
+        break;
+      case "No action needed":
+        flowKey = "NoActionNeeded->New";
+        status = "New";
+        break;
+      case "In review":
+        flowKey = "InReview->Done";
+        status = "Done";
+        break;
+      default:
+        throw new Error(`Unknown status ${status}`);
+    }
+    return await jiraClient2.issues.doTransition({
+      issueIdOrKey,
+      transition: {
+        id: transitionIds[flowKey]
+      }
+    });
+  }
+}
+function toDateString(date) {
+  return `${date.getUTCFullYear()}-${("0" + date.getUTCMonth()).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}`;
+}
+async function getReleaseVersion() {
+  const jiraClient2 = getJiraClient();
+  const lockfile = await getLockFile();
+  const releaseVersions = await jiraClient2.projectVersions.getProjectVersions({
+    projectIdOrKey: getJiraProjectId()
+  });
+  const version = releaseVersions.find(
+    (version2) => version2.name === lockfile.version
   );
-  const lockfile = await readLockfile(lockfilePath);
-  await tagAllRepositories(dryRun, lockfile, octokit);
-  await transitionIssuesAndUpdateFixVersion(
-    dryRun,
-    jiraIssueIds,
-    lockfile.version,
-    jiraClient
-  );
+  if (version)
+    return version;
+  const newVersion = await jiraClient2.projectVersions.createVersion({
+    name: version,
+    projectId: Number(getJiraProjectId()),
+    releaseDate: toDateString(new Date())
+  });
+  if (!newVersion) {
+    throw new Error("Could not create new release version in Jira");
+  }
+  return newVersion;
+}
+async function updateIssueFixVersion(jiraIssueIds) {
+  const jiraClient2 = getJiraClient();
+  const version = await getReleaseVersion();
+  jiraIssueIds.forEach((issueIdOrKey) => {
+    jiraClient2.issues.editIssue({
+      issueIdOrKey,
+      fields: {
+        fixVersions: [{ id: version.id }]
+      }
+    }).then(() => {
+      (0, import_console7.info)(`Set release version of ${issueIdOrKey} to ${version.name}`);
+    }).catch((err) => {
+      (0, import_core9.warning)(
+        `failed to set fixVersion for issue ${issueIdOrKey} to ${version.name}: ${JSON.stringify(err)}`
+      );
+    });
+  });
+}
+async function updateIssuesStatusAndFixVersion() {
+  const jiraIssues = await getIssuesFromIssueFile();
+  if (isEmpty_default(jiraIssues) || isDryRun()) {
+    (0, import_console7.info)("No issues to transition");
+  }
+  updateIssueFixVersion(jiraIssues);
+  jiraIssues.forEach(transitionToReleased);
+}
+
+// release/src/updateJiraIssues.ts
+async function updateJiraIssues() {
+  updateIssuesStatusAndFixVersion();
 }
 
 // release/src/index.ts
-var import_console3 = require("console");
+var runModes = {
+  ping,
+  prepare,
+  release,
+  ["update-jira-issues"]: updateJiraIssues
+};
 async function run() {
-  const releaserRepo = (0, import_core15.getInput)("releaser-repo");
-  const mode = (0, import_core15.getInput)("mode");
-  const lockfilePath = (0, import_core15.getInput)("lockfile");
-  const changelogPath = (0, import_core15.getInput)("changelog");
-  const prTemplatePath = (0, import_core15.getInput)("pr-template");
-  const upcomingReleaseBranch = (0, import_core15.getInput)("upcoming-release-branch");
-  const releaseBranch = (0, import_core15.getInput)("release-branch");
-  const dryRun = getBooleanInput("dry-run", false);
-  const ghToken = getToken();
-  const jiraUsername = (0, import_core15.getInput)("jira-username");
-  const jiraToken = (0, import_core15.getInput)("jira-token");
-  const octokit = (0, import_github9.getOctokit)(ghToken);
-  const jiraClient = jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null;
-  const core = (await octokit.request("GET /rate_limit", {})).data.resources.core;
-  (0, import_console3.info)(
-    `Remaining github API calls: ${core.remaining}. Rate limit will reset at ${new Date(core.reset * 1e3).toISOString()}.`
-  );
-  switch (mode) {
-    case "ping" /* Ping */:
-      await ping({ octokit, releaserRepo, dryRun });
-      break;
-    case "prepare" /* Prepare */:
-      if (!jiraClient) {
-        throw new Error(
-          "jira-username and jira-token inputs are required in prepare mode"
-        );
-      }
-      await prepare({
-        octokit,
-        jiraClient,
-        lockfilePath,
-        changelogPath,
-        repositories: await getRepositories(lockfilePath),
-        prTemplatePath,
-        upcomingReleaseBranch,
-        releaserRepo,
-        releaseBranch,
-        dryRun
-      });
-      break;
-    case "release" /* Release */:
-      if (!jiraClient) {
-        throw new Error(
-          "jira-username and jira-token inputs are required in release mode"
-        );
-      }
-      await release({
-        octokit,
-        lockfilePath,
-        jiraClient,
-        repositories: await getRepositories(lockfilePath),
-        dryRun
-      });
-      break;
-    default:
-      throw new Error(`Unknown mode "${mode}"`);
-  }
+  const mode = (0, import_core10.getInput)("mode");
+  if (!runModes[mode])
+    throw new Error(`Unknown mode "${mode}"`);
+  logAvailableRequests();
+  return runModes[mode]();
 }
-run().catch(import_core15.setFailed);
+run().catch(import_core10.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

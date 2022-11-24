@@ -1,104 +1,52 @@
-import { getOctokit } from '@actions/github'
-import { info } from '@actions/core'
-import { flatten, isEmpty } from 'ramda'
-
+import { info } from 'console'
+import { isEmpty } from 'ramda'
 import { getLatestVersion } from '../../lib/git'
-import type { getJiraClient } from './common/jiraClient'
-import { writeLockFile } from './common/lockfile'
+import { getRepoJiraIssues } from './jira/getRepoJiraIssues'
 import {
-  switchToReleaseBranch,
   commitAndPush,
-  updateMissingReleaseNotesWarningStatus,
+  switchToReleaseBranch,
   updatePr,
-} from './common/gitUpdates'
-import {
-  getChangelogItems,
-  inferVersionFromChangelog,
-  sortChangelogItems,
-  writeChangelog,
-  logChangelogItems,
-  removeIssuesFromReleaseTestRepo,
-} from './changelog'
+} from './common/gitActions'
+import { inferVersionFromJiraIssues } from './common/inferVersionFromJiraIssues'
+import { getRepositories } from './common/inputs'
+import { logIssues } from './common/utils'
+import { writeChangelog } from './common/writeChangelog'
+import { writeIssueFile } from './common/writeIssueFile'
+import { writeLockFile } from './common/writeLockFile'
 
-interface Prepare {
-  octokit: ReturnType<typeof getOctokit>
-  jiraClient: ReturnType<typeof getJiraClient>
-  lockfilePath: string
-  changelogPath: string
-  repositories: string[]
-  prTemplatePath: string
-  upcomingReleaseBranch: string
-  releaserRepo: string
-  releaseBranch: string
-  dryRun: boolean
-}
+const issuesProp = <T>({ issues }: { issues: T }) => issues
+const jiraIssueKeysProp = <T>({ jiraIssueKeys }: { jiraIssueKeys: T }) =>
+  jiraIssueKeys
 
-export async function prepare({
-  octokit,
-  jiraClient,
-  lockfilePath,
-  changelogPath,
-  repositories,
-  prTemplatePath,
-  upcomingReleaseBranch,
-  releaserRepo,
-  releaseBranch,
-  dryRun,
-}: Prepare) {
-  await switchToReleaseBranch(dryRun, releaseBranch, upcomingReleaseBranch)
+export async function prepare() {
+  await switchToReleaseBranch()
 
-  const changelogItems = await getChangelogItems(
-    octokit,
-    jiraClient,
-    repositories
-  )
+  const repositories = await getRepositories()
 
-  let flatChangelog = sortChangelogItems(flatten(changelogItems))
+  const issuesPerRepo = await Promise.all(repositories.map(getRepoJiraIssues))
+  const issues = issuesPerRepo.flatMap(issuesProp)
 
-  if (isEmpty(flatChangelog)) {
+  if (isEmpty(issues)) {
     info(`No features or fixes to release`)
     return
   }
 
-  const upcomingVersion = inferVersionFromChangelog(
+  logIssues(issues)
+
+  const upcomingVersion = inferVersionFromJiraIssues(
     await getLatestVersion(),
-    flatChangelog
+    issues
   )
 
-  // We can use release-test repo to trigger partiicular version bump and release
-  // but we might come up with something better and remove this
-  flatChangelog = removeIssuesFromReleaseTestRepo(flatChangelog)
+  await writeIssueFile(issuesPerRepo.flatMap(jiraIssueKeysProp))
 
-  logChangelogItems(flatChangelog)
+  await writeLockFile(upcomingVersion)
 
-  await writeLockFile(
-    dryRun,
-    octokit,
-    upcomingVersion,
-    repositories,
-    lockfilePath
-  )
-
-  await writeChangelog(changelogPath, flatChangelog, upcomingVersion, dryRun)
+  await writeChangelog(upcomingVersion, issues)
 
   const title = `chore: release ${upcomingVersion}`
 
-  await commitAndPush(dryRun, title, upcomingReleaseBranch)
+  await commitAndPush(title)
 
-  await updateMissingReleaseNotesWarningStatus(
-    dryRun,
-    releaserRepo,
-    flatChangelog,
-    octokit
-  )
-
-  await updatePr(
-    dryRun,
-    title,
-    prTemplatePath,
-    upcomingReleaseBranch,
-    releaseBranch,
-    flatChangelog,
-    octokit
-  )
+  await updatePr(title, issues)
 }
