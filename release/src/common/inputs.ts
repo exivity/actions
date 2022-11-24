@@ -30,7 +30,7 @@ export type Lockfile = {
   }
 }
 
-export const getJiraProjectId = () => getInput('jira-project-id') ?? false
+export const getJiraProjectId = () => getInput('jira-project-id')
 
 export const isDryRun = () => getBooleanInput('dry-run', false)
 

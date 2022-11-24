@@ -69084,7 +69084,7 @@ async function readJson(path3) {
     throw new Error(`Can't read "${path3}" or it's not valid JSON`);
   }
 }
-var getJiraProjectId = () => (0, import_core3.getInput)("jira-project-id") ?? false;
+var getJiraProjectId = () => (0, import_core3.getInput)("jira-project-id");
 var isDryRun = () => getBooleanInput("dry-run", false);
 var getReleaseRepo = () => (0, import_core3.getInput)("releaser-repo");
 var getLockFile = async () => readJson((0, import_core3.getInput)("lockfile"));
