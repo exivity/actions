@@ -71224,8 +71224,10 @@ async function updateIssuesStatusAndFixVersion() {
   if (isEmpty_default(jiraIssues) || isDryRun()) {
     (0, import_console7.info)("No issues to transition");
   }
-  updateIssueFixVersion(jiraIssues);
+  (0, import_console7.info)("Transitioning issues...");
   jiraIssues.forEach(transitionToReleased);
+  (0, import_console7.info)("Add fix version to issues...");
+  updateIssueFixVersion(jiraIssues);
 }
 
 // release/src/updateJiraIssues.ts

@@ -143,6 +143,9 @@ export async function updateIssuesStatusAndFixVersion() {
     info('No issues to transition')
   }
 
-  updateIssueFixVersion(jiraIssues)
+  info('Transitioning issues...')
   jiraIssues.forEach(transitionToReleased)
+
+  info('Add fix version to issues...')
+  updateIssueFixVersion(jiraIssues)
 }
