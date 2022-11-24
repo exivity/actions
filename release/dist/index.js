@@ -15326,7 +15326,7 @@ var require_lodash = __commonJS({
           }
           return result2;
         }
-        function toLower2(value) {
+        function toLower(value) {
           return toString4(value).toLowerCase();
         }
         function toUpper(value) {
@@ -15917,7 +15917,7 @@ var require_lodash = __commonJS({
         lodash.toFinite = toFinite;
         lodash.toInteger = toInteger;
         lodash.toLength = toLength;
-        lodash.toLower = toLower2;
+        lodash.toLower = toLower;
         lodash.toNumber = toNumber;
         lodash.toSafeInteger = toSafeInteger;
         lodash.toString = toString4;
@@ -70485,10 +70485,6 @@ var propEq_default = propEq;
 var split = /* @__PURE__ */ invoker_default(1, "split");
 var split_default = split;
 
-// node_modules/ramda/es/toLower.js
-var toLower = /* @__PURE__ */ invoker_default(0, "toLowerCase");
-var toLower_default = toLower;
-
 // node_modules/ramda/es/trim.js
 var hasProtoTrim = typeof String.prototype.trim === "function";
 
@@ -70644,8 +70640,14 @@ function parseCommitMessage(message) {
   };
 }
 
-// release/src/common/getRepoJiraIssues.ts
+// release/src/jira/utils.ts
 var JIRA_KEY_RGX = new RegExp(/\bEXVT-\d+\b|\bCLS-\d+\b/g);
+var isFeatOrFix = (type3 = "Chore" /* Chore */) => {
+  return type3 === "Feature" /* Feature */ || type3 === "Bug" /* Bug */ || type3 === "Epic" /* Epic */;
+};
+function getIssueType(issue) {
+  return issue.fields.issuetype.name === "Feature" /* Feature */ ? "feat" : issue.fields.issuetype.name === "Bug" /* Bug */ ? "bug" : "chore";
+}
 function isRegExpMatchArray(args) {
   return Array.isArray(args);
 }
@@ -70655,15 +70657,36 @@ var cleanJiraKeyMatches = pipe(
   chain_default(identity_default),
   uniq_default
 );
-var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
-var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
-function getEpic(issue) {
-  return issue.fields["customfield_10005" /* Epic */] ?? null;
+function getReleaseNotesTitle(issue) {
+  return issue.fields["customfield_10529" /* ReleaseNotesTitle */] ?? "";
+}
+function noReleaseNotesTitlePresent(issue) {
+  return typeof issue.fields["customfield_10529" /* ReleaseNotesTitle */] === "string" && isEmpty_default(issue.fields["customfield_10529" /* ReleaseNotesTitle */]);
+}
+function getReleaseNotesDescription(issue) {
+  return issue.fields["customfield_10530" /* ReleaseNotesDescription */] ?? "";
 }
 function noReleaseNotesNeeded(issue) {
   return issue.fields.labels.includes("no-release-notes-needed");
 }
-var toLowerEquals = pipe(toLower_default, equals_default);
+function releaseNotesAreMissing(issue) {
+  return noReleaseNotesTitlePresent(issue) && !noReleaseNotesNeeded(issue);
+}
+function getEpic(issue) {
+  return issue.fields["customfield_10005" /* Epic */] ?? null;
+}
+var getMissingReleaseNotes = pipe(
+  filter_default(
+    (issue) => isFeatOrFix(issue.fields.issuetype.name) || releaseNotesAreMissing(issue)
+  ),
+  map_default(
+    ({ key }) => `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`
+  )
+);
+
+// release/src/jira/getRepoJiraIssues.ts
+var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
+var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
 var getRepoJiraIssues = async (repo) => {
   const jiraClient2 = getJiraClient();
   const octokit = getOctoKitClient();
@@ -70698,22 +70721,21 @@ var getRepoJiraIssues = async (repo) => {
           associatedPullRequest == null ? void 0 : associatedPullRequest.body.match(JIRA_KEY_RGX)
         ]);
         jiraIssueKeys.push(...jiraKeys);
-        const { type: type3 = "chore", breaking = false } = parseCommitMessage(
-          commit.commit.message
-        );
+        const { breaking = false } = parseCommitMessage(commit.commit.message);
         return Promise.all(
           jiraKeys.map(
             (key) => jiraClient2.issues.getIssue({ issueIdOrKey: key })
           )
         ).then(
           (tickets) => tickets.flatMap((issue) => {
-            if (!issue || none_default(toLowerEquals(type3), ["feat", "fix"]))
+            const issueType = getIssueType(issue);
+            if (!issue || none_default(equals_default(issueType), ["feat", "fix"]))
               return [];
             const epic = getEpic(issue);
             return {
-              title: issue.fields["customfield_10529" /* ReleaseNotesTitle */] ?? "",
-              description: issue.fields["customfield_10530" /* ReleaseNotesDescription */] ?? "",
-              type: type3,
+              title: getReleaseNotesTitle(issue),
+              description: getReleaseNotesDescription(issue),
+              type: issueType,
               breaking,
               noReleaseNotesNeeded: noReleaseNotesNeeded(issue),
               commit: `[exivity/${repo}@${commit.sha.substring(0, 7)}](${commit.html_url})`,
@@ -71065,7 +71087,7 @@ async function release() {
   await tagAllRepositories();
 }
 
-// release/src/common/jiraActions.ts
+// release/src/jira/jiraActions.ts
 var import_core9 = __toESM(require_core());
 var import_console7 = require("console");
 var transitionIds = {

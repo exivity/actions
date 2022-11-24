@@ -1,4 +1,4 @@
-import { updateIssuesStatusAndFixVersion } from './common/jiraActions'
+import { updateIssuesStatusAndFixVersion } from './jira/jiraActions'
 
 export async function updateJiraIssues() {
   updateIssuesStatusAndFixVersion()

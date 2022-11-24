@@ -77,6 +77,12 @@ export function isValidType(type: string) {
   return availableTypes.includes(type)
 }
 
+export function isFeatOrFix(message: string) {
+  const { type } = parseCommitMessage(message)
+
+  return type === 'feat' || type === 'fix'
+}
+
 export function isSemanticCommitMessage(message: string) {
   const parsed = parseCommitMessage(message)
   const availableTypes = Object.keys(types)

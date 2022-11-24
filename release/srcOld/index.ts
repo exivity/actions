@@ -41,10 +41,10 @@ async function run() {
   const jiraToken = getInput('jira-token')
 
   // Init deps
-  const octokit = getOctokit(ghToken)
   const jiraClient =
     jiraUsername && jiraToken ? getJiraClient(jiraUsername, jiraToken) : null
 
+  const octokit = getOctokit(ghToken)
   const core = (await octokit.request('GET /rate_limit', {})).data.resources
     .core
 

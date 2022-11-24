@@ -1,6 +1,6 @@
 import { both, filter, isEmpty, propEq } from 'ramda'
 
-import { JiraIssue } from './getRepoJiraIssues'
+import { JiraIssue } from '../jira/getRepoJiraIssues'
 
 export const features = filter(
   both<(issue: JiraIssue) => boolean>(

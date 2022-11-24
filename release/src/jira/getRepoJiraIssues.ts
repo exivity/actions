@@ -1,19 +1,14 @@
 import {
   identity,
-  filter,
   chain,
-  uniq,
   pipe,
   split,
   pathOr,
   tail,
   join,
-  toLower,
   equals,
-  any,
   none,
 } from 'ramda'
-import type { Version2Models } from 'jira.js'
 
 import {
   getCommitForTag,
@@ -23,46 +18,20 @@ import {
 } from '../../../lib/github'
 import { getLatestVersion } from '../../../lib/git'
 import { parseCommitMessage } from '../../../lib/conventionalCommits'
-import { getJiraClient, getOctoKitClient } from './inputs'
+import { getJiraClient, getOctoKitClient } from '../common/inputs'
 
-export const JIRA_KEY_RGX = new RegExp(/\bEXVT-\d+\b|\bCLS-\d+\b/g)
-
-function isRegExpMatchArray(args: any): args is RegExpMatchArray {
-  return Array.isArray(args)
-}
-
-const cleanJiraKeyMatches = pipe(
-  identity<(RegExpMatchArray | null | undefined)[]>,
-  filter(isRegExpMatchArray),
-  chain(identity),
-  uniq
-)
+import {
+  JIRA_KEY_RGX,
+  cleanJiraKeyMatches,
+  getReleaseNotesTitle,
+  getReleaseNotesDescription,
+  noReleaseNotesNeeded,
+  getEpic,
+  getIssueType,
+} from './utils'
 
 export const getFirstLine = pipe(split('\n'), pathOr('', [0]))
 export const removeFirstLine = pipe(split('\n'), tail, join('\n'))
-
-export enum JiraCustomFields {
-  Epic = 'customfield_10005',
-  ReleaseNotesTitle = 'customfield_10529',
-  ReleaseNotesDescription = 'customfield_10530',
-}
-
-export enum JiraIssueType {
-  Chore = 'Chore',
-  Bug = 'Bug',
-  Feature = 'Feature',
-  Epic = 'Epic',
-}
-
-function getEpic(issue: Version2Models.Issue): string | null {
-  return issue.fields[JiraCustomFields.Epic] ?? null
-}
-
-function noReleaseNotesNeeded(issue: Version2Models.Issue) {
-  return issue.fields.labels.includes('no-release-notes-needed')
-}
-
-const toLowerEquals = pipe(toLower, equals)
 
 export const getRepoJiraIssues = async (repo: string) => {
   const jiraClient = getJiraClient()
@@ -107,9 +76,7 @@ export const getRepoJiraIssues = async (repo: string) => {
 
         jiraIssueKeys.push(...jiraKeys)
 
-        const { type = 'chore', breaking = false } = parseCommitMessage(
-          commit.commit.message
-        )
+        const { breaking = false } = parseCommitMessage(commit.commit.message)
 
         return Promise.all(
           jiraKeys.map((key) =>
@@ -117,19 +84,15 @@ export const getRepoJiraIssues = async (repo: string) => {
           )
         ).then((tickets) =>
           tickets.flatMap((issue) => {
-            if (!issue || none(toLowerEquals(type), ['feat', 'fix'])) return []
+            const issueType = getIssueType(issue)
+            if (!issue || none(equals(issueType), ['feat', 'fix'])) return []
 
             const epic = getEpic(issue)
 
             return {
-              title:
-                (issue.fields[JiraCustomFields.ReleaseNotesTitle] as string) ??
-                '',
-              description:
-                (issue.fields[
-                  JiraCustomFields.ReleaseNotesDescription
-                ] as string) ?? '',
-              type: type as 'feat' | 'fix',
+              title: getReleaseNotesTitle(issue),
+              description: getReleaseNotesDescription(issue),
+              type: issueType,
               breaking,
               noReleaseNotesNeeded: noReleaseNotesNeeded(issue),
               commit: `[exivity/${repo}@${commit.sha.substring(0, 7)}](${

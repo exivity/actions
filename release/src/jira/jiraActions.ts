@@ -6,8 +6,8 @@ import {
   getJiraProjectId,
   getLockFile,
   isDryRun,
-} from './inputs'
-import { getIssuesFromIssueFile } from './writeIssueFile'
+} from '../common/inputs'
+import { getIssuesFromIssueFile } from '../common/writeIssueFile'
 
 const transitionIds = {
   'NoActionNeeded->New': '201',

@@ -1,7 +1,7 @@
 import { info } from 'console'
 import { isEmpty, chain, prop } from 'ramda'
 import { getLatestVersion } from '../../lib/git'
-import { getRepoJiraIssues } from './common/getRepoJiraIssues'
+import { getRepoJiraIssues } from './jira/getRepoJiraIssues'
 import {
   commitAndPush,
   switchToReleaseBranch,

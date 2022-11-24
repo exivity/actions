@@ -1,8 +1,7 @@
-import { existsSync } from 'fs'
-import { readFile, writeFile } from 'fs/promises'
+import { writeFile } from 'fs/promises'
 import { info } from '@actions/core'
 
-import { JiraIssue } from './getRepoJiraIssues'
+import { JiraIssue } from '../jira/getRepoJiraIssues'
 import { getChangeLog, getChangeLogPath, isDryRun } from './inputs'
 import { formatPublicChangelog } from './formatChangelog'
 

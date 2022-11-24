@@ -15,7 +15,7 @@ import {
   getRepository,
   getPrFromRef,
 } from '../../../lib/github'
-import { JiraIssue } from './getRepoJiraIssues'
+import { JiraIssue } from '../jira/getRepoJiraIssues'
 
 import { formatPrChangelog } from './formatPrChangelog'
 
