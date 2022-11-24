@@ -69050,7 +69050,7 @@ async function readJson(path3) {
   }
 }
 var getJiraProjectId = () => (0, import_core2.getInput)("jira-project-id") ?? false;
-var isDryRun = () => (0, import_core2.getBooleanInput)("dry-run") ?? false;
+var isDryRun = () => (0, import_core2.getBooleanInput)("dry-run", false);
 var getReleaseRepo = () => (0, import_core2.getInput)("releaser-repo");
 var getLockFile = async () => readJson((0, import_core2.getInput)("lockfile"));
 var getLockFilePath = () => (0, import_core2.getInput)("lockfile");
@@ -69109,7 +69109,7 @@ var logAvailableRequests = async () => {
   (0, import_console.info)(
     `Remaining github API calls: ${core.remaining}. Rate limit will reset at ${new Date(
       core.reset * 1e3
-    ).toLocaleDateString()}.`
+    ).toLocaleTimeString()}.`
   );
 };
 
