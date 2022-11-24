@@ -79,17 +79,24 @@ async function getReleaseVersion() {
   const jiraClient = getJiraClient()
   const lockfile = await getLockFile()
 
-  const releaseVersions = await jiraClient.projectVersions.getProjectVersions({
-    projectIdOrKey: getJiraProjectId(),
-  })
+  try {
+    const releaseVersions = await jiraClient.projectVersions.getProjectVersions(
+      {
+        projectIdOrKey: getJiraProjectId() as unknown as string,
+      }
+    )
 
-  const version = releaseVersions.find(
-    (version) => version.name === lockfile.version
-  )
+    const version = releaseVersions.find(
+      (version) => version.name === lockfile.version
+    )
 
-  if (version) return version
+    if (version) return version
+  } catch (err) {
+    throw new Error(
+      `Could not connect with project versions: ${JSON.stringify(err)}`
+    )
+  }
 
-  info(getJiraProjectId())
   try {
     const newVersion = await jiraClient.projectVersions.createVersion({
       name: lockfile.version,
