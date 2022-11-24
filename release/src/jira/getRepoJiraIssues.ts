@@ -86,7 +86,7 @@ export const getRepoJiraIssues = async (repo: string) => {
         ).then((tickets) =>
           tickets.flatMap((issue) => {
             const issueType = getIssueType(issue)
-            info(`${issue.key}-${issueType}`)
+
             if (!issue || none(equals(issueType), ['feat', 'fix'])) return []
 
             const epic = getEpic(issue)

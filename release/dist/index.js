@@ -1265,12 +1265,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info14 = this._prepareRequest(verb, parsedUrl, headers);
+          let info13 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info14, data);
+            response = yield this.requestRaw(info13, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -1280,7 +1280,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info14, data);
+                return authenticationHandler.handleAuthentication(this, info13, data);
               } else {
                 return response;
               }
@@ -1303,8 +1303,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info14 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info14, data);
+              info13 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info13, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -1325,7 +1325,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info14, data) {
+      requestRaw(info13, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject3) => {
             function callbackForResult(err, res) {
@@ -1337,16 +1337,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info14, data, callbackForResult);
+            this.requestRawWithCallback(info13, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info14, data, onResult) {
+      requestRawWithCallback(info13, data, onResult) {
         if (typeof data === "string") {
-          if (!info14.options.headers) {
-            info14.options.headers = {};
+          if (!info13.options.headers) {
+            info13.options.headers = {};
           }
-          info14.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info13.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -1355,7 +1355,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info14.httpModule.request(info14.options, (msg) => {
+        const req = info13.httpModule.request(info13.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -1367,7 +1367,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info14.options.path}`));
+          handleResult(new Error(`Request timeout: ${info13.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -1389,27 +1389,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info14 = {};
-        info14.parsedUrl = requestUrl;
-        const usingSsl = info14.parsedUrl.protocol === "https:";
-        info14.httpModule = usingSsl ? https : http;
+        const info13 = {};
+        info13.parsedUrl = requestUrl;
+        const usingSsl = info13.parsedUrl.protocol === "https:";
+        info13.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info14.options = {};
-        info14.options.host = info14.parsedUrl.hostname;
-        info14.options.port = info14.parsedUrl.port ? parseInt(info14.parsedUrl.port) : defaultPort;
-        info14.options.path = (info14.parsedUrl.pathname || "") + (info14.parsedUrl.search || "");
-        info14.options.method = method;
-        info14.options.headers = this._mergeHeaders(headers);
+        info13.options = {};
+        info13.options.host = info13.parsedUrl.hostname;
+        info13.options.port = info13.parsedUrl.port ? parseInt(info13.parsedUrl.port) : defaultPort;
+        info13.options.path = (info13.parsedUrl.pathname || "") + (info13.parsedUrl.search || "");
+        info13.options.method = method;
+        info13.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info14.options.headers["user-agent"] = this.userAgent;
+          info13.options.headers["user-agent"] = this.userAgent;
         }
-        info14.options.agent = this._getAgent(info14.parsedUrl);
+        info13.options.agent = this._getAgent(info13.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info14.options);
+            handler.prepareRequest(info13.options);
           }
         }
-        return info14;
+        return info13;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -2117,10 +2117,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info14(message) {
+    function info13(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info14;
+    exports.info = info13;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -69169,7 +69169,7 @@ async function ping() {
 }
 
 // release/src/prepare.ts
-var import_console7 = require("console");
+var import_console6 = require("console");
 
 // node_modules/ramda/es/internal/_isPlaceholder.js
 function _isPlaceholder(a) {
@@ -70658,7 +70658,7 @@ var isFeatOrFix = (type3 = "Chore" /* Chore */) => {
   return type3 === "Feature" /* Feature */ || type3 === "Bug" /* Bug */ || type3 === "Epic" /* Epic */;
 };
 function getIssueType(issue) {
-  return issue.fields.issuetype.name === "Feature" /* Feature */ ? "feat" : issue.fields.issuetype.name === "Bug" /* Bug */ ? "bug" : "chore";
+  return issue.fields.issuetype.name === "Feature" /* Feature */ ? "feat" : issue.fields.issuetype.name === "Bug" /* Bug */ ? "fix" : "chore";
 }
 function isRegExpMatchArray(args) {
   return Array.isArray(args);
@@ -70697,7 +70697,6 @@ var getMissingReleaseNotes = pipe(
 );
 
 // release/src/jira/getRepoJiraIssues.ts
-var import_console3 = require("console");
 var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
 var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
 var getRepoJiraIssues = async (repo) => {
@@ -70742,7 +70741,6 @@ var getRepoJiraIssues = async (repo) => {
         ).then(
           (tickets) => tickets.flatMap((issue) => {
             const issueType = getIssueType(issue);
-            (0, import_console3.info)(`${issue.key}-${issueType}`);
             if (!issue || none_default(equals_default(issueType), ["feat", "fix"]))
               return [];
             const epic = getEpic(issue);
@@ -70767,7 +70765,7 @@ var getRepoJiraIssues = async (repo) => {
 };
 
 // release/src/common/gitActions.ts
-var import_console4 = require("console");
+var import_console3 = require("console");
 
 // release/src/common/formatPrChangelog.ts
 var features = filter_default(
@@ -70822,22 +70820,22 @@ var releaseBranch = "main";
 var upcomingReleaseBranch = "chore/upcoming-release";
 async function switchToReleaseBranch() {
   if (isDryRun()) {
-    (0, import_console4.info)(`Dry run, not switching branches`);
+    (0, import_console3.info)(`Dry run, not switching branches`);
   } else if (await gitHasChanges()) {
-    (0, import_console4.info)("Detected uncommitted changes, aborting");
+    (0, import_console3.info)("Detected uncommitted changes, aborting");
   } else {
     await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`);
   }
 }
 async function commitAndPush(title) {
   if (isDryRun()) {
-    (0, import_console4.info)(`Dry run, not committing and pushing changes`);
+    (0, import_console3.info)(`Dry run, not committing and pushing changes`);
   } else {
     await gitAdd();
     await gitSetAuthor("Exivity bot", "bot@exivity.com");
     await gitCommit(title);
     await gitPush(true);
-    (0, import_console4.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
+    (0, import_console3.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
   }
   return title;
 }
@@ -70845,7 +70843,7 @@ async function tagRepositories(lockfile) {
   const octokit = getOctoKitClient();
   for (const [repository, sha] of Object.entries(lockfile.repositories)) {
     if (isDryRun()) {
-      (0, import_console4.info)(`Dry run, not tagging ${repository}`);
+      (0, import_console3.info)(`Dry run, not tagging ${repository}`);
     } else {
       await createLightweightTag({
         octokit,
@@ -70862,11 +70860,11 @@ async function tagAllRepositories() {
   const dryRun = isDryRun();
   const lockfile = await getLockFile();
   if (dryRun) {
-    (0, import_console4.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_console3.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     await gitTag(lockfile.version);
     await gitPushTags();
-    (0, import_console4.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    (0, import_console3.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
   }
   await tagRepositories(lockfile);
 }
@@ -70896,7 +70894,7 @@ async function createOrUpdatePullRequest({
       title,
       body
     });
-    (0, import_console4.info)(`Updated pull request #${pr.data.number}`);
+    (0, import_console3.info)(`Updated pull request #${pr.data.number}`);
     return pr.data;
   } else {
     const pr = await octokit.rest.pulls.create({
@@ -70907,7 +70905,7 @@ async function createOrUpdatePullRequest({
       head: upcomingReleaseBranch2,
       base: releaseBranch2
     });
-    (0, import_console4.info)(`Opened pull request #${pr.data.number}`);
+    (0, import_console3.info)(`Opened pull request #${pr.data.number}`);
     return pr.data;
   }
 }
@@ -70915,7 +70913,7 @@ async function updatePr(title, issues) {
   const octokit = getOctoKitClient();
   const prTemplate = await getPrTemplate();
   if (isDryRun()) {
-    (0, import_console4.info)(`Dry run, not creating pull request`);
+    (0, import_console3.info)(`Dry run, not creating pull request`);
   } else {
     const prChangelogContents = formatPrChangelog(issues);
     const pr = await createOrUpdatePullRequest({
@@ -70926,7 +70924,7 @@ async function updatePr(title, issues) {
       upcomingReleaseBranch,
       releaseBranch
     });
-    (0, import_console4.info)(pr.html_url);
+    (0, import_console3.info)(pr.html_url);
   }
 }
 
@@ -71020,19 +71018,19 @@ ${publicChangelogContents}
 }
 
 // release/src/common/writeIssueFile.ts
-var import_console5 = require("console");
+var import_console4 = require("console");
 var import_promises3 = require("fs/promises");
 async function writeIssueFile(jiraIssueKeys) {
   if (isDryRun()) {
-    (0, import_console5.info)(`Dry run, not writing release jira keys.`);
+    (0, import_console4.info)(`Dry run, not writing release jira keys.`);
   } else {
     await (0, import_promises3.writeFile)("releaseJiraKeys.md", jiraIssueKeys.join("\n"));
-    (0, import_console5.info)(`Written jira keys to: releaseJiraKeys.md`);
+    (0, import_console4.info)(`Written jira keys to: releaseJiraKeys.md`);
   }
 }
 async function getIssuesFromIssueFile() {
   if (isDryRun()) {
-    (0, import_console5.info)(`Dry run, not reading release jira keys.`);
+    (0, import_console4.info)(`Dry run, not reading release jira keys.`);
     return [];
   } else {
     const content = await (0, import_promises3.readFile)("releaseJiraKeys.md", "utf8");
@@ -71041,11 +71039,11 @@ async function getIssuesFromIssueFile() {
 }
 
 // release/src/common/writeLockFile.ts
-var import_console6 = require("console");
+var import_console5 = require("console");
 var import_promises4 = require("fs/promises");
 async function writeLockFile(version) {
   if (isDryRun()) {
-    (0, import_console6.info)(`Dry run, not writing lockfile`);
+    (0, import_console5.info)(`Dry run, not writing lockfile`);
   } else {
     const repositories = await getRepositories();
     const octokit = getOctoKitClient();
@@ -71067,7 +71065,7 @@ async function writeLockFile(version) {
       )
     };
     await (0, import_promises4.writeFile)(lockFilePath, JSON.stringify(lockfile, null, 2) + "\n");
-    (0, import_console6.info)(`Written lockfile to: ${lockFilePath}`);
+    (0, import_console5.info)(`Written lockfile to: ${lockFilePath}`);
   }
 }
 
@@ -71080,7 +71078,7 @@ async function prepare() {
   const issuesPerRepo = await Promise.all(repositories.map(getRepoJiraIssues));
   const issues = issuesPerRepo.flatMap(issuesProp);
   if (isEmpty_default(issues)) {
-    (0, import_console7.info)(`No features or fixes to release`);
+    (0, import_console6.info)(`No features or fixes to release`);
     return;
   }
   logIssues(issues);
@@ -71103,7 +71101,7 @@ async function release() {
 
 // release/src/jira/jiraActions.ts
 var import_core10 = __toESM(require_core());
-var import_console8 = require("console");
+var import_console7 = require("console");
 var transitionIds = {
   "NoActionNeeded->New": "201",
   "New->Accepted": "171",
@@ -71192,7 +71190,7 @@ async function updateIssueFixVersion(jiraIssueIds) {
         fixVersions: [{ id: version.id }]
       }
     }).then(() => {
-      (0, import_console8.info)(`Set release version of ${issueIdOrKey} to ${version.name}`);
+      (0, import_console7.info)(`Set release version of ${issueIdOrKey} to ${version.name}`);
     }).catch((err) => {
       (0, import_core10.warning)(
         `failed to set fixVersion for issue ${issueIdOrKey} to ${version.name}: ${JSON.stringify(err)}`
@@ -71203,7 +71201,7 @@ async function updateIssueFixVersion(jiraIssueIds) {
 async function updateIssuesStatusAndFixVersion() {
   const jiraIssues = await getIssuesFromIssueFile();
   if (isEmpty_default(jiraIssues) || isDryRun()) {
-    (0, import_console8.info)("No issues to transition");
+    (0, import_console7.info)("No issues to transition");
   }
   updateIssueFixVersion(jiraIssues);
   jiraIssues.forEach(transitionToReleased);

@@ -29,7 +29,7 @@ export function getIssueType(issue: Version2Models.Issue): string {
   return issue.fields.issuetype.name === JiraIssueType.Feature
     ? 'feat'
     : issue.fields.issuetype.name === JiraIssueType.Bug
-    ? 'bug'
+    ? 'fix'
     : 'chore'
 }
 
