@@ -89,10 +89,11 @@ async function getReleaseVersion() {
 
   if (version) return version
 
+  info(getJiraProjectId())
   try {
     const newVersion = await jiraClient.projectVersions.createVersion({
       name: lockfile.version,
-      projectId: Number(getJiraProjectId()),
+      projectId: getJiraProjectId(),
       releaseDate: toDateString(new Date()),
     })
 

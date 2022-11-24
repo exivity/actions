@@ -71174,10 +71174,11 @@ async function getReleaseVersion() {
   );
   if (version)
     return version;
+  (0, import_console7.info)(getJiraProjectId());
   try {
     const newVersion = await jiraClient2.projectVersions.createVersion({
       name: lockfile.version,
-      projectId: Number(getJiraProjectId()),
+      projectId: getJiraProjectId(),
       releaseDate: toDateString(new Date())
     });
     return newVersion;
