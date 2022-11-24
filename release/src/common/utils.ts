@@ -18,6 +18,6 @@ export const logAvailableRequests = async () => {
       core.remaining
     }. Rate limit will reset at ${new Date(
       core.reset * 1000
-    ).toLocaleDateString()}.`
+    ).toLocaleTimeString()}.`
   )
 }

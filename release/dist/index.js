@@ -69144,7 +69144,7 @@ var logAvailableRequests = async () => {
   (0, import_console.info)(
     `Remaining github API calls: ${core.remaining}. Rate limit will reset at ${new Date(
       core.reset * 1e3
-    ).toLocaleDateString()}.`
+    ).toLocaleTimeString()}.`
   );
 };
 
