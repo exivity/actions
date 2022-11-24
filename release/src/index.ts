@@ -10,7 +10,7 @@ const runModes = {
   ping,
   prepare,
   release,
-  updateJiraIssues,
+  ['update-jira-issues']: updateJiraIssues,
 }
 
 async function run() {

@@ -71205,7 +71205,7 @@ var runModes = {
   ping,
   prepare,
   release,
-  updateJiraIssues
+  ["update-jira-issues"]: updateJiraIssues
 };
 async function run() {
   const mode = (0, import_core10.getInput)("mode");
