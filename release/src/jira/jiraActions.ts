@@ -92,9 +92,7 @@ async function getReleaseVersion() {
 
     if (version) return version
   } catch (err) {
-    throw new Error(
-      `Could not connect with project versions: ${JSON.stringify(err)}`
-    )
+    warning(`Could not connect with project versions: ${JSON.stringify(err)}`)
   }
 
   try {
@@ -106,7 +104,7 @@ async function getReleaseVersion() {
 
     return newVersion
   } catch (err) {
-    throw new Error(
+    warning(
       `Could not create new release version in Jira: ${JSON.stringify(err)}`
     )
   }
@@ -114,7 +112,9 @@ async function getReleaseVersion() {
 
 export async function updateIssueFixVersion(jiraIssueIds: string[]) {
   const jiraClient = getJiraClient()
+
   const version = await getReleaseVersion()
+  if (!version) return
 
   jiraIssueIds.forEach((issueIdOrKey) => {
     jiraClient.issues
