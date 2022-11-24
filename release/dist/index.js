@@ -71163,6 +71163,8 @@ async function transitionToReleased(issueIdOrKey) {
       transition: {
         id: transitionIds[flowKey]
       }
+    }).catch((err) => {
+      (0, import_console7.info)(`Could not transition ${issueIdOrKey}: ${JSON.stringify(err)}`);
     });
   }
 }
@@ -71184,7 +71186,9 @@ async function getReleaseVersion() {
     if (version)
       return version;
   } catch (err) {
-    (0, import_core10.warning)(`Could not connect with project versions: ${JSON.stringify(err)}`);
+    throw new Error(
+      `Could not connect with project versions: ${JSON.stringify(err)}`
+    );
   }
   try {
     const newVersion = await jiraClient2.projectVersions.createVersion({
@@ -71194,7 +71198,7 @@ async function getReleaseVersion() {
     });
     return newVersion;
   } catch (err) {
-    (0, import_core10.warning)(
+    throw new Error(
       `Could not create new release version in Jira: ${JSON.stringify(err)}`
     );
   }

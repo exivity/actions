@@ -60,12 +60,16 @@ export async function transitionToReleased(issueIdOrKey: string) {
         throw new Error(`Unknown status ${status}`)
     }
 
-    return await jiraClient.issues.doTransition({
-      issueIdOrKey,
-      transition: {
-        id: transitionIds[flowKey],
-      },
-    })
+    return await jiraClient.issues
+      .doTransition({
+        issueIdOrKey,
+        transition: {
+          id: transitionIds[flowKey],
+        },
+      })
+      .catch((err) => {
+        info(`Could not transition ${issueIdOrKey}: ${JSON.stringify(err)}`)
+      })
   }
 }
 
@@ -92,7 +96,9 @@ async function getReleaseVersion() {
 
     if (version) return version
   } catch (err) {
-    warning(`Could not connect with project versions: ${JSON.stringify(err)}`)
+    throw new Error(
+      `Could not connect with project versions: ${JSON.stringify(err)}`
+    )
   }
 
   try {
@@ -104,7 +110,7 @@ async function getReleaseVersion() {
 
     return newVersion
   } catch (err) {
-    warning(
+    throw new Error(
       `Could not create new release version in Jira: ${JSON.stringify(err)}`
     )
   }
