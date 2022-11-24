@@ -71037,8 +71037,14 @@ async function getIssuesFromIssueFile() {
     (0, import_console4.info)(`Dry run, not reading release jira keys.`);
     return [];
   } else {
-    const content = await (0, import_promises3.readFile)("releaseJiraKeys.md", "utf8");
-    return content.split("\n");
+    try {
+      const content = await (0, import_promises3.readFile)("releaseJiraKeys.md", "utf8");
+      return content.split("\n");
+    } catch (err) {
+      throw new Error(
+        `Couldn't read releaseJiraKeys.md: ${JSON.stringify(err)}`
+      );
+    }
   }
 }
 
@@ -71223,7 +71229,7 @@ async function updateIssuesStatusAndFixVersion() {
 }
 
 // release/src/updateJiraIssues.ts
-async function updateJiraIssues() {
+function updateJiraIssues() {
   updateIssuesStatusAndFixVersion();
 }
 

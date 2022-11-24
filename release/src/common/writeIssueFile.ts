@@ -18,7 +18,13 @@ export async function getIssuesFromIssueFile() {
     info(`Dry run, not reading release jira keys.`)
     return []
   } else {
-    const content = await readFile('releaseJiraKeys.md', 'utf8')
-    return content.split('\n')
+    try {
+      const content = await readFile('releaseJiraKeys.md', 'utf8')
+      return content.split('\n')
+    } catch (err) {
+      throw new Error(
+        `Couldn\'t read releaseJiraKeys.md: ${JSON.stringify(err)}`
+      )
+    }
   }
 }
