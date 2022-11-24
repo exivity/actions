@@ -1,10 +1,11 @@
 import { getOctokit } from '@actions/github'
-import { getInput, getBooleanInput } from '@actions/core'
+import { getInput } from '@actions/core'
 import { Version2Client } from 'jira.js'
 import { existsSync } from 'fs'
 import { readFile } from 'fs/promises'
 
 import { getToken } from '../../../lib/github'
+import { getBooleanInput } from '../../../lib/core'
 
 async function readTextFile(path: string) {
   try {
@@ -31,7 +32,7 @@ export type Lockfile = {
 
 export const getJiraProjectId = () => getInput('jira-project-id') ?? false
 
-export const isDryRun = () => getBooleanInput('dry-run') ?? false
+export const isDryRun = () => getBooleanInput('dry-run', false)
 
 export const getReleaseBranch = () => getInput('release-branch')
 
