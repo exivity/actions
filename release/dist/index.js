@@ -71179,7 +71179,7 @@ async function getReleaseVersion() {
       }
     );
     const version = releaseVersions.find(
-      (version2) => version2.name === lockfile.version
+      (version2) => version2.name === lockfile.version.replace(/v/, "")
     );
     if (version)
       return version;
@@ -71188,7 +71188,7 @@ async function getReleaseVersion() {
   }
   try {
     const newVersion = await jiraClient2.projectVersions.createVersion({
-      name: lockfile.version,
+      name: lockfile.version.replace(/v/, ""),
       projectId: getJiraProjectId(),
       releaseDate: toDateString(new Date())
     });
@@ -71227,7 +71227,7 @@ async function updateIssuesStatusAndFixVersion() {
     (0, import_console7.info)("No issues to transition");
   }
   (0, import_console7.info)("Transitioning issues...");
-  jiraIssues.forEach(transitionToReleased);
+  await Promise.all(jiraIssues.map(transitionToReleased));
   (0, import_console7.info)("Add fix version to issues...");
   updateIssueFixVersion(jiraIssues);
 }

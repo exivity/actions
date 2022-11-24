@@ -87,7 +87,7 @@ async function getReleaseVersion() {
     )
 
     const version = releaseVersions.find(
-      (version) => version.name === lockfile.version
+      (version) => version.name === lockfile.version.replace(/v/, '')
     )
 
     if (version) return version
@@ -97,7 +97,7 @@ async function getReleaseVersion() {
 
   try {
     const newVersion = await jiraClient.projectVersions.createVersion({
-      name: lockfile.version,
+      name: lockfile.version.replace(/v/, ''),
       projectId: getJiraProjectId(),
       releaseDate: toDateString(new Date()),
     })
@@ -146,7 +146,7 @@ export async function updateIssuesStatusAndFixVersion() {
   }
 
   info('Transitioning issues...')
-  jiraIssues.forEach(transitionToReleased)
+  await Promise.all(jiraIssues.map(transitionToReleased))
 
   info('Add fix version to issues...')
   updateIssueFixVersion(jiraIssues)
