@@ -16,13 +16,18 @@ export const fixes = filter(
   )
 )
 
+export const noReleaseNotesNeeded = filter(propEq('noReleaseNotesNeeded', true))
+
 export function formatPrChangelog(issues: JiraIssue[]) {
   return [
     ...buildChangelogSection('New features', features(issues)),
     '',
     ...buildChangelogSection('Bug fixes', fixes(issues)),
     '',
-    ...buildChangelogSection('No release notes needed', fixes(issues)),
+    ...buildChangelogSection(
+      'No release notes needed',
+      noReleaseNotesNeeded(issues)
+    ),
     '',
   ].join('\n')
 }

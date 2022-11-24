@@ -70780,13 +70780,17 @@ var fixes = filter_default(
     propEq_default("noReleaseNotesNeeded", false)
   )
 );
+var noReleaseNotesNeeded2 = filter_default(propEq_default("noReleaseNotesNeeded", true));
 function formatPrChangelog(issues) {
   return [
     ...buildChangelogSection("New features", features(issues)),
     "",
     ...buildChangelogSection("Bug fixes", fixes(issues)),
     "",
-    ...buildChangelogSection("No release notes needed", fixes(issues)),
+    ...buildChangelogSection(
+      "No release notes needed",
+      noReleaseNotesNeeded2(issues)
+    ),
     ""
   ].join("\n");
 }
