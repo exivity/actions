@@ -133,7 +133,7 @@ export async function updateIssueFixVersion(jiraIssueIds: string[]) {
         },
       })
       .then(() => {
-        info(`Set release version of ${issueIdOrKey} to ${version.name}`)
+        info(`Set fix version of ${issueIdOrKey} to ${version.name}`)
       })
       .catch((err) => {
         warning(

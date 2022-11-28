@@ -71217,7 +71217,7 @@ async function updateIssueFixVersion(jiraIssueIds) {
         fixVersions: [{ id: version.id }]
       }
     }).then(() => {
-      (0, import_console7.info)(`Set release version of ${issueIdOrKey} to ${version.name}`);
+      (0, import_console7.info)(`Set fix version of ${issueIdOrKey} to ${version.name}`);
     }).catch((err) => {
       (0, import_core10.warning)(
         `failed to set fixVersion for issue ${issueIdOrKey} to ${version.name}: ${JSON.stringify(err)}`

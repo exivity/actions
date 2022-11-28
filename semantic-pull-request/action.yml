@@ -5,12 +5,6 @@ inputs:
     description: GitHub token with read access to the repository
     required: false
     default: ${{ github.token }}
-  jira-username:
-    description: The Jira username (required in prepare and release mode)
-    required: false
-  jira-token:
-    description: The Jira token (required in prepare and release mode)
-    required: false
 runs:
   using: node16
   main: dist/index.js
