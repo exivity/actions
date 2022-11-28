@@ -50,7 +50,7 @@ async function run() {
 
     if (missingReleaseNotes.length > 0) {
       throw new Error(`
-        Missing release notes for:\n
+        Missing release notes for:
         ${missingReleaseNotes.join('\n')}
       `)
     }

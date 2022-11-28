@@ -70689,7 +70689,7 @@ function getEpic(issue) {
 }
 var getMissingReleaseNotes = pipe(
   filter_default(
-    (issue) => isFeatOrFix(issue.fields.issuetype.name) || releaseNotesAreMissing(issue)
+    (issue) => isFeatOrFix(issue.fields.issuetype.name) && releaseNotesAreMissing(issue)
   ),
   map_default(
     ({ key }) => `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`

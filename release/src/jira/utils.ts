@@ -88,7 +88,7 @@ export function getEpic(issue: Version2Models.Issue): string | null {
 const getMissingReleaseNotes = pipe(
   filter(
     (issue: Version2Models.Issue) =>
-      isFeatOrFix(issue.fields.issuetype.name) || releaseNotesAreMissing(issue)
+      isFeatOrFix(issue.fields.issuetype.name) && releaseNotesAreMissing(issue)
   ),
   map(
     ({ key }) =>

@@ -67680,7 +67680,7 @@ function releaseNotesAreMissing(issue) {
 }
 var getMissingReleaseNotes = pipe(
   filter_default(
-    (issue) => isFeatOrFix2(issue.fields.issuetype.name) || releaseNotesAreMissing(issue)
+    (issue) => isFeatOrFix2(issue.fields.issuetype.name) && releaseNotesAreMissing(issue)
   ),
   map_default(
     ({ key }) => `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`
@@ -67727,7 +67727,6 @@ async function run() {
     if (missingReleaseNotes.length > 0) {
       throw new Error(`
         Missing release notes for:
-
         ${missingReleaseNotes.join("\n")}
       `);
     }
