@@ -25,6 +25,9 @@ inputs:
     description: Location of new release PR template (markdown)
     required: false
     default: NEW_RELEASE_PR_TEMPLATE.md
+  pinged-by:
+    description: The repository that originally pinged
+    required: false
   dry-run:
     description: If `true`, running this action will have no side-effects
     required: false

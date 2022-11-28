@@ -69084,6 +69084,7 @@ async function readJson(path3) {
     throw new Error(`Can't read "${path3}" or it's not valid JSON`);
   }
 }
+var getPingedBy = () => (0, import_core3.getInput)("pinged-by");
 var getJiraProjectId = () => Number((0, import_core3.getInput)("jira-project-id"));
 var isDryRun = () => getBooleanInput("dry-run", false);
 var getReleaseRepo = () => (0, import_core3.getInput)("releaser-repo");
@@ -69091,7 +69092,9 @@ var getLockFile = async () => readJson((0, import_core3.getInput)("lockfile"));
 var getLockFilePath = () => (0, import_core3.getInput)("lockfile");
 var getRepositories = async () => {
   const lockfile = await getLockFile();
-  return Object.keys(lockfile.repositories);
+  const pingedBy = getPingedBy();
+  const repos = Object.keys(lockfile.repositories);
+  return repos.includes(pingedBy) ? repos : [...repos, pingedBy];
 };
 var getChangeLogPath = () => (0, import_core3.getInput)("changelog");
 var getChangeLog = async () => {
@@ -69109,9 +69112,7 @@ var getJiraClient = () => {
   if (jiraClient)
     return jiraClient;
   if (!username || !password) {
-    throw new Error(
-      "jira-username and jira-token inputs are required in prepare mode"
-    );
+    throw new Error("jira-username and jira-token inputs are required.");
   }
   jiraClient = new import_jira.Version2Client({
     host: "https://exivity.atlassian.net",
@@ -69124,9 +69125,7 @@ var getJiraClient = () => {
     newErrorHandling: true
   });
   if (!jiraClient) {
-    throw new Error(
-      "jira-username and jira-token inputs are required in prepare mode"
-    );
+    throw new Error("jira-username and jira-token inputs are required.");
   }
   return jiraClient;
 };
@@ -69153,6 +69152,7 @@ var import_console2 = require("console");
 var prepareWorkflowId = "prepare-on-demand.yml";
 async function ping() {
   const repo = getReleaseRepo();
+  const ctx = getRepository();
   if (isDryRun()) {
     (0, import_console2.info)(
       `Would have dispatched workflow ${prepareWorkflowId} of exivity/${repo}#main`
@@ -69164,7 +69164,10 @@ async function ping() {
     owner: "exivity",
     repo,
     ref: "main",
-    workflow_id: prepareWorkflowId
+    workflow_id: prepareWorkflowId,
+    inputs: {
+      "pinged-by": ctx.repo
+    }
   });
 }
 

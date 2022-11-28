@@ -30,6 +30,8 @@ export type Lockfile = {
   }
 }
 
+export const getPingedBy = () => getInput('pinged-by')
+
 export const getJiraProjectId = () => Number(getInput('jira-project-id'))
 
 export const isDryRun = () => getBooleanInput('dry-run', false)
@@ -47,7 +49,10 @@ export const getLockFilePath = () => getInput('lockfile')
 
 export const getRepositories = async () => {
   const lockfile = await getLockFile()
-  return Object.keys(lockfile.repositories)
+  const pingedBy = getPingedBy()
+  const repos = Object.keys(lockfile.repositories)
+
+  return repos.includes(pingedBy) ? repos : [...repos, pingedBy]
 }
 
 export const getChangeLogPath = () => getInput('changelog')
@@ -76,9 +81,7 @@ export const getJiraClient = () => {
   if (jiraClient) return jiraClient
 
   if (!username || !password) {
-    throw new Error(
-      'jira-username and jira-token inputs are required in prepare mode'
-    )
+    throw new Error('jira-username and jira-token inputs are required.')
   }
 
   jiraClient = new Version2Client({
@@ -93,9 +96,7 @@ export const getJiraClient = () => {
   })
 
   if (!jiraClient) {
-    throw new Error(
-      'jira-username and jira-token inputs are required in prepare mode'
-    )
+    throw new Error('jira-username and jira-token inputs are required.')
   }
 
   return jiraClient

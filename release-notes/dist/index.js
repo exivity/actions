@@ -67630,9 +67630,7 @@ var getJiraClient = () => {
   if (jiraClient)
     return jiraClient;
   if (!username || !password) {
-    throw new Error(
-      "jira-username and jira-token inputs are required in prepare mode"
-    );
+    throw new Error("jira-username and jira-token inputs are required.");
   }
   jiraClient = new import_jira.Version2Client({
     host: "https://exivity.atlassian.net",
@@ -67645,9 +67643,7 @@ var getJiraClient = () => {
     newErrorHandling: true
   });
   if (!jiraClient) {
-    throw new Error(
-      "jira-username and jira-token inputs are required in prepare mode"
-    );
+    throw new Error("jira-username and jira-token inputs are required.");
   }
   return jiraClient;
 };
