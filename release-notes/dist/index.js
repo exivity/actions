@@ -67715,6 +67715,8 @@ async function run() {
   });
   if (!pr)
     throw Error("Couldn't get PR data.");
+  (0, import_core6.info)(`${pr.author_association}`);
+  (0, import_core6.info)(`${JSON.stringify(pr.user, null, 4)}`);
   const requiresJiraTicket = isFeatOrFix(pr.title);
   if (requiresJiraTicket && prIsNotAssociatedWithTicket(pr)) {
     throw new Error(

@@ -35,6 +35,10 @@ async function run() {
 
   if (!pr) throw Error("Couldn't get PR data.")
 
+  info(`${pr.author_association}`)
+
+  info(`${JSON.stringify(pr.user, null, 4)}`)
+
   const requiresJiraTicket = isFeatOrFix(pr.title)
 
   // feat or fix needs to be associated to a jira ticket key
