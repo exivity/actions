@@ -35,9 +35,10 @@ async function run() {
 
   if (!pr) throw Error("Couldn't get PR data.")
 
-  info(`${pr.author_association}`)
-
-  info(`${JSON.stringify(pr.user, null, 4)}`)
+  if (pr.user?.login === 'renovate[bot]') {
+    info('Renovate is author: No release notes necessary')
+    return
+  }
 
   const requiresJiraTicket = isFeatOrFix(pr.title)
 

@@ -67702,6 +67702,7 @@ var getPrMissingReleaseNotes = async (pr) => {
 // release-notes/src/index.ts
 var supportedEvents = ["pull_request"];
 async function run() {
+  var _a;
   const token = getToken();
   const { owner, repo } = getRepository();
   const eventName = getEventName(supportedEvents);
@@ -67715,8 +67716,10 @@ async function run() {
   });
   if (!pr)
     throw Error("Couldn't get PR data.");
-  (0, import_core6.info)(`${pr.author_association}`);
-  (0, import_core6.info)(`${JSON.stringify(pr.user, null, 4)}`);
+  if (((_a = pr.user) == null ? void 0 : _a.login) === "renovate[bot]") {
+    (0, import_core6.info)("Renovate is author: No release notes necessary");
+    return;
+  }
   const requiresJiraTicket = isFeatOrFix(pr.title);
   if (requiresJiraTicket && prIsNotAssociatedWithTicket(pr)) {
     throw new Error(
