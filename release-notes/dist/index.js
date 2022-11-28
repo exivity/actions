@@ -67717,7 +67717,7 @@ async function run() {
   if (!pr)
     throw Error("Couldn't get PR data.");
   if (((_a = pr.user) == null ? void 0 : _a.login) === "renovate[bot]") {
-    (0, import_core6.info)("Renovate is author: No release notes necessary");
+    (0, import_core6.info)("Renovate is author: No release notes necessary.");
     return;
   }
   const requiresJiraTicket = isFeatOrFix(pr.title);
@@ -67736,7 +67736,7 @@ async function run() {
       `);
     }
   }
-  requiresJiraTicket ? (0, import_core6.info)("\u{1F389} Congratulations! You've provided release notes!") : (0, import_core6.info)("No release notes necessary");
+  requiresJiraTicket ? (0, import_core6.info)("\u{1F389} Congratulations! You've provided release notes!") : (0, import_core6.info)("No release notes necessary.");
 }
 run().catch(import_core6.setFailed);
 /*!

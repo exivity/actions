@@ -36,7 +36,7 @@ async function run() {
   if (!pr) throw Error("Couldn't get PR data.")
 
   if (pr.user?.login === 'renovate[bot]') {
-    info('Renovate is author: No release notes necessary')
+    info('Renovate is author: No release notes necessary.')
     return
   }
 
@@ -63,7 +63,7 @@ async function run() {
 
   requiresJiraTicket
     ? info("🎉 Congratulations! You've provided release notes!")
-    : info('No release notes necessary')
+    : info('No release notes necessary.')
 }
 
 run().catch(setFailed)
