@@ -69149,7 +69149,6 @@ var import_console2 = require("console");
 var prepareWorkflowId = "prepare-on-demand.yml";
 async function ping() {
   const repo = getReleaseRepo();
-  const ctx = getRepository();
   if (isDryRun()) {
     (0, import_console2.info)(
       `Would have dispatched workflow ${prepareWorkflowId} of exivity/${repo}#main`
@@ -69161,10 +69160,7 @@ async function ping() {
     owner: "exivity",
     repo,
     ref: "main",
-    workflow_id: prepareWorkflowId,
-    inputs: {
-      "pinged-by": ctx.repo
-    }
+    workflow_id: prepareWorkflowId
   });
 }
 

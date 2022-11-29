@@ -30,8 +30,6 @@ export type Lockfile = {
   }
 }
 
-export const getPingedBy = () => getInput('pinged-by')
-
 export const getJiraProjectId = () => Number(getInput('jira-project-id'))
 
 export const isDryRun = () => getBooleanInput('dry-run', false)

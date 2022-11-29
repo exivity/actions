@@ -1,12 +1,11 @@
 import { info } from 'console'
-import { dispatchWorkflow, getRepository } from '../../lib/github'
+import { dispatchWorkflow } from '../../lib/github'
 import { isDryRun, getReleaseRepo, getOctoKitClient } from './common/inputs'
 
 const prepareWorkflowId = 'prepare-on-demand.yml'
 
 export async function ping() {
   const repo = getReleaseRepo()
-  const ctx = getRepository()
 
   if (isDryRun()) {
     info(
@@ -21,8 +20,5 @@ export async function ping() {
     repo,
     ref: 'main',
     workflow_id: prepareWorkflowId,
-    inputs: {
-      'pinged-by': ctx.repo,
-    },
   })
 }
