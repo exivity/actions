@@ -69084,7 +69084,6 @@ async function readJson(path3) {
     throw new Error(`Can't read "${path3}" or it's not valid JSON`);
   }
 }
-var getPingedBy = () => (0, import_core3.getInput)("pinged-by");
 var getJiraProjectId = () => Number((0, import_core3.getInput)("jira-project-id"));
 var isDryRun = () => getBooleanInput("dry-run", false);
 var getReleaseRepo = () => (0, import_core3.getInput)("releaser-repo");
@@ -69092,9 +69091,7 @@ var getLockFile = async () => readJson((0, import_core3.getInput)("lockfile"));
 var getLockFilePath = () => (0, import_core3.getInput)("lockfile");
 var getRepositories = async () => {
   const lockfile = await getLockFile();
-  const pingedBy = getPingedBy();
-  const repos = Object.keys(lockfile.repositories);
-  return repos.includes(pingedBy) ? repos : [...repos, pingedBy];
+  return Object.keys(lockfile.repositories);
 };
 var getChangeLogPath = () => (0, import_core3.getInput)("changelog");
 var getChangeLog = async () => {

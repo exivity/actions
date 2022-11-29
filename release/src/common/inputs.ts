@@ -49,10 +49,7 @@ export const getLockFilePath = () => getInput('lockfile')
 
 export const getRepositories = async () => {
   const lockfile = await getLockFile()
-  const pingedBy = getPingedBy()
-  const repos = Object.keys(lockfile.repositories)
-
-  return repos.includes(pingedBy) ? repos : [...repos, pingedBy]
+  return Object.keys(lockfile.repositories)
 }
 
 export const getChangeLogPath = () => getInput('changelog')
