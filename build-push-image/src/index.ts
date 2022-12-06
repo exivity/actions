@@ -1,4 +1,4 @@
-import { getInput, setFailed } from '@actions/core'
+import { getInput, setFailed, getBooleanInput } from '@actions/core'
 import { table } from '../../lib/core'
 import {
   dockerBuild,
@@ -15,9 +15,11 @@ async function run() {
   const namespace = getOwnerInput('namespace')
   const name = getRepoInput('name')
   const dockerfile = getInput('dockerfile')
+  const context = getInput('context')
   const registry = getInput('registry')
   const user = getInput('user')
   const password = getInput('password')
+  const useSSH = getBooleanInput('useSSH')
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -38,8 +40,10 @@ async function run() {
 
   await dockerBuild({
     dockerfile,
+    context,
     labels,
     image,
+    useSSH,
   })
 
   await dockerPush(image)
