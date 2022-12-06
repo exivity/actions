@@ -30,6 +30,10 @@ inputs:
     description: Password for Docker registry
     required: false
     default: ${{ github.token }}
+  useSSH:
+    description: Pass the SSH agent to the build context
+    required: false
+    default: 'false'
 runs:
   using: node16
   main: dist/index.js

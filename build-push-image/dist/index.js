@@ -2067,7 +2067,7 @@ var require_core = __commonJS({
       return inputs.map((input) => input.trim());
     }
     exports.getMultilineInput = getMultilineInput;
-    function getBooleanInput(name, options) {
+    function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
       const val = getInput4(name, options);
@@ -2078,7 +2078,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports.getBooleanInput = getBooleanInput;
+    exports.getBooleanInput = getBooleanInput2;
     function setOutput(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
@@ -10930,16 +10930,23 @@ async function dockerBuild({
   dockerfile,
   context: context2,
   labels,
-  image
+  image,
+  useSSH
 }) {
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
-  const cmd = `docker build -f ${dockerfile} -t ${getImageFQN(
+  const ssh = useSSH ? "--ssh default" : "";
+  const cmd = `/usr/bin/bash -c "docker build ${ssh} -f ${dockerfile} -t ${getImageFQN(
     image
-  )} ${labelOptions} ${context2}`;
+  )} ${labelOptions} ${context2}"`;
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
-  await (0, import_exec2.exec)(cmd, void 0, { env: { DOCKER_BUILDKIT: "1" } });
+  await (0, import_exec2.exec)(cmd, void 0, {
+    env: {
+      ...process.env,
+      DOCKER_BUILDKIT: "1"
+    }
+  });
 }
 async function dockerPush(image) {
   (0, import_core2.info)("Pushing image...");
@@ -11080,6 +11087,7 @@ async function run() {
   const registry = (0, import_core5.getInput)("registry");
   const user = (0, import_core5.getInput)("user");
   const password = (0, import_core5.getInput)("password");
+  const useSSH = (0, import_core5.getBooleanInput)("useSSH");
   const labels = getLabels(name);
   const tag = branchToTag();
   const image = { registry, namespace, name, tag };
@@ -11096,7 +11104,8 @@ async function run() {
     dockerfile,
     context: context2,
     labels,
-    image
+    image,
+    useSSH
   });
   await dockerPush(image);
 }

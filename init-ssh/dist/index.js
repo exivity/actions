@@ -2024,7 +2024,7 @@ var require_core = __commonJS({
       ExitCode2[ExitCode2["Success"] = 0] = "Success";
       ExitCode2[ExitCode2["Failure"] = 1] = "Failure";
     })(ExitCode = exports.ExitCode || (exports.ExitCode = {}));
-    function exportVariable(name, val) {
+    function exportVariable2(name, val) {
       const convertedVal = utils_1.toCommandValue(val);
       process.env[name] = convertedVal;
       const filePath = process.env["GITHUB_ENV"] || "";
@@ -2033,7 +2033,7 @@ var require_core = __commonJS({
       }
       command_1.issueCommand("set-env", { name }, convertedVal);
     }
-    exports.exportVariable = exportVariable;
+    exports.exportVariable = exportVariable2;
     function setSecret(secret) {
       command_1.issueCommand("add-mask", {}, secret);
     }
@@ -2423,7 +2423,7 @@ var require_io = __commonJS({
     var path2 = __importStar(require("path"));
     var util_1 = require("util");
     var ioUtil = __importStar(require_io_util());
-    var exec2 = util_1.promisify(childProcess.exec);
+    var exec = util_1.promisify(childProcess.exec);
     var execFile = util_1.promisify(childProcess.execFile);
     function cp(source, dest, options = {}) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -2482,11 +2482,11 @@ var require_io = __commonJS({
           try {
             const cmdPath = ioUtil.getCmdPath();
             if (yield ioUtil.isDirectory(inputPath, true)) {
-              yield exec2(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
+              yield exec(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
                 env: { inputPath }
               });
             } else {
-              yield exec2(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
+              yield exec(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
                 env: { inputPath }
               });
             }
@@ -3182,7 +3182,7 @@ var require_exec = __commonJS({
     exports.getExecOutput = exports.exec = void 0;
     var string_decoder_1 = require("string_decoder");
     var tr = __importStar(require_toolrunner());
-    function exec2(commandLine, args, options) {
+    function exec(commandLine, args, options) {
       return __awaiter(this, void 0, void 0, function* () {
         const commandArgs = tr.argStringToArray(commandLine);
         if (commandArgs.length === 0) {
@@ -3194,8 +3194,8 @@ var require_exec = __commonJS({
         return runner.exec();
       });
     }
-    exports.exec = exec2;
-    function getExecOutput(commandLine, args, options) {
+    exports.exec = exec;
+    function getExecOutput2(commandLine, args, options) {
       var _a, _b;
       return __awaiter(this, void 0, void 0, function* () {
         let stdout = "";
@@ -3217,7 +3217,7 @@ var require_exec = __commonJS({
           }
         };
         const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
-        const exitCode = yield exec2(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+        const exitCode = yield exec(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
         stdout += stdoutDecoder.end();
         stderr += stderrDecoder.end();
         return {
@@ -3227,7 +3227,7 @@ var require_exec = __commonJS({
         };
       });
     }
-    exports.getExecOutput = getExecOutput;
+    exports.getExecOutput = getExecOutput2;
   }
 });
 
@@ -3237,11 +3237,17 @@ var import_exec = __toESM(require_exec());
 var import_path = __toESM(require("path"));
 async function run() {
   const privateKey = (0, import_core.getInput)("private-key");
-  await (0, import_exec.exec)("bash init-ssh.sh", void 0, {
+  const output = await (0, import_exec.getExecOutput)("bash init-ssh.sh", void 0, {
     cwd: import_path.default.resolve(__dirname, ".."),
     env: {
       ...process.env,
       PRIVATE_KEY: privateKey
+    }
+  });
+  output.stdout.split("\n").forEach((line) => {
+    const matches = /^(SSH_AUTH_SOCK|SSH_AGENT_PID)=(.*);/.exec(line);
+    if (matches && matches.length > 0) {
+      (0, import_core.exportVariable)(matches[1], matches[2]);
     }
   });
 }
