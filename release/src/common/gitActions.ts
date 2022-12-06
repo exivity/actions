@@ -1,3 +1,4 @@
+import { warning } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { info } from 'console'
 
@@ -81,9 +82,13 @@ export async function tagAllRepositories() {
   if (dryRun) {
     info(`Dry run, not tagging ${repository.fqn}`)
   } else {
-    await gitTag(lockfile.version)
-    await gitPushTags()
-    info(`Pushed tag ${lockfile.version} to ${repository.fqn}`)
+    try {
+      await gitTag(lockfile.version)
+      await gitPushTags()
+      info(`Pushed tag ${lockfile.version} to ${repository.fqn}`)
+    } catch (e) {
+      warning(`Could not push tag to ${repository.fqn}: ${e}`)
+    }
   }
 
   // Tag repositories in lockfile

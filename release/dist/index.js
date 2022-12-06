@@ -2109,10 +2109,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.error = error;
-    function warning5(message, properties = {}) {
+    function warning6(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning5;
+    exports.warning = warning6;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -68810,7 +68810,7 @@ var require_semver2 = __commonJS({
 });
 
 // release/src/index.ts
-var import_core11 = __toESM(require_core());
+var import_core12 = __toESM(require_core());
 
 // release/src/common/utils.ts
 var import_console = require("console");
@@ -70761,6 +70761,7 @@ var getRepoJiraIssues = async (repo) => {
 };
 
 // release/src/common/gitActions.ts
+var import_core8 = __toESM(require_core());
 var import_console3 = require("console");
 
 // release/src/common/formatPrChangelog.ts
@@ -70862,9 +70863,13 @@ async function tagAllRepositories() {
   if (dryRun) {
     (0, import_console3.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
-    await gitTag(lockfile.version);
-    await gitPushTags();
-    (0, import_console3.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    try {
+      await gitTag(lockfile.version);
+      await gitPushTags();
+      (0, import_console3.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+    } catch (e) {
+      (0, import_core8.warning)(`Could not push tag to ${repository.fqn}: ${e}`);
+    }
   }
   await tagRepositories(lockfile);
 }
@@ -70929,7 +70934,7 @@ async function updatePr(title, issues) {
 }
 
 // release/src/common/inferVersionFromJiraIssues.ts
-var import_core8 = __toESM(require_core());
+var import_core9 = __toESM(require_core());
 var import_semver2 = __toESM(require_semver2());
 var containsFeature = any_default(propEq_default("type", "feat"));
 var containsBreakingChange = any_default(propEq_default("breaking", true));
@@ -70948,7 +70953,7 @@ function inferVersionFromJiraIssues(from, issues) {
       `Could not calculate new version (incrementing ${from} to ${upcomingVersionIncrement})`
     );
   }
-  (0, import_core8.info)(
+  (0, import_core9.info)(
     `Version increment (${description[upcomingVersionIncrement]}): ${from} -> v${upcomingVersion}`
   );
   return `v${upcomingVersion}`;
@@ -70956,7 +70961,7 @@ function inferVersionFromJiraIssues(from, issues) {
 
 // release/src/common/writeChangelog.ts
 var import_promises2 = require("fs/promises");
-var import_core9 = __toESM(require_core());
+var import_core10 = __toESM(require_core());
 
 // release/src/common/formatChangelog.ts
 function formatPublicChangelog(version, issues) {
@@ -71000,7 +71005,7 @@ async function writeChangelog(upcomingVersion, issues) {
   const currentPublicChangelogContents = await getChangeLog();
   const publicChangelogContents = formatPublicChangelog(upcomingVersion, issues);
   if (isDryRun()) {
-    (0, import_core9.info)(`Dry run, not writing changelog`);
+    (0, import_core10.info)(`Dry run, not writing changelog`);
   } else {
     await (0, import_promises2.writeFile)(
       changelogPath,
@@ -71013,7 +71018,7 @@ ${publicChangelogContents}
 `
       )
     );
-    (0, import_core9.info)(`Written changelog to: ${changelogPath}`);
+    (0, import_core10.info)(`Written changelog to: ${changelogPath}`);
   }
 }
 
@@ -71106,7 +71111,7 @@ async function release() {
 }
 
 // release/src/jira/jiraActions.ts
-var import_core10 = __toESM(require_core());
+var import_core11 = __toESM(require_core());
 var import_console7 = require("console");
 var transitionIds = {
   "NoActionNeeded->New": "201",
@@ -71215,7 +71220,7 @@ async function updateIssueFixVersion(jiraIssueIds) {
     }).then(() => {
       (0, import_console7.info)(`Set fix version of ${issueIdOrKey} to ${version.name}`);
     }).catch((err) => {
-      (0, import_core10.warning)(
+      (0, import_core11.warning)(
         `failed to set fixVersion for issue ${issueIdOrKey} to ${version.name}: ${JSON.stringify(err)}`
       );
     });
@@ -71245,13 +71250,13 @@ var runModes = {
   ["update-jira-issues"]: updateJiraIssues
 };
 async function run() {
-  const mode = (0, import_core11.getInput)("mode");
+  const mode = (0, import_core12.getInput)("mode");
   if (!runModes[mode])
     throw new Error(`Unknown mode "${mode}"`);
   logAvailableRequests();
   return runModes[mode]();
 }
-run().catch(import_core11.setFailed);
+run().catch(import_core12.setFailed);
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
