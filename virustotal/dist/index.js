@@ -8173,7 +8173,7 @@ var require_minimatch = __commonJS({
           negateOffset++;
         }
         if (negateOffset)
-          this.pattern = pattern.slice(negateOffset);
+          this.pattern = pattern.substr(negateOffset);
         this.negate = negate;
       }
       matchOne(file, pattern, partial) {
@@ -8393,7 +8393,7 @@ var require_minimatch = __commonJS({
                 RegExp("[" + cs + "]");
               } catch (er) {
                 sp = this.parse(cs, SUBPARSE);
-                re = re.substring(0, reClassStart) + "\\[" + sp[0] + "\\]";
+                re = re.substr(0, reClassStart) + "\\[" + sp[0] + "\\]";
                 hasMagic = hasMagic || sp[1];
                 inClass = false;
                 continue;
@@ -8412,9 +8412,9 @@ var require_minimatch = __commonJS({
           }
         }
         if (inClass) {
-          cs = pattern.slice(classStart + 1);
+          cs = pattern.substr(classStart + 1);
           sp = this.parse(cs, SUBPARSE);
-          re = re.substring(0, reClassStart) + "\\[" + sp[0];
+          re = re.substr(0, reClassStart) + "\\[" + sp[0];
           hasMagic = hasMagic || sp[1];
         }
         for (pl = patternListStack.pop(); pl; pl = patternListStack.pop()) {

@@ -70846,13 +70846,17 @@ async function tagRepositories(lockfile) {
     if (isDryRun()) {
       (0, import_console3.info)(`Dry run, not tagging ${repository}`);
     } else {
-      await createLightweightTag({
-        octokit,
-        owner: "exivity",
-        repo: repository,
-        tag: lockfile.version,
-        sha
-      });
+      try {
+        await createLightweightTag({
+          octokit,
+          owner: "exivity",
+          repo: repository,
+          tag: lockfile.version,
+          sha
+        });
+      } catch (e) {
+        (0, import_core8.warning)(`Could not create lightweight tag on ${repository}: ${e}`);
+      }
     }
   }
 }
