@@ -15,6 +15,7 @@ async function run() {
   const namespace = getOwnerInput('namespace')
   const name = getRepoInput('name')
   const dockerfile = getInput('dockerfile')
+  const context = getInput('context')
   const registry = getInput('registry')
   const user = getInput('user')
   const password = getInput('password')
@@ -38,6 +39,7 @@ async function run() {
 
   await dockerBuild({
     dockerfile,
+    context,
     labels,
     image,
   })

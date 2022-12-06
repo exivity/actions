@@ -26,6 +26,7 @@ export async function dockerLogin({ registry, user, password }: LoginOptions) {
 
 type BuildOptions = {
   dockerfile: string
+  context: string
   labels: { [key: string]: string }
   image: Image
 }
@@ -37,7 +38,12 @@ export type Image = {
   tag: string
 }
 
-export async function dockerBuild({ dockerfile, labels, image }: BuildOptions) {
+export async function dockerBuild({
+  dockerfile,
+  context,
+  labels,
+  image,
+}: BuildOptions) {
   info('Building image...')
 
   // Concat list of labels
@@ -47,7 +53,7 @@ export async function dockerBuild({ dockerfile, labels, image }: BuildOptions) {
 
   const cmd = `docker build -f ${dockerfile} -t ${getImageFQN(
     image
-  )} ${labelOptions} .`
+  )} ${labelOptions} ${context}`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd)

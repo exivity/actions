@@ -10926,12 +10926,17 @@ ${cmd}`);
     }
   });
 }
-async function dockerBuild({ dockerfile, labels, image }) {
+async function dockerBuild({
+  dockerfile,
+  context: context2,
+  labels,
+  image
+}) {
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
   const cmd = `docker build -f ${dockerfile} -t ${getImageFQN(
     image
-  )} ${labelOptions} .`;
+  )} ${labelOptions} ${context2}`;
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
   await (0, import_exec2.exec)(cmd);
@@ -11071,6 +11076,7 @@ async function run() {
   const namespace = getOwnerInput("namespace");
   const name = getRepoInput("name");
   const dockerfile = (0, import_core5.getInput)("dockerfile");
+  const context2 = (0, import_core5.getInput)("context");
   const registry = (0, import_core5.getInput)("registry");
   const user = (0, import_core5.getInput)("user");
   const password = (0, import_core5.getInput)("password");
@@ -11088,6 +11094,7 @@ async function run() {
   });
   await dockerBuild({
     dockerfile,
+    context: context2,
     labels,
     image
   });

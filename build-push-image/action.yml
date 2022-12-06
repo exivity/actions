@@ -14,6 +14,10 @@ inputs:
     description: Path to the Dockerfile
     required: false
     default: ./Dockerfile
+  context:
+    description: Path to the Docker context
+    required: false
+    default: .
   registry:
     description: The Docker registry to use
     required: false
