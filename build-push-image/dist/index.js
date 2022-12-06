@@ -10939,7 +10939,7 @@ async function dockerBuild({
   )} ${labelOptions} ${context2}`;
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
-  await (0, import_exec2.exec)(cmd);
+  await (0, import_exec2.exec)(cmd, void 0, { env: { DOCKER_BUILDKIT: "1" } });
 }
 async function dockerPush(image) {
   (0, import_core2.info)("Pushing image...");
