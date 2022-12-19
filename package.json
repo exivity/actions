@@ -44,7 +44,7 @@
     "deepmerge": "^4.2.2",
     "form-data": "4.0.0",
     "glob": "8.0.3",
-    "glob-promise": "5.0.0",
+    "glob-promise": "5.0.1",
     "jira.js": "2.15.15",
     "js-yaml": "4.1.0",
     "mime": "3.0.0",
