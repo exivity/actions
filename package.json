@@ -48,7 +48,7 @@
     "jira.js": "2.15.15",
     "js-yaml": "4.1.0",
     "mime": "3.0.0",
-    "minimatch": "5.1.1",
+    "minimatch": "5.1.2",
     "ramda": "0.28.0",
     "rcedit": "3.0.1",
     "semver": "7.3.8",
