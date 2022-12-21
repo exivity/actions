@@ -67141,6 +67141,8 @@ var getPrMissingReleaseNotes = async (pr) => {
     pr == null ? void 0 : pr.title.match(JIRA_KEY_RGX),
     pr == null ? void 0 : pr.body.match(JIRA_KEY_RGX)
   ]);
+  (0, import_console.info)(`found issues: 
+${issues.join("\n")}`);
   return Promise.all(
     issues.map((key) => jiraClient2.issues.getIssue({ issueIdOrKey: key }))
   ).then((issues2) => {

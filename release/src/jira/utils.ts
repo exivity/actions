@@ -109,13 +109,17 @@ export const getPrMissingReleaseNotes = async (pr: {
   body: string | null
 }) => {
   const jiraClient = getJiraClient()
+
   info(pr.body)
+
   if (!pr.body) return []
 
   const issues = cleanJiraKeyMatches([
     pr?.title.match(JIRA_KEY_RGX),
     pr?.body.match(JIRA_KEY_RGX),
   ])
+
+  info(`found issues: \n${issues.join('\n')}`)
 
   return Promise.all(
     issues.map((key) => jiraClient.issues.getIssue({ issueIdOrKey: key }))
