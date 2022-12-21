@@ -64,7 +64,7 @@ export function noReleaseNotesTitlePresent(
 ): boolean {
   return (
     typeof issue.fields[JiraCustomFields.ReleaseNotesTitle] === 'string' &&
-    isEmpty(issue.fields[JiraCustomFields.ReleaseNotesTitle])
+    isEmpty(issue.fields[JiraCustomFields.ReleaseNotesTitle].trim())
   )
 }
 
