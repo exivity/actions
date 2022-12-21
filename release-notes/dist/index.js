@@ -67134,7 +67134,7 @@ var getMissingReleaseNotes = pipe(
 );
 var getPrMissingReleaseNotes = async (pr) => {
   const jiraClient2 = getJiraClient();
-  (0, import_console.info)(`${JSON.stringify(pr)}}`);
+  (0, import_console.info)(pr.body);
   if (!pr.body)
     return [];
   const issues = cleanJiraKeyMatches([

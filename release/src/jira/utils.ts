@@ -109,7 +109,7 @@ export const getPrMissingReleaseNotes = async (pr: {
   body: string | null
 }) => {
   const jiraClient = getJiraClient()
-  info(`${JSON.stringify(pr)}}`)
+  info(pr.body)
   if (!pr.body) return []
 
   const issues = cleanJiraKeyMatches([
