@@ -89,13 +89,13 @@ var require_command = __commonJS({
     exports.issue = exports.issueCommand = void 0;
     var os2 = __importStar(require("os"));
     var utils_1 = require_utils();
-    function issueCommand(command, properties, message) {
+    function issueCommand2(command, properties, message) {
       const cmd = new Command(command, properties, message);
       process.stdout.write(cmd.toString() + os2.EOL);
     }
-    exports.issueCommand = issueCommand;
+    exports.issueCommand = issueCommand2;
     function issue(name, message = "") {
-      issueCommand(name, {}, message);
+      issueCommand2(name, {}, message);
     }
     exports.issue = issue;
     var CMD_STRING = "::";
@@ -137,6 +137,59 @@ var require_command = __commonJS({
     function escapeProperty(s) {
       return utils_1.toCommandValue(s).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A").replace(/:/g, "%3A").replace(/,/g, "%2C");
     }
+  }
+});
+
+// node_modules/@actions/core/lib/file-command.js
+var require_file_command = __commonJS({
+  "node_modules/@actions/core/lib/file-command.js"(exports) {
+    "use strict";
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m[k];
+      } });
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports && exports.__importStar || function(mod) {
+      if (mod && mod.__esModule)
+        return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.issueCommand = void 0;
+    var fs6 = __importStar(require("fs"));
+    var os2 = __importStar(require("os"));
+    var utils_1 = require_utils();
+    function issueCommand2(command, message) {
+      const filePath = process.env[`GITHUB_${command}`];
+      if (!filePath) {
+        throw new Error(`Unable to find environment variable for file command ${command}`);
+      }
+      if (!fs6.existsSync(filePath)) {
+        throw new Error(`Missing file at path: ${filePath}`);
+      }
+      fs6.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os2.EOL}`, {
+        encoding: "utf8"
+      });
+    }
+    exports.issueCommand = issueCommand2;
   }
 });
 
@@ -360,8 +413,8 @@ var require_v35 = __commonJS({
     }
     var DNS = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
     exports.DNS = DNS;
-    var URL3 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
-    exports.URL = URL3;
+    var URL4 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
+    exports.URL = URL4;
     function _default2(name, version, hashfunc) {
       function generateUUID(value, namespace, buf, offset) {
         if (typeof value === "string") {
@@ -393,7 +446,7 @@ var require_v35 = __commonJS({
       } catch (err) {
       }
       generateUUID.DNS = DNS;
-      generateUUID.URL = URL3;
+      generateUUID.URL = URL4;
       return generateUUID;
     }
   }
@@ -628,72 +681,6 @@ var require_dist = __commonJS({
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-  }
-});
-
-// node_modules/@actions/core/lib/file-command.js
-var require_file_command = __commonJS({
-  "node_modules/@actions/core/lib/file-command.js"(exports) {
-    "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      o[k2] = m[k];
-    });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
-      Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
-      o["default"] = v;
-    });
-    var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
-      var result = {};
-      if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
-      }
-      __setModuleDefault(result, mod);
-      return result;
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
-    var fs6 = __importStar(require("fs"));
-    var os2 = __importStar(require("os"));
-    var uuid_1 = require_dist();
-    var utils_1 = require_utils();
-    function issueFileCommand(command, message) {
-      const filePath = process.env[`GITHUB_${command}`];
-      if (!filePath) {
-        throw new Error(`Unable to find environment variable for file command ${command}`);
-      }
-      if (!fs6.existsSync(filePath)) {
-        throw new Error(`Missing file at path: ${filePath}`);
-      }
-      fs6.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os2.EOL}`, {
-        encoding: "utf8"
-      });
-    }
-    exports.issueFileCommand = issueFileCommand;
-    function prepareKeyValueMessage(key, value) {
-      const delimiter = `ghadelimiter_${uuid_1.v4()}`;
-      const convertedValue = utils_1.toCommandValue(value);
-      if (key.includes(delimiter)) {
-        throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
-      }
-      if (convertedValue.includes(delimiter)) {
-        throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
-      }
-      return `${key}<<${delimiter}${os2.EOL}${convertedValue}${os2.EOL}${delimiter}`;
-    }
-    exports.prepareKeyValueMessage = prepareKeyValueMessage;
   }
 });
 
@@ -2018,6 +2005,7 @@ var require_core = __commonJS({
     var utils_1 = require_utils();
     var os2 = __importStar(require("os"));
     var path7 = __importStar(require("path"));
+    var uuid_1 = require_dist();
     var oidc_utils_1 = require_oidc_utils();
     var ExitCode;
     (function(ExitCode2) {
@@ -2029,9 +2017,18 @@ var require_core = __commonJS({
       process.env[name] = convertedVal;
       const filePath = process.env["GITHUB_ENV"] || "";
       if (filePath) {
-        return file_command_1.issueFileCommand("ENV", file_command_1.prepareKeyValueMessage(name, val));
+        const delimiter = `ghadelimiter_${uuid_1.v4()}`;
+        if (name.includes(delimiter)) {
+          throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
+        }
+        if (convertedVal.includes(delimiter)) {
+          throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
+        }
+        const commandValue = `${name}<<${delimiter}${os2.EOL}${convertedVal}${os2.EOL}${delimiter}`;
+        file_command_1.issueCommand("ENV", commandValue);
+      } else {
+        command_1.issueCommand("set-env", { name }, convertedVal);
       }
-      command_1.issueCommand("set-env", { name }, convertedVal);
     }
     exports.exportVariable = exportVariable;
     function setSecret2(secret) {
@@ -2041,7 +2038,7 @@ var require_core = __commonJS({
     function addPath(inputPath) {
       const filePath = process.env["GITHUB_PATH"] || "";
       if (filePath) {
-        file_command_1.issueFileCommand("PATH", inputPath);
+        file_command_1.issueCommand("PATH", inputPath);
       } else {
         command_1.issueCommand("add-path", {}, inputPath);
       }
@@ -2061,10 +2058,7 @@ var require_core = __commonJS({
     exports.getInput = getInput5;
     function getMultilineInput2(name, options) {
       const inputs = getInput5(name, options).split("\n").filter((x) => x !== "");
-      if (options && options.trimWhitespace === false) {
-        return inputs;
-      }
-      return inputs.map((input) => input.trim());
+      return inputs;
     }
     exports.getMultilineInput = getMultilineInput2;
     function getBooleanInput2(name, options) {
@@ -2080,12 +2074,8 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports.getBooleanInput = getBooleanInput2;
     function setOutput(name, value) {
-      const filePath = process.env["GITHUB_OUTPUT"] || "";
-      if (filePath) {
-        return file_command_1.issueFileCommand("OUTPUT", file_command_1.prepareKeyValueMessage(name, value));
-      }
       process.stdout.write(os2.EOL);
-      command_1.issueCommand("set-output", { name }, utils_1.toCommandValue(value));
+      command_1.issueCommand("set-output", { name }, value);
     }
     exports.setOutput = setOutput;
     function setCommandEcho(enabled) {
@@ -2142,18 +2132,14 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       });
     }
     exports.group = group;
-    function saveState2(name, value) {
-      const filePath = process.env["GITHUB_STATE"] || "";
-      if (filePath) {
-        return file_command_1.issueFileCommand("STATE", file_command_1.prepareKeyValueMessage(name, value));
-      }
-      command_1.issueCommand("save-state", { name }, utils_1.toCommandValue(value));
+    function saveState(name, value) {
+      command_1.issueCommand("save-state", { name }, value);
     }
-    exports.saveState = saveState2;
-    function getState2(name) {
+    exports.saveState = saveState;
+    function getState(name) {
       return process.env[`STATE_${name}`] || "";
     }
-    exports.getState = getState2;
+    exports.getState = getState;
     function getIDToken(aud) {
       return __awaiter(this, void 0, void 0, function* () {
         return yield oidc_utils_1.OidcClient.getIDToken(aud);
@@ -4356,8 +4342,8 @@ var require_URL = __commonJS({
     var utils = require_utils3();
     var Impl = require_URL_impl();
     var impl = utils.implSymbol;
-    function URL3(url) {
-      if (!this || this[impl] || !(this instanceof URL3)) {
+    function URL4(url) {
+      if (!this || this[impl] || !(this instanceof URL4)) {
         throw new TypeError("Failed to construct 'URL': Please use the 'new' operator, this DOM object constructor cannot be called as a function.");
       }
       if (arguments.length < 1) {
@@ -4373,7 +4359,7 @@ var require_URL = __commonJS({
       }
       module2.exports.setup(this, args);
     }
-    URL3.prototype.toJSON = function toJSON() {
+    URL4.prototype.toJSON = function toJSON() {
       if (!this || !module2.exports.is(this)) {
         throw new TypeError("Illegal invocation");
       }
@@ -4383,7 +4369,7 @@ var require_URL = __commonJS({
       }
       return this[impl].toJSON.apply(this[impl], args);
     };
-    Object.defineProperty(URL3.prototype, "href", {
+    Object.defineProperty(URL4.prototype, "href", {
       get() {
         return this[impl].href;
       },
@@ -4394,20 +4380,20 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    URL3.prototype.toString = function() {
+    URL4.prototype.toString = function() {
       if (!this || !module2.exports.is(this)) {
         throw new TypeError("Illegal invocation");
       }
       return this.href;
     };
-    Object.defineProperty(URL3.prototype, "origin", {
+    Object.defineProperty(URL4.prototype, "origin", {
       get() {
         return this[impl].origin;
       },
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL3.prototype, "protocol", {
+    Object.defineProperty(URL4.prototype, "protocol", {
       get() {
         return this[impl].protocol;
       },
@@ -4418,7 +4404,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL3.prototype, "username", {
+    Object.defineProperty(URL4.prototype, "username", {
       get() {
         return this[impl].username;
       },
@@ -4429,7 +4415,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL3.prototype, "password", {
+    Object.defineProperty(URL4.prototype, "password", {
       get() {
         return this[impl].password;
       },
@@ -4440,7 +4426,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL3.prototype, "host", {
+    Object.defineProperty(URL4.prototype, "host", {
       get() {
         return this[impl].host;
       },
@@ -4451,7 +4437,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL3.prototype, "hostname", {
+    Object.defineProperty(URL4.prototype, "hostname", {
       get() {
         return this[impl].hostname;
       },
@@ -4462,7 +4448,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL3.prototype, "port", {
+    Object.defineProperty(URL4.prototype, "port", {
       get() {
         return this[impl].port;
       },
@@ -4473,7 +4459,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL3.prototype, "pathname", {
+    Object.defineProperty(URL4.prototype, "pathname", {
       get() {
         return this[impl].pathname;
       },
@@ -4484,7 +4470,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL3.prototype, "search", {
+    Object.defineProperty(URL4.prototype, "search", {
       get() {
         return this[impl].search;
       },
@@ -4495,7 +4481,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL3.prototype, "hash", {
+    Object.defineProperty(URL4.prototype, "hash", {
       get() {
         return this[impl].hash;
       },
@@ -4511,7 +4497,7 @@ var require_URL = __commonJS({
         return !!obj && obj[impl] instanceof Impl.implementation;
       },
       create(constructorArgs, privateData) {
-        let obj = Object.create(URL3.prototype);
+        let obj = Object.create(URL4.prototype);
         this.setup(obj, constructorArgs, privateData);
         return obj;
       },
@@ -4522,10 +4508,10 @@ var require_URL = __commonJS({
         obj[impl] = new Impl.implementation(constructorArgs, privateData);
         obj[impl][utils.wrapperSymbol] = obj;
       },
-      interface: URL3,
+      interface: URL4,
       expose: {
-        Window: { URL: URL3 },
-        Worker: { URL: URL3 }
+        Window: { URL: URL4 },
+        Worker: { URL: URL4 }
       }
     };
   }
@@ -5268,12 +5254,12 @@ var require_lib3 = __commonJS({
       configurable: true
     });
     var INTERNALS$2 = Symbol("Request internals");
-    var URL3 = Url.URL || whatwgUrl.URL;
+    var URL4 = Url.URL || whatwgUrl.URL;
     var parse_url = Url.parse;
     var format_url = Url.format;
     function parseURL(urlStr) {
       if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.exec(urlStr)) {
-        urlStr = new URL3(urlStr).toString();
+        urlStr = new URL4(urlStr).toString();
       }
       return parse_url(urlStr);
     }
@@ -6111,7 +6097,7 @@ var require_dist_node8 = __commonJS({
     }
     var VERSION = "3.6.0";
     var _excluded = ["authStrategy"];
-    var Octokit3 = class {
+    var Octokit = class {
       constructor(options = {}) {
         const hook = new beforeAfterHook.Collection();
         const requestDefaults = {
@@ -6197,9 +6183,9 @@ var require_dist_node8 = __commonJS({
         return NewOctokit;
       }
     };
-    Octokit3.VERSION = VERSION;
-    Octokit3.plugins = [];
-    exports.Octokit = Octokit3;
+    Octokit.VERSION = VERSION;
+    Octokit.plugins = [];
+    exports.Octokit = Octokit;
   }
 });
 
@@ -7466,7 +7452,7 @@ var require_utils4 = __commonJS({
       return result;
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getOctokitOptions = exports.GitHub = exports.defaults = exports.context = void 0;
+    exports.getOctokitOptions = exports.GitHub = exports.context = void 0;
     var Context = __importStar(require_context());
     var Utils = __importStar(require_utils2());
     var core_1 = require_dist_node8();
@@ -7474,13 +7460,13 @@ var require_utils4 = __commonJS({
     var plugin_paginate_rest_1 = require_dist_node10();
     exports.context = new Context.Context();
     var baseUrl = Utils.getApiBaseUrl();
-    exports.defaults = {
+    var defaults = {
       baseUrl,
       request: {
         agent: Utils.getProxyAgent(baseUrl)
       }
     };
-    exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports.defaults);
+    exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(defaults);
     function getOctokitOptions(token, options) {
       const opts = Object.assign({}, options || {});
       const auth = Utils.getAuthString(token, opts);
@@ -7530,11 +7516,10 @@ var require_github = __commonJS({
     var Context = __importStar(require_context());
     var utils_1 = require_utils4();
     exports.context = new Context.Context();
-    function getOctokit3(token, options, ...additionalPlugins) {
-      const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
-      return new GitHubWithPlugins(utils_1.getOctokitOptions(token, options));
+    function getOctokit2(token, options) {
+      return new utils_1.GitHub(utils_1.getOctokitOptions(token, options));
     }
-    exports.getOctokit = getOctokit3;
+    exports.getOctokit = getOctokit2;
   }
 });
 
@@ -22743,11 +22728,11 @@ var require_mode = __commonJS({
 var require_isexe = __commonJS({
   "node_modules/isexe/index.js"(exports, module2) {
     var fs6 = require("fs");
-    var core12;
+    var core11;
     if (process.platform === "win32" || global.TESTING_WINDOWS) {
-      core12 = require_windows();
+      core11 = require_windows();
     } else {
-      core12 = require_mode();
+      core11 = require_mode();
     }
     module2.exports = isexe;
     isexe.sync = sync;
@@ -22770,7 +22755,7 @@ var require_isexe = __commonJS({
           });
         });
       }
-      core12(path7, options || {}, function(er, is) {
+      core11(path7, options || {}, function(er, is) {
         if (er) {
           if (er.code === "EACCES" || options && options.ignoreErrors) {
             er = null;
@@ -22782,7 +22767,7 @@ var require_isexe = __commonJS({
     }
     function sync(path7, options) {
       try {
-        return core12.sync(path7, options || {});
+        return core11.sync(path7, options || {});
       } catch (er) {
         if (options && options.ignoreErrors || er.code === "EACCES") {
           return false;
@@ -25506,11 +25491,11 @@ var require_parse_client_options = __commonJS({
 // node_modules/@octokit/rest/lib/constructor.js
 var require_constructor = __commonJS({
   "node_modules/@octokit/rest/lib/constructor.js"(exports, module2) {
-    module2.exports = Octokit3;
+    module2.exports = Octokit;
     var { request } = require_dist_node5();
     var Hook = require_before_after_hook();
     var parseClientOptions = require_parse_client_options();
-    function Octokit3(plugins, options) {
+    function Octokit(plugins, options) {
       options = options || {};
       const hook = new Hook.Collection();
       const log = Object.assign(
@@ -25552,10 +25537,10 @@ var require_register_plugin = __commonJS({
 var require_factory = __commonJS({
   "node_modules/@octokit/rest/lib/factory.js"(exports, module2) {
     module2.exports = factory;
-    var Octokit3 = require_constructor();
+    var Octokit = require_constructor();
     var registerPlugin = require_register_plugin();
     function factory(plugins) {
-      const Api = Octokit3.bind(null, plugins || []);
+      const Api = Octokit.bind(null, plugins || []);
       Api.plugin = registerPlugin.bind(null, plugins || []);
       return Api;
     }
@@ -27417,15 +27402,15 @@ var require_rest = __commonJS({
       );
       return new OctokitRest(options);
     }
-    var Octokit3 = Object.assign(DeprecatedOctokit, {
+    var Octokit = Object.assign(DeprecatedOctokit, {
       Octokit: OctokitRest
     });
     Object.keys(OctokitRest).forEach((key) => {
       if (OctokitRest.hasOwnProperty(key)) {
-        Octokit3[key] = OctokitRest[key];
+        Octokit[key] = OctokitRest[key];
       }
     });
-    module2.exports = Octokit3;
+    module2.exports = Octokit;
   }
 });
 
@@ -28017,10 +28002,10 @@ var require_github2 = __commonJS({
     var httpClient = __importStar(require_http_client());
     rest_1.Octokit.prototype = new rest_1.Octokit();
     exports.context = new Context.Context();
-    var GitHub2 = class extends rest_1.Octokit {
+    var GitHub3 = class extends rest_1.Octokit {
       constructor(token, opts) {
-        super(GitHub2.getOctokitOptions(GitHub2.disambiguate(token, opts)));
-        this.graphql = GitHub2.getGraphQL(GitHub2.disambiguate(token, opts));
+        super(GitHub3.getOctokitOptions(GitHub3.disambiguate(token, opts)));
+        this.graphql = GitHub3.getGraphQL(GitHub3.disambiguate(token, opts));
       }
       static disambiguate(token, opts) {
         return [
@@ -28032,11 +28017,11 @@ var require_github2 = __commonJS({
         const token = args[0];
         const options = Object.assign({}, args[1]);
         options.baseUrl = options.baseUrl || this.getApiBaseUrl();
-        const auth = GitHub2.getAuthString(token, options);
+        const auth = GitHub3.getAuthString(token, options);
         if (auth) {
           options.auth = auth;
         }
-        const agent = GitHub2.getProxyAgent(options.baseUrl, options);
+        const agent = GitHub3.getProxyAgent(options.baseUrl, options);
         if (agent) {
           options.request = options.request ? Object.assign({}, options.request) : {};
           options.request.agent = agent;
@@ -28054,7 +28039,7 @@ var require_github2 = __commonJS({
             authorization: auth
           };
         }
-        const agent = GitHub2.getProxyAgent(defaults.baseUrl, options);
+        const agent = GitHub3.getProxyAgent(defaults.baseUrl, options);
         if (agent) {
           defaults.request = { agent };
         }
@@ -28092,7 +28077,7 @@ var require_github2 = __commonJS({
         return url;
       }
     };
-    exports.GitHub = GitHub2;
+    exports.GitHub = GitHub3;
   }
 });
 
@@ -29943,7 +29928,7 @@ var require_retry_helper = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RetryHelper = void 0;
-    var core12 = __importStar(require_core());
+    var core11 = __importStar(require_core());
     var RetryHelper2 = class {
       constructor(maxAttempts, minSeconds, maxSeconds) {
         if (maxAttempts < 1) {
@@ -29966,10 +29951,10 @@ var require_retry_helper = __commonJS({
               if (isRetryable && !isRetryable(err)) {
                 throw err;
               }
-              core12.info(err.message);
+              core11.info(err.message);
             }
             const seconds = this.getSleepAmount();
-            core12.info(`Waiting ${seconds} seconds before trying again`);
+            core11.info(`Waiting ${seconds} seconds before trying again`);
             yield this.sleep(seconds);
             attempt++;
           }
@@ -30053,7 +30038,7 @@ var require_tool_cache = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.evaluateVersions = exports.isExplicitVersion = exports.findFromManifest = exports.getManifestFromRepo = exports.findAllVersions = exports.find = exports.cacheFile = exports.cacheDir = exports.extractZip = exports.extractXar = exports.extractTar = exports.extract7z = exports.downloadTool = exports.HTTPError = void 0;
-    var core12 = __importStar(require_core());
+    var core11 = __importStar(require_core());
     var io6 = __importStar(require_io());
     var fs6 = __importStar(require("fs"));
     var mm = __importStar(require_manifest());
@@ -30082,8 +30067,8 @@ var require_tool_cache = __commonJS({
       return __awaiter(this, void 0, void 0, function* () {
         dest = dest || path7.join(_getTempDirectory(), v4_1.default());
         yield io6.mkdirP(path7.dirname(dest));
-        core12.debug(`Downloading ${url}`);
-        core12.debug(`Destination ${dest}`);
+        core11.debug(`Downloading ${url}`);
+        core11.debug(`Destination ${dest}`);
         const maxAttempts = 3;
         const minSeconds = _getGlobal("TEST_DOWNLOAD_TOOL_RETRY_MIN_SECONDS", 10);
         const maxSeconds = _getGlobal("TEST_DOWNLOAD_TOOL_RETRY_MAX_SECONDS", 20);
@@ -30110,7 +30095,7 @@ var require_tool_cache = __commonJS({
           allowRetries: false
         });
         if (auth) {
-          core12.debug("set auth");
+          core11.debug("set auth");
           if (headers === void 0) {
             headers = {};
           }
@@ -30119,7 +30104,7 @@ var require_tool_cache = __commonJS({
         const response = yield http.get(url, headers);
         if (response.message.statusCode !== 200) {
           const err = new HTTPError(response.message.statusCode);
-          core12.debug(`Failed to download from "${url}". Code(${response.message.statusCode}) Message(${response.message.statusMessage})`);
+          core11.debug(`Failed to download from "${url}". Code(${response.message.statusCode}) Message(${response.message.statusMessage})`);
           throw err;
         }
         const pipeline = util.promisify(stream.pipeline);
@@ -30128,16 +30113,16 @@ var require_tool_cache = __commonJS({
         let succeeded = false;
         try {
           yield pipeline(readStream, fs6.createWriteStream(dest));
-          core12.debug("download complete");
+          core11.debug("download complete");
           succeeded = true;
           return dest;
         } finally {
           if (!succeeded) {
-            core12.debug("download failed");
+            core11.debug("download failed");
             try {
               yield io6.rmRF(dest);
             } catch (err) {
-              core12.debug(`Failed to delete '${dest}'. ${err.message}`);
+              core11.debug(`Failed to delete '${dest}'. ${err.message}`);
             }
           }
         }
@@ -30152,7 +30137,7 @@ var require_tool_cache = __commonJS({
         process.chdir(dest);
         if (_7zPath) {
           try {
-            const logLevel = core12.isDebug() ? "-bb1" : "-bb0";
+            const logLevel = core11.isDebug() ? "-bb1" : "-bb0";
             const args = [
               "x",
               logLevel,
@@ -30202,7 +30187,7 @@ var require_tool_cache = __commonJS({
           throw new Error("parameter 'file' is required");
         }
         dest = yield _createExtractFolder(dest);
-        core12.debug("Checking tar --version");
+        core11.debug("Checking tar --version");
         let versionOutput = "";
         yield exec_1.exec("tar --version", [], {
           ignoreReturnCode: true,
@@ -30212,7 +30197,7 @@ var require_tool_cache = __commonJS({
             stderr: (data) => versionOutput += data.toString()
           }
         });
-        core12.debug(versionOutput.trim());
+        core11.debug(versionOutput.trim());
         const isGnuTar = versionOutput.toUpperCase().includes("GNU TAR");
         let args;
         if (flags instanceof Array) {
@@ -30220,7 +30205,7 @@ var require_tool_cache = __commonJS({
         } else {
           args = [flags];
         }
-        if (core12.isDebug() && !flags.includes("v")) {
+        if (core11.isDebug() && !flags.includes("v")) {
           args.push("-v");
         }
         let destArg = dest;
@@ -30252,7 +30237,7 @@ var require_tool_cache = __commonJS({
           args = [flags];
         }
         args.push("-x", "-C", dest, "-f", file);
-        if (core12.isDebug()) {
+        if (core11.isDebug()) {
           args.push("-v");
         }
         const xarPath = yield io6.which("xar", true);
@@ -30297,7 +30282,7 @@ var require_tool_cache = __commonJS({
             "-Command",
             pwshCommand
           ];
-          core12.debug(`Using pwsh at path: ${pwshPath}`);
+          core11.debug(`Using pwsh at path: ${pwshPath}`);
           yield exec_1.exec(`"${pwshPath}"`, args);
         } else {
           const powershellCommand = [
@@ -30317,7 +30302,7 @@ var require_tool_cache = __commonJS({
             powershellCommand
           ];
           const powershellPath = yield io6.which("powershell", true);
-          core12.debug(`Using powershell at path: ${powershellPath}`);
+          core11.debug(`Using powershell at path: ${powershellPath}`);
           yield exec_1.exec(`"${powershellPath}"`, args);
         }
       });
@@ -30326,7 +30311,7 @@ var require_tool_cache = __commonJS({
       return __awaiter(this, void 0, void 0, function* () {
         const unzipPath = yield io6.which("unzip", true);
         const args = [file];
-        if (!core12.isDebug()) {
+        if (!core11.isDebug()) {
           args.unshift("-q");
         }
         args.unshift("-o");
@@ -30337,8 +30322,8 @@ var require_tool_cache = __commonJS({
       return __awaiter(this, void 0, void 0, function* () {
         version = semver.clean(version) || version;
         arch = arch || os2.arch();
-        core12.debug(`Caching tool ${tool} ${version} ${arch}`);
-        core12.debug(`source dir: ${sourceDir}`);
+        core11.debug(`Caching tool ${tool} ${version} ${arch}`);
+        core11.debug(`source dir: ${sourceDir}`);
         if (!fs6.statSync(sourceDir).isDirectory()) {
           throw new Error("sourceDir is not a directory");
         }
@@ -30356,14 +30341,14 @@ var require_tool_cache = __commonJS({
       return __awaiter(this, void 0, void 0, function* () {
         version = semver.clean(version) || version;
         arch = arch || os2.arch();
-        core12.debug(`Caching tool ${tool} ${version} ${arch}`);
-        core12.debug(`source file: ${sourceFile}`);
+        core11.debug(`Caching tool ${tool} ${version} ${arch}`);
+        core11.debug(`source file: ${sourceFile}`);
         if (!fs6.statSync(sourceFile).isFile()) {
           throw new Error("sourceFile is not a file");
         }
         const destFolder = yield _createToolPath(tool, version, arch);
         const destPath = path7.join(destFolder, targetFile);
-        core12.debug(`destination file ${destPath}`);
+        core11.debug(`destination file ${destPath}`);
         yield io6.cp(sourceFile, destPath);
         _completeToolPath(tool, version, arch);
         return destFolder;
@@ -30387,12 +30372,12 @@ var require_tool_cache = __commonJS({
       if (versionSpec) {
         versionSpec = semver.clean(versionSpec) || "";
         const cachePath = path7.join(_getCacheDirectory(), toolName, versionSpec, arch);
-        core12.debug(`checking cache: ${cachePath}`);
+        core11.debug(`checking cache: ${cachePath}`);
         if (fs6.existsSync(cachePath) && fs6.existsSync(`${cachePath}.complete`)) {
-          core12.debug(`Found tool in cache ${toolName} ${versionSpec} ${arch}`);
+          core11.debug(`Found tool in cache ${toolName} ${versionSpec} ${arch}`);
           toolPath = cachePath;
         } else {
-          core12.debug("not found");
+          core11.debug("not found");
         }
       }
       return toolPath;
@@ -30423,7 +30408,7 @@ var require_tool_cache = __commonJS({
         const http = new httpm.HttpClient("tool-cache");
         const headers = {};
         if (auth) {
-          core12.debug("set auth");
+          core11.debug("set auth");
           headers.authorization = auth;
         }
         const response = yield http.getJson(treeUrl, headers);
@@ -30444,7 +30429,7 @@ var require_tool_cache = __commonJS({
           try {
             releases = JSON.parse(versionsRaw);
           } catch (_a) {
-            core12.debug("Invalid json");
+            core11.debug("Invalid json");
           }
         }
         return releases;
@@ -30470,7 +30455,7 @@ var require_tool_cache = __commonJS({
     function _createToolPath(tool, version, arch) {
       return __awaiter(this, void 0, void 0, function* () {
         const folderPath = path7.join(_getCacheDirectory(), tool, semver.clean(version) || version, arch || "");
-        core12.debug(`destination ${folderPath}`);
+        core11.debug(`destination ${folderPath}`);
         const markerPath = `${folderPath}.complete`;
         yield io6.rmRF(folderPath);
         yield io6.rmRF(markerPath);
@@ -30482,19 +30467,19 @@ var require_tool_cache = __commonJS({
       const folderPath = path7.join(_getCacheDirectory(), tool, semver.clean(version) || version, arch || "");
       const markerPath = `${folderPath}.complete`;
       fs6.writeFileSync(markerPath, "");
-      core12.debug("finished caching tool");
+      core11.debug("finished caching tool");
     }
     function isExplicitVersion(versionSpec) {
       const c = semver.clean(versionSpec) || "";
-      core12.debug(`isExplicit: ${c}`);
+      core11.debug(`isExplicit: ${c}`);
       const valid = semver.valid(c) != null;
-      core12.debug(`explicit? ${valid}`);
+      core11.debug(`explicit? ${valid}`);
       return valid;
     }
     exports.isExplicitVersion = isExplicitVersion;
     function evaluateVersions(versions, versionSpec) {
       let version = "";
-      core12.debug(`evaluating ${versions.length} versions`);
+      core11.debug(`evaluating ${versions.length} versions`);
       versions = versions.sort((a, b) => {
         if (semver.gt(a, b)) {
           return 1;
@@ -30510,9 +30495,9 @@ var require_tool_cache = __commonJS({
         }
       }
       if (version) {
-        core12.debug(`matched: ${version}`);
+        core11.debug(`matched: ${version}`);
       } else {
-        core12.debug("match not found");
+        core11.debug("match not found");
       }
       return version;
     }
@@ -30818,11 +30803,11 @@ function fileExistsSync(path7) {
 }
 
 // node_modules/checkout/src/git-source-provider.ts
-var core8 = __toESM(require_core());
+var core7 = __toESM(require_core());
 
 // node_modules/checkout/src/git-auth-helper.ts
 var assert2 = __toESM(require("assert"));
-var core2 = __toESM(require_core());
+var core = __toESM(require_core());
 var exec = __toESM(require_exec());
 var fs2 = __toESM(require("fs"));
 var io = __toESM(require_io());
@@ -30837,26 +30822,34 @@ function escape(value) {
 }
 
 // node_modules/checkout/src/state-helper.ts
-var core = __toESM(require_core());
-var IsPost = !!core.getState("isPost");
-var RepositoryPath = core.getState("repositoryPath");
-var PostSetSafeDirectory = core.getState("setSafeDirectory") === "true";
-var SshKeyPath = core.getState("sshKeyPath");
-var SshKnownHostsPath = core.getState("sshKnownHostsPath");
+var coreCommand = __toESM(require_command());
+var IsPost = !!process.env["STATE_isPost"];
+var RepositoryPath = process.env["STATE_repositoryPath"] || "";
+var PostSetSafeDirectory = process.env["STATE_setSafeDirectory"] === "true";
+var SshKeyPath = process.env["STATE_sshKeyPath"] || "";
+var SshKnownHostsPath = process.env["STATE_sshKnownHostsPath"] || "";
 function setRepositoryPath(repositoryPath) {
-  core.saveState("repositoryPath", repositoryPath);
+  coreCommand.issueCommand(
+    "save-state",
+    { name: "repositoryPath" },
+    repositoryPath
+  );
 }
 function setSshKeyPath(sshKeyPath) {
-  core.saveState("sshKeyPath", sshKeyPath);
+  coreCommand.issueCommand("save-state", { name: "sshKeyPath" }, sshKeyPath);
 }
 function setSshKnownHostsPath(sshKnownHostsPath) {
-  core.saveState("sshKnownHostsPath", sshKnownHostsPath);
+  coreCommand.issueCommand(
+    "save-state",
+    { name: "sshKnownHostsPath" },
+    sshKnownHostsPath
+  );
 }
 function setSafeDirectory() {
-  core.saveState("setSafeDirectory", "true");
+  coreCommand.issueCommand("save-state", { name: "setSafeDirectory" }, "true");
 }
 if (!IsPost) {
-  core.saveState("isPost", "true");
+  coreCommand.issueCommand("save-state", { name: "isPost" }, "true");
 }
 
 // node_modules/checkout/src/url-helper.ts
@@ -30868,7 +30861,7 @@ function getFetchUrl(settings) {
     "settings.repositoryOwner must be defined"
   );
   assert.ok(settings.repositoryName, "settings.repositoryName must be defined");
-  const serviceUrl = getServerUrl(settings.githubServerUrl);
+  const serviceUrl = getServerUrl();
   const encodedOwner = encodeURIComponent(settings.repositoryOwner);
   const encodedName = encodeURIComponent(settings.repositoryName);
   if (settings.sshKey) {
@@ -30876,21 +30869,10 @@ function getFetchUrl(settings) {
   }
   return `${serviceUrl.origin}/${encodedOwner}/${encodedName}`;
 }
-function getServerUrl(url) {
-  let urlValue = url && url.trim().length > 0 ? url : process.env["GITHUB_SERVER_URL"] || "https://github.com";
-  return new import_url.URL(urlValue);
-}
-function getServerApiUrl(url) {
-  let apiUrl = "https://api.github.com";
-  if (isGhes(url)) {
-    const serverUrl = getServerUrl(url);
-    apiUrl = new import_url.URL(`${serverUrl.origin}/api/v3`).toString();
-  }
-  return apiUrl;
-}
-function isGhes(url) {
-  const ghUrl = getServerUrl(url);
-  return ghUrl.hostname.toUpperCase() !== "GITHUB.COM";
+function getServerUrl() {
+  return new import_url.URL(
+    process.env["GITHUB_SERVER_URL"] || process.env["GITHUB_URL"] || "https://github.com"
+  );
 }
 
 // node_modules/checkout/src/git-auth-helper.ts
@@ -30909,13 +30891,13 @@ var GitAuthHelper = class {
     this.temporaryHomePath = "";
     this.git = gitCommandManager;
     this.settings = gitSourceSettings || {};
-    const serverUrl = getServerUrl(this.settings.githubServerUrl);
+    const serverUrl = getServerUrl();
     this.tokenConfigKey = `http.${serverUrl.origin}/.extraheader`;
     const basicCredential = Buffer.from(
       `x-access-token:${this.settings.authToken}`,
       "utf8"
     ).toString("base64");
-    core2.setSecret(basicCredential);
+    core.setSecret(basicCredential);
     this.tokenPlaceholderConfigValue = `AUTHORIZATION: basic ***`;
     this.tokenConfigValue = `AUTHORIZATION: basic ${basicCredential}`;
     this.insteadOfKey = `url.${serverUrl.origin}/.insteadOf`;
@@ -30956,12 +30938,12 @@ var GitAuthHelper = class {
       }
     }
     if (configExists) {
-      core2.info(`Copying '${gitConfigPath}' to '${newGitConfigPath}'`);
+      core.info(`Copying '${gitConfigPath}' to '${newGitConfigPath}'`);
       await io.cp(gitConfigPath, newGitConfigPath);
     } else {
       await fs2.promises.writeFile(newGitConfigPath, "");
     }
-    core2.info(
+    core.info(
       `Temporarily overriding HOME='${this.temporaryHomePath}' before making global git config changes`
     );
     this.git.setEnvironmentVariable("HOME", this.temporaryHomePath);
@@ -30978,7 +30960,7 @@ var GitAuthHelper = class {
         }
       }
     } catch (err) {
-      core2.info(
+      core.info(
         "Encountered an error when attempting to configure token. Attempting unconfigure."
       );
       await this.git.tryConfigUnset(this.tokenConfigKey, true);
@@ -30994,7 +30976,7 @@ var GitAuthHelper = class {
       );
       const configPaths = output.match(/(?<=(^|\n)file:)[^\t]+(?=\tremote\.origin\.url)/g) || [];
       for (const configPath of configPaths) {
-        core2.debug(`Replacing token placeholder in '${configPath}'`);
+        core.debug(`Replacing token placeholder in '${configPath}'`);
         await this.replaceTokenPlaceholder(configPath);
       }
       if (this.settings.sshKey) {
@@ -31019,7 +31001,7 @@ var GitAuthHelper = class {
   async removeGlobalConfig() {
     var _a;
     if (((_a = this.temporaryHomePath) == null ? void 0 : _a.length) > 0) {
-      core2.debug(`Unsetting HOME override`);
+      core.debug(`Unsetting HOME override`);
       this.git.removeEnvironmentVariable("HOME");
       await io.rmRF(this.temporaryHomePath);
     }
@@ -31085,7 +31067,7 @@ github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXY
     this.sshCommand += ` -o "UserKnownHostsFile=$RUNNER_TEMP/${path.basename(
       this.sshKnownHostsPath
     )}"`;
-    core2.info(`Temporarily overriding GIT_SSH_COMMAND=${this.sshCommand}`);
+    core.info(`Temporarily overriding GIT_SSH_COMMAND=${this.sshCommand}`);
     this.git.setEnvironmentVariable("GIT_SSH_COMMAND", this.sshCommand);
     if (this.settings.persistCredentials) {
       await this.git.config(SSH_COMMAND_KEY, this.sshCommand);
@@ -31126,8 +31108,8 @@ github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXY
       try {
         await io.rmRF(keyPath);
       } catch (err) {
-        core2.debug(`${(err == null ? void 0 : err.message) ?? err}`);
-        core2.warning(`Failed to remove SSH key '${keyPath}'`);
+        core.debug(`${(err == null ? void 0 : err.message) ?? err}`);
+        core.warning(`Failed to remove SSH key '${keyPath}'`);
       }
     }
     const knownHostsPath = this.sshKnownHostsPath || SshKnownHostsPath;
@@ -31145,7 +31127,7 @@ github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXY
   async removeGitConfig(configKey, submoduleOnly = false) {
     if (!submoduleOnly) {
       if (await this.git.configExists(configKey) && !await this.git.tryConfigUnset(configKey)) {
-        core2.warning(`Failed to remove '${configKey}' from the git config`);
+        core.warning(`Failed to remove '${configKey}' from the git config`);
       }
     }
     const pattern = escape(configKey);
@@ -31157,29 +31139,15 @@ github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXY
 };
 
 // node_modules/checkout/src/git-command-manager.ts
-var core5 = __toESM(require_core());
+var core4 = __toESM(require_core());
 var exec3 = __toESM(require_exec());
 var io2 = __toESM(require_io());
 var path2 = __toESM(require("path"));
 
 // node_modules/checkout/src/ref-helper.ts
-var core3 = __toESM(require_core());
-var github2 = __toESM(require_github2());
-
-// node_modules/checkout/src/octokit-provider.ts
+var import_url2 = require("url");
+var core2 = __toESM(require_core());
 var github = __toESM(require_github2());
-var import_rest = __toESM(require_rest());
-function getOctokit(authToken, opts) {
-  const options = {
-    baseUrl: getServerApiUrl(opts.baseUrl)
-  };
-  if (opts.userAgent) {
-    options.userAgent = opts.userAgent;
-  }
-  return new github.GitHub(authToken, options);
-}
-
-// node_modules/checkout/src/ref-helper.ts
 var tagsRefSpec = "+refs/tags/*:refs/tags/*";
 async function getCheckoutInfo(git, ref, commit) {
   if (!git) {
@@ -31277,29 +31245,29 @@ async function testRef(git, ref, commit) {
     const tagName = ref.substring("refs/tags/".length);
     return await git.tagExists(tagName) && commit === await git.revParse(ref);
   } else {
-    core3.debug(`Unexpected ref format '${ref}' when testing ref info`);
+    core2.debug(`Unexpected ref format '${ref}' when testing ref info`);
     return true;
   }
 }
-async function checkCommitInfo(token, commitInfo, repositoryOwner, repositoryName, ref, commit, baseUrl) {
+async function checkCommitInfo(token, commitInfo, repositoryOwner, repositoryName, ref, commit) {
   try {
-    if (isGhes(baseUrl)) {
+    if (isGhes()) {
       return;
     }
     if (!token) {
       return;
     }
-    if (fromPayload("repository.private") !== false || github2.context.eventName !== "pull_request" || fromPayload("action") !== "synchronize" || repositoryOwner !== github2.context.repo.owner || repositoryName !== github2.context.repo.repo || ref !== github2.context.ref || !ref.startsWith("refs/pull/") || commit !== github2.context.sha) {
+    if (fromPayload("repository.private") !== false || github.context.eventName !== "pull_request" || fromPayload("action") !== "synchronize" || repositoryOwner !== github.context.repo.owner || repositoryName !== github.context.repo.repo || ref !== github.context.ref || !ref.startsWith("refs/pull/") || commit !== github.context.sha) {
       return;
     }
     const expectedHeadSha = fromPayload("after");
     if (!expectedHeadSha) {
-      core3.debug("Unable to determine head sha");
+      core2.debug("Unable to determine head sha");
       return;
     }
     const expectedBaseSha = fromPayload("pull_request.base.sha");
     if (!expectedBaseSha) {
-      core3.debug("Unable to determine base sha");
+      core2.debug("Unable to determine base sha");
       return;
     }
     const expectedMessage = `Merge ${expectedHeadSha} into ${expectedBaseSha}`;
@@ -31308,16 +31276,15 @@ async function checkCommitInfo(token, commitInfo, repositoryOwner, repositoryNam
     }
     const match = commitInfo.match(/Merge ([0-9a-f]{40}) into ([0-9a-f]{40})/);
     if (!match) {
-      core3.debug("Unexpected message format");
+      core2.debug("Unexpected message format");
       return;
     }
     const actualHeadSha = match[1];
     if (actualHeadSha !== expectedHeadSha) {
-      core3.debug(
+      core2.debug(
         `Expected head sha ${expectedHeadSha}; actual head sha ${actualHeadSha}`
       );
-      const octokit = getOctokit(token, {
-        baseUrl,
+      const octokit = new github.GitHub(token, {
         userAgent: `actions-checkout-tracepoint/1.0 (code=STALE_MERGE;owner=${repositoryOwner};repo=${repositoryName};pr=${fromPayload(
           "number"
         )};run_id=${process.env["GITHUB_RUN_ID"]};expected_head_sha=${expectedHeadSha};actual_head_sha=${actualHeadSha})`
@@ -31325,13 +31292,13 @@ async function checkCommitInfo(token, commitInfo, repositoryOwner, repositoryNam
       await octokit.repos.get({ owner: repositoryOwner, repo: repositoryName });
     }
   } catch (err) {
-    core3.debug(
+    core2.debug(
       `Error when validating commit info: ${(err == null ? void 0 : err.stack) ?? err}`
     );
   }
 }
 function fromPayload(path7) {
-  return select(github2.context.payload, path7);
+  return select(github.context.payload, path7);
 }
 function select(obj, path7) {
   if (!obj) {
@@ -31344,9 +31311,15 @@ function select(obj, path7) {
   const key = path7.substr(0, i);
   return select(obj[key], path7.substr(i + 1));
 }
+function isGhes() {
+  const ghUrl = new import_url2.URL(
+    process.env["GITHUB_SERVER_URL"] || "https://github.com"
+  );
+  return ghUrl.hostname.toUpperCase() !== "GITHUB.COM";
+}
 
 // node_modules/checkout/src/retry-helper.ts
-var core4 = __toESM(require_core());
+var core3 = __toESM(require_core());
 var defaultMaxAttempts = 3;
 var defaultMinSeconds = 10;
 var defaultMaxSeconds = 20;
@@ -31365,10 +31338,10 @@ var RetryHelper = class {
       try {
         return await action();
       } catch (err) {
-        core4.info(err == null ? void 0 : err.message);
+        core3.info(err == null ? void 0 : err.message);
       }
       const seconds = this.getSleepAmount();
-      core4.info(`Waiting ${seconds} seconds before trying again`);
+      core3.info(`Waiting ${seconds} seconds before trying again`);
       await this.sleep(seconds);
       attempt++;
     }
@@ -31727,7 +31700,7 @@ var GitCommandManager = class {
       this.gitEnv["GIT_LFS_SKIP_SMUDGE"] = "1";
     }
     this.gitPath = await io2.which("git", true);
-    core5.debug("Getting git version");
+    core4.debug("Getting git version");
     let gitVersion = new GitVersion();
     let gitOutput = await this.execGit(["version"]);
     let stdout = gitOutput.stdout.trim();
@@ -31746,7 +31719,7 @@ var GitCommandManager = class {
       );
     }
     if (this.lfs) {
-      core5.debug("Getting git-lfs version");
+      core4.debug("Getting git-lfs version");
       let gitLfsVersion = new GitVersion();
       const gitLfsPath = await io2.which("git-lfs", true);
       gitOutput = await this.execGit(["lfs", "version"]);
@@ -31768,7 +31741,7 @@ var GitCommandManager = class {
       }
     }
     const gitHttpUserAgent = `git/${gitVersion} (github-actions-checkout)`;
-    core5.debug(`Set git useragent to: ${gitHttpUserAgent}`);
+    core4.debug(`Set git useragent to: ${gitHttpUserAgent}`);
     this.gitEnv["GIT_HTTP_USER_AGENT"] = gitHttpUserAgent;
   }
 };
@@ -31781,7 +31754,7 @@ var GitOutput = class {
 
 // node_modules/checkout/src/git-directory-helper.ts
 var assert3 = __toESM(require("assert"));
-var core6 = __toESM(require_core());
+var core5 = __toESM(require_core());
 var fs3 = __toESM(require("fs"));
 var io3 = __toESM(require_io());
 var path3 = __toESM(require("path"));
@@ -31802,13 +31775,13 @@ async function prepareExistingDirectory(git, repositoryPath, repositoryUrl, clea
       try {
         await io3.rmRF(lockPath);
       } catch (error) {
-        core6.debug(
+        core5.debug(
           `Unable to delete '${lockPath}'. ${(error == null ? void 0 : error.message) ?? error}`
         );
       }
     }
     try {
-      core6.startGroup("Removing previously created refs, to avoid conflicts");
+      core5.startGroup("Removing previously created refs, to avoid conflicts");
       if (!await git.isDetached()) {
         await git.checkoutDetach();
       }
@@ -31831,33 +31804,33 @@ async function prepareExistingDirectory(git, repositoryPath, repositoryUrl, clea
           }
         }
       }
-      core6.endGroup();
+      core5.endGroup();
       if (clean) {
-        core6.startGroup("Cleaning the repository");
+        core5.startGroup("Cleaning the repository");
         if (!await git.tryClean()) {
-          core6.debug(
+          core5.debug(
             `The clean command failed. This might be caused by: 1) path too long, 2) permission issue, or 3) file in use. For futher investigation, manually run 'git clean -ffdx' on the directory '${repositoryPath}'.`
           );
           remove = true;
         } else if (!await git.tryReset()) {
           remove = true;
         }
-        core6.endGroup();
+        core5.endGroup();
         if (remove) {
-          core6.warning(
+          core5.warning(
             `Unable to clean or reset the repository. The repository will be recreated instead.`
           );
         }
       }
     } catch (error) {
-      core6.warning(
+      core5.warning(
         `Unable to prepare the existing repository. The repository will be recreated instead.`
       );
       remove = true;
     }
   }
   if (remove) {
-    core6.info(`Deleting the contents of '${repositoryPath}'`);
+    core5.info(`Deleting the contents of '${repositoryPath}'`);
     for (const file of await fs3.promises.readdir(repositoryPath)) {
       await io3.rmRF(path3.join(repositoryPath, file));
     }
@@ -31866,28 +31839,29 @@ async function prepareExistingDirectory(git, repositoryPath, repositoryUrl, clea
 
 // node_modules/checkout/src/github-api-helper.ts
 var assert4 = __toESM(require("assert"));
-var core7 = __toESM(require_core());
+var core6 = __toESM(require_core());
 var fs4 = __toESM(require("fs"));
+var github2 = __toESM(require_github2());
 var io4 = __toESM(require_io());
 var path4 = __toESM(require("path"));
 var toolCache = __toESM(require_tool_cache());
 var import_v42 = __toESM(require_v42());
 var IS_WINDOWS2 = process.platform === "win32";
-async function downloadRepository(authToken, owner, repo, ref, commit, repositoryPath, baseUrl) {
+async function downloadRepository(authToken, owner, repo, ref, commit, repositoryPath) {
   if (!ref && !commit) {
-    core7.info("Determining the default branch");
-    ref = await getDefaultBranch(authToken, owner, repo, baseUrl);
+    core6.info("Determining the default branch");
+    ref = await getDefaultBranch(authToken, owner, repo);
   }
   let archiveData = await execute(async () => {
-    core7.info("Downloading the archive");
-    return await downloadArchive(authToken, owner, repo, ref, commit, baseUrl);
+    core6.info("Downloading the archive");
+    return await downloadArchive(authToken, owner, repo, ref, commit);
   });
-  core7.info("Writing archive to disk");
+  core6.info("Writing archive to disk");
   const uniqueId = (0, import_v42.default)();
   const archivePath = path4.join(repositoryPath, `${uniqueId}.tar.gz`);
   await fs4.promises.writeFile(archivePath, archiveData);
   archiveData = Buffer.from("");
-  core7.info("Extracting the archive");
+  core6.info("Extracting the archive");
   const extractPath = path4.join(repositoryPath, uniqueId);
   await io4.mkdirP(extractPath);
   if (IS_WINDOWS2) {
@@ -31902,7 +31876,7 @@ async function downloadRepository(authToken, owner, repo, ref, commit, repositor
     "Expected exactly one directory inside archive"
   );
   const archiveVersion = archiveFileNames[0];
-  core7.info(`Resolved version ${archiveVersion}`);
+  core6.info(`Resolved version ${archiveVersion}`);
   const tempRepositoryPath = path4.join(extractPath, archiveVersion);
   for (const fileName of await fs4.promises.readdir(tempRepositoryPath)) {
     const sourcePath = path4.join(tempRepositoryPath, fileName);
@@ -31915,10 +31889,10 @@ async function downloadRepository(authToken, owner, repo, ref, commit, repositor
   }
   await io4.rmRF(extractPath);
 }
-async function getDefaultBranch(authToken, owner, repo, baseUrl) {
+async function getDefaultBranch(authToken, owner, repo) {
   return await execute(async () => {
-    core7.info("Retrieving the default branch name");
-    const octokit = getOctokit(authToken, { baseUrl });
+    core6.info("Retrieving the default branch name");
+    const octokit = new github2.GitHub(authToken);
     let result;
     try {
       const response = await octokit.repos.get({ owner, repo });
@@ -31931,15 +31905,15 @@ async function getDefaultBranch(authToken, owner, repo, baseUrl) {
         throw err;
       }
     }
-    core7.info(`Default branch '${result}'`);
+    core6.info(`Default branch '${result}'`);
     if (!result.startsWith("refs/")) {
       result = `refs/heads/${result}`;
     }
     return result;
   });
 }
-async function downloadArchive(authToken, owner, repo, ref, commit, baseUrl) {
-  const octokit = getOctokit(authToken, { baseUrl });
+async function downloadArchive(authToken, owner, repo, ref, commit) {
+  const octokit = new github2.GitHub(authToken);
   const params = {
     owner,
     repo,
@@ -31959,7 +31933,7 @@ async function downloadArchive(authToken, owner, repo, ref, commit, baseUrl) {
 var io5 = __toESM(require_io());
 var path5 = __toESM(require("path"));
 async function getSource(settings) {
-  core8.info(
+  core7.info(
     `Syncing repository: ${settings.repositoryOwner}/${settings.repositoryName}`
   );
   const repositoryUrl = getFetchUrl(settings);
@@ -31971,20 +31945,20 @@ async function getSource(settings) {
     isExisting = false;
     await io5.mkdirP(settings.repositoryPath);
   }
-  core8.startGroup("Getting Git version info");
+  core7.startGroup("Getting Git version info");
   const git = await getGitCommandManager(settings);
-  core8.endGroup();
+  core7.endGroup();
   let authHelper = null;
   try {
     if (git) {
       authHelper = createAuthHelper(git, settings);
       if (settings.setSafeDirectory) {
         await authHelper.configureTempGlobalConfig();
-        core8.info(
+        core7.info(
           `Adding repository directory to the temporary git global config as a safe directory`
         );
         await git.config("safe.directory", settings.repositoryPath, true, true).catch((error) => {
-          core8.info(
+          core7.info(
             `Failed to initialize safe directory with error: ${error}`
           );
         });
@@ -32001,8 +31975,8 @@ async function getSource(settings) {
       );
     }
     if (!git) {
-      core8.info(`The repository will be downloaded using the GitHub REST API`);
-      core8.info(
+      core7.info(`The repository will be downloaded using the GitHub REST API`);
+      core7.info(
         `To create a local Git repository instead, add Git ${MinimumGitVersion} or higher to the PATH`
       );
       if (settings.submodules) {
@@ -32020,49 +31994,47 @@ async function getSource(settings) {
         settings.repositoryName,
         settings.ref,
         settings.commit,
-        settings.repositoryPath,
-        settings.githubServerUrl
+        settings.repositoryPath
       );
       return;
     }
     setRepositoryPath(settings.repositoryPath);
     if (!directoryExistsSync(path5.join(settings.repositoryPath, ".git"))) {
-      core8.startGroup("Initializing the repository");
+      core7.startGroup("Initializing the repository");
       await git.init();
       await git.remoteAdd("origin", repositoryUrl);
-      core8.endGroup();
+      core7.endGroup();
     }
-    core8.startGroup("Disabling automatic garbage collection");
+    core7.startGroup("Disabling automatic garbage collection");
     if (!await git.tryDisableAutomaticGarbageCollection()) {
-      core8.warning(
+      core7.warning(
         `Unable to turn off git automatic garbage collection. The git fetch operation may trigger garbage collection and cause a delay.`
       );
     }
-    core8.endGroup();
+    core7.endGroup();
     if (!authHelper) {
       authHelper = createAuthHelper(git, settings);
     }
-    core8.startGroup("Setting up auth");
+    core7.startGroup("Setting up auth");
     await authHelper.configureAuth();
-    core8.endGroup();
+    core7.endGroup();
     if (!settings.ref && !settings.commit) {
-      core8.startGroup("Determining the default branch");
+      core7.startGroup("Determining the default branch");
       if (settings.sshKey) {
         settings.ref = await git.getDefaultBranch(repositoryUrl);
       } else {
         settings.ref = await getDefaultBranch(
           settings.authToken,
           settings.repositoryOwner,
-          settings.repositoryName,
-          settings.githubServerUrl
+          settings.repositoryName
         );
       }
-      core8.endGroup();
+      core7.endGroup();
     }
     if (settings.lfs) {
       await git.lfsInstall();
     }
-    core8.startGroup("Fetching the repository");
+    core7.startGroup("Fetching the repository");
     if (settings.fetchDepth <= 0) {
       let refSpec = getRefSpecForAllHistory(
         settings.ref,
@@ -32077,38 +32049,38 @@ async function getSource(settings) {
       const refSpec = getRefSpec(settings.ref, settings.commit);
       await git.fetch(refSpec, settings.fetchDepth);
     }
-    core8.endGroup();
-    core8.startGroup("Determining the checkout info");
+    core7.endGroup();
+    core7.startGroup("Determining the checkout info");
     const checkoutInfo = await getCheckoutInfo(
       git,
       settings.ref,
       settings.commit
     );
-    core8.endGroup();
+    core7.endGroup();
     if (settings.lfs) {
-      core8.startGroup("Fetching LFS objects");
+      core7.startGroup("Fetching LFS objects");
       await git.lfsFetch(checkoutInfo.startPoint || checkoutInfo.ref);
-      core8.endGroup();
+      core7.endGroup();
     }
-    core8.startGroup("Checking out the ref");
+    core7.startGroup("Checking out the ref");
     await git.checkout(checkoutInfo.ref, checkoutInfo.startPoint);
-    core8.endGroup();
+    core7.endGroup();
     if (settings.submodules) {
-      core8.startGroup("Setting up auth for fetching submodules");
+      core7.startGroup("Setting up auth for fetching submodules");
       await authHelper.configureGlobalAuth();
-      core8.endGroup();
-      core8.startGroup("Fetching submodules");
+      core7.endGroup();
+      core7.startGroup("Fetching submodules");
       await git.submoduleSync(settings.nestedSubmodules);
       await git.submoduleUpdate(settings.fetchDepth, settings.nestedSubmodules);
       await git.submoduleForeach(
         "git config --local gc.auto 0",
         settings.nestedSubmodules
       );
-      core8.endGroup();
+      core7.endGroup();
       if (settings.persistCredentials) {
-        core8.startGroup("Persisting credentials for submodules");
+        core7.startGroup("Persisting credentials for submodules");
         await authHelper.configureSubmoduleAuth();
-        core8.endGroup();
+        core7.endGroup();
       }
     }
     const commitInfo = await git.log1();
@@ -32119,22 +32091,21 @@ async function getSource(settings) {
       settings.repositoryOwner,
       settings.repositoryName,
       settings.ref,
-      settings.commit,
-      settings.githubServerUrl
+      settings.commit
     );
   } finally {
     if (authHelper) {
       if (!settings.persistCredentials) {
-        core8.startGroup("Removing auth");
+        core7.startGroup("Removing auth");
         await authHelper.removeAuth();
-        core8.endGroup();
+        core7.endGroup();
       }
       authHelper.removeGlobalConfig();
     }
   }
 }
 async function getGitCommandManager(settings) {
-  core8.info(`Working directory is '${settings.repositoryPath}'`);
+  core7.info(`Working directory is '${settings.repositoryPath}'`);
   try {
     return await createCommandManager(
       settings.repositoryPath,
@@ -32149,31 +32120,31 @@ async function getGitCommandManager(settings) {
 }
 
 // node_modules/checkout/src/input-helper.ts
-var core10 = __toESM(require_core());
+var core9 = __toESM(require_core());
 var github3 = __toESM(require_github2());
 var path6 = __toESM(require("path"));
 
 // node_modules/checkout/src/workflow-context-helper.ts
-var core9 = __toESM(require_core());
+var core8 = __toESM(require_core());
 var fs5 = __toESM(require("fs"));
 async function getOrganizationId() {
   var _a, _b;
   try {
     const eventPath = process.env.GITHUB_EVENT_PATH;
     if (!eventPath) {
-      core9.debug(`GITHUB_EVENT_PATH is not defined`);
+      core8.debug(`GITHUB_EVENT_PATH is not defined`);
       return;
     }
     const content = await fs5.promises.readFile(eventPath, { encoding: "utf8" });
     const event = JSON.parse(content);
     const id = (_b = (_a = event == null ? void 0 : event.repository) == null ? void 0 : _a.owner) == null ? void 0 : _b.id;
     if (typeof id !== "number") {
-      core9.debug("Repository owner ID not found within GITHUB event info");
+      core8.debug("Repository owner ID not found within GITHUB event info");
       return;
     }
     return id;
   } catch (err) {
-    core9.debug(
+    core8.debug(
       `Unable to load organization ID from GITHUB_EVENT_PATH: ${err.message || err}`
     );
   }
@@ -32187,10 +32158,10 @@ async function getInputs() {
     throw new Error("GITHUB_WORKSPACE not defined");
   }
   githubWorkspacePath = path6.resolve(githubWorkspacePath);
-  core10.debug(`GITHUB_WORKSPACE = '${githubWorkspacePath}'`);
+  core9.debug(`GITHUB_WORKSPACE = '${githubWorkspacePath}'`);
   directoryExistsSync(githubWorkspacePath, true);
-  const qualifiedRepository = core10.getInput("repository") || `${github3.context.repo.owner}/${github3.context.repo.repo}`;
-  core10.debug(`qualified repository = '${qualifiedRepository}'`);
+  const qualifiedRepository = core9.getInput("repository") || `${github3.context.repo.owner}/${github3.context.repo.repo}`;
+  core9.debug(`qualified repository = '${qualifiedRepository}'`);
   const splitRepository = qualifiedRepository.split("/");
   if (splitRepository.length !== 2 || !splitRepository[0] || !splitRepository[1]) {
     throw new Error(
@@ -32199,7 +32170,7 @@ async function getInputs() {
   }
   result.repositoryOwner = splitRepository[0];
   result.repositoryName = splitRepository[1];
-  result.repositoryPath = core10.getInput("path") || ".";
+  result.repositoryPath = core9.getInput("path") || ".";
   result.repositoryPath = path6.resolve(
     githubWorkspacePath,
     result.repositoryPath
@@ -32212,7 +32183,7 @@ async function getInputs() {
     );
   }
   const isWorkflowRepository = qualifiedRepository.toUpperCase() === `${github3.context.repo.owner}/${github3.context.repo.repo}`.toUpperCase();
-  result.ref = core10.getInput("ref");
+  result.ref = core9.getInput("ref");
   if (!result.ref) {
     if (isWorkflowRepository) {
       result.ref = github3.context.ref;
@@ -32225,37 +32196,35 @@ async function getInputs() {
     result.commit = result.ref;
     result.ref = "";
   }
-  core10.debug(`ref = '${result.ref}'`);
-  core10.debug(`commit = '${result.commit}'`);
-  result.clean = (core10.getInput("clean") || "true").toUpperCase() === "TRUE";
-  core10.debug(`clean = ${result.clean}`);
-  result.fetchDepth = Math.floor(Number(core10.getInput("fetch-depth") || "1"));
+  core9.debug(`ref = '${result.ref}'`);
+  core9.debug(`commit = '${result.commit}'`);
+  result.clean = (core9.getInput("clean") || "true").toUpperCase() === "TRUE";
+  core9.debug(`clean = ${result.clean}`);
+  result.fetchDepth = Math.floor(Number(core9.getInput("fetch-depth") || "1"));
   if (isNaN(result.fetchDepth) || result.fetchDepth < 0) {
     result.fetchDepth = 0;
   }
-  core10.debug(`fetch depth = ${result.fetchDepth}`);
-  result.lfs = (core10.getInput("lfs") || "false").toUpperCase() === "TRUE";
-  core10.debug(`lfs = ${result.lfs}`);
+  core9.debug(`fetch depth = ${result.fetchDepth}`);
+  result.lfs = (core9.getInput("lfs") || "false").toUpperCase() === "TRUE";
+  core9.debug(`lfs = ${result.lfs}`);
   result.submodules = false;
   result.nestedSubmodules = false;
-  const submodulesString = (core10.getInput("submodules") || "").toUpperCase();
+  const submodulesString = (core9.getInput("submodules") || "").toUpperCase();
   if (submodulesString == "RECURSIVE") {
     result.submodules = true;
     result.nestedSubmodules = true;
   } else if (submodulesString == "TRUE") {
     result.submodules = true;
   }
-  core10.debug(`submodules = ${result.submodules}`);
-  core10.debug(`recursive submodules = ${result.nestedSubmodules}`);
-  result.authToken = core10.getInput("token", { required: true });
-  result.sshKey = core10.getInput("ssh-key");
-  result.sshKnownHosts = core10.getInput("ssh-known-hosts");
-  result.sshStrict = (core10.getInput("ssh-strict") || "true").toUpperCase() === "TRUE";
-  result.persistCredentials = (core10.getInput("persist-credentials") || "false").toUpperCase() === "TRUE";
+  core9.debug(`submodules = ${result.submodules}`);
+  core9.debug(`recursive submodules = ${result.nestedSubmodules}`);
+  result.authToken = core9.getInput("token", { required: true });
+  result.sshKey = core9.getInput("ssh-key");
+  result.sshKnownHosts = core9.getInput("ssh-known-hosts");
+  result.sshStrict = (core9.getInput("ssh-strict") || "true").toUpperCase() === "TRUE";
+  result.persistCredentials = (core9.getInput("persist-credentials") || "false").toUpperCase() === "TRUE";
   result.workflowOrganizationId = await getOrganizationId();
-  result.setSafeDirectory = (core10.getInput("set-safe-directory") || "true").toUpperCase() === "TRUE";
-  result.githubServerUrl = core10.getInput("github-server-url");
-  core10.debug(`GitHub Host URL = ${result.githubServerUrl}`);
+  result.setSafeDirectory = (core9.getInput("set-safe-directory") || "true").toUpperCase() === "TRUE";
   return result;
 }
 
@@ -32859,7 +32828,7 @@ var json = failsafe.extend({
     float
   ]
 });
-var core11 = json;
+var core10 = json;
 var YAML_DATE_REGEXP = new RegExp(
   "^([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])$"
 );
@@ -33096,7 +33065,7 @@ var set = new type("tag:yaml.org,2002:set", {
   resolve: resolveYamlSet,
   construct: constructYamlSet
 });
-var _default = core11.extend({
+var _default = core10.extend({
   implicit: [
     timestamp,
     merge
@@ -34903,7 +34872,7 @@ var Type = type;
 var Schema = schema;
 var FAILSAFE_SCHEMA = failsafe;
 var JSON_SCHEMA = json;
-var CORE_SCHEMA = core11;
+var CORE_SCHEMA = core10;
 var DEFAULT_SCHEMA = _default;
 var load = loader.load;
 var loadAll = loader.loadAll;

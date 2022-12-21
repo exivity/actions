@@ -140,6 +140,59 @@ var require_command = __commonJS({
   }
 });
 
+// node_modules/@actions/core/lib/file-command.js
+var require_file_command = __commonJS({
+  "node_modules/@actions/core/lib/file-command.js"(exports) {
+    "use strict";
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m[k];
+      } });
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports && exports.__importStar || function(mod2) {
+      if (mod2 && mod2.__esModule)
+        return mod2;
+      var result = {};
+      if (mod2 != null) {
+        for (var k in mod2)
+          if (k !== "default" && Object.hasOwnProperty.call(mod2, k))
+            __createBinding(result, mod2, k);
+      }
+      __setModuleDefault(result, mod2);
+      return result;
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.issueCommand = void 0;
+    var fs = __importStar(require("fs"));
+    var os = __importStar(require("os"));
+    var utils_1 = require_utils();
+    function issueCommand(command, message) {
+      const filePath = process.env[`GITHUB_${command}`];
+      if (!filePath) {
+        throw new Error(`Unable to find environment variable for file command ${command}`);
+      }
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`Missing file at path: ${filePath}`);
+      }
+      fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+        encoding: "utf8"
+      });
+    }
+    exports.issueCommand = issueCommand;
+  }
+});
+
 // node_modules/@actions/core/node_modules/uuid/dist/rng.js
 var require_rng = __commonJS({
   "node_modules/@actions/core/node_modules/uuid/dist/rng.js"(exports) {
@@ -628,72 +681,6 @@ var require_dist = __commonJS({
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-  }
-});
-
-// node_modules/@actions/core/lib/file-command.js
-var require_file_command = __commonJS({
-  "node_modules/@actions/core/lib/file-command.js"(exports) {
-    "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      o[k2] = m[k];
-    });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
-      Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
-      o["default"] = v;
-    });
-    var __importStar = exports && exports.__importStar || function(mod2) {
-      if (mod2 && mod2.__esModule)
-        return mod2;
-      var result = {};
-      if (mod2 != null) {
-        for (var k in mod2)
-          if (k !== "default" && Object.hasOwnProperty.call(mod2, k))
-            __createBinding(result, mod2, k);
-      }
-      __setModuleDefault(result, mod2);
-      return result;
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
-    var fs = __importStar(require("fs"));
-    var os = __importStar(require("os"));
-    var uuid_1 = require_dist();
-    var utils_1 = require_utils();
-    function issueFileCommand(command, message) {
-      const filePath = process.env[`GITHUB_${command}`];
-      if (!filePath) {
-        throw new Error(`Unable to find environment variable for file command ${command}`);
-      }
-      if (!fs.existsSync(filePath)) {
-        throw new Error(`Missing file at path: ${filePath}`);
-      }
-      fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
-        encoding: "utf8"
-      });
-    }
-    exports.issueFileCommand = issueFileCommand;
-    function prepareKeyValueMessage(key, value) {
-      const delimiter = `ghadelimiter_${uuid_1.v4()}`;
-      const convertedValue = utils_1.toCommandValue(value);
-      if (key.includes(delimiter)) {
-        throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
-      }
-      if (convertedValue.includes(delimiter)) {
-        throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
-      }
-      return `${key}<<${delimiter}${os.EOL}${convertedValue}${os.EOL}${delimiter}`;
-    }
-    exports.prepareKeyValueMessage = prepareKeyValueMessage;
   }
 });
 
@@ -2018,6 +2005,7 @@ var require_core = __commonJS({
     var utils_1 = require_utils();
     var os = __importStar(require("os"));
     var path = __importStar(require("path"));
+    var uuid_1 = require_dist();
     var oidc_utils_1 = require_oidc_utils();
     var ExitCode;
     (function(ExitCode2) {
@@ -2029,9 +2017,18 @@ var require_core = __commonJS({
       process.env[name] = convertedVal;
       const filePath = process.env["GITHUB_ENV"] || "";
       if (filePath) {
-        return file_command_1.issueFileCommand("ENV", file_command_1.prepareKeyValueMessage(name, val));
+        const delimiter = `ghadelimiter_${uuid_1.v4()}`;
+        if (name.includes(delimiter)) {
+          throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
+        }
+        if (convertedVal.includes(delimiter)) {
+          throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
+        }
+        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
+        file_command_1.issueCommand("ENV", commandValue);
+      } else {
+        command_1.issueCommand("set-env", { name }, convertedVal);
       }
-      command_1.issueCommand("set-env", { name }, convertedVal);
     }
     exports.exportVariable = exportVariable;
     function setSecret(secret) {
@@ -2041,7 +2038,7 @@ var require_core = __commonJS({
     function addPath(inputPath) {
       const filePath = process.env["GITHUB_PATH"] || "";
       if (filePath) {
-        file_command_1.issueFileCommand("PATH", inputPath);
+        file_command_1.issueCommand("PATH", inputPath);
       } else {
         command_1.issueCommand("add-path", {}, inputPath);
       }
@@ -2061,10 +2058,7 @@ var require_core = __commonJS({
     exports.getInput = getInput3;
     function getMultilineInput(name, options) {
       const inputs = getInput3(name, options).split("\n").filter((x) => x !== "");
-      if (options && options.trimWhitespace === false) {
-        return inputs;
-      }
-      return inputs.map((input) => input.trim());
+      return inputs;
     }
     exports.getMultilineInput = getMultilineInput;
     function getBooleanInput(name, options) {
@@ -2080,12 +2074,8 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports.getBooleanInput = getBooleanInput;
     function setOutput(name, value) {
-      const filePath = process.env["GITHUB_OUTPUT"] || "";
-      if (filePath) {
-        return file_command_1.issueFileCommand("OUTPUT", file_command_1.prepareKeyValueMessage(name, value));
-      }
       process.stdout.write(os.EOL);
-      command_1.issueCommand("set-output", { name }, utils_1.toCommandValue(value));
+      command_1.issueCommand("set-output", { name }, value);
     }
     exports.setOutput = setOutput;
     function setCommandEcho(enabled) {
@@ -2143,11 +2133,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports.group = group;
     function saveState(name, value) {
-      const filePath = process.env["GITHUB_STATE"] || "";
-      if (filePath) {
-        return file_command_1.issueFileCommand("STATE", file_command_1.prepareKeyValueMessage(name, value));
-      }
-      command_1.issueCommand("save-state", { name }, utils_1.toCommandValue(value));
+      command_1.issueCommand("save-state", { name }, value);
     }
     exports.saveState = saveState;
     function getState(name) {
@@ -7466,7 +7452,7 @@ var require_utils4 = __commonJS({
       return result;
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getOctokitOptions = exports.GitHub = exports.defaults = exports.context = void 0;
+    exports.getOctokitOptions = exports.GitHub = exports.context = void 0;
     var Context = __importStar(require_context());
     var Utils = __importStar(require_utils2());
     var core_1 = require_dist_node8();
@@ -7474,13 +7460,13 @@ var require_utils4 = __commonJS({
     var plugin_paginate_rest_1 = require_dist_node10();
     exports.context = new Context.Context();
     var baseUrl = Utils.getApiBaseUrl();
-    exports.defaults = {
+    var defaults = {
       baseUrl,
       request: {
         agent: Utils.getProxyAgent(baseUrl)
       }
     };
-    exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports.defaults);
+    exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(defaults);
     function getOctokitOptions(token, options) {
       const opts = Object.assign({}, options || {});
       const auth = Utils.getAuthString(token, opts);
@@ -7530,9 +7516,8 @@ var require_github = __commonJS({
     var Context = __importStar(require_context());
     var utils_1 = require_utils4();
     exports.context = new Context.Context();
-    function getOctokit2(token, options, ...additionalPlugins) {
-      const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
-      return new GitHubWithPlugins(utils_1.getOctokitOptions(token, options));
+    function getOctokit2(token, options) {
+      return new utils_1.GitHub(utils_1.getOctokitOptions(token, options));
     }
     exports.getOctokit = getOctokit2;
   }
@@ -19453,12 +19438,6 @@ var util;
     return array.map((val) => typeof val === "string" ? `'${val}'` : val).join(separator);
   }
   util2.joinValues = joinValues;
-  util2.jsonStringifyReplacer = (_, value) => {
-    if (typeof value === "bigint") {
-      return value.toString();
-    }
-    return value;
-  };
 })(util || (util = {}));
 var ZodParsedType = util.arrayToEnum([
   "string",
@@ -19604,7 +19583,7 @@ var ZodError = class extends Error {
     return this.message;
   }
   get message() {
-    return JSON.stringify(this.issues, util.jsonStringifyReplacer, 2);
+    return JSON.stringify(this.issues, jsonStringifyReplacer, 2);
   }
   get isEmpty() {
     return this.issues.length === 0;
@@ -19630,7 +19609,7 @@ ZodError.create = (issues) => {
   const error = new ZodError(issues);
   return error;
 };
-var errorMap = (issue, _ctx) => {
+var defaultErrorMap = (issue, _ctx) => {
   let message;
   switch (issue.code) {
     case ZodIssueCode.invalid_type:
@@ -19641,7 +19620,7 @@ var errorMap = (issue, _ctx) => {
       }
       break;
     case ZodIssueCode.invalid_literal:
-      message = `Invalid literal value, expected ${JSON.stringify(issue.expected, util.jsonStringifyReplacer)}`;
+      message = `Invalid literal value, expected ${JSON.stringify(issue.expected, jsonStringifyReplacer)}`;
       break;
     case ZodIssueCode.unrecognized_keys:
       message = `Unrecognized key(s) in object: ${util.joinValues(issue.keys, ", ")}`;
@@ -19718,7 +19697,7 @@ var errorMap = (issue, _ctx) => {
   }
   return { message };
 };
-var overrideErrorMap = errorMap;
+var overrideErrorMap = defaultErrorMap;
 function setErrorMap(map) {
   overrideErrorMap = map;
 }
@@ -19753,7 +19732,7 @@ function addIssueToContext(ctx, issueData) {
       ctx.common.contextualErrorMap,
       ctx.schemaErrorMap,
       getErrorMap(),
-      errorMap
+      defaultErrorMap
     ].filter((x) => !!x)
   });
   ctx.common.issues.push(issue);
@@ -19819,6 +19798,12 @@ var isAborted = (x) => x.status === "aborted";
 var isDirty = (x) => x.status === "dirty";
 var isValid = (x) => x.status === "valid";
 var isAsync = (x) => typeof Promise !== void 0 && x instanceof Promise;
+var jsonStringifyReplacer = (_, value) => {
+  if (typeof value === "bigint") {
+    return value.toString();
+  }
+  return value;
+};
 var errorUtil;
 (function(errorUtil2) {
   errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
@@ -19849,12 +19834,12 @@ var handleResult = (ctx, result) => {
 function processCreateParams(params) {
   if (!params)
     return {};
-  const { errorMap: errorMap2, invalid_type_error, required_error, description } = params;
-  if (errorMap2 && (invalid_type_error || required_error)) {
-    throw new Error(`Can't use "invalid_type_error" or "required_error" in conjunction with custom error map.`);
+  const { errorMap, invalid_type_error, required_error, description } = params;
+  if (errorMap && (invalid_type_error || required_error)) {
+    throw new Error(`Can't use "invalid" or "required" in conjunction with custom error map.`);
   }
-  if (errorMap2)
-    return { errorMap: errorMap2, description };
+  if (errorMap)
+    return { errorMap, description };
   const customMap = (iss, ctx) => {
     if (iss.code !== "invalid_type")
       return { message: ctx.defaultError };
@@ -20915,11 +20900,9 @@ var ZodObject = class extends ZodType {
     const { status, ctx } = this._processInputParams(input);
     const { shape, keys: shapeKeys } = this._getCached();
     const extraKeys = [];
-    if (!(this._def.catchall instanceof ZodNever && this._def.unknownKeys === "strip")) {
-      for (const key in ctx.data) {
-        if (!shapeKeys.includes(key)) {
-          extraKeys.push(key);
-        }
+    for (const key in ctx.data) {
+      if (!shapeKeys.includes(key)) {
+        extraKeys.push(key);
       }
     }
     const pairs = [];
@@ -21439,9 +21422,6 @@ var ZodTuple = class extends ZodType {
   }
 };
 ZodTuple.create = (schemas, params) => {
-  if (!Array.isArray(schemas)) {
-    throw new Error("You must pass an array of schemas to z.tuple([ ... ])");
-  }
   return new ZodTuple({
     items: schemas,
     typeName: ZodFirstPartyTypeKind.ZodTuple,
@@ -21667,7 +21647,7 @@ var ZodFunction = class extends ZodType {
           ctx.common.contextualErrorMap,
           ctx.schemaErrorMap,
           getErrorMap(),
-          errorMap
+          defaultErrorMap
         ].filter((x) => !!x),
         issueData: {
           code: ZodIssueCode.invalid_arguments,
@@ -21683,7 +21663,7 @@ var ZodFunction = class extends ZodType {
           ctx.common.contextualErrorMap,
           ctx.schemaErrorMap,
           getErrorMap(),
-          errorMap
+          defaultErrorMap
         ].filter((x) => !!x),
         issueData: {
           code: ZodIssueCode.invalid_return_type,
@@ -21748,14 +21728,14 @@ var ZodFunction = class extends ZodType {
     const validatedFunc = this.parse(func);
     return validatedFunc;
   }
-  static create(args, returns, params) {
-    return new ZodFunction({
-      args: args ? args : ZodTuple.create([]).rest(ZodUnknown.create()),
-      returns: returns || ZodUnknown.create(),
-      typeName: ZodFirstPartyTypeKind.ZodFunction,
-      ...processCreateParams(params)
-    });
-  }
+};
+ZodFunction.create = (args, returns, params) => {
+  return new ZodFunction({
+    args: args ? args.rest(ZodUnknown.create()) : ZodTuple.create([]).rest(ZodUnknown.create()),
+    returns: returns || ZodUnknown.create(),
+    typeName: ZodFirstPartyTypeKind.ZodFunction,
+    ...processCreateParams(params)
+  });
 };
 var ZodLazy = class extends ZodType {
   get schema() {
@@ -22216,14 +22196,10 @@ var preprocessType = ZodEffects.createWithPreprocess;
 var ostring = () => stringType().optional();
 var onumber = () => numberType().optional();
 var oboolean = () => booleanType().optional();
-var NEVER = INVALID;
 var mod = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   getParsedType,
   ZodParsedType,
-  defaultErrorMap: errorMap,
-  setErrorMap,
-  getErrorMap,
   makeIssue,
   EMPTY_PATH,
   addIssueToContext,
@@ -22235,6 +22211,7 @@ var mod = /* @__PURE__ */ Object.freeze({
   isDirty,
   isValid,
   isAsync,
+  jsonStringifyReplacer,
   ZodType,
   ZodString,
   ZodNumber,
@@ -22317,10 +22294,12 @@ var mod = /* @__PURE__ */ Object.freeze({
   union: unionType,
   unknown: unknownType,
   "void": voidType,
-  NEVER,
   ZodIssueCode,
   quotelessJson,
-  ZodError
+  ZodError,
+  defaultErrorMap,
+  setErrorMap,
+  getErrorMap
 });
 
 // virustotal/src/virustotal.ts

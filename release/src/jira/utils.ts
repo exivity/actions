@@ -1,6 +1,7 @@
 import { identity, filter, chain, uniq, pipe, isEmpty, map } from 'ramda'
 import type { Version2Models } from 'jira.js'
 import { getJiraClient } from '../common/inputs'
+import { info } from 'console'
 
 export const JIRA_KEY_RGX = new RegExp(/\bEXVT-\d+\b|\bCLS-\d+\b/g)
 
@@ -67,6 +68,13 @@ export function noReleaseNotesTitlePresent(
   )
 }
 
+export function hasReleaseNotesTitle(issue: Version2Models.Issue): boolean {
+  return (
+    typeof issue.fields[JiraCustomFields.ReleaseNotesTitle] === 'string' &&
+    issue.fields[JiraCustomFields.ReleaseNotesTitle].length > 0
+  )
+}
+
 export function getReleaseNotesDescription(
   issue: Version2Models.Issue
 ): string {
@@ -110,5 +118,15 @@ export const getPrMissingReleaseNotes = async (pr: {
 
   return Promise.all(
     issues.map((key) => jiraClient.issues.getIssue({ issueIdOrKey: key }))
-  ).then(getMissingReleaseNotes)
+  ).then((issues) => {
+    issues.filter(hasReleaseNotesTitle).forEach((issue) => {
+      info(
+        `Found release notes for ${issue.key} in Jira: ${getReleaseNotesTitle(
+          issue
+        )}`
+      )
+    })
+
+    return getMissingReleaseNotes(issues)
+  })
 }
