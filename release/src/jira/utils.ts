@@ -119,11 +119,17 @@ export const getPrMissingReleaseNotes = async (pr: {
     pr?.body.match(JIRA_KEY_RGX),
   ])
 
-  info(`found issues: \n${issues.join('\n')}`)
+  info(`Found issues in PR body: \n${issues.join('\n')}`)
 
   return Promise.all(
     issues.map((key) => jiraClient.issues.getIssue({ issueIdOrKey: key }))
   ).then((issues) => {
+    issues.forEach((issue) => {
+      info(
+        `Found issue ${issue.key} in Jira: $(${issue.fields.issuetype.name})`
+      )
+      info(`Release notes title: ${getReleaseNotesTitle(issue)}`)
+    })
     issues.filter(hasReleaseNotesTitle).forEach((issue) => {
       info(
         `Found release notes for ${issue.key} in Jira: ${getReleaseNotesTitle(

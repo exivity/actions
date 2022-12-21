@@ -67141,11 +67141,17 @@ var getPrMissingReleaseNotes = async (pr) => {
     pr == null ? void 0 : pr.title.match(JIRA_KEY_RGX),
     pr == null ? void 0 : pr.body.match(JIRA_KEY_RGX)
   ]);
-  (0, import_console.info)(`found issues: 
+  (0, import_console.info)(`Found issues in PR body: 
 ${issues.join("\n")}`);
   return Promise.all(
     issues.map((key) => jiraClient2.issues.getIssue({ issueIdOrKey: key }))
   ).then((issues2) => {
+    issues2.forEach((issue) => {
+      (0, import_console.info)(
+        `Found issue ${issue.key} in Jira: $(${issue.fields.issuetype.name})`
+      );
+      (0, import_console.info)(`Release notes title: ${getReleaseNotesTitle(issue)}`);
+    });
     issues2.filter(hasReleaseNotesTitle).forEach((issue) => {
       (0, import_console.info)(
         `Found release notes for ${issue.key} in Jira: ${getReleaseNotesTitle(
