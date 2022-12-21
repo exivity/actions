@@ -52,6 +52,7 @@ async function run() {
 
   if (requiresJiraTicket) {
     const missingReleaseNotes = await getPrMissingReleaseNotes(pr)
+    info(`Missing release notes: ${missingReleaseNotes.length}`)
 
     if (missingReleaseNotes.length > 0) {
       throw new Error(`

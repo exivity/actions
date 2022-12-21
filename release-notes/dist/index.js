@@ -67184,6 +67184,7 @@ async function run() {
   }
   if (requiresJiraTicket) {
     const missingReleaseNotes = await getPrMissingReleaseNotes(pr);
+    (0, import_core6.info)(`Missing release notes: ${missingReleaseNotes.length}`);
     if (missingReleaseNotes.length > 0) {
       throw new Error(`
         Missing release notes for:
