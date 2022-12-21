@@ -70072,6 +70072,8 @@ function getReleaseNotesTitle(issue) {
   return issue.fields["customfield_10529" /* ReleaseNotesTitle */] ?? "";
 }
 function noReleaseNotesTitlePresent(issue) {
+  if (issue.fields["customfield_10529" /* ReleaseNotesTitle */] === null)
+    return true;
   return typeof issue.fields["customfield_10529" /* ReleaseNotesTitle */] === "string" && isEmpty_default(issue.fields["customfield_10529" /* ReleaseNotesTitle */].trim());
 }
 function getReleaseNotesDescription(issue) {

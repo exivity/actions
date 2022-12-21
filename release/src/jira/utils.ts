@@ -62,6 +62,8 @@ export function getReleaseNotesTitle(issue: Version2Models.Issue): string {
 export function noReleaseNotesTitlePresent(
   issue: Version2Models.Issue
 ): boolean {
+  if (issue.fields[JiraCustomFields.ReleaseNotesTitle] === null) return true
+
   return (
     typeof issue.fields[JiraCustomFields.ReleaseNotesTitle] === 'string' &&
     isEmpty(issue.fields[JiraCustomFields.ReleaseNotesTitle].trim())
@@ -69,6 +71,8 @@ export function noReleaseNotesTitlePresent(
 }
 
 export function hasReleaseNotesTitle(issue: Version2Models.Issue): boolean {
+  if (issue.fields[JiraCustomFields.ReleaseNotesTitle] === null) return false
+
   return (
     typeof issue.fields[JiraCustomFields.ReleaseNotesTitle] === 'string' &&
     issue.fields[JiraCustomFields.ReleaseNotesTitle].trim().length > 0
@@ -125,15 +129,9 @@ export const getPrMissingReleaseNotes = async (pr: {
     issues.map((key) => jiraClient.issues.getIssue({ issueIdOrKey: key }))
   ).then((issues) => {
     issues.forEach((issue) => {
-      info(
-        `Found issue ${issue.key} in Jira: $(${issue.fields.issuetype.name})`
-      )
-      info(`Release notes title: ${typeof issue.fields[
-        JiraCustomFields.ReleaseNotesTitle
-      ]}
-        ${issue.fields[JiraCustomFields.ReleaseNotesTitle].length}
-        ${issue.fields[JiraCustomFields.ReleaseNotesTitle]}
-      `)
+      info(`Issue type: ${issue.fields.issuetype.name}`)
+      info(`Release notes title: ${getReleaseNotesTitle(issue)}`)
+      info(`Release notes description: ${getReleaseNotesDescription(issue)}`)
     })
     issues.filter(hasReleaseNotesTitle).forEach((issue) => {
       info(

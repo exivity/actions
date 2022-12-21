@@ -67113,10 +67113,17 @@ function getReleaseNotesTitle(issue) {
   return issue.fields["customfield_10529" /* ReleaseNotesTitle */] ?? "";
 }
 function noReleaseNotesTitlePresent(issue) {
+  if (issue.fields["customfield_10529" /* ReleaseNotesTitle */] === null)
+    return true;
   return typeof issue.fields["customfield_10529" /* ReleaseNotesTitle */] === "string" && isEmpty_default(issue.fields["customfield_10529" /* ReleaseNotesTitle */].trim());
 }
 function hasReleaseNotesTitle(issue) {
+  if (issue.fields["customfield_10529" /* ReleaseNotesTitle */] === null)
+    return false;
   return typeof issue.fields["customfield_10529" /* ReleaseNotesTitle */] === "string" && issue.fields["customfield_10529" /* ReleaseNotesTitle */].trim().length > 0;
+}
+function getReleaseNotesDescription(issue) {
+  return issue.fields["customfield_10530" /* ReleaseNotesDescription */] ?? "";
 }
 function noReleaseNotesNeeded(issue) {
   return issue.fields.labels.includes("no-release-notes-needed");
@@ -67147,13 +67154,9 @@ ${issues.join("\n")}`);
     issues.map((key) => jiraClient2.issues.getIssue({ issueIdOrKey: key }))
   ).then((issues2) => {
     issues2.forEach((issue) => {
-      (0, import_console.info)(
-        `Found issue ${issue.key} in Jira: $(${issue.fields.issuetype.name})`
-      );
-      (0, import_console.info)(`Release notes title: ${typeof issue.fields["customfield_10529" /* ReleaseNotesTitle */]}
-        ${issue.fields["customfield_10529" /* ReleaseNotesTitle */].length}
-        ${issue.fields["customfield_10529" /* ReleaseNotesTitle */]}
-      `);
+      (0, import_console.info)(`Issue type: ${issue.fields.issuetype.name}`);
+      (0, import_console.info)(`Release notes title: ${getReleaseNotesTitle(issue)}`);
+      (0, import_console.info)(`Release notes description: ${getReleaseNotesDescription(issue)}`);
     });
     issues2.filter(hasReleaseNotesTitle).forEach((issue) => {
       (0, import_console.info)(
