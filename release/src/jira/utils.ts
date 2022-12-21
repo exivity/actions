@@ -128,7 +128,12 @@ export const getPrMissingReleaseNotes = async (pr: {
       info(
         `Found issue ${issue.key} in Jira: $(${issue.fields.issuetype.name})`
       )
-      info(`Release notes title: ${getReleaseNotesTitle(issue)}`)
+      info(`Release notes title: ${typeof issue.fields[
+        JiraCustomFields.ReleaseNotesTitle
+      ]}
+        ${issue.fields[JiraCustomFields.ReleaseNotesTitle].length}
+        ${issue.fields[JiraCustomFields.ReleaseNotesTitle]}
+      `)
     })
     issues.filter(hasReleaseNotesTitle).forEach((issue) => {
       info(

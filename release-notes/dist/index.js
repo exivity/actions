@@ -67150,7 +67150,10 @@ ${issues.join("\n")}`);
       (0, import_console.info)(
         `Found issue ${issue.key} in Jira: $(${issue.fields.issuetype.name})`
       );
-      (0, import_console.info)(`Release notes title: ${getReleaseNotesTitle(issue)}`);
+      (0, import_console.info)(`Release notes title: ${typeof issue.fields["customfield_10529" /* ReleaseNotesTitle */]}
+        ${issue.fields["customfield_10529" /* ReleaseNotesTitle */].length}
+        ${issue.fields["customfield_10529" /* ReleaseNotesTitle */]}
+      `);
     });
     issues2.filter(hasReleaseNotesTitle).forEach((issue) => {
       (0, import_console.info)(
