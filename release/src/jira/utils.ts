@@ -128,17 +128,10 @@ export const getPrMissingReleaseNotes = async (pr: {
   return Promise.all(
     issues.map((key) => jiraClient.issues.getIssue({ issueIdOrKey: key }))
   ).then((issues) => {
-    issues.forEach((issue) => {
+    issues.filter(hasReleaseNotesTitle).forEach((issue) => {
       info(`Issue type: ${issue.fields.issuetype.name}`)
       info(`Release notes title: ${getReleaseNotesTitle(issue)}`)
       info(`Release notes description: ${getReleaseNotesDescription(issue)}`)
-    })
-    issues.filter(hasReleaseNotesTitle).forEach((issue) => {
-      info(
-        `Found release notes for ${issue.key} in Jira: ${getReleaseNotesTitle(
-          issue
-        )}`
-      )
     })
 
     return getMissingReleaseNotes(issues)
