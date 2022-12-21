@@ -71,7 +71,7 @@ export function noReleaseNotesTitlePresent(
 export function hasReleaseNotesTitle(issue: Version2Models.Issue): boolean {
   return (
     typeof issue.fields[JiraCustomFields.ReleaseNotesTitle] === 'string' &&
-    issue.fields[JiraCustomFields.ReleaseNotesTitle].length > 0
+    issue.fields[JiraCustomFields.ReleaseNotesTitle].trim().length > 0
   )
 }
 
