@@ -70609,7 +70609,17 @@ async function getReleaseVersion() {
     return newVersion;
   } catch (err) {
     throw new Error(
-      `Could not create new release version in Jira: ${JSON.stringify(err)}`
+      `Could not create new release version in Jira: ${JSON.stringify(err)} 
+
+      Payload: ${JSON.stringify(
+        {
+          name: lockfile.version.replace(/v/, ""),
+          projectId: getJiraProjectId(),
+          releaseDate: toDateString(new Date())
+        },
+        null,
+        2
+      )}`
     );
   }
 }
