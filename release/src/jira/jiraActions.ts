@@ -73,10 +73,8 @@ export async function transitionToReleased(issueIdOrKey: string) {
   }
 }
 
-function toDateString(date: Date): string {
-  return `${date.getUTCFullYear()}-${('0' + date.getUTCMonth()).slice(-2)}-${(
-    '0' + date.getUTCDate()
-  ).slice(-2)}`
+function toDateString(date: Date) {
+  return date.toISOString().split('T')[0]
 }
 
 async function getReleaseVersion() {

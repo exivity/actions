@@ -70579,7 +70579,7 @@ async function transitionToReleased(issueIdOrKey) {
   }
 }
 function toDateString(date) {
-  return `${date.getUTCFullYear()}-${("0" + date.getUTCMonth()).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}`;
+  return date.toISOString().split("T")[0];
 }
 async function getReleaseVersion() {
   const jiraClient2 = getJiraClient();
