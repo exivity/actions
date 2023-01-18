@@ -347,10 +347,10 @@
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-types/-/webhooks-types-6.7.0.tgz#5fae3f6d92befcb8224a8c19a18d9d90e59f095d"
   integrity sha512-bykm7UkSnxmb2uhSfcLM1Pity/LQ6ZBSdzy9HU0vXjR+2g+tzlmRhXb7Go8oj0TlgO+vDrTivGXju6zkzOGKjA==
 
-"@octokit/webhooks@10.6.1":
-  version "10.6.1"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-10.6.1.tgz#5623cf2abf7abff44a7e8ec4a0b815b552408c46"
-  integrity sha512-+1LZDqSD9geJq6T1GRvjilzx+1l8SrJm9gdQlpOUFeIHhgYJXDvsobx3Ha4yvX4BjhH47BtyuEPZW6EUAOCwNw==
+"@octokit/webhooks@10.6.2":
+  version "10.6.2"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-10.6.2.tgz#5fe14f483582c073c0c1582f790e81b90bac344b"
+  integrity sha512-C45+ZkNngFQ+OvRxHaBY4ryB+/CvB44/gCXp3OciulUwbAHt1fznhSWOkctsi2FTnbowr4CfQQBXMJhJGopb5g==
   dependencies:
     "@octokit/request-error" "^3.0.0"
     "@octokit/webhooks-methods" "^3.0.0"
