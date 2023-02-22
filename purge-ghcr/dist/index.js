@@ -11041,7 +11041,7 @@ async function run() {
   let tag;
   if (isEvent(eventName, "workflow_dispatch", eventData)) {
     tag = (_a = eventData.inputs) == null ? void 0 : _a.tag;
-  } else if (isEvent(eventName, "delete", eventData)) {
+  } else if (isEvent(eventName, "delete", eventData) && eventData.ref_type === "branch") {
     tag = eventData.ref;
   } else {
     tag = branchToTag();
