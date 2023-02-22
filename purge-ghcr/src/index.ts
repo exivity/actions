@@ -24,6 +24,8 @@ async function run() {
 
   if (isEvent(eventName, 'workflow_dispatch', eventData)) {
     tag = eventData.inputs?.tag as string
+  } else if (isEvent(eventName, 'delete', eventData)) {
+    tag = eventData.ref
   } else {
     tag = branchToTag()
   }
