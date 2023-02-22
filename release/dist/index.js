@@ -140,59 +140,6 @@ var require_command = __commonJS({
   }
 });
 
-// node_modules/@actions/core/lib/file-command.js
-var require_file_command = __commonJS({
-  "node_modules/@actions/core/lib/file-command.js"(exports) {
-    "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      o[k2] = m[k];
-    });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
-      Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
-      o["default"] = v;
-    });
-    var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
-      var result = {};
-      if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
-      }
-      __setModuleDefault(result, mod);
-      return result;
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.issueCommand = void 0;
-    var fs = __importStar(require("fs"));
-    var os = __importStar(require("os"));
-    var utils_1 = require_utils();
-    function issueCommand(command, message) {
-      const filePath = process.env[`GITHUB_${command}`];
-      if (!filePath) {
-        throw new Error(`Unable to find environment variable for file command ${command}`);
-      }
-      if (!fs.existsSync(filePath)) {
-        throw new Error(`Missing file at path: ${filePath}`);
-      }
-      fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
-        encoding: "utf8"
-      });
-    }
-    exports.issueCommand = issueCommand;
-  }
-});
-
 // node_modules/@actions/core/node_modules/uuid/dist/rng.js
 var require_rng = __commonJS({
   "node_modules/@actions/core/node_modules/uuid/dist/rng.js"(exports) {
@@ -681,6 +628,72 @@ var require_dist = __commonJS({
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
+  }
+});
+
+// node_modules/@actions/core/lib/file-command.js
+var require_file_command = __commonJS({
+  "node_modules/@actions/core/lib/file-command.js"(exports) {
+    "use strict";
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m[k];
+      } });
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports && exports.__importStar || function(mod) {
+      if (mod && mod.__esModule)
+        return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
+    var fs = __importStar(require("fs"));
+    var os = __importStar(require("os"));
+    var uuid_1 = require_dist();
+    var utils_1 = require_utils();
+    function issueFileCommand(command, message) {
+      const filePath = process.env[`GITHUB_${command}`];
+      if (!filePath) {
+        throw new Error(`Unable to find environment variable for file command ${command}`);
+      }
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`Missing file at path: ${filePath}`);
+      }
+      fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+        encoding: "utf8"
+      });
+    }
+    exports.issueFileCommand = issueFileCommand;
+    function prepareKeyValueMessage(key, value) {
+      const delimiter = `ghadelimiter_${uuid_1.v4()}`;
+      const convertedValue = utils_1.toCommandValue(value);
+      if (key.includes(delimiter)) {
+        throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
+      }
+      if (convertedValue.includes(delimiter)) {
+        throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
+      }
+      return `${key}<<${delimiter}${os.EOL}${convertedValue}${os.EOL}${delimiter}`;
+    }
+    exports.prepareKeyValueMessage = prepareKeyValueMessage;
   }
 });
 
@@ -2005,7 +2018,6 @@ var require_core = __commonJS({
     var utils_1 = require_utils();
     var os = __importStar(require("os"));
     var path3 = __importStar(require("path"));
-    var uuid_1 = require_dist();
     var oidc_utils_1 = require_oidc_utils();
     var ExitCode;
     (function(ExitCode2) {
@@ -2017,18 +2029,9 @@ var require_core = __commonJS({
       process.env[name] = convertedVal;
       const filePath = process.env["GITHUB_ENV"] || "";
       if (filePath) {
-        const delimiter = `ghadelimiter_${uuid_1.v4()}`;
-        if (name.includes(delimiter)) {
-          throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
-        }
-        if (convertedVal.includes(delimiter)) {
-          throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
-        }
-        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
-        file_command_1.issueCommand("ENV", commandValue);
-      } else {
-        command_1.issueCommand("set-env", { name }, convertedVal);
+        return file_command_1.issueFileCommand("ENV", file_command_1.prepareKeyValueMessage(name, val));
       }
+      command_1.issueCommand("set-env", { name }, convertedVal);
     }
     exports.exportVariable = exportVariable;
     function setSecret(secret) {
@@ -2038,7 +2041,7 @@ var require_core = __commonJS({
     function addPath(inputPath) {
       const filePath = process.env["GITHUB_PATH"] || "";
       if (filePath) {
-        file_command_1.issueCommand("PATH", inputPath);
+        file_command_1.issueFileCommand("PATH", inputPath);
       } else {
         command_1.issueCommand("add-path", {}, inputPath);
       }
@@ -2058,7 +2061,10 @@ var require_core = __commonJS({
     exports.getInput = getInput5;
     function getMultilineInput(name, options) {
       const inputs = getInput5(name, options).split("\n").filter((x) => x !== "");
-      return inputs;
+      if (options && options.trimWhitespace === false) {
+        return inputs;
+      }
+      return inputs.map((input) => input.trim());
     }
     exports.getMultilineInput = getMultilineInput;
     function getBooleanInput2(name, options) {
@@ -2074,8 +2080,12 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports.getBooleanInput = getBooleanInput2;
     function setOutput(name, value) {
+      const filePath = process.env["GITHUB_OUTPUT"] || "";
+      if (filePath) {
+        return file_command_1.issueFileCommand("OUTPUT", file_command_1.prepareKeyValueMessage(name, value));
+      }
       process.stdout.write(os.EOL);
-      command_1.issueCommand("set-output", { name }, value);
+      command_1.issueCommand("set-output", { name }, utils_1.toCommandValue(value));
     }
     exports.setOutput = setOutput;
     function setCommandEcho(enabled) {
@@ -2133,7 +2143,11 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports.group = group;
     function saveState(name, value) {
-      command_1.issueCommand("save-state", { name }, value);
+      const filePath = process.env["GITHUB_STATE"] || "";
+      if (filePath) {
+        return file_command_1.issueFileCommand("STATE", file_command_1.prepareKeyValueMessage(name, value));
+      }
+      command_1.issueCommand("save-state", { name }, utils_1.toCommandValue(value));
     }
     exports.saveState = saveState;
     function getState(name) {
@@ -7452,7 +7466,7 @@ var require_utils4 = __commonJS({
       return result;
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getOctokitOptions = exports.GitHub = exports.context = void 0;
+    exports.getOctokitOptions = exports.GitHub = exports.defaults = exports.context = void 0;
     var Context = __importStar(require_context());
     var Utils = __importStar(require_utils2());
     var core_1 = require_dist_node8();
@@ -7460,13 +7474,13 @@ var require_utils4 = __commonJS({
     var plugin_paginate_rest_1 = require_dist_node10();
     exports.context = new Context.Context();
     var baseUrl = Utils.getApiBaseUrl();
-    var defaults = {
+    exports.defaults = {
       baseUrl,
       request: {
         agent: Utils.getProxyAgent(baseUrl)
       }
     };
-    exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(defaults);
+    exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports.defaults);
     function getOctokitOptions(token, options) {
       const opts = Object.assign({}, options || {});
       const auth = Utils.getAuthString(token, opts);
@@ -7516,8 +7530,9 @@ var require_github = __commonJS({
     var Context = __importStar(require_context());
     var utils_1 = require_utils4();
     exports.context = new Context.Context();
-    function getOctokit2(token, options) {
-      return new utils_1.GitHub(utils_1.getOctokitOptions(token, options));
+    function getOctokit2(token, options, ...additionalPlugins) {
+      const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
+      return new GitHubWithPlugins(utils_1.getOctokitOptions(token, options));
     }
     exports.getOctokit = getOctokit2;
   }
@@ -29437,10 +29452,12 @@ var require_baseClient = __commonJS({
       constructor(config) {
         var _a;
         this.config = config;
-        this.instance = axios_1.default.create(Object.assign(Object.assign({ paramsSerializer: this.paramSerializer.bind(this) }, config.baseRequestConfig), { baseURL: config.host, headers: this.removeUndefinedProperties(Object.assign({ [STRICT_GDPR_FLAG]: config.strictGDPR, [ATLASSIAN_TOKEN_CHECK_FLAG]: config.noCheckAtlassianToken ? ATLASSIAN_TOKEN_CHECK_NOCHECK_VALUE : void 0 }, (_a = config.baseRequestConfig) === null || _a === void 0 ? void 0 : _a.headers)) }));
-        if (this.config.newErrorHandling === void 0) {
-          console.log("Jira.js: Deprecation warning: New error handling mechanism added. Please use `newErrorHandling: true` in config");
+        try {
+          new URL(config.host);
+        } catch (e) {
+          throw new Error("Couldn't parse the host URL. Perhaps you forgot to add 'http://' or 'https://' at the beginning of the URL?");
         }
+        this.instance = axios_1.default.create(Object.assign(Object.assign({ paramsSerializer: this.paramSerializer.bind(this) }, config.baseRequestConfig), { baseURL: config.host, headers: this.removeUndefinedProperties(Object.assign({ [STRICT_GDPR_FLAG]: config.strictGDPR, [ATLASSIAN_TOKEN_CHECK_FLAG]: config.noCheckAtlassianToken ? ATLASSIAN_TOKEN_CHECK_NOCHECK_VALUE : void 0 }, (_a = config.baseRequestConfig) === null || _a === void 0 ? void 0 : _a.headers)) }));
       }
       paramSerializer(parameters) {
         const parts = [];
@@ -29996,7 +30013,11 @@ var require_dashboards = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/2/dashboard/${parameters.dashboardId}/items/${parameters.itemId}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            data: parameters.body
           };
           return this.client.sendRequest(config, callback);
         });
@@ -30499,7 +30520,9 @@ var require_groups = __commonJS({
               startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
               maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
               groupId: parameters === null || parameters === void 0 ? void 0 : parameters.groupId,
-              groupName: parameters === null || parameters === void 0 ? void 0 : parameters.groupName
+              groupName: parameters === null || parameters === void 0 ? void 0 : parameters.groupName,
+              accessType: parameters === null || parameters === void 0 ? void 0 : parameters.accessType,
+              applicationKey: parameters === null || parameters === void 0 ? void 0 : parameters.applicationKey
             }
           };
           return this.client.sendRequest(config, callback);
@@ -32034,6 +32057,32 @@ var require_issuePriorities = __commonJS({
           return this.client.sendRequest(config, callback);
         });
       }
+      setDefaultPriority(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/priority/default",
+            method: "PUT",
+            data: {
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      movePriorities(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/priority/move",
+            method: "PUT",
+            data: {
+              ids: parameters.ids,
+              after: parameters.after,
+              position: parameters.position
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
       searchPriorities(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
@@ -32068,6 +32117,18 @@ var require_issuePriorities = __commonJS({
               description: parameters.description,
               iconUrl: parameters.iconUrl,
               statusColor: parameters.statusColor
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deletePriority(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/priority/${parameters.id}`,
+            method: "DELETE",
+            params: {
+              newPriority: parameters.newPriority
             }
           };
           return this.client.sendRequest(config, callback);
@@ -32290,11 +32351,84 @@ var require_issueResolutions = __commonJS({
           return this.client.sendRequest(config, callback);
         });
       }
+      createResolution(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/resolution",
+            method: "POST",
+            data: parameters
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      setDefaultResolution(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/resolution/default",
+            method: "PUT",
+            data: {
+              id: parameters.id
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      moveResolutions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/resolution/move",
+            method: "PUT",
+            data: {
+              ids: parameters.ids,
+              after: parameters.after,
+              position: parameters.position
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      searchResolutions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/resolution/search",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
+              onlyDefault: parameters === null || parameters === void 0 ? void 0 : parameters.onlyDefault
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
       getResolution(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/2/resolution/${parameters.id}`,
             method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateResolution(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/resolution/${parameters.id}`,
+            method: "PUT",
+            data: Object.assign(Object.assign({}, parameters), { name: parameters.name, description: parameters.description, id: void 0 })
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteResolution(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/resolution/${parameters.id}`,
+            method: "DELETE",
+            params: {
+              replaceWith: parameters.replaceWith
+            }
           };
           return this.client.sendRequest(config, callback);
         });
@@ -34955,24 +35089,24 @@ var require_projects2 = __commonJS({
             url: "/rest/api/2/project",
             method: "POST",
             data: {
-              key: parameters === null || parameters === void 0 ? void 0 : parameters.key,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              lead: parameters === null || parameters === void 0 ? void 0 : parameters.lead,
-              leadAccountId: parameters === null || parameters === void 0 ? void 0 : parameters.leadAccountId,
-              url: parameters === null || parameters === void 0 ? void 0 : parameters.url,
-              assigneeType: parameters === null || parameters === void 0 ? void 0 : parameters.assigneeType,
-              avatarId: parameters === null || parameters === void 0 ? void 0 : parameters.avatarId,
-              issueSecurityScheme: parameters === null || parameters === void 0 ? void 0 : parameters.issueSecurityScheme,
-              permissionScheme: parameters === null || parameters === void 0 ? void 0 : parameters.permissionScheme,
-              notificationScheme: parameters === null || parameters === void 0 ? void 0 : parameters.notificationScheme,
-              categoryId: parameters === null || parameters === void 0 ? void 0 : parameters.categoryId,
-              projectTypeKey: parameters === null || parameters === void 0 ? void 0 : parameters.projectTypeKey,
-              projectTemplateKey: parameters === null || parameters === void 0 ? void 0 : parameters.projectTemplateKey,
-              workflowScheme: parameters === null || parameters === void 0 ? void 0 : parameters.workflowScheme,
-              issueTypeScreenScheme: parameters === null || parameters === void 0 ? void 0 : parameters.issueTypeScreenScheme,
-              issueTypeScheme: parameters === null || parameters === void 0 ? void 0 : parameters.issueTypeScheme,
-              fieldConfigurationScheme: parameters === null || parameters === void 0 ? void 0 : parameters.fieldConfigurationScheme
+              key: parameters.key,
+              name: parameters.name,
+              description: parameters.description,
+              lead: parameters.lead,
+              leadAccountId: parameters.leadAccountId,
+              url: parameters.url,
+              assigneeType: parameters.assigneeType,
+              avatarId: parameters.avatarId,
+              issueSecurityScheme: parameters.issueSecurityScheme,
+              permissionScheme: parameters.permissionScheme,
+              notificationScheme: parameters.notificationScheme,
+              categoryId: parameters.categoryId,
+              projectTypeKey: parameters.projectTypeKey,
+              projectTemplateKey: parameters.projectTemplateKey,
+              workflowScheme: parameters.workflowScheme,
+              issueTypeScreenScheme: parameters.issueTypeScreenScheme,
+              issueTypeScheme: parameters.issueTypeScheme,
+              fieldConfigurationScheme: parameters.fieldConfigurationScheme
             }
           };
           return this.client.sendRequest(config, callback);
@@ -37471,6 +37605,14 @@ var require_createProjectDetails = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/createResolutionDetails.js
+var require_createResolutionDetails = __commonJS({
+  "node_modules/jira.js/out/version2/models/createResolutionDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/createUiModificationDetails.js
 var require_createUiModificationDetails = __commonJS({
   "node_modules/jira.js/out/version2/models/createUiModificationDetails.js"(exports) {
@@ -39463,6 +39605,14 @@ var require_pageProjectDetails = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/pageResolution.js
+var require_pageResolution = __commonJS({
+  "node_modules/jira.js/out/version2/models/pageResolution.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/pageScreen.js
 var require_pageScreen = __commonJS({
   "node_modules/jira.js/out/version2/models/pageScreen.js"(exports) {
@@ -39999,9 +40149,33 @@ var require_renamedOption = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/reorderIssuePriorities.js
+var require_reorderIssuePriorities = __commonJS({
+  "node_modules/jira.js/out/version2/models/reorderIssuePriorities.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/reorderIssueResolutionsRequest.js
+var require_reorderIssueResolutionsRequest = __commonJS({
+  "node_modules/jira.js/out/version2/models/reorderIssueResolutionsRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/resolution.js
 var require_resolution = __commonJS({
   "node_modules/jira.js/out/version2/models/resolution.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/resolutionId.js
+var require_resolutionId = __commonJS({
+  "node_modules/jira.js/out/version2/models/resolutionId.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -40194,6 +40368,22 @@ var require_securitySchemes = __commonJS({
 // node_modules/jira.js/out/version2/models/serverInformation.js
 var require_serverInformation = __commonJS({
   "node_modules/jira.js/out/version2/models/serverInformation.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/setDefaultPriorityRequest.js
+var require_setDefaultPriorityRequest = __commonJS({
+  "node_modules/jira.js/out/version2/models/setDefaultPriorityRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/setDefaultResolutionRequest.js
+var require_setDefaultResolutionRequest = __commonJS({
+  "node_modules/jira.js/out/version2/models/setDefaultResolutionRequest.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -40514,6 +40704,14 @@ var require_updatePriorityDetails = __commonJS({
 // node_modules/jira.js/out/version2/models/updateProjectDetails.js
 var require_updateProjectDetails = __commonJS({
   "node_modules/jira.js/out/version2/models/updateProjectDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/updateResolutionDetails.js
+var require_updateResolutionDetails = __commonJS({
+  "node_modules/jira.js/out/version2/models/updateResolutionDetails.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -41025,6 +41223,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_createIssueAdjustmentDetails(), exports);
     tslib_1.__exportStar(require_createPriorityDetails(), exports);
     tslib_1.__exportStar(require_createProjectDetails(), exports);
+    tslib_1.__exportStar(require_createResolutionDetails(), exports);
     tslib_1.__exportStar(require_createUiModificationDetails(), exports);
     tslib_1.__exportStar(require_createUpdateRoleRequest(), exports);
     tslib_1.__exportStar(require_createWorkflowCondition(), exports);
@@ -41274,6 +41473,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_pagePriority(), exports);
     tslib_1.__exportStar(require_pageProject(), exports);
     tslib_1.__exportStar(require_pageProjectDetails(), exports);
+    tslib_1.__exportStar(require_pageResolution(), exports);
     tslib_1.__exportStar(require_pageScreen(), exports);
     tslib_1.__exportStar(require_pageScreenScheme(), exports);
     tslib_1.__exportStar(require_pageScreenWithTab(), exports);
@@ -41341,7 +41541,10 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_removeOptionFromIssuesResult(), exports);
     tslib_1.__exportStar(require_renamedCascadingOption(), exports);
     tslib_1.__exportStar(require_renamedOption(), exports);
+    tslib_1.__exportStar(require_reorderIssuePriorities(), exports);
+    tslib_1.__exportStar(require_reorderIssueResolutionsRequest(), exports);
     tslib_1.__exportStar(require_resolution(), exports);
+    tslib_1.__exportStar(require_resolutionId(), exports);
     tslib_1.__exportStar(require_restrictedPermission(), exports);
     tslib_1.__exportStar(require_richText(), exports);
     tslib_1.__exportStar(require_roleActor(), exports);
@@ -41366,6 +41569,8 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_securityScheme(), exports);
     tslib_1.__exportStar(require_securitySchemes(), exports);
     tslib_1.__exportStar(require_serverInformation(), exports);
+    tslib_1.__exportStar(require_setDefaultPriorityRequest(), exports);
+    tslib_1.__exportStar(require_setDefaultResolutionRequest(), exports);
     tslib_1.__exportStar(require_sharePermission(), exports);
     tslib_1.__exportStar(require_sharePermissionInput(), exports);
     tslib_1.__exportStar(require_simpleApplicationProperty(), exports);
@@ -41406,6 +41611,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_updateIssueAdjustmentDetails(), exports);
     tslib_1.__exportStar(require_updatePriorityDetails(), exports);
     tslib_1.__exportStar(require_updateProjectDetails(), exports);
+    tslib_1.__exportStar(require_updateResolutionDetails(), exports);
     tslib_1.__exportStar(require_updateScreenDetails(), exports);
     tslib_1.__exportStar(require_updateScreenSchemeDetails(), exports);
     tslib_1.__exportStar(require_updateScreenTypes(), exports);
@@ -41967,6 +42173,14 @@ var require_createProjectRole = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/createResolution.js
+var require_createResolution = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/createResolution.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/createScreen.js
 var require_createScreen = __commonJS({
   "node_modules/jira.js/out/version2/parameters/createScreen.js"(exports) {
@@ -42303,6 +42517,14 @@ var require_deletePermissionSchemeEntity = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/deletePriority.js
+var require_deletePriority = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/deletePriority.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/deleteProject.js
 var require_deleteProject = __commonJS({
   "node_modules/jira.js/out/version2/parameters/deleteProject.js"(exports) {
@@ -42362,6 +42584,14 @@ var require_deleteRemoteIssueLinkByGlobalId = __commonJS({
 // node_modules/jira.js/out/version2/parameters/deleteRemoteIssueLinkById.js
 var require_deleteRemoteIssueLinkById = __commonJS({
   "node_modules/jira.js/out/version2/parameters/deleteRemoteIssueLinkById.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/deleteResolution.js
+var require_deleteResolution = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/deleteResolution.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -44167,6 +44397,22 @@ var require_migrateQueries = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/movePriorities.js
+var require_movePriorities = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/movePriorities.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/moveResolutions.js
+var require_moveResolutions = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/moveResolutions.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/moveScreenTab.js
 var require_moveScreenTab = __commonJS({
   "node_modules/jira.js/out/version2/parameters/moveScreenTab.js"(exports) {
@@ -44495,6 +44741,14 @@ var require_searchProjects = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/searchResolutions.js
+var require_searchResolutions = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/searchResolutions.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/selectTimeTrackingImplementation.js
 var require_selectTimeTrackingImplementation = __commonJS({
   "node_modules/jira.js/out/version2/parameters/selectTimeTrackingImplementation.js"(exports) {
@@ -44546,6 +44800,22 @@ var require_setCommentProperty = __commonJS({
 // node_modules/jira.js/out/version2/parameters/setDashboardItemProperty.js
 var require_setDashboardItemProperty = __commonJS({
   "node_modules/jira.js/out/version2/parameters/setDashboardItemProperty.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/setDefaultPriority.js
+var require_setDefaultPriority = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/setDefaultPriority.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/setDefaultResolution.js
+var require_setDefaultResolution = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/setDefaultResolution.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -44975,6 +45245,14 @@ var require_updateRemoteIssueLink = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/updateResolution.js
+var require_updateResolution = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/updateResolution.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/updateScreen.js
 var require_updateScreen = __commonJS({
   "node_modules/jira.js/out/version2/parameters/updateScreen.js"(exports) {
@@ -45148,6 +45426,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_createProjectAvatar(), exports);
     tslib_1.__exportStar(require_createProjectCategory(), exports);
     tslib_1.__exportStar(require_createProjectRole(), exports);
+    tslib_1.__exportStar(require_createResolution(), exports);
     tslib_1.__exportStar(require_createScreen(), exports);
     tslib_1.__exportStar(require_createScreenScheme(), exports);
     tslib_1.__exportStar(require_createStatuses(), exports);
@@ -45190,6 +45469,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_deleteIssueTypeScreenScheme(), exports);
     tslib_1.__exportStar(require_deletePermissionScheme(), exports);
     tslib_1.__exportStar(require_deletePermissionSchemeEntity(), exports);
+    tslib_1.__exportStar(require_deletePriority(), exports);
     tslib_1.__exportStar(require_deleteProject(), exports);
     tslib_1.__exportStar(require_deleteProjectAsynchronously(), exports);
     tslib_1.__exportStar(require_deleteProjectAvatar(), exports);
@@ -45198,6 +45478,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_deleteProjectRoleActorsFromRole(), exports);
     tslib_1.__exportStar(require_deleteRemoteIssueLinkByGlobalId(), exports);
     tslib_1.__exportStar(require_deleteRemoteIssueLinkById(), exports);
+    tslib_1.__exportStar(require_deleteResolution(), exports);
     tslib_1.__exportStar(require_deleteScreen(), exports);
     tslib_1.__exportStar(require_deleteScreenScheme(), exports);
     tslib_1.__exportStar(require_deleteScreenTab(), exports);
@@ -45415,6 +45696,8 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_matchIssues(), exports);
     tslib_1.__exportStar(require_mergeVersions(), exports);
     tslib_1.__exportStar(require_migrateQueries(), exports);
+    tslib_1.__exportStar(require_movePriorities(), exports);
+    tslib_1.__exportStar(require_moveResolutions(), exports);
     tslib_1.__exportStar(require_moveScreenTab(), exports);
     tslib_1.__exportStar(require_moveScreenTabField(), exports);
     tslib_1.__exportStar(require_moveVersion(), exports);
@@ -45456,6 +45739,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_searchForIssuesUsingJqlPost(), exports);
     tslib_1.__exportStar(require_searchPriorities(), exports);
     tslib_1.__exportStar(require_searchProjects(), exports);
+    tslib_1.__exportStar(require_searchResolutions(), exports);
     tslib_1.__exportStar(require_selectTimeTrackingImplementation(), exports);
     tslib_1.__exportStar(require_setActors(), exports);
     tslib_1.__exportStar(require_setApplicationProperty(), exports);
@@ -45463,6 +45747,8 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_setColumns(), exports);
     tslib_1.__exportStar(require_setCommentProperty(), exports);
     tslib_1.__exportStar(require_setDashboardItemProperty(), exports);
+    tslib_1.__exportStar(require_setDefaultPriority(), exports);
+    tslib_1.__exportStar(require_setDefaultResolution(), exports);
     tslib_1.__exportStar(require_setDefaultShareScope(), exports);
     tslib_1.__exportStar(require_setDefaultValues(), exports);
     tslib_1.__exportStar(require_setFavouriteForFilter(), exports);
@@ -45517,6 +45803,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_updateProjectEmail(), exports);
     tslib_1.__exportStar(require_updateProjectType(), exports);
     tslib_1.__exportStar(require_updateRemoteIssueLink(), exports);
+    tslib_1.__exportStar(require_updateResolution(), exports);
     tslib_1.__exportStar(require_updateScreen(), exports);
     tslib_1.__exportStar(require_updateScreenScheme(), exports);
     tslib_1.__exportStar(require_updateStatuses(), exports);
@@ -46209,7 +46496,11 @@ var require_dashboards2 = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/3/dashboard/${parameters.dashboardId}/items/${parameters.itemId}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            data: parameters.body
           };
           return this.client.sendRequest(config, callback);
         });
@@ -46712,7 +47003,9 @@ var require_groups2 = __commonJS({
               startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
               maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
               groupId: parameters === null || parameters === void 0 ? void 0 : parameters.groupId,
-              groupName: parameters === null || parameters === void 0 ? void 0 : parameters.groupName
+              groupName: parameters === null || parameters === void 0 ? void 0 : parameters.groupName,
+              accessType: parameters === null || parameters === void 0 ? void 0 : parameters.accessType,
+              applicationKey: parameters === null || parameters === void 0 ? void 0 : parameters.applicationKey
             }
           };
           return this.client.sendRequest(config, callback);
@@ -48247,6 +48540,32 @@ var require_issuePriorities2 = __commonJS({
           return this.client.sendRequest(config, callback);
         });
       }
+      setDefaultPriority(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/priority/default",
+            method: "PUT",
+            data: {
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      movePriorities(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/priority/move",
+            method: "PUT",
+            data: {
+              ids: parameters === null || parameters === void 0 ? void 0 : parameters.ids,
+              after: parameters === null || parameters === void 0 ? void 0 : parameters.after,
+              position: parameters === null || parameters === void 0 ? void 0 : parameters.position
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
       searchPriorities(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
@@ -48281,6 +48600,18 @@ var require_issuePriorities2 = __commonJS({
               description: parameters.description,
               iconUrl: parameters.iconUrl,
               statusColor: parameters.statusColor
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deletePriority(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/priority/${parameters.id}`,
+            method: "DELETE",
+            params: {
+              newPriority: parameters.newPriority
             }
           };
           return this.client.sendRequest(config, callback);
@@ -48503,11 +48834,84 @@ var require_issueResolutions2 = __commonJS({
           return this.client.sendRequest(config, callback);
         });
       }
+      createResolution(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/resolution",
+            method: "POST",
+            data: parameters
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      setDefaultResolution(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/resolution/default",
+            method: "PUT",
+            data: {
+              id: parameters.id
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      moveResolutions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/resolution/move",
+            method: "PUT",
+            data: {
+              ids: parameters.ids,
+              after: parameters.after,
+              position: parameters.position
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      searchResolutions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/resolution/search",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
+              onlyDefault: parameters === null || parameters === void 0 ? void 0 : parameters.onlyDefault
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
       getResolution(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/3/resolution/${parameters.id}`,
             method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateResolution(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/resolution/${parameters.id}`,
+            method: "PUT",
+            data: Object.assign(Object.assign({}, parameters), { name: parameters.name, description: parameters.description, id: void 0 })
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteResolution(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/resolution/${parameters.id}`,
+            method: "DELETE",
+            params: {
+              replaceWith: parameters.replaceWith
+            }
           };
           return this.client.sendRequest(config, callback);
         });
@@ -53899,6 +54303,14 @@ var require_createProjectDetails2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/createResolutionDetails.js
+var require_createResolutionDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/createResolutionDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/createUiModificationDetails.js
 var require_createUiModificationDetails2 = __commonJS({
   "node_modules/jira.js/out/version3/models/createUiModificationDetails.js"(exports) {
@@ -55923,6 +56335,14 @@ var require_pageProjectDetails2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/pageResolution.js
+var require_pageResolution2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/pageResolution.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/pageScreen.js
 var require_pageScreen2 = __commonJS({
   "node_modules/jira.js/out/version3/models/pageScreen.js"(exports) {
@@ -56495,9 +56915,33 @@ var require_renamedOption2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/reorderIssuePriorities.js
+var require_reorderIssuePriorities2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/reorderIssuePriorities.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/reorderIssueResolutionsRequest.js
+var require_reorderIssueResolutionsRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/reorderIssueResolutionsRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/resolution.js
 var require_resolution2 = __commonJS({
   "node_modules/jira.js/out/version3/models/resolution.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/resolutionId.js
+var require_resolutionId2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/resolutionId.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -56698,6 +57142,22 @@ var require_securitySchemes2 = __commonJS({
 // node_modules/jira.js/out/version3/models/serverInformation.js
 var require_serverInformation2 = __commonJS({
   "node_modules/jira.js/out/version3/models/serverInformation.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/setDefaultPriorityRequest.js
+var require_setDefaultPriorityRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/setDefaultPriorityRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/setDefaultResolutionRequest.js
+var require_setDefaultResolutionRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/setDefaultResolutionRequest.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -57002,6 +57462,14 @@ var require_updatePriorityDetails2 = __commonJS({
 // node_modules/jira.js/out/version3/models/updateProjectDetails.js
 var require_updateProjectDetails2 = __commonJS({
   "node_modules/jira.js/out/version3/models/updateProjectDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/updateResolutionDetails.js
+var require_updateResolutionDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/updateResolutionDetails.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -57514,6 +57982,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_createIssueAdjustmentDetails2(), exports);
     tslib_1.__exportStar(require_createPriorityDetails2(), exports);
     tslib_1.__exportStar(require_createProjectDetails2(), exports);
+    tslib_1.__exportStar(require_createResolutionDetails2(), exports);
     tslib_1.__exportStar(require_createUiModificationDetails2(), exports);
     tslib_1.__exportStar(require_createUpdateRoleRequest2(), exports);
     tslib_1.__exportStar(require_createWorkflowCondition2(), exports);
@@ -57768,6 +58237,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_pagePriority2(), exports);
     tslib_1.__exportStar(require_pageProject2(), exports);
     tslib_1.__exportStar(require_pageProjectDetails2(), exports);
+    tslib_1.__exportStar(require_pageResolution2(), exports);
     tslib_1.__exportStar(require_pageScreen2(), exports);
     tslib_1.__exportStar(require_pageScreenScheme2(), exports);
     tslib_1.__exportStar(require_pageScreenWithTab2(), exports);
@@ -57838,7 +58308,10 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_removeOptionFromIssuesResult2(), exports);
     tslib_1.__exportStar(require_renamedCascadingOption2(), exports);
     tslib_1.__exportStar(require_renamedOption2(), exports);
+    tslib_1.__exportStar(require_reorderIssuePriorities2(), exports);
+    tslib_1.__exportStar(require_reorderIssueResolutionsRequest2(), exports);
     tslib_1.__exportStar(require_resolution2(), exports);
+    tslib_1.__exportStar(require_resolutionId2(), exports);
     tslib_1.__exportStar(require_restrictedPermission2(), exports);
     tslib_1.__exportStar(require_richText2(), exports);
     tslib_1.__exportStar(require_roleActor2(), exports);
@@ -57864,6 +58337,8 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_securityScheme2(), exports);
     tslib_1.__exportStar(require_securitySchemes2(), exports);
     tslib_1.__exportStar(require_serverInformation2(), exports);
+    tslib_1.__exportStar(require_setDefaultPriorityRequest2(), exports);
+    tslib_1.__exportStar(require_setDefaultResolutionRequest2(), exports);
     tslib_1.__exportStar(require_sharePermission2(), exports);
     tslib_1.__exportStar(require_sharePermissionInput2(), exports);
     tslib_1.__exportStar(require_simpleApplicationProperty2(), exports);
@@ -57902,6 +58377,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_updateIssueAdjustmentDetails2(), exports);
     tslib_1.__exportStar(require_updatePriorityDetails2(), exports);
     tslib_1.__exportStar(require_updateProjectDetails2(), exports);
+    tslib_1.__exportStar(require_updateResolutionDetails2(), exports);
     tslib_1.__exportStar(require_updateScreenDetails2(), exports);
     tslib_1.__exportStar(require_updateScreenSchemeDetails2(), exports);
     tslib_1.__exportStar(require_updateScreenTypes2(), exports);
@@ -58463,6 +58939,14 @@ var require_createProjectRole2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/createResolution.js
+var require_createResolution2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/createResolution.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/createScreen.js
 var require_createScreen2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/createScreen.js"(exports) {
@@ -58799,6 +59283,14 @@ var require_deletePermissionSchemeEntity2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/deletePriority.js
+var require_deletePriority2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/deletePriority.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/deleteProject.js
 var require_deleteProject2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/deleteProject.js"(exports) {
@@ -58858,6 +59350,14 @@ var require_deleteRemoteIssueLinkByGlobalId2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/deleteRemoteIssueLinkById.js
 var require_deleteRemoteIssueLinkById2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/deleteRemoteIssueLinkById.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/deleteResolution.js
+var require_deleteResolution2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/deleteResolution.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -60646,6 +61146,22 @@ var require_migrateQueries2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/movePriorities.js
+var require_movePriorities2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/movePriorities.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/moveResolutions.js
+var require_moveResolutions2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/moveResolutions.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/moveScreenTab.js
 var require_moveScreenTab2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/moveScreenTab.js"(exports) {
@@ -60974,6 +61490,14 @@ var require_searchProjects2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/searchResolutions.js
+var require_searchResolutions2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/searchResolutions.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/selectTimeTrackingImplementation.js
 var require_selectTimeTrackingImplementation2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/selectTimeTrackingImplementation.js"(exports) {
@@ -61025,6 +61549,22 @@ var require_setCommentProperty2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/setDashboardItemProperty.js
 var require_setDashboardItemProperty2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/setDashboardItemProperty.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/setDefaultPriority.js
+var require_setDefaultPriority2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/setDefaultPriority.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/setDefaultResolution.js
+var require_setDefaultResolution2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/setDefaultResolution.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -61454,6 +61994,14 @@ var require_updateRemoteIssueLink2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/updateResolution.js
+var require_updateResolution2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/updateResolution.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/updateScreen.js
 var require_updateScreen2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/updateScreen.js"(exports) {
@@ -61630,6 +62178,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_createProjectAvatar2(), exports);
     tslib_1.__exportStar(require_createProjectCategory2(), exports);
     tslib_1.__exportStar(require_createProjectRole2(), exports);
+    tslib_1.__exportStar(require_createResolution2(), exports);
     tslib_1.__exportStar(require_createScreen2(), exports);
     tslib_1.__exportStar(require_createScreenScheme2(), exports);
     tslib_1.__exportStar(require_createStatuses2(), exports);
@@ -61673,6 +62222,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_deleteIssueTypeScreenScheme2(), exports);
     tslib_1.__exportStar(require_deletePermissionScheme2(), exports);
     tslib_1.__exportStar(require_deletePermissionSchemeEntity2(), exports);
+    tslib_1.__exportStar(require_deletePriority2(), exports);
     tslib_1.__exportStar(require_deleteProject2(), exports);
     tslib_1.__exportStar(require_deleteProjectAsynchronously2(), exports);
     tslib_1.__exportStar(require_deleteProjectAvatar2(), exports);
@@ -61681,6 +62231,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_deleteProjectRoleActorsFromRole2(), exports);
     tslib_1.__exportStar(require_deleteRemoteIssueLinkByGlobalId2(), exports);
     tslib_1.__exportStar(require_deleteRemoteIssueLinkById2(), exports);
+    tslib_1.__exportStar(require_deleteResolution2(), exports);
     tslib_1.__exportStar(require_deleteScreen2(), exports);
     tslib_1.__exportStar(require_deleteScreenScheme2(), exports);
     tslib_1.__exportStar(require_deleteScreenTab2(), exports);
@@ -61899,6 +62450,8 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_matchIssues2(), exports);
     tslib_1.__exportStar(require_mergeVersions2(), exports);
     tslib_1.__exportStar(require_migrateQueries2(), exports);
+    tslib_1.__exportStar(require_movePriorities2(), exports);
+    tslib_1.__exportStar(require_moveResolutions2(), exports);
     tslib_1.__exportStar(require_moveScreenTab2(), exports);
     tslib_1.__exportStar(require_moveScreenTabField2(), exports);
     tslib_1.__exportStar(require_moveVersion2(), exports);
@@ -61941,6 +62494,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_searchForIssuesUsingJqlPost2(), exports);
     tslib_1.__exportStar(require_searchPriorities2(), exports);
     tslib_1.__exportStar(require_searchProjects2(), exports);
+    tslib_1.__exportStar(require_searchResolutions2(), exports);
     tslib_1.__exportStar(require_selectTimeTrackingImplementation2(), exports);
     tslib_1.__exportStar(require_setActors2(), exports);
     tslib_1.__exportStar(require_setApplicationProperty2(), exports);
@@ -61948,6 +62502,8 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_setColumns2(), exports);
     tslib_1.__exportStar(require_setCommentProperty2(), exports);
     tslib_1.__exportStar(require_setDashboardItemProperty2(), exports);
+    tslib_1.__exportStar(require_setDefaultPriority2(), exports);
+    tslib_1.__exportStar(require_setDefaultResolution2(), exports);
     tslib_1.__exportStar(require_setDefaultShareScope2(), exports);
     tslib_1.__exportStar(require_setDefaultValues2(), exports);
     tslib_1.__exportStar(require_setFavouriteForFilter2(), exports);
@@ -62004,6 +62560,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_updateProjectEmail2(), exports);
     tslib_1.__exportStar(require_updateProjectType2(), exports);
     tslib_1.__exportStar(require_updateRemoteIssueLink2(), exports);
+    tslib_1.__exportStar(require_updateResolution2(), exports);
     tslib_1.__exportStar(require_updateScreen2(), exports);
     tslib_1.__exportStar(require_updateScreenScheme2(), exports);
     tslib_1.__exportStar(require_updateStatuses2(), exports);
@@ -68163,51 +68720,91 @@ var require_subset = __commonJS({
 var require_semver2 = __commonJS({
   "node_modules/semver/index.js"(exports, module2) {
     var internalRe = require_re();
+    var constants = require_constants();
+    var SemVer = require_semver();
+    var identifiers = require_identifiers();
+    var parse = require_parse2();
+    var valid = require_valid();
+    var clean = require_clean();
+    var inc = require_inc();
+    var diff = require_diff();
+    var major = require_major();
+    var minor = require_minor();
+    var patch = require_patch();
+    var prerelease = require_prerelease();
+    var compare = require_compare();
+    var rcompare = require_rcompare();
+    var compareLoose = require_compare_loose();
+    var compareBuild = require_compare_build();
+    var sort = require_sort();
+    var rsort = require_rsort();
+    var gt = require_gt();
+    var lt = require_lt();
+    var eq = require_eq();
+    var neq = require_neq();
+    var gte = require_gte();
+    var lte = require_lte();
+    var cmp = require_cmp();
+    var coerce = require_coerce();
+    var Comparator = require_comparator();
+    var Range = require_range();
+    var satisfies = require_satisfies();
+    var toComparators = require_to_comparators();
+    var maxSatisfying = require_max_satisfying();
+    var minSatisfying = require_min_satisfying();
+    var minVersion = require_min_version();
+    var validRange = require_valid2();
+    var outside = require_outside();
+    var gtr = require_gtr();
+    var ltr = require_ltr();
+    var intersects = require_intersects();
+    var simplifyRange = require_simplify();
+    var subset = require_subset();
     module2.exports = {
+      parse,
+      valid,
+      clean,
+      inc,
+      diff,
+      major,
+      minor,
+      patch,
+      prerelease,
+      compare,
+      rcompare,
+      compareLoose,
+      compareBuild,
+      sort,
+      rsort,
+      gt,
+      lt,
+      eq,
+      neq,
+      gte,
+      lte,
+      cmp,
+      coerce,
+      Comparator,
+      Range,
+      satisfies,
+      toComparators,
+      maxSatisfying,
+      minSatisfying,
+      minVersion,
+      validRange,
+      outside,
+      gtr,
+      ltr,
+      intersects,
+      simplifyRange,
+      subset,
+      SemVer,
       re: internalRe.re,
       src: internalRe.src,
       tokens: internalRe.t,
-      SEMVER_SPEC_VERSION: require_constants().SEMVER_SPEC_VERSION,
-      SemVer: require_semver(),
-      compareIdentifiers: require_identifiers().compareIdentifiers,
-      rcompareIdentifiers: require_identifiers().rcompareIdentifiers,
-      parse: require_parse2(),
-      valid: require_valid(),
-      clean: require_clean(),
-      inc: require_inc(),
-      diff: require_diff(),
-      major: require_major(),
-      minor: require_minor(),
-      patch: require_patch(),
-      prerelease: require_prerelease(),
-      compare: require_compare(),
-      rcompare: require_rcompare(),
-      compareLoose: require_compare_loose(),
-      compareBuild: require_compare_build(),
-      sort: require_sort(),
-      rsort: require_rsort(),
-      gt: require_gt(),
-      lt: require_lt(),
-      eq: require_eq(),
-      neq: require_neq(),
-      gte: require_gte(),
-      lte: require_lte(),
-      cmp: require_cmp(),
-      coerce: require_coerce(),
-      Comparator: require_comparator(),
-      Range: require_range(),
-      satisfies: require_satisfies(),
-      toComparators: require_to_comparators(),
-      maxSatisfying: require_max_satisfying(),
-      minSatisfying: require_min_satisfying(),
-      minVersion: require_min_version(),
-      validRange: require_valid2(),
-      outside: require_outside(),
-      gtr: require_gtr(),
-      ltr: require_ltr(),
-      intersects: require_intersects(),
-      simplifyRange: require_simplify(),
-      subset: require_subset()
+      SEMVER_SPEC_VERSION: constants.SEMVER_SPEC_VERSION,
+      compareIdentifiers: identifiers.compareIdentifiers,
+      rcompareIdentifiers: identifiers.rcompareIdentifiers
     };
   }
 });
