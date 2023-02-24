@@ -9,7 +9,7 @@ import {
   getToken,
   isEvent,
 } from '../../lib/github'
-import { branchToTag } from '../../lib/image'
+import { branchToTag, validTag } from '../../lib/image'
 
 async function run() {
   // Inputs
@@ -28,7 +28,7 @@ async function run() {
     isEvent(eventName, 'delete', eventData) &&
     eventData.ref_type === 'branch'
   ) {
-    tag = eventData.ref
+    tag = validTag(eventData.ref)
   } else {
     tag = branchToTag()
   }
