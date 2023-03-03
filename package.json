@@ -62,7 +62,7 @@
     "@types/mime": "3.0.1",
     "@types/minimatch": "5.1.2",
     "@types/ramda": "0.28.23",
-    "@types/node": "18.14.4",
+    "@types/node": "18.14.5",
     "@types/semver": "7.3.13",
     "@types/uuid": "9.0.1",
     "esbuild": "0.17.10",
