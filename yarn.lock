@@ -50,10 +50,10 @@
   dependencies:
     tunnel "0.0.6"
 
-"@actions/io@^1.0.1", "@actions/io@^1.1.1", "@actions/io@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@actions/io/-/io-1.1.2.tgz#766ac09674a289ce0f1550ffe0a6eac9261a8ea9"
-  integrity sha512-d+RwPlMp+2qmBfeLYPLXuSRykDIFEwdTA0MMxzS9kh4kvP1ftrc/9fzy6pX6qAjthdXruHQ6/6kjT/DNo5ALuw==
+"@actions/io@^1.0.1", "@actions/io@^1.1.1", "@actions/io@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@actions/io/-/io-1.1.3.tgz#4cdb6254da7962b07473ff5c335f3da485d94d71"
+  integrity sha512-wi9JjgKLYS7U/z8PPbco+PvTb/nRWjeoFlJ1Qer83k/3C5PHQi28hiVdeE2kHXmIL99mQFawx8qt/JPjZilJ8Q==
 
 "@actions/tool-cache@^1.1.2":
   version "1.7.2"
@@ -502,15 +502,15 @@ chalk@^2.4.1:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-"checkout@https://github.com/actions/checkout#v3.3.0":
+"checkout@https://github.com/actions/checkout#v3.4.0":
   version "3.2.0"
-  uid ac593985615ec2ede58e132d2e21d2b1cbd6127c
-  resolved "https://github.com/actions/checkout#ac593985615ec2ede58e132d2e21d2b1cbd6127c"
+  uid "24cb9080177205b6e8c946b17badbe402adc938f"
+  resolved "https://github.com/actions/checkout#24cb9080177205b6e8c946b17badbe402adc938f"
   dependencies:
     "@actions/core" "^1.10.0"
     "@actions/exec" "^1.0.1"
     "@actions/github" "^2.2.0"
-    "@actions/io" "^1.1.2"
+    "@actions/io" "^1.1.3"
     "@actions/tool-cache" "^1.1.2"
     uuid "^3.3.3"
 
