@@ -1058,10 +1058,10 @@ mime@3.0.0:
   resolved "https://registry.yarnpkg.com/mime/-/mime-3.0.0.tgz#b374550dca3a0c18443b0c950a6a58f1931cf7a7"
   integrity sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==
 
-minimatch@7.4.2:
-  version "7.4.2"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-7.4.2.tgz#157e847d79ca671054253b840656720cb733f10f"
-  integrity sha512-xy4q7wou3vUoC9k1xGTXc+awNdGaGVHtFUaey8tiX4H1QRc04DZ/rmDFwNm2EBsuYEhAZ6SgMmYf3InGY6OauA==
+minimatch@7.4.3:
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-7.4.3.tgz#012cbf110a65134bb354ae9773b55256cdb045a2"
+  integrity sha512-5UB4yYusDtkRPbRiy1cqZ1IpGNcJCGlEMG17RKzPddpyiPKoCdwohbED8g4QXT0ewCt8LTkQXuljsUfQ3FKM4A==
   dependencies:
     brace-expansion "^2.0.1"
 
