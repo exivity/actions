@@ -10,7 +10,7 @@ import {
 
 const validStates = ['error', 'failure', 'pending', 'success'] as const
 
-function isValidState(state: string): state is typeof validStates[number] {
+function isValidState(state: string): state is (typeof validStates)[number] {
   return validStates.includes(state as any)
 }
 

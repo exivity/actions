@@ -5,8 +5,15 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
+var __export = (target, all3) => {
+  for (var name in all3)
+    __defProp(target, name, { get: all3[name], enumerable: true });
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
@@ -17,9 +24,14 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
@@ -57,7 +69,7 @@ var require_utils = __commonJS({
 var require_command = __commonJS({
   "node_modules/@actions/core/lib/command.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -68,26 +80,26 @@ var require_command = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.issue = exports.issueCommand = void 0;
-    var os = __importStar(require("os"));
+    var os = __importStar2(require("os"));
     var utils_1 = require_utils();
     function issueCommand(command, properties, message) {
       const cmd = new Command(command, properties, message);
@@ -140,494 +152,336 @@ var require_command = __commonJS({
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/rng.js
-var require_rng = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/rng.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = rng;
-    var _crypto = _interopRequireDefault(require("crypto"));
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var rnds8Pool = new Uint8Array(256);
-    var poolPtr = rnds8Pool.length;
-    function rng() {
-      if (poolPtr > rnds8Pool.length - 16) {
-        _crypto.default.randomFillSync(rnds8Pool);
-        poolPtr = 0;
-      }
-      return rnds8Pool.slice(poolPtr, poolPtr += 16);
-    }
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/rng.js
+function rng() {
+  if (poolPtr > rnds8Pool.length - 16) {
+    import_crypto.default.randomFillSync(rnds8Pool);
+    poolPtr = 0;
+  }
+  return rnds8Pool.slice(poolPtr, poolPtr += 16);
+}
+var import_crypto, rnds8Pool, poolPtr;
+var init_rng = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/rng.js"() {
+    import_crypto = __toESM(require("crypto"));
+    rnds8Pool = new Uint8Array(256);
+    poolPtr = rnds8Pool.length;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/regex.js
-var require_regex = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/regex.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-    exports.default = _default;
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/regex.js
+var regex_default;
+var init_regex = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/regex.js"() {
+    regex_default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/validate.js
-var require_validate = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/validate.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _regex = _interopRequireDefault(require_regex());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function validate(uuid) {
-      return typeof uuid === "string" && _regex.default.test(uuid);
-    }
-    var _default = validate;
-    exports.default = _default;
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/validate.js
+function validate(uuid) {
+  return typeof uuid === "string" && regex_default.test(uuid);
+}
+var validate_default;
+var init_validate = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/validate.js"() {
+    init_regex();
+    validate_default = validate;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/stringify.js
-var require_stringify = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/stringify.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _validate = _interopRequireDefault(require_validate());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var byteToHex = [];
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/stringify.js
+function stringify(arr, offset = 0) {
+  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
+  if (!validate_default(uuid)) {
+    throw TypeError("Stringified UUID is invalid");
+  }
+  return uuid;
+}
+var byteToHex, stringify_default;
+var init_stringify = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/stringify.js"() {
+    init_validate();
+    byteToHex = [];
     for (let i = 0; i < 256; ++i) {
       byteToHex.push((i + 256).toString(16).substr(1));
     }
-    function stringify(arr, offset = 0) {
-      const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
-      if (!(0, _validate.default)(uuid)) {
-        throw TypeError("Stringified UUID is invalid");
-      }
-      return uuid;
-    }
-    var _default = stringify;
-    exports.default = _default;
+    stringify_default = stringify;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/v1.js
-var require_v1 = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/v1.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _rng = _interopRequireDefault(require_rng());
-    var _stringify = _interopRequireDefault(require_stringify());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/v1.js
+function v1(options, buf, offset) {
+  let i = buf && offset || 0;
+  const b = buf || new Array(16);
+  options = options || {};
+  let node = options.node || _nodeId;
+  let clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq;
+  if (node == null || clockseq == null) {
+    const seedBytes = options.random || (options.rng || rng)();
+    if (node == null) {
+      node = _nodeId = [seedBytes[0] | 1, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
     }
-    var _nodeId;
-    var _clockseq;
-    var _lastMSecs = 0;
-    var _lastNSecs = 0;
-    function v1(options, buf, offset) {
-      let i = buf && offset || 0;
-      const b = buf || new Array(16);
-      options = options || {};
-      let node = options.node || _nodeId;
-      let clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq;
-      if (node == null || clockseq == null) {
-        const seedBytes = options.random || (options.rng || _rng.default)();
-        if (node == null) {
-          node = _nodeId = [seedBytes[0] | 1, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
-        }
-        if (clockseq == null) {
-          clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
-        }
-      }
-      let msecs = options.msecs !== void 0 ? options.msecs : Date.now();
-      let nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs + 1;
-      const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 1e4;
-      if (dt < 0 && options.clockseq === void 0) {
-        clockseq = clockseq + 1 & 16383;
-      }
-      if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === void 0) {
-        nsecs = 0;
-      }
-      if (nsecs >= 1e4) {
-        throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
-      }
-      _lastMSecs = msecs;
-      _lastNSecs = nsecs;
-      _clockseq = clockseq;
-      msecs += 122192928e5;
-      const tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
-      b[i++] = tl >>> 24 & 255;
-      b[i++] = tl >>> 16 & 255;
-      b[i++] = tl >>> 8 & 255;
-      b[i++] = tl & 255;
-      const tmh = msecs / 4294967296 * 1e4 & 268435455;
-      b[i++] = tmh >>> 8 & 255;
-      b[i++] = tmh & 255;
-      b[i++] = tmh >>> 24 & 15 | 16;
-      b[i++] = tmh >>> 16 & 255;
-      b[i++] = clockseq >>> 8 | 128;
-      b[i++] = clockseq & 255;
-      for (let n = 0; n < 6; ++n) {
-        b[i + n] = node[n];
-      }
-      return buf || (0, _stringify.default)(b);
+    if (clockseq == null) {
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
     }
-    var _default = v1;
-    exports.default = _default;
+  }
+  let msecs = options.msecs !== void 0 ? options.msecs : Date.now();
+  let nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs + 1;
+  const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 1e4;
+  if (dt < 0 && options.clockseq === void 0) {
+    clockseq = clockseq + 1 & 16383;
+  }
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === void 0) {
+    nsecs = 0;
+  }
+  if (nsecs >= 1e4) {
+    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
+  }
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+  msecs += 122192928e5;
+  const tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
+  b[i++] = tl >>> 24 & 255;
+  b[i++] = tl >>> 16 & 255;
+  b[i++] = tl >>> 8 & 255;
+  b[i++] = tl & 255;
+  const tmh = msecs / 4294967296 * 1e4 & 268435455;
+  b[i++] = tmh >>> 8 & 255;
+  b[i++] = tmh & 255;
+  b[i++] = tmh >>> 24 & 15 | 16;
+  b[i++] = tmh >>> 16 & 255;
+  b[i++] = clockseq >>> 8 | 128;
+  b[i++] = clockseq & 255;
+  for (let n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+  return buf || stringify_default(b);
+}
+var _nodeId, _clockseq, _lastMSecs, _lastNSecs, v1_default;
+var init_v1 = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/v1.js"() {
+    init_rng();
+    init_stringify();
+    _lastMSecs = 0;
+    _lastNSecs = 0;
+    v1_default = v1;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/parse.js
-var require_parse = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/parse.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _validate = _interopRequireDefault(require_validate());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function parse(uuid) {
-      if (!(0, _validate.default)(uuid)) {
-        throw TypeError("Invalid UUID");
-      }
-      let v;
-      const arr = new Uint8Array(16);
-      arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
-      arr[1] = v >>> 16 & 255;
-      arr[2] = v >>> 8 & 255;
-      arr[3] = v & 255;
-      arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
-      arr[5] = v & 255;
-      arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
-      arr[7] = v & 255;
-      arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
-      arr[9] = v & 255;
-      arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 1099511627776 & 255;
-      arr[11] = v / 4294967296 & 255;
-      arr[12] = v >>> 24 & 255;
-      arr[13] = v >>> 16 & 255;
-      arr[14] = v >>> 8 & 255;
-      arr[15] = v & 255;
-      return arr;
-    }
-    var _default = parse;
-    exports.default = _default;
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/parse.js
+function parse(uuid) {
+  if (!validate_default(uuid)) {
+    throw TypeError("Invalid UUID");
+  }
+  let v;
+  const arr = new Uint8Array(16);
+  arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
+  arr[1] = v >>> 16 & 255;
+  arr[2] = v >>> 8 & 255;
+  arr[3] = v & 255;
+  arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
+  arr[5] = v & 255;
+  arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
+  arr[7] = v & 255;
+  arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
+  arr[9] = v & 255;
+  arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 1099511627776 & 255;
+  arr[11] = v / 4294967296 & 255;
+  arr[12] = v >>> 24 & 255;
+  arr[13] = v >>> 16 & 255;
+  arr[14] = v >>> 8 & 255;
+  arr[15] = v & 255;
+  return arr;
+}
+var parse_default;
+var init_parse = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/parse.js"() {
+    init_validate();
+    parse_default = parse;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/v35.js
-var require_v35 = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/v35.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = _default;
-    exports.URL = exports.DNS = void 0;
-    var _stringify = _interopRequireDefault(require_stringify());
-    var _parse = _interopRequireDefault(require_parse());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/v35.js
+function stringToBytes(str) {
+  str = unescape(encodeURIComponent(str));
+  const bytes = [];
+  for (let i = 0; i < str.length; ++i) {
+    bytes.push(str.charCodeAt(i));
+  }
+  return bytes;
+}
+function v35_default(name, version2, hashfunc) {
+  function generateUUID(value, namespace, buf, offset) {
+    if (typeof value === "string") {
+      value = stringToBytes(value);
     }
-    function stringToBytes(str) {
-      str = unescape(encodeURIComponent(str));
-      const bytes = [];
-      for (let i = 0; i < str.length; ++i) {
-        bytes.push(str.charCodeAt(i));
-      }
-      return bytes;
+    if (typeof namespace === "string") {
+      namespace = parse_default(namespace);
     }
-    var DNS = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
-    exports.DNS = DNS;
-    var URL2 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
-    exports.URL = URL2;
-    function _default(name, version, hashfunc) {
-      function generateUUID(value, namespace, buf, offset) {
-        if (typeof value === "string") {
-          value = stringToBytes(value);
-        }
-        if (typeof namespace === "string") {
-          namespace = (0, _parse.default)(namespace);
-        }
-        if (namespace.length !== 16) {
-          throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
-        }
-        let bytes = new Uint8Array(16 + value.length);
-        bytes.set(namespace);
-        bytes.set(value, namespace.length);
-        bytes = hashfunc(bytes);
-        bytes[6] = bytes[6] & 15 | version;
-        bytes[8] = bytes[8] & 63 | 128;
-        if (buf) {
-          offset = offset || 0;
-          for (let i = 0; i < 16; ++i) {
-            buf[offset + i] = bytes[i];
-          }
-          return buf;
-        }
-        return (0, _stringify.default)(bytes);
-      }
-      try {
-        generateUUID.name = name;
-      } catch (err) {
-      }
-      generateUUID.DNS = DNS;
-      generateUUID.URL = URL2;
-      return generateUUID;
+    if (namespace.length !== 16) {
+      throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
     }
+    let bytes = new Uint8Array(16 + value.length);
+    bytes.set(namespace);
+    bytes.set(value, namespace.length);
+    bytes = hashfunc(bytes);
+    bytes[6] = bytes[6] & 15 | version2;
+    bytes[8] = bytes[8] & 63 | 128;
+    if (buf) {
+      offset = offset || 0;
+      for (let i = 0; i < 16; ++i) {
+        buf[offset + i] = bytes[i];
+      }
+      return buf;
+    }
+    return stringify_default(bytes);
+  }
+  try {
+    generateUUID.name = name;
+  } catch (err) {
+  }
+  generateUUID.DNS = DNS;
+  generateUUID.URL = URL2;
+  return generateUUID;
+}
+var DNS, URL2;
+var init_v35 = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/v35.js"() {
+    init_stringify();
+    init_parse();
+    DNS = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+    URL2 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/md5.js
-var require_md5 = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/md5.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _crypto = _interopRequireDefault(require("crypto"));
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function md5(bytes) {
-      if (Array.isArray(bytes)) {
-        bytes = Buffer.from(bytes);
-      } else if (typeof bytes === "string") {
-        bytes = Buffer.from(bytes, "utf8");
-      }
-      return _crypto.default.createHash("md5").update(bytes).digest();
-    }
-    var _default = md5;
-    exports.default = _default;
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/md5.js
+function md5(bytes) {
+  if (Array.isArray(bytes)) {
+    bytes = Buffer.from(bytes);
+  } else if (typeof bytes === "string") {
+    bytes = Buffer.from(bytes, "utf8");
+  }
+  return import_crypto2.default.createHash("md5").update(bytes).digest();
+}
+var import_crypto2, md5_default;
+var init_md5 = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/md5.js"() {
+    import_crypto2 = __toESM(require("crypto"));
+    md5_default = md5;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/v3.js
-var require_v3 = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/v3.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _v = _interopRequireDefault(require_v35());
-    var _md = _interopRequireDefault(require_md5());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var v3 = (0, _v.default)("v3", 48, _md.default);
-    var _default = v3;
-    exports.default = _default;
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/v3.js
+var v3, v3_default;
+var init_v3 = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/v3.js"() {
+    init_v35();
+    init_md5();
+    v3 = v35_default("v3", 48, md5_default);
+    v3_default = v3;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/v4.js
-var require_v4 = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/v4.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _rng = _interopRequireDefault(require_rng());
-    var _stringify = _interopRequireDefault(require_stringify());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/v4.js
+function v4(options, buf, offset) {
+  options = options || {};
+  const rnds = options.random || (options.rng || rng)();
+  rnds[6] = rnds[6] & 15 | 64;
+  rnds[8] = rnds[8] & 63 | 128;
+  if (buf) {
+    offset = offset || 0;
+    for (let i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
     }
-    function v4(options, buf, offset) {
-      options = options || {};
-      const rnds = options.random || (options.rng || _rng.default)();
-      rnds[6] = rnds[6] & 15 | 64;
-      rnds[8] = rnds[8] & 63 | 128;
-      if (buf) {
-        offset = offset || 0;
-        for (let i = 0; i < 16; ++i) {
-          buf[offset + i] = rnds[i];
-        }
-        return buf;
-      }
-      return (0, _stringify.default)(rnds);
-    }
-    var _default = v4;
-    exports.default = _default;
+    return buf;
+  }
+  return stringify_default(rnds);
+}
+var v4_default;
+var init_v4 = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/v4.js"() {
+    init_rng();
+    init_stringify();
+    v4_default = v4;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/sha1.js
-var require_sha1 = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/sha1.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _crypto = _interopRequireDefault(require("crypto"));
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function sha1(bytes) {
-      if (Array.isArray(bytes)) {
-        bytes = Buffer.from(bytes);
-      } else if (typeof bytes === "string") {
-        bytes = Buffer.from(bytes, "utf8");
-      }
-      return _crypto.default.createHash("sha1").update(bytes).digest();
-    }
-    var _default = sha1;
-    exports.default = _default;
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/sha1.js
+function sha1(bytes) {
+  if (Array.isArray(bytes)) {
+    bytes = Buffer.from(bytes);
+  } else if (typeof bytes === "string") {
+    bytes = Buffer.from(bytes, "utf8");
+  }
+  return import_crypto3.default.createHash("sha1").update(bytes).digest();
+}
+var import_crypto3, sha1_default;
+var init_sha1 = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/sha1.js"() {
+    import_crypto3 = __toESM(require("crypto"));
+    sha1_default = sha1;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/v5.js
-var require_v5 = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/v5.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _v = _interopRequireDefault(require_v35());
-    var _sha = _interopRequireDefault(require_sha1());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var v5 = (0, _v.default)("v5", 80, _sha.default);
-    var _default = v5;
-    exports.default = _default;
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/v5.js
+var v5, v5_default;
+var init_v5 = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/v5.js"() {
+    init_v35();
+    init_sha1();
+    v5 = v35_default("v5", 80, sha1_default);
+    v5_default = v5;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/nil.js
-var require_nil = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/nil.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _default = "00000000-0000-0000-0000-000000000000";
-    exports.default = _default;
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/nil.js
+var nil_default;
+var init_nil = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/nil.js"() {
+    nil_default = "00000000-0000-0000-0000-000000000000";
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/version.js
-var require_version = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/version.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _validate = _interopRequireDefault(require_validate());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function version(uuid) {
-      if (!(0, _validate.default)(uuid)) {
-        throw TypeError("Invalid UUID");
-      }
-      return parseInt(uuid.substr(14, 1), 16);
-    }
-    var _default = version;
-    exports.default = _default;
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/version.js
+function version(uuid) {
+  if (!validate_default(uuid)) {
+    throw TypeError("Invalid UUID");
+  }
+  return parseInt(uuid.substr(14, 1), 16);
+}
+var version_default;
+var init_version = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/version.js"() {
+    init_validate();
+    version_default = version;
   }
 });
 
-// node_modules/@actions/core/node_modules/uuid/dist/index.js
-var require_dist = __commonJS({
-  "node_modules/@actions/core/node_modules/uuid/dist/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    Object.defineProperty(exports, "v1", {
-      enumerable: true,
-      get: function() {
-        return _v.default;
-      }
-    });
-    Object.defineProperty(exports, "v3", {
-      enumerable: true,
-      get: function() {
-        return _v2.default;
-      }
-    });
-    Object.defineProperty(exports, "v4", {
-      enumerable: true,
-      get: function() {
-        return _v3.default;
-      }
-    });
-    Object.defineProperty(exports, "v5", {
-      enumerable: true,
-      get: function() {
-        return _v4.default;
-      }
-    });
-    Object.defineProperty(exports, "NIL", {
-      enumerable: true,
-      get: function() {
-        return _nil.default;
-      }
-    });
-    Object.defineProperty(exports, "version", {
-      enumerable: true,
-      get: function() {
-        return _version.default;
-      }
-    });
-    Object.defineProperty(exports, "validate", {
-      enumerable: true,
-      get: function() {
-        return _validate.default;
-      }
-    });
-    Object.defineProperty(exports, "stringify", {
-      enumerable: true,
-      get: function() {
-        return _stringify.default;
-      }
-    });
-    Object.defineProperty(exports, "parse", {
-      enumerable: true,
-      get: function() {
-        return _parse.default;
-      }
-    });
-    var _v = _interopRequireDefault(require_v1());
-    var _v2 = _interopRequireDefault(require_v3());
-    var _v3 = _interopRequireDefault(require_v4());
-    var _v4 = _interopRequireDefault(require_v5());
-    var _nil = _interopRequireDefault(require_nil());
-    var _version = _interopRequireDefault(require_version());
-    var _validate = _interopRequireDefault(require_validate());
-    var _stringify = _interopRequireDefault(require_stringify());
-    var _parse = _interopRequireDefault(require_parse());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
+// node_modules/@actions/core/node_modules/uuid/dist/esm-node/index.js
+var esm_node_exports = {};
+__export(esm_node_exports, {
+  NIL: () => nil_default,
+  parse: () => parse_default,
+  stringify: () => stringify_default,
+  v1: () => v1_default,
+  v3: () => v3_default,
+  v4: () => v4_default,
+  v5: () => v5_default,
+  validate: () => validate_default,
+  version: () => version_default
+});
+var init_esm_node = __esm({
+  "node_modules/@actions/core/node_modules/uuid/dist/esm-node/index.js"() {
+    init_v1();
+    init_v3();
+    init_v4();
+    init_v5();
+    init_nil();
+    init_version();
+    init_validate();
+    init_stringify();
+    init_parse();
   }
 });
 
@@ -635,7 +489,7 @@ var require_dist = __commonJS({
 var require_file_command = __commonJS({
   "node_modules/@actions/core/lib/file-command.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -646,28 +500,28 @@ var require_file_command = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
-    var fs = __importStar(require("fs"));
-    var os = __importStar(require("os"));
-    var uuid_1 = require_dist();
+    var fs = __importStar2(require("fs"));
+    var os = __importStar2(require("os"));
+    var uuid_1 = (init_esm_node(), __toCommonJS(esm_node_exports));
     var utils_1 = require_utils();
     function issueFileCommand(command, message) {
       const filePath = process.env[`GITHUB_${command}`];
@@ -726,6 +580,10 @@ var require_proxy = __commonJS({
       if (!reqUrl.hostname) {
         return false;
       }
+      const reqHost = reqUrl.hostname;
+      if (isLoopbackAddress(reqHost)) {
+        return true;
+      }
       const noProxy = process.env["no_proxy"] || process.env["NO_PROXY"] || "";
       if (!noProxy) {
         return false;
@@ -743,13 +601,17 @@ var require_proxy = __commonJS({
         upperReqHosts.push(`${upperReqHosts[0]}:${reqPort}`);
       }
       for (const upperNoProxyItem of noProxy.split(",").map((x) => x.trim().toUpperCase()).filter((x) => x)) {
-        if (upperReqHosts.some((x) => x === upperNoProxyItem)) {
+        if (upperNoProxyItem === "*" || upperReqHosts.some((x) => x === upperNoProxyItem || x.endsWith(`.${upperNoProxyItem}`) || upperNoProxyItem.startsWith(".") && x.endsWith(`${upperNoProxyItem}`))) {
           return true;
         }
       }
       return false;
     }
     exports.checkBypass = checkBypass;
+    function isLoopbackAddress(host) {
+      const hostLower = host.toLowerCase();
+      return hostLower === "localhost" || hostLower.startsWith("127.") || hostLower.startsWith("[::1]") || hostLower.startsWith("[0:0:0:0:0:0:0:1]");
+    }
   }
 });
 
@@ -994,7 +856,7 @@ var require_tunnel2 = __commonJS({
 var require_lib = __commonJS({
   "node_modules/@actions/http-client/lib/index.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -1005,24 +867,24 @@ var require_lib = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter2 = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -1051,10 +913,10 @@ var require_lib = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.HttpClient = exports.isHttps = exports.HttpClientResponse = exports.HttpClientError = exports.getProxyUrl = exports.MediaTypes = exports.Headers = exports.HttpCodes = void 0;
-    var http = __importStar(require("http"));
-    var https = __importStar(require("https"));
-    var pm = __importStar(require_proxy());
-    var tunnel = __importStar(require_tunnel2());
+    var http = __importStar2(require("http"));
+    var https = __importStar2(require("https"));
+    var pm = __importStar2(require_proxy());
+    var tunnel = __importStar2(require_tunnel2());
     var HttpCodes;
     (function(HttpCodes2) {
       HttpCodes2[HttpCodes2["OK"] = 200] = "OK";
@@ -1128,8 +990,8 @@ var require_lib = __commonJS({
         this.message = message;
       }
       readBody() {
-        return __awaiter(this, void 0, void 0, function* () {
-          return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
+          return new Promise((resolve) => __awaiter2(this, void 0, void 0, function* () {
             let output = Buffer.alloc(0);
             this.message.on("data", (chunk) => {
               output = Buffer.concat([output, chunk]);
@@ -1186,54 +1048,58 @@ var require_lib = __commonJS({
         }
       }
       options(requestUrl, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return this.request("OPTIONS", requestUrl, null, additionalHeaders || {});
         });
       }
       get(requestUrl, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return this.request("GET", requestUrl, null, additionalHeaders || {});
         });
       }
       del(requestUrl, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return this.request("DELETE", requestUrl, null, additionalHeaders || {});
         });
       }
       post(requestUrl, data, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return this.request("POST", requestUrl, data, additionalHeaders || {});
         });
       }
       patch(requestUrl, data, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return this.request("PATCH", requestUrl, data, additionalHeaders || {});
         });
       }
       put(requestUrl, data, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return this.request("PUT", requestUrl, data, additionalHeaders || {});
         });
       }
       head(requestUrl, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return this.request("HEAD", requestUrl, null, additionalHeaders || {});
         });
       }
       sendStream(verb, requestUrl, stream, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return this.request(verb, requestUrl, stream, additionalHeaders);
         });
       }
+      /**
+       * Gets a typed object from an endpoint
+       * Be aware that not found returns a null.  Other errors (4xx, 5xx) reject the promise
+       */
       getJson(requestUrl, additionalHeaders = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
           const res = yield this.get(requestUrl, additionalHeaders);
           return this._processResponse(res, this.requestOptions);
         });
       }
       postJson(requestUrl, obj, additionalHeaders = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           const data = JSON.stringify(obj, null, 2);
           additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
           additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
@@ -1242,7 +1108,7 @@ var require_lib = __commonJS({
         });
       }
       putJson(requestUrl, obj, additionalHeaders = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           const data = JSON.stringify(obj, null, 2);
           additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
           additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
@@ -1251,7 +1117,7 @@ var require_lib = __commonJS({
         });
       }
       patchJson(requestUrl, obj, additionalHeaders = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           const data = JSON.stringify(obj, null, 2);
           additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
           additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
@@ -1259,8 +1125,13 @@ var require_lib = __commonJS({
           return this._processResponse(res, this.requestOptions);
         });
       }
+      /**
+       * Makes a raw http request.
+       * All other methods such as get, post, patch, and request ultimately call this.
+       * Prefer get, del, post and patch
+       */
       request(verb, requestUrl, data, headers) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           if (this._disposed) {
             throw new Error("Client has already been disposed.");
           }
@@ -1319,14 +1190,22 @@ var require_lib = __commonJS({
           return response;
         });
       }
+      /**
+       * Needs to be called if keepAlive is set to true in request options.
+       */
       dispose() {
         if (this._agent) {
           this._agent.destroy();
         }
         this._disposed = true;
       }
+      /**
+       * Raw request.
+       * @param info
+       * @param data
+       */
       requestRaw(info13, data) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return new Promise((resolve, reject3) => {
             function callbackForResult(err, res) {
               if (err) {
@@ -1341,6 +1220,12 @@ var require_lib = __commonJS({
           });
         });
       }
+      /**
+       * Raw request with callback.
+       * @param info
+       * @param data
+       * @param onResult
+       */
       requestRawWithCallback(info13, data, onResult) {
         if (typeof data === "string") {
           if (!info13.options.headers) {
@@ -1384,6 +1269,11 @@ var require_lib = __commonJS({
           req.end();
         }
       }
+      /**
+       * Gets an http agent. This function is useful when you need an http agent that handles
+       * routing through a proxy server - depending upon the url and proxy environment variables.
+       * @param serverUrl  The server URL where the request will be sent. For example, https://api.github.com
+       */
       getAgent(serverUrl) {
         const parsedUrl = new URL(serverUrl);
         return this._getAgent(parsedUrl);
@@ -1476,15 +1366,15 @@ var require_lib = __commonJS({
         return agent;
       }
       _performExponentialBackoff(retryNumber) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           retryNumber = Math.min(ExponentialBackoffCeiling, retryNumber);
           const ms = ExponentialBackoffTimeSlice * Math.pow(2, retryNumber);
           return new Promise((resolve) => setTimeout(() => resolve(), ms));
         });
       }
       _processResponse(res, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return new Promise((resolve, reject3) => __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
+          return new Promise((resolve, reject3) => __awaiter2(this, void 0, void 0, function* () {
             const statusCode = res.message.statusCode || 0;
             const response = {
               statusCode,
@@ -1546,7 +1436,7 @@ var require_lib = __commonJS({
 var require_auth = __commonJS({
   "node_modules/@actions/http-client/lib/auth.js"(exports) {
     "use strict";
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter2 = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -1586,11 +1476,12 @@ var require_auth = __commonJS({
         }
         options.headers["Authorization"] = `Basic ${Buffer.from(`${this.username}:${this.password}`).toString("base64")}`;
       }
+      // This handler cannot handle 401
       canHandleAuthentication() {
         return false;
       }
       handleAuthentication() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           throw new Error("not implemented");
         });
       }
@@ -1600,17 +1491,20 @@ var require_auth = __commonJS({
       constructor(token) {
         this.token = token;
       }
+      // currently implements pre-authorization
+      // TODO: support preAuth = false where it hooks on 401
       prepareRequest(options) {
         if (!options.headers) {
           throw Error("The request has no headers");
         }
         options.headers["Authorization"] = `Bearer ${this.token}`;
       }
+      // This handler cannot handle 401
       canHandleAuthentication() {
         return false;
       }
       handleAuthentication() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           throw new Error("not implemented");
         });
       }
@@ -1620,17 +1514,20 @@ var require_auth = __commonJS({
       constructor(token) {
         this.token = token;
       }
+      // currently implements pre-authorization
+      // TODO: support preAuth = false where it hooks on 401
       prepareRequest(options) {
         if (!options.headers) {
           throw Error("The request has no headers");
         }
         options.headers["Authorization"] = `Basic ${Buffer.from(`PAT:${this.token}`).toString("base64")}`;
       }
+      // This handler cannot handle 401
       canHandleAuthentication() {
         return false;
       }
       handleAuthentication() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           throw new Error("not implemented");
         });
       }
@@ -1643,7 +1540,7 @@ var require_auth = __commonJS({
 var require_oidc_utils = __commonJS({
   "node_modules/@actions/core/lib/oidc-utils.js"(exports) {
     "use strict";
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter2 = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -1699,7 +1596,7 @@ var require_oidc_utils = __commonJS({
       }
       static getCall(id_token_url) {
         var _a;
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           const httpclient = OidcClient.createHttpClient();
           const res = yield httpclient.getJson(id_token_url).catch((error) => {
             throw new Error(`Failed to get ID Token. 
@@ -1716,7 +1613,7 @@ var require_oidc_utils = __commonJS({
         });
       }
       static getIDToken(audience) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           try {
             let id_token_url = OidcClient.getIDTokenUrl();
             if (audience) {
@@ -1741,7 +1638,7 @@ var require_oidc_utils = __commonJS({
 var require_summary = __commonJS({
   "node_modules/@actions/core/lib/summary.js"(exports) {
     "use strict";
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter2 = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -1779,8 +1676,14 @@ var require_summary = __commonJS({
       constructor() {
         this._buffer = "";
       }
+      /**
+       * Finds the summary file path from the environment, rejects if env var is not found or file does not exist
+       * Also checks r/w permissions.
+       *
+       * @returns step summary file path
+       */
       filePath() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           if (this._filePath) {
             return this._filePath;
           }
@@ -1797,6 +1700,15 @@ var require_summary = __commonJS({
           return this._filePath;
         });
       }
+      /**
+       * Wraps content in an HTML tag, adding any HTML attributes
+       *
+       * @param {string} tag HTML tag to wrap
+       * @param {string | null} content content within the tag
+       * @param {[attribute: string]: string} attrs key-value list of HTML attributes to add
+       *
+       * @returns {string} content wrapped in HTML element
+       */
       wrap(tag, content, attrs = {}) {
         const htmlAttrs = Object.entries(attrs).map(([key, value]) => ` ${key}="${value}"`).join("");
         if (!content) {
@@ -1804,8 +1716,15 @@ var require_summary = __commonJS({
         }
         return `<${tag}${htmlAttrs}>${content}</${tag}>`;
       }
+      /**
+       * Writes text in the buffer to the summary buffer file and empties buffer. Will append by default.
+       *
+       * @param {SummaryWriteOptions} [options] (optional) options for write operation
+       *
+       * @returns {Promise<Summary>} summary instance
+       */
       write(options) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
           const filePath = yield this.filePath();
           const writeFunc = overwrite ? writeFile4 : appendFile;
@@ -1813,39 +1732,95 @@ var require_summary = __commonJS({
           return this.emptyBuffer();
         });
       }
+      /**
+       * Clears the summary buffer and wipes the summary file
+       *
+       * @returns {Summary} summary instance
+       */
       clear() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           return this.emptyBuffer().write({ overwrite: true });
         });
       }
+      /**
+       * Returns the current summary buffer as a string
+       *
+       * @returns {string} string of summary buffer
+       */
       stringify() {
         return this._buffer;
       }
+      /**
+       * If the summary buffer is empty
+       *
+       * @returns {boolen} true if the buffer is empty
+       */
       isEmptyBuffer() {
         return this._buffer.length === 0;
       }
+      /**
+       * Resets the summary buffer without writing to summary file
+       *
+       * @returns {Summary} summary instance
+       */
       emptyBuffer() {
         this._buffer = "";
         return this;
       }
+      /**
+       * Adds raw text to the summary buffer
+       *
+       * @param {string} text content to add
+       * @param {boolean} [addEOL=false] (optional) append an EOL to the raw text (default: false)
+       *
+       * @returns {Summary} summary instance
+       */
       addRaw(text, addEOL = false) {
         this._buffer += text;
         return addEOL ? this.addEOL() : this;
       }
+      /**
+       * Adds the operating system-specific end-of-line marker to the buffer
+       *
+       * @returns {Summary} summary instance
+       */
       addEOL() {
         return this.addRaw(os_1.EOL);
       }
+      /**
+       * Adds an HTML codeblock to the summary buffer
+       *
+       * @param {string} code content to render within fenced code block
+       * @param {string} lang (optional) language to syntax highlight code
+       *
+       * @returns {Summary} summary instance
+       */
       addCodeBlock(code, lang) {
         const attrs = Object.assign({}, lang && { lang });
         const element = this.wrap("pre", this.wrap("code", code), attrs);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML list to the summary buffer
+       *
+       * @param {string[]} items list of items to render
+       * @param {boolean} [ordered=false] (optional) if the rendered list should be ordered or not (default: false)
+       *
+       * @returns {Summary} summary instance
+       */
       addList(items, ordered = false) {
         const tag = ordered ? "ol" : "ul";
         const listItems = items.map((item) => this.wrap("li", item)).join("");
         const element = this.wrap(tag, listItems);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML table to the summary buffer
+       *
+       * @param {SummaryTableCell[]} rows table rows
+       *
+       * @returns {Summary} summary instance
+       */
       addTable(rows) {
         const tableBody = rows.map((row) => {
           const cells = row.map((cell) => {
@@ -1862,35 +1837,86 @@ var require_summary = __commonJS({
         const element = this.wrap("table", tableBody);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds a collapsable HTML details element to the summary buffer
+       *
+       * @param {string} label text for the closed state
+       * @param {string} content collapsable content
+       *
+       * @returns {Summary} summary instance
+       */
       addDetails(label, content) {
         const element = this.wrap("details", this.wrap("summary", label) + content);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML image tag to the summary buffer
+       *
+       * @param {string} src path to the image you to embed
+       * @param {string} alt text description of the image
+       * @param {SummaryImageOptions} options (optional) addition image attributes
+       *
+       * @returns {Summary} summary instance
+       */
       addImage(src, alt, options) {
         const { width, height } = options || {};
         const attrs = Object.assign(Object.assign({}, width && { width }), height && { height });
         const element = this.wrap("img", null, Object.assign({ src, alt }, attrs));
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML section heading element
+       *
+       * @param {string} text heading text
+       * @param {number | string} [level=1] (optional) the heading level, default: 1
+       *
+       * @returns {Summary} summary instance
+       */
       addHeading(text, level) {
         const tag = `h${level}`;
         const allowedTag = ["h1", "h2", "h3", "h4", "h5", "h6"].includes(tag) ? tag : "h1";
         const element = this.wrap(allowedTag, text);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML thematic break (<hr>) to the summary buffer
+       *
+       * @returns {Summary} summary instance
+       */
       addSeparator() {
         const element = this.wrap("hr", null);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML line break (<br>) to the summary buffer
+       *
+       * @returns {Summary} summary instance
+       */
       addBreak() {
         const element = this.wrap("br", null);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML blockquote to the summary buffer
+       *
+       * @param {string} text quote text
+       * @param {string} cite (optional) citation url
+       *
+       * @returns {Summary} summary instance
+       */
       addQuote(text, cite) {
         const attrs = Object.assign({}, cite && { cite });
         const element = this.wrap("blockquote", text, attrs);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML anchor tag to the summary buffer
+       *
+       * @param {string} text link text/content
+       * @param {string} href hyperlink
+       *
+       * @returns {Summary} summary instance
+       */
       addLink(text, href) {
         const element = this.wrap("a", text, { href });
         return this.addRaw(element).addEOL();
@@ -1906,7 +1932,7 @@ var require_summary = __commonJS({
 var require_path_utils = __commonJS({
   "node_modules/@actions/core/lib/path-utils.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -1917,26 +1943,26 @@ var require_path_utils = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = void 0;
-    var path3 = __importStar(require("path"));
+    var path3 = __importStar2(require("path"));
     function toPosixPath(pth) {
       return pth.replace(/[\\]/g, "/");
     }
@@ -1956,7 +1982,7 @@ var require_path_utils = __commonJS({
 var require_core = __commonJS({
   "node_modules/@actions/core/lib/core.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -1967,24 +1993,24 @@ var require_core = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter2 = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -2016,8 +2042,8 @@ var require_core = __commonJS({
     var command_1 = require_command();
     var file_command_1 = require_file_command();
     var utils_1 = require_utils();
-    var os = __importStar(require("os"));
-    var path3 = __importStar(require("path"));
+    var os = __importStar2(require("os"));
+    var path3 = __importStar2(require("path"));
     var oidc_utils_1 = require_oidc_utils();
     var ExitCode;
     (function(ExitCode2) {
@@ -2130,7 +2156,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports.endGroup = endGroup;
     function group(name, fn) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         startGroup(name);
         let result;
         try {
@@ -2155,7 +2181,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports.getState = getState;
     function getIDToken(aud) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         return yield oidc_utils_1.OidcClient.getIDToken(aud);
       });
     }
@@ -2190,6 +2216,9 @@ var require_context = __commonJS({
     var fs_1 = require("fs");
     var os_1 = require("os");
     var Context = class {
+      /**
+       * Hydrate the context from the environment
+       */
       constructor() {
         var _a, _b, _c;
         this.payload = {};
@@ -2240,7 +2269,7 @@ var require_context = __commonJS({
 var require_utils2 = __commonJS({
   "node_modules/@actions/github/lib/internal/utils.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -2251,26 +2280,26 @@ var require_utils2 = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getApiBaseUrl = exports.getProxyAgent = exports.getAuthString = void 0;
-    var httpClient = __importStar(require_lib());
+    var httpClient = __importStar2(require_lib());
     function getAuthString(token, options) {
       if (!token && !options.auth) {
         throw new Error("Parameter token or opts.auth is required");
@@ -2687,7 +2716,7 @@ var require_dist_node2 = __commonJS({
         }
       });
     }
-    function parse(options) {
+    function parse2(options) {
       let method = options.method.toUpperCase();
       let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
       let headers = Object.assign({}, options.headers);
@@ -2743,7 +2772,7 @@ var require_dist_node2 = __commonJS({
       } : null);
     }
     function endpointWithDefaults(defaults, route, options) {
-      return parse(merge(defaults, route, options));
+      return parse2(merge(defaults, route, options));
     }
     function withDefaults(oldDefaults, newDefaults) {
       const DEFAULTS2 = merge(oldDefaults, newDefaults);
@@ -2752,7 +2781,7 @@ var require_dist_node2 = __commonJS({
         DEFAULTS: DEFAULTS2,
         defaults: withDefaults.bind(null, DEFAULTS2),
         merge: merge.bind(null, DEFAULTS2),
-        parse
+        parse: parse2
       });
     }
     var VERSION = "6.0.12";
@@ -3893,7 +3922,9 @@ var require_url_state_machine = __commonJS({
           this.url.fragment = "";
           this.state = "fragment";
         } else {
-          if (this.input.length - this.pointer - 1 === 0 || !isWindowsDriveLetterCodePoints(c, this.input[this.pointer + 1]) || this.input.length - this.pointer - 1 >= 2 && !fileOtherwiseCodePoints.has(this.input[this.pointer + 2])) {
+          if (this.input.length - this.pointer - 1 === 0 || // remaining consists of 0 code points
+          !isWindowsDriveLetterCodePoints(c, this.input[this.pointer + 1]) || this.input.length - this.pointer - 1 >= 2 && // remaining has at least 2 code points
+          !fileOtherwiseCodePoints.has(this.input[this.pointer + 2])) {
             this.url.host = this.base.host;
             this.url.path = this.base.path.slice();
             shortenPath(this.url);
@@ -4356,8 +4387,8 @@ var require_URL = __commonJS({
     var utils = require_utils3();
     var Impl = require_URL_impl();
     var impl = utils.implSymbol;
-    function URL2(url) {
-      if (!this || this[impl] || !(this instanceof URL2)) {
+    function URL3(url) {
+      if (!this || this[impl] || !(this instanceof URL3)) {
         throw new TypeError("Failed to construct 'URL': Please use the 'new' operator, this DOM object constructor cannot be called as a function.");
       }
       if (arguments.length < 1) {
@@ -4373,7 +4404,7 @@ var require_URL = __commonJS({
       }
       module2.exports.setup(this, args);
     }
-    URL2.prototype.toJSON = function toJSON() {
+    URL3.prototype.toJSON = function toJSON() {
       if (!this || !module2.exports.is(this)) {
         throw new TypeError("Illegal invocation");
       }
@@ -4383,7 +4414,7 @@ var require_URL = __commonJS({
       }
       return this[impl].toJSON.apply(this[impl], args);
     };
-    Object.defineProperty(URL2.prototype, "href", {
+    Object.defineProperty(URL3.prototype, "href", {
       get() {
         return this[impl].href;
       },
@@ -4394,20 +4425,20 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    URL2.prototype.toString = function() {
+    URL3.prototype.toString = function() {
       if (!this || !module2.exports.is(this)) {
         throw new TypeError("Illegal invocation");
       }
       return this.href;
     };
-    Object.defineProperty(URL2.prototype, "origin", {
+    Object.defineProperty(URL3.prototype, "origin", {
       get() {
         return this[impl].origin;
       },
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL2.prototype, "protocol", {
+    Object.defineProperty(URL3.prototype, "protocol", {
       get() {
         return this[impl].protocol;
       },
@@ -4418,7 +4449,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL2.prototype, "username", {
+    Object.defineProperty(URL3.prototype, "username", {
       get() {
         return this[impl].username;
       },
@@ -4429,7 +4460,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL2.prototype, "password", {
+    Object.defineProperty(URL3.prototype, "password", {
       get() {
         return this[impl].password;
       },
@@ -4440,7 +4471,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL2.prototype, "host", {
+    Object.defineProperty(URL3.prototype, "host", {
       get() {
         return this[impl].host;
       },
@@ -4451,7 +4482,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL2.prototype, "hostname", {
+    Object.defineProperty(URL3.prototype, "hostname", {
       get() {
         return this[impl].hostname;
       },
@@ -4462,7 +4493,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL2.prototype, "port", {
+    Object.defineProperty(URL3.prototype, "port", {
       get() {
         return this[impl].port;
       },
@@ -4473,7 +4504,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL2.prototype, "pathname", {
+    Object.defineProperty(URL3.prototype, "pathname", {
       get() {
         return this[impl].pathname;
       },
@@ -4484,7 +4515,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL2.prototype, "search", {
+    Object.defineProperty(URL3.prototype, "search", {
       get() {
         return this[impl].search;
       },
@@ -4495,7 +4526,7 @@ var require_URL = __commonJS({
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(URL2.prototype, "hash", {
+    Object.defineProperty(URL3.prototype, "hash", {
       get() {
         return this[impl].hash;
       },
@@ -4511,7 +4542,7 @@ var require_URL = __commonJS({
         return !!obj && obj[impl] instanceof Impl.implementation;
       },
       create(constructorArgs, privateData) {
-        let obj = Object.create(URL2.prototype);
+        let obj = Object.create(URL3.prototype);
         this.setup(obj, constructorArgs, privateData);
         return obj;
       },
@@ -4522,10 +4553,10 @@ var require_URL = __commonJS({
         obj[impl] = new Impl.implementation(constructorArgs, privateData);
         obj[impl][utils.wrapperSymbol] = obj;
       },
-      interface: URL2,
+      interface: URL3,
       expose: {
-        Window: { URL: URL2 },
-        Worker: { URL: URL2 }
+        Window: { URL: URL3 },
+        Worker: { URL: URL3 }
       }
     };
   }
@@ -4724,15 +4755,26 @@ var require_lib3 = __commonJS({
       get bodyUsed() {
         return this[INTERNALS].disturbed;
       },
+      /**
+       * Decode response as ArrayBuffer
+       *
+       * @return  Promise
+       */
       arrayBuffer() {
         return consumeBody.call(this).then(function(buf) {
           return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
         });
       },
+      /**
+       * Return raw response as Blob
+       *
+       * @return Promise
+       */
       blob() {
         let ct = this.headers && this.headers.get("content-type") || "";
         return consumeBody.call(this).then(function(buf) {
           return Object.assign(
+            // Prevent copying
             new Blob2([], {
               type: ct.toLowerCase()
             }),
@@ -4742,6 +4784,11 @@ var require_lib3 = __commonJS({
           );
         });
       },
+      /**
+       * Decode response as json
+       *
+       * @return  Promise
+       */
       json() {
         var _this2 = this;
         return consumeBody.call(this).then(function(buffer) {
@@ -4752,14 +4799,30 @@ var require_lib3 = __commonJS({
           }
         });
       },
+      /**
+       * Decode response as text
+       *
+       * @return  Promise
+       */
       text() {
         return consumeBody.call(this).then(function(buffer) {
           return buffer.toString();
         });
       },
+      /**
+       * Decode response as buffer (non-spec api)
+       *
+       * @return  Promise
+       */
       buffer() {
         return consumeBody.call(this);
       },
+      /**
+       * Decode response as text, while automatically detecting the encoding and
+       * trying to decode to UTF-8 (non-spec api)
+       *
+       * @return  Promise
+       */
       textConverted() {
         var _this3 = this;
         return consumeBody.call(this).then(function(buffer) {
@@ -4943,7 +5006,8 @@ var require_lib3 = __commonJS({
       } else if (Buffer.isBuffer(body)) {
         return body.length;
       } else if (body && typeof body.getLengthSync === "function") {
-        if (body._lengthRetrievers && body._lengthRetrievers.length == 0 || body.hasKnownLength && body.hasKnownLength()) {
+        if (body._lengthRetrievers && body._lengthRetrievers.length == 0 || // 1.x
+        body.hasKnownLength && body.hasKnownLength()) {
           return body.getLengthSync();
         }
         return null;
@@ -4990,6 +5054,12 @@ var require_lib3 = __commonJS({
     }
     var MAP = Symbol("map");
     var Headers = class {
+      /**
+       * Headers class
+       *
+       * @param   Object  headers  Response headers
+       * @return  Void
+       */
       constructor() {
         let init = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : void 0;
         this[MAP] = /* @__PURE__ */ Object.create(null);
@@ -5034,6 +5104,12 @@ var require_lib3 = __commonJS({
           throw new TypeError("Provided initializer must be an object");
         }
       }
+      /**
+       * Return combined header value given name
+       *
+       * @param   String  name  Header name
+       * @return  Mixed
+       */
       get(name) {
         name = `${name}`;
         validateName(name);
@@ -5043,6 +5119,13 @@ var require_lib3 = __commonJS({
         }
         return this[MAP][key].join(", ");
       }
+      /**
+       * Iterate over all headers
+       *
+       * @param   Function  callback  Executed for each item with parameters (value, name, thisArg)
+       * @param   Boolean   thisArg   `this` context for callback function
+       * @return  Void
+       */
       forEach(callback) {
         let thisArg = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : void 0;
         let pairs = getHeaders(this);
@@ -5055,6 +5138,13 @@ var require_lib3 = __commonJS({
           i++;
         }
       }
+      /**
+       * Overwrite header values given name
+       *
+       * @param   String  name   Header name
+       * @param   String  value  Header value
+       * @return  Void
+       */
       set(name, value) {
         name = `${name}`;
         value = `${value}`;
@@ -5063,6 +5153,13 @@ var require_lib3 = __commonJS({
         const key = find(this[MAP], name);
         this[MAP][key !== void 0 ? key : name] = [value];
       }
+      /**
+       * Append a value onto existing header
+       *
+       * @param   String  name   Header name
+       * @param   String  value  Header value
+       * @return  Void
+       */
       append(name, value) {
         name = `${name}`;
         value = `${value}`;
@@ -5075,11 +5172,23 @@ var require_lib3 = __commonJS({
           this[MAP][name] = [value];
         }
       }
+      /**
+       * Check for header name existence
+       *
+       * @param   String   name  Header name
+       * @return  Boolean
+       */
       has(name) {
         name = `${name}`;
         validateName(name);
         return find(this[MAP], name) !== void 0;
       }
+      /**
+       * Delete all header values given name
+       *
+       * @param   String  name  Header name
+       * @return  Void
+       */
       delete(name) {
         name = `${name}`;
         validateName(name);
@@ -5088,15 +5197,37 @@ var require_lib3 = __commonJS({
           delete this[MAP][key];
         }
       }
+      /**
+       * Return raw headers (non-spec api)
+       *
+       * @return  Object
+       */
       raw() {
         return this[MAP];
       }
+      /**
+       * Get an iterator on keys.
+       *
+       * @return  Iterator
+       */
       keys() {
         return createHeadersIterator(this, "key");
       }
+      /**
+       * Get an iterator on values.
+       *
+       * @return  Iterator
+       */
       values() {
         return createHeadersIterator(this, "value");
       }
+      /**
+       * Get an iterator on entries.
+       *
+       * This is the default iterator of the Headers object.
+       *
+       * @return  Iterator
+       */
       [Symbol.iterator]() {
         return createHeadersIterator(this, "key+value");
       }
@@ -5228,6 +5359,9 @@ var require_lib3 = __commonJS({
       get status() {
         return this[INTERNALS$1].status;
       }
+      /**
+       * Convenience property representing if the request ended normally
+       */
       get ok() {
         return this[INTERNALS$1].status >= 200 && this[INTERNALS$1].status < 300;
       }
@@ -5240,6 +5374,11 @@ var require_lib3 = __commonJS({
       get headers() {
         return this[INTERNALS$1].headers;
       }
+      /**
+       * Clone this response
+       *
+       * @return  Response
+       */
       clone() {
         return new Response(clone(this), {
           url: this.url,
@@ -5268,12 +5407,12 @@ var require_lib3 = __commonJS({
       configurable: true
     });
     var INTERNALS$2 = Symbol("Request internals");
-    var URL2 = Url.URL || whatwgUrl.URL;
+    var URL3 = Url.URL || whatwgUrl.URL;
     var parse_url = Url.parse;
     var format_url = Url.format;
     function parseURL(urlStr) {
       if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.exec(urlStr)) {
-        urlStr = new URL2(urlStr).toString();
+        urlStr = new URL3(urlStr).toString();
       }
       return parse_url(urlStr);
     }
@@ -5349,6 +5488,11 @@ var require_lib3 = __commonJS({
       get signal() {
         return this[INTERNALS$2].signal;
       }
+      /**
+       * Clone this request
+       *
+       * @return  Request
+       */
       clone() {
         return new Request(this);
       }
@@ -5803,6 +5947,8 @@ var require_dist_node5 = __commonJS({
           headers: requestOptions.headers,
           redirect: requestOptions.redirect
         },
+        // `requestOptions.request.agent` type is incompatible
+        // see https://github.com/octokit/types.ts/pull/264
         requestOptions.request
       )).then(async (response) => {
         url = response.url;
@@ -6118,6 +6264,7 @@ var require_dist_node8 = __commonJS({
           baseUrl: request.request.endpoint.DEFAULTS.baseUrl,
           headers: {},
           request: Object.assign({}, options.request, {
+            // @ts-ignore internal usage only, no need to type
             hook: hook.bind(null, "request")
           }),
           mediaType: {
@@ -6163,6 +6310,11 @@ var require_dist_node8 = __commonJS({
           const auth = authStrategy(Object.assign({
             request: this.request,
             log: this.log,
+            // we pass the current octokit instance as well as its constructor options
+            // to allow for authentication strategies that return a new octokit instance
+            // that shares the same internal state as the current one. The original
+            // requirement for this was the "event-octokit" authentication strategy
+            // of https://github.com/probot/octokit-auth-probot.
             octokit: this,
             octokitOptions: otherOptions
           }, options.auth));
@@ -6189,6 +6341,12 @@ var require_dist_node8 = __commonJS({
         };
         return OctokitWithDefaults;
       }
+      /**
+       * Attach a plugin (or many) to your Octokit instance.
+       *
+       * @example
+       * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
+       */
       static plugin(...newPlugins) {
         var _a;
         const currentPlugins = this.plugins;
@@ -7437,7 +7595,7 @@ var require_dist_node10 = __commonJS({
 var require_utils4 = __commonJS({
   "node_modules/@actions/github/lib/utils.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -7448,27 +7606,27 @@ var require_utils4 = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getOctokitOptions = exports.GitHub = exports.defaults = exports.context = void 0;
-    var Context = __importStar(require_context());
-    var Utils = __importStar(require_utils2());
+    var Context = __importStar2(require_context());
+    var Utils = __importStar2(require_utils2());
     var core_1 = require_dist_node8();
     var plugin_rest_endpoint_methods_1 = require_dist_node9();
     var plugin_paginate_rest_1 = require_dist_node10();
@@ -7497,7 +7655,7 @@ var require_utils4 = __commonJS({
 var require_github = __commonJS({
   "node_modules/@actions/github/lib/github.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -7508,26 +7666,26 @@ var require_github = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getOctokit = exports.context = void 0;
-    var Context = __importStar(require_context());
+    var Context = __importStar2(require_context());
     var utils_1 = require_utils4();
     exports.context = new Context.Context();
     function getOctokit2(token, options, ...additionalPlugins) {
@@ -7538,75 +7696,436 @@ var require_github = __commonJS({
   }
 });
 
-// node_modules/tslib/tslib.js
-var require_tslib = __commonJS({
-  "node_modules/tslib/tslib.js"(exports, module2) {
-    var __extends;
-    var __assign;
-    var __rest;
-    var __decorate;
-    var __param;
-    var __metadata;
-    var __awaiter;
-    var __generator;
-    var __exportStar;
-    var __values;
-    var __read;
-    var __spread;
-    var __spreadArrays;
-    var __spreadArray;
-    var __await;
-    var __asyncGenerator;
-    var __asyncDelegator;
-    var __asyncValues;
-    var __makeTemplateObject;
-    var __importStar;
-    var __importDefault;
-    var __classPrivateFieldGet;
-    var __classPrivateFieldSet;
-    var __classPrivateFieldIn;
-    var __createBinding;
-    (function(factory) {
-      var root = typeof global === "object" ? global : typeof self === "object" ? self : typeof this === "object" ? this : {};
-      if (typeof define === "function" && define.amd) {
-        define("tslib", ["exports"], function(exports2) {
-          factory(createExporter(root, createExporter(exports2)));
+// node_modules/tslib/tslib.es6.js
+var tslib_es6_exports = {};
+__export(tslib_es6_exports, {
+  __assign: () => __assign,
+  __asyncDelegator: () => __asyncDelegator,
+  __asyncGenerator: () => __asyncGenerator,
+  __asyncValues: () => __asyncValues,
+  __await: () => __await,
+  __awaiter: () => __awaiter,
+  __classPrivateFieldGet: () => __classPrivateFieldGet,
+  __classPrivateFieldIn: () => __classPrivateFieldIn,
+  __classPrivateFieldSet: () => __classPrivateFieldSet,
+  __createBinding: () => __createBinding,
+  __decorate: () => __decorate,
+  __esDecorate: () => __esDecorate,
+  __exportStar: () => __exportStar,
+  __extends: () => __extends,
+  __generator: () => __generator,
+  __importDefault: () => __importDefault,
+  __importStar: () => __importStar,
+  __makeTemplateObject: () => __makeTemplateObject,
+  __metadata: () => __metadata,
+  __param: () => __param,
+  __propKey: () => __propKey,
+  __read: () => __read,
+  __rest: () => __rest,
+  __runInitializers: () => __runInitializers,
+  __setFunctionName: () => __setFunctionName,
+  __spread: () => __spread,
+  __spreadArray: () => __spreadArray,
+  __spreadArrays: () => __spreadArrays,
+  __values: () => __values
+});
+function __extends(d, b) {
+  if (typeof b !== "function" && b !== null)
+    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+  extendStatics(d, b);
+  function __() {
+    this.constructor = d;
+  }
+  d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+function __rest(s, e) {
+  var t = {};
+  for (var p in s)
+    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+      t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function")
+    for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+      if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+        t[p[i]] = s[p[i]];
+    }
+  return t;
+}
+function __decorate(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+    r = Reflect.decorate(decorators, target, key, desc);
+  else
+    for (var i = decorators.length - 1; i >= 0; i--)
+      if (d = decorators[i])
+        r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+function __param(paramIndex, decorator) {
+  return function(target, key) {
+    decorator(target, key, paramIndex);
+  };
+}
+function __esDecorate(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+  function accept(f) {
+    if (f !== void 0 && typeof f !== "function")
+      throw new TypeError("Function expected");
+    return f;
+  }
+  var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+  var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+  var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+  var _, done = false;
+  for (var i = decorators.length - 1; i >= 0; i--) {
+    var context2 = {};
+    for (var p in contextIn)
+      context2[p] = p === "access" ? {} : contextIn[p];
+    for (var p in contextIn.access)
+      context2.access[p] = contextIn.access[p];
+    context2.addInitializer = function(f) {
+      if (done)
+        throw new TypeError("Cannot add initializers after decoration has completed");
+      extraInitializers.push(accept(f || null));
+    };
+    var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context2);
+    if (kind === "accessor") {
+      if (result === void 0)
+        continue;
+      if (result === null || typeof result !== "object")
+        throw new TypeError("Object expected");
+      if (_ = accept(result.get))
+        descriptor.get = _;
+      if (_ = accept(result.set))
+        descriptor.set = _;
+      if (_ = accept(result.init))
+        initializers.push(_);
+    } else if (_ = accept(result)) {
+      if (kind === "field")
+        initializers.push(_);
+      else
+        descriptor[key] = _;
+    }
+  }
+  if (target)
+    Object.defineProperty(target, contextIn.name, descriptor);
+  done = true;
+}
+function __runInitializers(thisArg, initializers, value) {
+  var useValue = arguments.length > 2;
+  for (var i = 0; i < initializers.length; i++) {
+    value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+  }
+  return useValue ? value : void 0;
+}
+function __propKey(x) {
+  return typeof x === "symbol" ? x : "".concat(x);
+}
+function __setFunctionName(f, name, prefix) {
+  if (typeof name === "symbol")
+    name = name.description ? "[".concat(name.description, "]") : "";
+  return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+}
+function __metadata(metadataKey, metadataValue) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+    return Reflect.metadata(metadataKey, metadataValue);
+}
+function __awaiter(thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function(resolve) {
+      resolve(value);
+    });
+  }
+  return new (P || (P = Promise))(function(resolve, reject3) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject3(e);
+      }
+    }
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject3(e);
+      }
+    }
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+}
+function __generator(thisArg, body) {
+  var _ = { label: 0, sent: function() {
+    if (t[0] & 1)
+      throw t[1];
+    return t[1];
+  }, trys: [], ops: [] }, f, y, t, g;
+  return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
+    return this;
+  }), g;
+  function verb(n) {
+    return function(v) {
+      return step([n, v]);
+    };
+  }
+  function step(op) {
+    if (f)
+      throw new TypeError("Generator is already executing.");
+    while (g && (g = 0, op[0] && (_ = 0)), _)
+      try {
+        if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
+          return t;
+        if (y = 0, t)
+          op = [op[0] & 2, t.value];
+        switch (op[0]) {
+          case 0:
+          case 1:
+            t = op;
+            break;
+          case 4:
+            _.label++;
+            return { value: op[1], done: false };
+          case 5:
+            _.label++;
+            y = op[1];
+            op = [0];
+            continue;
+          case 7:
+            op = _.ops.pop();
+            _.trys.pop();
+            continue;
+          default:
+            if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+              _ = 0;
+              continue;
+            }
+            if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+              _.label = op[1];
+              break;
+            }
+            if (op[0] === 6 && _.label < t[1]) {
+              _.label = t[1];
+              t = op;
+              break;
+            }
+            if (t && _.label < t[2]) {
+              _.label = t[2];
+              _.ops.push(op);
+              break;
+            }
+            if (t[2])
+              _.ops.pop();
+            _.trys.pop();
+            continue;
+        }
+        op = body.call(thisArg, _);
+      } catch (e) {
+        op = [6, e];
+        y = 0;
+      } finally {
+        f = t = 0;
+      }
+    if (op[0] & 5)
+      throw op[1];
+    return { value: op[0] ? op[1] : void 0, done: true };
+  }
+}
+function __exportStar(m, o) {
+  for (var p in m)
+    if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p))
+      __createBinding(o, m, p);
+}
+function __values(o) {
+  var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+  if (m)
+    return m.call(o);
+  if (o && typeof o.length === "number")
+    return {
+      next: function() {
+        if (o && i >= o.length)
+          o = void 0;
+        return { value: o && o[i++], done: !o };
+      }
+    };
+  throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+function __read(o, n) {
+  var m = typeof Symbol === "function" && o[Symbol.iterator];
+  if (!m)
+    return o;
+  var i = m.call(o), r, ar = [], e;
+  try {
+    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+      ar.push(r.value);
+  } catch (error) {
+    e = { error };
+  } finally {
+    try {
+      if (r && !r.done && (m = i["return"]))
+        m.call(i);
+    } finally {
+      if (e)
+        throw e.error;
+    }
+  }
+  return ar;
+}
+function __spread() {
+  for (var ar = [], i = 0; i < arguments.length; i++)
+    ar = ar.concat(__read(arguments[i]));
+  return ar;
+}
+function __spreadArrays() {
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++)
+    s += arguments[i].length;
+  for (var r = Array(s), k = 0, i = 0; i < il; i++)
+    for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+      r[k] = a[j];
+  return r;
+}
+function __spreadArray(to, from, pack) {
+  if (pack || arguments.length === 2)
+    for (var i = 0, l = from.length, ar; i < l; i++) {
+      if (ar || !(i in from)) {
+        if (!ar)
+          ar = Array.prototype.slice.call(from, 0, i);
+        ar[i] = from[i];
+      }
+    }
+  return to.concat(ar || Array.prototype.slice.call(from));
+}
+function __await(v) {
+  return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+function __asyncGenerator(thisArg, _arguments, generator) {
+  if (!Symbol.asyncIterator)
+    throw new TypeError("Symbol.asyncIterator is not defined.");
+  var g = generator.apply(thisArg, _arguments || []), i, q = [];
+  return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
+    return this;
+  }, i;
+  function verb(n) {
+    if (g[n])
+      i[n] = function(v) {
+        return new Promise(function(a, b) {
+          q.push([n, v, a, b]) > 1 || resume(n, v);
         });
-      } else if (typeof module2 === "object" && typeof module2.exports === "object") {
-        factory(createExporter(root, createExporter(module2.exports)));
-      } else {
-        factory(createExporter(root));
-      }
-      function createExporter(exports2, previous) {
-        if (exports2 !== root) {
-          if (typeof Object.create === "function") {
-            Object.defineProperty(exports2, "__esModule", { value: true });
-          } else {
-            exports2.__esModule = true;
-          }
-        }
-        return function(id, v) {
-          return exports2[id] = previous ? previous(id, v) : v;
-        };
-      }
-    })(function(exporter) {
-      var extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d, b) {
-        d.__proto__ = b;
-      } || function(d, b) {
-        for (var p in b)
-          if (Object.prototype.hasOwnProperty.call(b, p))
-            d[p] = b[p];
       };
-      __extends = function(d, b) {
-        if (typeof b !== "function" && b !== null)
-          throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() {
-          this.constructor = d;
-        }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  }
+  function resume(n, v) {
+    try {
+      step(g[n](v));
+    } catch (e) {
+      settle(q[0][3], e);
+    }
+  }
+  function step(r) {
+    r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject3) : settle(q[0][2], r);
+  }
+  function fulfill(value) {
+    resume("next", value);
+  }
+  function reject3(value) {
+    resume("throw", value);
+  }
+  function settle(f, v) {
+    if (f(v), q.shift(), q.length)
+      resume(q[0][0], q[0][1]);
+  }
+}
+function __asyncDelegator(o) {
+  var i, p;
+  return i = {}, verb("next"), verb("throw", function(e) {
+    throw e;
+  }), verb("return"), i[Symbol.iterator] = function() {
+    return this;
+  }, i;
+  function verb(n, f) {
+    i[n] = o[n] ? function(v) {
+      return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v;
+    } : f;
+  }
+}
+function __asyncValues(o) {
+  if (!Symbol.asyncIterator)
+    throw new TypeError("Symbol.asyncIterator is not defined.");
+  var m = o[Symbol.asyncIterator], i;
+  return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
+    return this;
+  }, i);
+  function verb(n) {
+    i[n] = o[n] && function(v) {
+      return new Promise(function(resolve, reject3) {
+        v = o[n](v), settle(resolve, reject3, v.done, v.value);
+      });
+    };
+  }
+  function settle(resolve, reject3, d, v) {
+    Promise.resolve(v).then(function(v2) {
+      resolve({ value: v2, done: d });
+    }, reject3);
+  }
+}
+function __makeTemplateObject(cooked, raw) {
+  if (Object.defineProperty) {
+    Object.defineProperty(cooked, "raw", { value: raw });
+  } else {
+    cooked.raw = raw;
+  }
+  return cooked;
+}
+function __importStar(mod) {
+  if (mod && mod.__esModule)
+    return mod;
+  var result = {};
+  if (mod != null) {
+    for (var k in mod)
+      if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+        __createBinding(result, mod, k);
+  }
+  __setModuleDefault(result, mod);
+  return result;
+}
+function __importDefault(mod) {
+  return mod && mod.__esModule ? mod : { default: mod };
+}
+function __classPrivateFieldGet(receiver, state, kind, f) {
+  if (kind === "a" && !f)
+    throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
+    throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+}
+function __classPrivateFieldSet(receiver, state, value, kind, f) {
+  if (kind === "m")
+    throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f)
+    throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
+    throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
+}
+function __classPrivateFieldIn(state, receiver) {
+  if (receiver === null || typeof receiver !== "object" && typeof receiver !== "function")
+    throw new TypeError("Cannot use 'in' operator on non-object");
+  return typeof state === "function" ? receiver === state : state.has(receiver);
+}
+var extendStatics, __assign, __createBinding, __setModuleDefault;
+var init_tslib_es6 = __esm({
+  "node_modules/tslib/tslib.es6.js"() {
+    extendStatics = function(d, b) {
+      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+        d2.__proto__ = b2;
+      } || function(d2, b2) {
+        for (var p in b2)
+          if (Object.prototype.hasOwnProperty.call(b2, p))
+            d2[p] = b2[p];
       };
-      __assign = Object.assign || function(t) {
+      return extendStatics(d, b);
+    };
+    __assign = function() {
+      __assign = Object.assign || function __assign2(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
           s = arguments[i];
           for (var p in s)
@@ -7615,366 +8134,28 @@ var require_tslib = __commonJS({
         }
         return t;
       };
-      __rest = function(s, e) {
-        var t = {};
-        for (var p in s)
-          if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-            t[p] = s[p];
-        if (s != null && typeof Object.getOwnPropertySymbols === "function")
-          for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-              t[p[i]] = s[p[i]];
-          }
-        return t;
-      };
-      __decorate = function(decorators, target, key, desc) {
-        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-        if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-          r = Reflect.decorate(decorators, target, key, desc);
-        else
-          for (var i = decorators.length - 1; i >= 0; i--)
-            if (d = decorators[i])
-              r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-        return c > 3 && r && Object.defineProperty(target, key, r), r;
-      };
-      __param = function(paramIndex, decorator) {
-        return function(target, key) {
-          decorator(target, key, paramIndex);
-        };
-      };
-      __metadata = function(metadataKey, metadataValue) {
-        if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-          return Reflect.metadata(metadataKey, metadataValue);
-      };
-      __awaiter = function(thisArg, _arguments, P, generator) {
-        function adopt(value) {
-          return value instanceof P ? value : new P(function(resolve) {
-            resolve(value);
-          });
-        }
-        return new (P || (P = Promise))(function(resolve, reject3) {
-          function fulfilled(value) {
-            try {
-              step(generator.next(value));
-            } catch (e) {
-              reject3(e);
-            }
-          }
-          function rejected(value) {
-            try {
-              step(generator["throw"](value));
-            } catch (e) {
-              reject3(e);
-            }
-          }
-          function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-          }
-          step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-      };
-      __generator = function(thisArg, body) {
-        var _ = { label: 0, sent: function() {
-          if (t[0] & 1)
-            throw t[1];
-          return t[1];
-        }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
-          return this;
-        }), g;
-        function verb(n) {
-          return function(v) {
-            return step([n, v]);
-          };
-        }
-        function step(op) {
-          if (f)
-            throw new TypeError("Generator is already executing.");
-          while (_)
-            try {
-              if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
-                return t;
-              if (y = 0, t)
-                op = [op[0] & 2, t.value];
-              switch (op[0]) {
-                case 0:
-                case 1:
-                  t = op;
-                  break;
-                case 4:
-                  _.label++;
-                  return { value: op[1], done: false };
-                case 5:
-                  _.label++;
-                  y = op[1];
-                  op = [0];
-                  continue;
-                case 7:
-                  op = _.ops.pop();
-                  _.trys.pop();
-                  continue;
-                default:
-                  if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-                    _ = 0;
-                    continue;
-                  }
-                  if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-                    _.label = op[1];
-                    break;
-                  }
-                  if (op[0] === 6 && _.label < t[1]) {
-                    _.label = t[1];
-                    t = op;
-                    break;
-                  }
-                  if (t && _.label < t[2]) {
-                    _.label = t[2];
-                    _.ops.push(op);
-                    break;
-                  }
-                  if (t[2])
-                    _.ops.pop();
-                  _.trys.pop();
-                  continue;
-              }
-              op = body.call(thisArg, _);
-            } catch (e) {
-              op = [6, e];
-              y = 0;
-            } finally {
-              f = t = 0;
-            }
-          if (op[0] & 5)
-            throw op[1];
-          return { value: op[0] ? op[1] : void 0, done: true };
-        }
-      };
-      __exportStar = function(m, o) {
-        for (var p in m)
-          if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p))
-            __createBinding(o, m, p);
-      };
-      __createBinding = Object.create ? function(o, m, k, k2) {
-        if (k2 === void 0)
-          k2 = k;
-        var desc = Object.getOwnPropertyDescriptor(m, k);
-        if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-          desc = { enumerable: true, get: function() {
-            return m[k];
-          } };
-        }
-        Object.defineProperty(o, k2, desc);
-      } : function(o, m, k, k2) {
-        if (k2 === void 0)
-          k2 = k;
-        o[k2] = m[k];
-      };
-      __values = function(o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-        if (m)
-          return m.call(o);
-        if (o && typeof o.length === "number")
-          return {
-            next: function() {
-              if (o && i >= o.length)
-                o = void 0;
-              return { value: o && o[i++], done: !o };
-            }
-          };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-      };
-      __read = function(o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m)
-          return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-          while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-            ar.push(r.value);
-        } catch (error) {
-          e = { error };
-        } finally {
-          try {
-            if (r && !r.done && (m = i["return"]))
-              m.call(i);
-          } finally {
-            if (e)
-              throw e.error;
-          }
-        }
-        return ar;
-      };
-      __spread = function() {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-          ar = ar.concat(__read(arguments[i]));
-        return ar;
-      };
-      __spreadArrays = function() {
-        for (var s = 0, i = 0, il = arguments.length; i < il; i++)
-          s += arguments[i].length;
-        for (var r = Array(s), k = 0, i = 0; i < il; i++)
-          for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-        return r;
-      };
-      __spreadArray = function(to, from, pack) {
-        if (pack || arguments.length === 2)
-          for (var i = 0, l = from.length, ar; i < l; i++) {
-            if (ar || !(i in from)) {
-              if (!ar)
-                ar = Array.prototype.slice.call(from, 0, i);
-              ar[i] = from[i];
-            }
-          }
-        return to.concat(ar || Array.prototype.slice.call(from));
-      };
-      __await = function(v) {
-        return this instanceof __await ? (this.v = v, this) : new __await(v);
-      };
-      __asyncGenerator = function(thisArg, _arguments, generator) {
-        if (!Symbol.asyncIterator)
-          throw new TypeError("Symbol.asyncIterator is not defined.");
-        var g = generator.apply(thisArg, _arguments || []), i, q = [];
-        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
-          return this;
-        }, i;
-        function verb(n) {
-          if (g[n])
-            i[n] = function(v) {
-              return new Promise(function(a, b) {
-                q.push([n, v, a, b]) > 1 || resume(n, v);
-              });
-            };
-        }
-        function resume(n, v) {
-          try {
-            step(g[n](v));
-          } catch (e) {
-            settle(q[0][3], e);
-          }
-        }
-        function step(r) {
-          r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject3) : settle(q[0][2], r);
-        }
-        function fulfill(value) {
-          resume("next", value);
-        }
-        function reject3(value) {
-          resume("throw", value);
-        }
-        function settle(f, v) {
-          if (f(v), q.shift(), q.length)
-            resume(q[0][0], q[0][1]);
-        }
-      };
-      __asyncDelegator = function(o) {
-        var i, p;
-        return i = {}, verb("next"), verb("throw", function(e) {
-          throw e;
-        }), verb("return"), i[Symbol.iterator] = function() {
-          return this;
-        }, i;
-        function verb(n, f) {
-          i[n] = o[n] ? function(v) {
-            return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v;
-          } : f;
-        }
-      };
-      __asyncValues = function(o) {
-        if (!Symbol.asyncIterator)
-          throw new TypeError("Symbol.asyncIterator is not defined.");
-        var m = o[Symbol.asyncIterator], i;
-        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
-          return this;
-        }, i);
-        function verb(n) {
-          i[n] = o[n] && function(v) {
-            return new Promise(function(resolve, reject3) {
-              v = o[n](v), settle(resolve, reject3, v.done, v.value);
-            });
-          };
-        }
-        function settle(resolve, reject3, d, v) {
-          Promise.resolve(v).then(function(v2) {
-            resolve({ value: v2, done: d });
-          }, reject3);
-        }
-      };
-      __makeTemplateObject = function(cooked, raw) {
-        if (Object.defineProperty) {
-          Object.defineProperty(cooked, "raw", { value: raw });
-        } else {
-          cooked.raw = raw;
-        }
-        return cooked;
-      };
-      var __setModuleDefault = Object.create ? function(o, v) {
-        Object.defineProperty(o, "default", { enumerable: true, value: v });
-      } : function(o, v) {
-        o["default"] = v;
-      };
-      __importStar = function(mod) {
-        if (mod && mod.__esModule)
-          return mod;
-        var result = {};
-        if (mod != null) {
-          for (var k in mod)
-            if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-              __createBinding(result, mod, k);
-        }
-        __setModuleDefault(result, mod);
-        return result;
-      };
-      __importDefault = function(mod) {
-        return mod && mod.__esModule ? mod : { "default": mod };
-      };
-      __classPrivateFieldGet = function(receiver, state, kind, f) {
-        if (kind === "a" && !f)
-          throw new TypeError("Private accessor was defined without a getter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
-          throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-      };
-      __classPrivateFieldSet = function(receiver, state, value, kind, f) {
-        if (kind === "m")
-          throw new TypeError("Private method is not writable");
-        if (kind === "a" && !f)
-          throw new TypeError("Private accessor was defined without a setter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
-          throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
-      };
-      __classPrivateFieldIn = function(state, receiver) {
-        if (receiver === null || typeof receiver !== "object" && typeof receiver !== "function")
-          throw new TypeError("Cannot use 'in' operator on non-object");
-        return typeof state === "function" ? receiver === state : state.has(receiver);
-      };
-      exporter("__extends", __extends);
-      exporter("__assign", __assign);
-      exporter("__rest", __rest);
-      exporter("__decorate", __decorate);
-      exporter("__param", __param);
-      exporter("__metadata", __metadata);
-      exporter("__awaiter", __awaiter);
-      exporter("__generator", __generator);
-      exporter("__exportStar", __exportStar);
-      exporter("__createBinding", __createBinding);
-      exporter("__values", __values);
-      exporter("__read", __read);
-      exporter("__spread", __spread);
-      exporter("__spreadArrays", __spreadArrays);
-      exporter("__spreadArray", __spreadArray);
-      exporter("__await", __await);
-      exporter("__asyncGenerator", __asyncGenerator);
-      exporter("__asyncDelegator", __asyncDelegator);
-      exporter("__asyncValues", __asyncValues);
-      exporter("__makeTemplateObject", __makeTemplateObject);
-      exporter("__importStar", __importStar);
-      exporter("__importDefault", __importDefault);
-      exporter("__classPrivateFieldGet", __classPrivateFieldGet);
-      exporter("__classPrivateFieldSet", __classPrivateFieldSet);
-      exporter("__classPrivateFieldIn", __classPrivateFieldIn);
-    });
+      return __assign.apply(this, arguments);
+    };
+    __createBinding = Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    };
+    __setModuleDefault = Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    };
   }
 });
 
@@ -7984,7 +8165,7 @@ var require_backlog = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Backlog = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Backlog = class {
       constructor(client) {
         this.client = client;
@@ -7995,7 +8176,7 @@ var require_backlog = __commonJS({
             url: "/rest/agile/1.0/backlog/issue",
             method: "POST",
             data: {
-              issues: parameters === null || parameters === void 0 ? void 0 : parameters.issues
+              issues: parameters.issues
             }
           };
           return this.client.sendRequest(config, callback);
@@ -8027,7 +8208,7 @@ var require_board = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Board = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Board = class {
       constructor(client) {
         this.client = client;
@@ -8061,10 +8242,10 @@ var require_board = __commonJS({
             url: "/rest/agile/1.0/board",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              type: parameters === null || parameters === void 0 ? void 0 : parameters.type,
-              filterId: parameters === null || parameters === void 0 ? void 0 : parameters.filterId,
-              location: parameters === null || parameters === void 0 ? void 0 : parameters.location
+              name: parameters.name,
+              type: parameters.type,
+              filterId: parameters.filterId,
+              location: parameters.location
             }
           };
           return this.client.sendRequest(config, callback);
@@ -8371,7 +8552,7 @@ var require_builds = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Builds = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Builds = class {
       constructor(client) {
         this.client = client;
@@ -8382,9 +8563,9 @@ var require_builds = __commonJS({
             url: "/rest/builds/0.1/bulk",
             method: "POST",
             data: {
-              properties: parameters === null || parameters === void 0 ? void 0 : parameters.properties,
-              builds: parameters === null || parameters === void 0 ? void 0 : parameters.builds,
-              providerMetadata: parameters === null || parameters === void 0 ? void 0 : parameters.providerMetadata
+              properties: parameters.properties,
+              builds: parameters.builds,
+              providerMetadata: parameters.providerMetadata
             }
           };
           return this.client.sendRequest(config, callback);
@@ -8396,7 +8577,7 @@ var require_builds = __commonJS({
             url: "/rest/builds/0.1/bulkByProperties",
             method: "DELETE",
             params: {
-              _updateSequenceNumber: (parameters === null || parameters === void 0 ? void 0 : parameters._updateSequenceNumber) || (parameters === null || parameters === void 0 ? void 0 : parameters.updateSequenceNumber)
+              _updateSequenceNumber: parameters._updateSequenceNumber || parameters.updateSequenceNumber
             }
           };
           return this.client.sendRequest(config, callback);
@@ -8434,7 +8615,7 @@ var require_deployments = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Deployments = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Deployments = class {
       constructor(client) {
         this.client = client;
@@ -8445,9 +8626,9 @@ var require_deployments = __commonJS({
             url: "/rest/deployments/0.1/bulk",
             method: "POST",
             data: {
-              properties: parameters === null || parameters === void 0 ? void 0 : parameters.properties,
-              deployments: parameters === null || parameters === void 0 ? void 0 : parameters.deployments,
-              providerMetadata: parameters === null || parameters === void 0 ? void 0 : parameters.providerMetadata
+              properties: parameters.properties,
+              deployments: parameters.deployments,
+              providerMetadata: parameters.providerMetadata
             }
           };
           return this.client.sendRequest(config, callback);
@@ -8459,7 +8640,7 @@ var require_deployments = __commonJS({
             url: "/rest/deployments/0.1/bulkByProperties",
             method: "DELETE",
             params: {
-              _updateSequenceNumber: (parameters === null || parameters === void 0 ? void 0 : parameters._updateSequenceNumber) || (parameters === null || parameters === void 0 ? void 0 : parameters.updateSequenceNumber)
+              _updateSequenceNumber: parameters._updateSequenceNumber || parameters.updateSequenceNumber
             }
           };
           return this.client.sendRequest(config, callback);
@@ -8506,7 +8687,7 @@ var require_developmentInformation = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DevelopmentInformation = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var DevelopmentInformation = class {
       constructor(client) {
         this.client = client;
@@ -8519,6 +8700,7 @@ var require_developmentInformation = __commonJS({
             data: {
               repositories: parameters.repositories,
               preventTransitions: parameters.preventTransitions,
+              operationType: parameters.operationType,
               properties: parameters.properties,
               providerMetadata: parameters.providerMetadata
             }
@@ -8594,7 +8776,7 @@ var require_epic = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Epic = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Epic = class {
       constructor(client) {
         this.client = client;
@@ -8721,7 +8903,7 @@ var require_featureFlags = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.FeatureFlags = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var FeatureFlags = class {
       constructor(client) {
         this.client = client;
@@ -8732,9 +8914,9 @@ var require_featureFlags = __commonJS({
             url: "/rest/featureflags/0.1/bulk",
             method: "POST",
             data: {
-              properties: parameters === null || parameters === void 0 ? void 0 : parameters.properties,
-              flags: parameters === null || parameters === void 0 ? void 0 : parameters.flags,
-              providerMetadata: parameters === null || parameters === void 0 ? void 0 : parameters.providerMetadata
+              properties: parameters.properties,
+              flags: parameters.flags,
+              providerMetadata: parameters.providerMetadata
             }
           };
           return this.client.sendRequest(config, callback);
@@ -8784,7 +8966,7 @@ var require_issue = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Issue = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Issue = class {
       constructor(client) {
         this.client = client;
@@ -8856,7 +9038,7 @@ var require_project = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Project = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Project = class {
       constructor(client) {
         this.client = client;
@@ -8881,7 +9063,7 @@ var require_remoteLinks = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RemoteLinks = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var RemoteLinks = class {
       constructor(client) {
         this.client = client;
@@ -8892,9 +9074,9 @@ var require_remoteLinks = __commonJS({
             url: "/rest/remotelinks/1.0/bulk",
             method: "POST",
             data: {
-              properties: parameters === null || parameters === void 0 ? void 0 : parameters.properties,
-              remoteLinks: parameters === null || parameters === void 0 ? void 0 : parameters.remoteLinks,
-              providerMetadata: parameters === null || parameters === void 0 ? void 0 : parameters.providerMetadata
+              properties: parameters.properties,
+              remoteLinks: parameters.remoteLinks,
+              providerMetadata: parameters.providerMetadata
             }
           };
           return this.client.sendRequest(config, callback);
@@ -8906,8 +9088,8 @@ var require_remoteLinks = __commonJS({
             url: "/rest/remotelinks/1.0/bulkByProperties",
             method: "DELETE",
             params: {
-              _updateSequenceNumber: (parameters === null || parameters === void 0 ? void 0 : parameters._updateSequenceNumber) || (parameters === null || parameters === void 0 ? void 0 : parameters.updateSequenceNumber),
-              params: parameters === null || parameters === void 0 ? void 0 : parameters.params
+              _updateSequenceNumber: parameters._updateSequenceNumber || parameters.updateSequenceNumber,
+              params: parameters.params
             }
           };
           return this.client.sendRequest(config, callback);
@@ -8939,13 +9121,113 @@ var require_remoteLinks = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/agile/securityInformation.js
+var require_securityInformation = __commonJS({
+  "node_modules/jira.js/out/agile/securityInformation.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SecurityInformation = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var SecurityInformation = class {
+      constructor(client) {
+        this.client = client;
+      }
+      submitWorkspaces(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/security/1.0/linkedWorkspaces/bulk",
+            method: "POST",
+            data: {
+              workspaceIds: parameters.workspaceIds
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteLinkedWorkspaces(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/security/1.0/linkedWorkspaces/bulk",
+            method: "DELETE",
+            params: {
+              workspaceIds: parameters.workspaceIds
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getLinkedWorkspaces(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/security/1.0/linkedWorkspaces",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getLinkedWorkspaceById(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/security/1.0/linkedWorkspaces/${parameters.workspaceId}`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      submitVulnerabilities(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/security/1.0/bulk",
+            method: "POST",
+            data: {
+              properties: parameters.properties,
+              vulnerabilities: parameters.vulnerabilities,
+              providerMetadata: parameters.providerMetadata
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteVulnerabilitiesByProperty(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/security/1.0/bulkByProperties",
+            method: "DELETE",
+            params: parameters
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getVulnerabilityById(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/security/1.0/vulnerability/${parameters.vulnerabilityId}`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteVulnerabilityById(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/security/1.0/vulnerability/${parameters.vulnerabilityId}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.SecurityInformation = SecurityInformation;
+  }
+});
+
 // node_modules/jira.js/out/agile/sprint.js
 var require_sprint = __commonJS({
   "node_modules/jira.js/out/agile/sprint.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Sprint = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Sprint = class {
       constructor(client) {
         this.client = client;
@@ -8956,11 +9238,11 @@ var require_sprint = __commonJS({
             url: "/rest/agile/1.0/sprint",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              startDate: parameters === null || parameters === void 0 ? void 0 : parameters.startDate,
-              endDate: parameters === null || parameters === void 0 ? void 0 : parameters.endDate,
-              originBoardId: parameters === null || parameters === void 0 ? void 0 : parameters.originBoardId,
-              goal: parameters === null || parameters === void 0 ? void 0 : parameters.goal
+              name: parameters.name,
+              startDate: parameters.startDate,
+              endDate: parameters.endDate,
+              originBoardId: parameters.originBoardId,
+              goal: parameters.goal
             }
           };
           return this.client.sendRequest(config, callback);
@@ -9543,6 +9825,22 @@ var require_jsonType = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/agile/models/linkedSecurityWorkspaceIds.js
+var require_linkedSecurityWorkspaceIds = __commonJS({
+  "node_modules/jira.js/out/agile/models/linkedSecurityWorkspaceIds.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/models/linkedWorkspace.js
+var require_linkedWorkspace = __commonJS({
+  "node_modules/jira.js/out/agile/models/linkedWorkspace.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/agile/models/linkGroup.js
 var require_linkGroup = __commonJS({
   "node_modules/jira.js/out/agile/models/linkGroup.js"(exports) {
@@ -9769,6 +10067,14 @@ var require_submitRemoteLinks = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/agile/models/submittedVulnerabilitiesResult.js
+var require_submittedVulnerabilitiesResult = __commonJS({
+  "node_modules/jira.js/out/agile/models/submittedVulnerabilitiesResult.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/agile/models/subquery.js
 var require_subquery = __commonJS({
   "node_modules/jira.js/out/agile/models/subquery.js"(exports) {
@@ -9802,8 +10108,16 @@ var require_userJson = __commonJS({
 });
 
 // node_modules/jira.js/out/agile/models/version.js
-var require_version2 = __commonJS({
+var require_version = __commonJS({
   "node_modules/jira.js/out/agile/models/version.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/models/vulnerability.js
+var require_vulnerability = __commonJS({
+  "node_modules/jira.js/out/agile/models/vulnerability.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -9814,7 +10128,7 @@ var require_models = __commonJS({
   "node_modules/jira.js/out/agile/models/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_avatarUrls(), exports);
     tslib_1.__exportStar(require_basicUser(), exports);
     tslib_1.__exportStar(require_board2(), exports);
@@ -9869,6 +10183,8 @@ var require_models = __commonJS({
     tslib_1.__exportStar(require_issueRankRequest(), exports);
     tslib_1.__exportStar(require_issueTransition(), exports);
     tslib_1.__exportStar(require_jsonType(), exports);
+    tslib_1.__exportStar(require_linkedSecurityWorkspaceIds(), exports);
+    tslib_1.__exportStar(require_linkedWorkspace(), exports);
     tslib_1.__exportStar(require_linkGroup(), exports);
     tslib_1.__exportStar(require_location(), exports);
     tslib_1.__exportStar(require_moveIssuesToBoard(), exports);
@@ -9896,11 +10212,13 @@ var require_models = __commonJS({
     tslib_1.__exportStar(require_submitDeployments(), exports);
     tslib_1.__exportStar(require_submitFeatureFlags(), exports);
     tslib_1.__exportStar(require_submitRemoteLinks(), exports);
+    tslib_1.__exportStar(require_submittedVulnerabilitiesResult(), exports);
     tslib_1.__exportStar(require_subquery(), exports);
     tslib_1.__exportStar(require_toggleFeatures(), exports);
     tslib_1.__exportStar(require_userAvatarUrls(), exports);
     tslib_1.__exportStar(require_userJson(), exports);
-    tslib_1.__exportStar(require_version2(), exports);
+    tslib_1.__exportStar(require_version(), exports);
+    tslib_1.__exportStar(require_vulnerability(), exports);
   }
 });
 
@@ -10000,6 +10318,14 @@ var require_deleteFeatureFlagsByProperty = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/agile/parameters/deleteLinkedWorkspaces.js
+var require_deleteLinkedWorkspaces = __commonJS({
+  "node_modules/jira.js/out/agile/parameters/deleteLinkedWorkspaces.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/agile/parameters/deleteProperty.js
 var require_deleteProperty = __commonJS({
   "node_modules/jira.js/out/agile/parameters/deleteProperty.js"(exports) {
@@ -10035,6 +10361,22 @@ var require_deleteRepository = __commonJS({
 // node_modules/jira.js/out/agile/parameters/deleteSprint.js
 var require_deleteSprint = __commonJS({
   "node_modules/jira.js/out/agile/parameters/deleteSprint.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/parameters/deleteVulnerabilitiesByProperty.js
+var require_deleteVulnerabilitiesByProperty = __commonJS({
+  "node_modules/jira.js/out/agile/parameters/deleteVulnerabilitiesByProperty.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/parameters/deleteVulnerabilityById.js
+var require_deleteVulnerabilityById = __commonJS({
+  "node_modules/jira.js/out/agile/parameters/deleteVulnerabilityById.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -10272,6 +10614,14 @@ var require_getIssuesWithoutEpicForBoard = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/agile/parameters/getLinkedWorkspaceById.js
+var require_getLinkedWorkspaceById = __commonJS({
+  "node_modules/jira.js/out/agile/parameters/getLinkedWorkspaceById.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/agile/parameters/getProjects.js
 var require_getProjects = __commonJS({
   "node_modules/jira.js/out/agile/parameters/getProjects.js"(exports) {
@@ -10339,6 +10689,14 @@ var require_getRepository2 = __commonJS({
 // node_modules/jira.js/out/agile/parameters/getSprint.js
 var require_getSprint = __commonJS({
   "node_modules/jira.js/out/agile/parameters/getSprint.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/parameters/getVulnerabilityById.js
+var require_getVulnerabilityById = __commonJS({
+  "node_modules/jira.js/out/agile/parameters/getVulnerabilityById.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -10488,6 +10846,22 @@ var require_submitRemoteLinks2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/agile/parameters/submitVulnerabilities.js
+var require_submitVulnerabilities = __commonJS({
+  "node_modules/jira.js/out/agile/parameters/submitVulnerabilities.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/parameters/submitWorkspaces.js
+var require_submitWorkspaces = __commonJS({
+  "node_modules/jira.js/out/agile/parameters/submitWorkspaces.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/agile/parameters/swapSprint.js
 var require_swapSprint = __commonJS({
   "node_modules/jira.js/out/agile/parameters/swapSprint.js"(exports) {
@@ -10517,7 +10891,7 @@ var require_parameters = __commonJS({
   "node_modules/jira.js/out/agile/parameters/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_createBoard2(), exports);
     tslib_1.__exportStar(require_createSprint(), exports);
     tslib_1.__exportStar(require_deleteBoard(), exports);
@@ -10530,11 +10904,14 @@ var require_parameters = __commonJS({
     tslib_1.__exportStar(require_deleteEntity(), exports);
     tslib_1.__exportStar(require_deleteFeatureFlagById(), exports);
     tslib_1.__exportStar(require_deleteFeatureFlagsByProperty(), exports);
+    tslib_1.__exportStar(require_deleteLinkedWorkspaces(), exports);
     tslib_1.__exportStar(require_deleteProperty(), exports);
     tslib_1.__exportStar(require_deleteRemoteLinkById(), exports);
     tslib_1.__exportStar(require_deleteRemoteLinksByProperty(), exports);
     tslib_1.__exportStar(require_deleteRepository(), exports);
     tslib_1.__exportStar(require_deleteSprint(), exports);
+    tslib_1.__exportStar(require_deleteVulnerabilitiesByProperty(), exports);
+    tslib_1.__exportStar(require_deleteVulnerabilityById(), exports);
     tslib_1.__exportStar(require_estimateIssueForBoard(), exports);
     tslib_1.__exportStar(require_existsByProperties2(), exports);
     tslib_1.__exportStar(require_getAllBoards2(), exports);
@@ -10564,6 +10941,7 @@ var require_parameters = __commonJS({
     tslib_1.__exportStar(require_getIssuesForSprint(), exports);
     tslib_1.__exportStar(require_getIssuesWithoutEpic(), exports);
     tslib_1.__exportStar(require_getIssuesWithoutEpicForBoard(), exports);
+    tslib_1.__exportStar(require_getLinkedWorkspaceById(), exports);
     tslib_1.__exportStar(require_getProjects(), exports);
     tslib_1.__exportStar(require_getProjectsFull(), exports);
     tslib_1.__exportStar(require_getPropertiesKeys(), exports);
@@ -10573,6 +10951,7 @@ var require_parameters = __commonJS({
     tslib_1.__exportStar(require_getReportsForBoard2(), exports);
     tslib_1.__exportStar(require_getRepository2(), exports);
     tslib_1.__exportStar(require_getSprint(), exports);
+    tslib_1.__exportStar(require_getVulnerabilityById(), exports);
     tslib_1.__exportStar(require_moveIssuesToBacklog(), exports);
     tslib_1.__exportStar(require_moveIssuesToBacklogForBoard(), exports);
     tslib_1.__exportStar(require_moveIssuesToBoard2(), exports);
@@ -10591,6 +10970,8 @@ var require_parameters = __commonJS({
     tslib_1.__exportStar(require_submitDeployments2(), exports);
     tslib_1.__exportStar(require_submitFeatureFlags2(), exports);
     tslib_1.__exportStar(require_submitRemoteLinks2(), exports);
+    tslib_1.__exportStar(require_submitVulnerabilities(), exports);
+    tslib_1.__exportStar(require_submitWorkspaces(), exports);
     tslib_1.__exportStar(require_swapSprint(), exports);
     tslib_1.__exportStar(require_toggleFeatures2(), exports);
     tslib_1.__exportStar(require_updateSprint(), exports);
@@ -10791,6 +11172,7 @@ var require_lodash = __commonJS({
       cloneableTags[argsTag] = cloneableTags[arrayTag] = cloneableTags[arrayBufferTag] = cloneableTags[dataViewTag] = cloneableTags[boolTag] = cloneableTags[dateTag] = cloneableTags[float32Tag] = cloneableTags[float64Tag] = cloneableTags[int8Tag] = cloneableTags[int16Tag] = cloneableTags[int32Tag] = cloneableTags[mapTag] = cloneableTags[numberTag] = cloneableTags[objectTag] = cloneableTags[regexpTag] = cloneableTags[setTag] = cloneableTags[stringTag] = cloneableTags[symbolTag] = cloneableTags[uint8Tag] = cloneableTags[uint8ClampedTag] = cloneableTags[uint16Tag] = cloneableTags[uint32Tag] = true;
       cloneableTags[errorTag] = cloneableTags[funcTag] = cloneableTags[weakMapTag] = false;
       var deburredLetters = {
+        // Latin-1 Supplement block.
         "\xC0": "A",
         "\xC1": "A",
         "\xC2": "A",
@@ -10853,6 +11235,7 @@ var require_lodash = __commonJS({
         "\xDE": "Th",
         "\xFE": "th",
         "\xDF": "ss",
+        // Latin Extended-A block.
         "\u0100": "A",
         "\u0102": "A",
         "\u0104": "A",
@@ -11438,11 +11821,47 @@ var require_lodash = __commonJS({
           this.__values__ = undefined2;
         }
         lodash.templateSettings = {
+          /**
+           * Used to detect `data` property values to be HTML-escaped.
+           *
+           * @memberOf _.templateSettings
+           * @type {RegExp}
+           */
           "escape": reEscape,
+          /**
+           * Used to detect code to be evaluated.
+           *
+           * @memberOf _.templateSettings
+           * @type {RegExp}
+           */
           "evaluate": reEvaluate,
+          /**
+           * Used to detect `data` property values to inject.
+           *
+           * @memberOf _.templateSettings
+           * @type {RegExp}
+           */
           "interpolate": reInterpolate,
+          /**
+           * Used to reference the data object in the template text.
+           *
+           * @memberOf _.templateSettings
+           * @type {string}
+           */
           "variable": "",
+          /**
+           * Used to import variables into the compiled template.
+           *
+           * @memberOf _.templateSettings
+           * @type {Object}
+           */
           "imports": {
+            /**
+             * A reference to the `lodash` function.
+             *
+             * @memberOf _.templateSettings.imports
+             * @type {Function}
+             */
             "_": lodash
           }
         };
@@ -11692,7 +12111,11 @@ var require_lodash = __commonJS({
         function arrayLikeKeys(value, inherited) {
           var isArr = isArray(value), isArg = !isArr && isArguments(value), isBuff = !isArr && !isArg && isBuffer(value), isType = !isArr && !isArg && !isBuff && isTypedArray(value), skipIndexes = isArr || isArg || isBuff || isType, result2 = skipIndexes ? baseTimes(value.length, String2) : [], length = result2.length;
           for (var key in value) {
-            if ((inherited || hasOwnProperty.call(value, key)) && !(skipIndexes && (key == "length" || isBuff && (key == "offset" || key == "parent") || isType && (key == "buffer" || key == "byteLength" || key == "byteOffset") || isIndex(key, length)))) {
+            if ((inherited || hasOwnProperty.call(value, key)) && !(skipIndexes && // Safari 9 has enumerable `arguments.length` in strict mode.
+            (key == "length" || // Node.js 0.10 has enumerable non-index properties on buffers.
+            isBuff && (key == "offset" || key == "parent") || // PhantomJS 2 has enumerable non-index properties on typed arrays.
+            isType && (key == "buffer" || key == "byteLength" || key == "byteOffset") || // Skip index properties.
+            isIndex(key, length)))) {
               result2.push(key);
             }
           }
@@ -16417,8 +16840,8 @@ var require_Uri = __commonJS({
 var require_jwt = __commonJS({
   "node_modules/atlassian-jwt/dist/lib/jwt.js"(exports) {
     "use strict";
-    var __assign = exports && exports.__assign || function() {
-      __assign = Object.assign || function(t) {
+    var __assign2 = exports && exports.__assign || function() {
+      __assign2 = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
           s = arguments[i];
           for (var p in s)
@@ -16427,9 +16850,9 @@ var require_jwt = __commonJS({
         }
         return t;
       };
-      return __assign.apply(this, arguments);
+      return __assign2.apply(this, arguments);
     };
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -16440,32 +16863,32 @@ var require_jwt = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
-    var __importDefault = exports && exports.__importDefault || function(mod) {
+    var __importDefault2 = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.createQueryStringHash = exports.createCanonicalRequest = exports.encodeAsymmetric = exports.encodeSymmetric = exports.decodeSymmetric = exports.getAlgorithm = exports.getKeyId = exports.decodeAsymmetric = exports.version = exports.fromMethodAndPathAndBody = exports.fromMethodAndUrl = exports.fromExpressRequest = exports.SymmetricAlgorithm = exports.AsymmetricAlgorithm = void 0;
     var crypto_1 = require("crypto");
-    var lodash_1 = __importDefault(require_lodash());
-    var jsuri_1 = __importDefault(require_Uri());
-    var url = __importStar(require("url"));
+    var lodash_1 = __importDefault2(require_lodash());
+    var jsuri_1 = __importDefault2(require_Uri());
+    var url = __importStar2(require("url"));
     var AsymmetricAlgorithm;
     (function(AsymmetricAlgorithm2) {
       AsymmetricAlgorithm2["RS256"] = "RS256";
@@ -16578,7 +17001,7 @@ var require_jwt = __commonJS({
       }
       var defaultHeader = { typ: "JWT", alg: signingAlgorithm };
       var segments = [];
-      segments.push(base64urlEncode(JSON.stringify(header ? __assign(__assign({}, defaultHeader), { kid: header.kid }) : defaultHeader)));
+      segments.push(base64urlEncode(JSON.stringify(header ? __assign2(__assign2({}, defaultHeader), { kid: header.kid }) : defaultHeader)));
       segments.push(base64urlEncode(JSON.stringify(payload)));
       segments.push(sign(segments.join("."), key, signingMethod));
       return segments.join(".");
@@ -16730,10 +17153,10 @@ var require_jwt = __commonJS({
 });
 
 // node_modules/atlassian-jwt/dist/index.js
-var require_dist2 = __commonJS({
+var require_dist = __commonJS({
   "node_modules/atlassian-jwt/dist/index.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -16744,13 +17167,13 @@ var require_dist2 = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __exportStar = exports && exports.__exportStar || function(m, exports2) {
+    var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
       for (var p in m)
         if (p !== "default" && !exports2.hasOwnProperty(p))
-          __createBinding(exports2, m, p);
+          __createBinding2(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    __exportStar(require_jwt(), exports);
+    __exportStar2(require_jwt(), exports);
   }
 });
 
@@ -16760,11 +17183,12 @@ var require_createJWTAuthentication = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.createJWTAuthentication = void 0;
-    var jwt = require_dist2();
+    var jwt = require_dist();
     function createJWTAuthentication(authenticationData, requestData) {
+      var _a;
       const { method, url } = requestData;
       const now = Math.floor(Date.now() / 1e3);
-      const expire = now + 180;
+      const expire = now + ((_a = authenticationData.expiryTimeSeconds) !== null && _a !== void 0 ? _a : 180);
       const request = jwt.fromMethodAndUrl(method, url);
       const tokenData = {
         iss: authenticationData.issuer,
@@ -16793,7 +17217,7 @@ var require_createOAuth2AuthenticationToken = __commonJS({
 });
 
 // node_modules/oauth/lib/sha1.js
-var require_sha12 = __commonJS({
+var require_sha1 = __commonJS({
   "node_modules/oauth/lib/sha1.js"(exports) {
     var b64pad = "=";
     function b64_hmac_sha1(k, d) {
@@ -16955,14 +17379,14 @@ var require_utils5 = __commonJS({
 // node_modules/oauth/lib/oauth.js
 var require_oauth = __commonJS({
   "node_modules/oauth/lib/oauth.js"(exports) {
-    var crypto = require("crypto");
-    var sha1 = require_sha12();
+    var crypto4 = require("crypto");
+    var sha12 = require_sha1();
     var http = require("http");
     var https = require("https");
-    var URL2 = require("url");
+    var URL3 = require("url");
     var querystring = require("querystring");
     var OAuthUtils = require_utils5();
-    exports.OAuth = function(requestUrl, accessUrl, consumerKey, consumerSecret, version, authorize_callback, signatureMethod, nonceSize, customHeaders) {
+    exports.OAuth = function(requestUrl, accessUrl, consumerKey, consumerSecret, version2, authorize_callback, signatureMethod, nonceSize, customHeaders) {
       this._isEcho = false;
       this._requestUrl = requestUrl;
       this._accessUrl = accessUrl;
@@ -16971,7 +17395,7 @@ var require_oauth = __commonJS({
       if (signatureMethod == "RSA-SHA1") {
         this._privateKey = consumerSecret;
       }
-      this._version = version;
+      this._version = version2;
       if (authorize_callback === void 0) {
         this._authorize_callback = "oob";
       } else {
@@ -16993,7 +17417,7 @@ var require_oauth = __commonJS({
       };
       this._oauthParameterSeperator = ",";
     };
-    exports.OAuthEcho = function(realm, verify_credentials, consumerKey, consumerSecret, version, signatureMethod, nonceSize, customHeaders) {
+    exports.OAuthEcho = function(realm, verify_credentials, consumerKey, consumerSecret, version2, signatureMethod, nonceSize, customHeaders) {
       this._isEcho = true;
       this._realm = realm;
       this._verifyCredentials = verify_credentials;
@@ -17002,7 +17426,7 @@ var require_oauth = __commonJS({
       if (signatureMethod == "RSA-SHA1") {
         this._privateKey = consumerSecret;
       }
-      this._version = version;
+      this._version = version2;
       if (signatureMethod != "PLAINTEXT" && signatureMethod != "HMAC-SHA1" && signatureMethod != "RSA-SHA1")
         throw new Error("Un-supported signature method: " + signatureMethod);
       this._signatureMethod = signatureMethod;
@@ -17016,7 +17440,7 @@ var require_oauth = __commonJS({
     };
     exports.OAuthEcho.prototype = exports.OAuth.prototype;
     exports.OAuth.prototype._getTimestamp = function() {
-      return Math.floor(new Date().getTime() / 1e3);
+      return Math.floor((/* @__PURE__ */ new Date()).getTime() / 1e3);
     };
     exports.OAuth.prototype._encodeData = function(toEncode) {
       if (toEncode == null || toEncode == "")
@@ -17037,7 +17461,7 @@ var require_oauth = __commonJS({
       return this._createSignature(signatureBase, tokenSecret);
     };
     exports.OAuth.prototype._normalizeUrl = function(url) {
-      var parsedUrl = URL2.parse(url, true);
+      var parsedUrl = URL3.parse(url, true);
       var port = "";
       if (parsedUrl.port) {
         if (parsedUrl.protocol == "http:" && parsedUrl.port != "80" || parsedUrl.protocol == "https:" && parsedUrl.port != "443") {
@@ -17127,12 +17551,12 @@ var require_oauth = __commonJS({
         hash = key;
       } else if (this._signatureMethod == "RSA-SHA1") {
         key = this._privateKey || "";
-        hash = crypto.createSign("RSA-SHA1").update(signatureBase).sign(key, "base64");
+        hash = crypto4.createSign("RSA-SHA1").update(signatureBase).sign(key, "base64");
       } else {
-        if (crypto.Hmac) {
-          hash = crypto.createHmac("sha1", key).update(signatureBase).digest("base64");
+        if (crypto4.Hmac) {
+          hash = crypto4.createHmac("sha1", key).update(signatureBase).digest("base64");
         } else {
-          hash = sha1.HMACSHA1(key, signatureBase);
+          hash = sha12.HMACSHA1(key, signatureBase);
         }
       }
       return hash;
@@ -17249,7 +17673,7 @@ var require_oauth = __commonJS({
               oauthParameters[key] = extra_params[key];
           }
         }
-        var parsedUrl = URL2.parse(url, false);
+        var parsedUrl = URL3.parse(url, false);
         if (parsedUrl.query) {
           var key2;
           var extraParameters = querystring.parse(parsedUrl.query);
@@ -17275,7 +17699,7 @@ var require_oauth = __commonJS({
       if (!post_content_type) {
         post_content_type = "application/x-www-form-urlencoded";
       }
-      var parsedUrl = URL2.parse(url, false);
+      var parsedUrl = URL3.parse(url, false);
       if (parsedUrl.protocol == "http:" && !parsedUrl.port)
         parsedUrl.port = 80;
       if (parsedUrl.protocol == "https:" && !parsedUrl.port)
@@ -17461,7 +17885,7 @@ var require_oauth = __commonJS({
         var method = "GET";
       }
       var orderedParameters = this._prepareParameters(oauth_token, oauth_token_secret, method, url, {});
-      var parsedUrl = URL2.parse(url, false);
+      var parsedUrl = URL3.parse(url, false);
       var query = "";
       for (var i = 0; i < orderedParameters.length; i++) {
         query += orderedParameters[i][0] + "=" + this._encodeData(orderedParameters[i][1]) + "&";
@@ -17483,10 +17907,10 @@ var require_oauth = __commonJS({
 var require_oauth2 = __commonJS({
   "node_modules/oauth/lib/oauth2.js"(exports) {
     var querystring = require("querystring");
-    var crypto = require("crypto");
+    var crypto4 = require("crypto");
     var https = require("https");
     var http = require("http");
-    var URL2 = require("url");
+    var URL3 = require("url");
     var OAuthUtils = require_utils5();
     exports.OAuth2 = function(clientId, clientSecret, baseSite, authorizePath, accessTokenPath, customHeaders) {
       this._clientId = clientId;
@@ -17526,7 +17950,7 @@ var require_oauth2 = __commonJS({
       return http_library;
     };
     exports.OAuth2.prototype._request = function(method, url, headers, post_body, access_token, callback) {
-      var parsedUrl = URL2.parse(url, true);
+      var parsedUrl = URL3.parse(url, true);
       if (parsedUrl.protocol == "https:" && !parsedUrl.port) {
         parsedUrl.port = 443;
       }
@@ -17703,7 +18127,7 @@ var require_authentications = __commonJS({
   "node_modules/jira.js/out/services/authenticationService/authentications/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_createBasicAuthenticationToken(), exports);
     tslib_1.__exportStar(require_createJWTAuthentication(), exports);
     tslib_1.__exportStar(require_createOAuth2AuthenticationToken(), exports);
@@ -17718,7 +18142,7 @@ var require_authenticationService = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AuthenticationService = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var authentications_1 = require_authentications();
     var AuthenticationService;
     (function(AuthenticationService2) {
@@ -17755,7 +18179,7 @@ var require_authenticationService2 = __commonJS({
   "node_modules/jira.js/out/services/authenticationService/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_authenticationService(), exports);
   }
 });
@@ -18109,14 +18533,18 @@ var require_AxiosError = __commonJS({
     utils.inherits(AxiosError, Error, {
       toJSON: function toJSON() {
         return {
+          // Standard
           message: this.message,
           name: this.name,
+          // Microsoft
           description: this.description,
           number: this.number,
+          // Mozilla
           fileName: this.fileName,
           lineNumber: this.lineNumber,
           columnNumber: this.columnNumber,
           stack: this.stack,
+          // Axios
           config: this.config,
           code: this.code,
           status: this.response && this.response.status ? this.response.status : null
@@ -18136,6 +18564,7 @@ var require_AxiosError = __commonJS({
       "ERR_BAD_RESPONSE",
       "ERR_BAD_REQUEST",
       "ERR_CANCELED"
+      // eslint-disable-next-line func-names
     ].forEach(function(code) {
       descriptors[code] = { value: code };
     });
@@ -18248,44 +18677,50 @@ var require_cookies = __commonJS({
   "node_modules/axios/lib/helpers/cookies.js"(exports, module2) {
     "use strict";
     var utils = require_utils6();
-    module2.exports = utils.isStandardBrowserEnv() ? function standardBrowserEnv() {
-      return {
-        write: function write(name, value, expires, path3, domain, secure) {
-          var cookie = [];
-          cookie.push(name + "=" + encodeURIComponent(value));
-          if (utils.isNumber(expires)) {
-            cookie.push("expires=" + new Date(expires).toGMTString());
+    module2.exports = utils.isStandardBrowserEnv() ? (
+      // Standard browser envs support document.cookie
+      function standardBrowserEnv() {
+        return {
+          write: function write(name, value, expires, path3, domain, secure) {
+            var cookie = [];
+            cookie.push(name + "=" + encodeURIComponent(value));
+            if (utils.isNumber(expires)) {
+              cookie.push("expires=" + new Date(expires).toGMTString());
+            }
+            if (utils.isString(path3)) {
+              cookie.push("path=" + path3);
+            }
+            if (utils.isString(domain)) {
+              cookie.push("domain=" + domain);
+            }
+            if (secure === true) {
+              cookie.push("secure");
+            }
+            document.cookie = cookie.join("; ");
+          },
+          read: function read(name) {
+            var match = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
+            return match ? decodeURIComponent(match[3]) : null;
+          },
+          remove: function remove(name) {
+            this.write(name, "", Date.now() - 864e5);
           }
-          if (utils.isString(path3)) {
-            cookie.push("path=" + path3);
+        };
+      }()
+    ) : (
+      // Non standard browser env (web workers, react-native) lack needed support.
+      function nonStandardBrowserEnv() {
+        return {
+          write: function write() {
+          },
+          read: function read() {
+            return null;
+          },
+          remove: function remove() {
           }
-          if (utils.isString(domain)) {
-            cookie.push("domain=" + domain);
-          }
-          if (secure === true) {
-            cookie.push("secure");
-          }
-          document.cookie = cookie.join("; ");
-        },
-        read: function read(name) {
-          var match = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
-          return match ? decodeURIComponent(match[3]) : null;
-        },
-        remove: function remove(name) {
-          this.write(name, "", Date.now() - 864e5);
-        }
-      };
-    }() : function nonStandardBrowserEnv() {
-      return {
-        write: function write() {
-        },
-        read: function read() {
-          return null;
-        },
-        remove: function remove() {
-        }
-      };
-    }();
+        };
+      }()
+    );
   }
 });
 
@@ -18381,38 +18816,45 @@ var require_isURLSameOrigin = __commonJS({
   "node_modules/axios/lib/helpers/isURLSameOrigin.js"(exports, module2) {
     "use strict";
     var utils = require_utils6();
-    module2.exports = utils.isStandardBrowserEnv() ? function standardBrowserEnv() {
-      var msie = /(msie|trident)/i.test(navigator.userAgent);
-      var urlParsingNode = document.createElement("a");
-      var originURL;
-      function resolveURL(url) {
-        var href = url;
-        if (msie) {
+    module2.exports = utils.isStandardBrowserEnv() ? (
+      // Standard browser envs have full support of the APIs needed to test
+      // whether the request URL is of the same origin as current location.
+      function standardBrowserEnv() {
+        var msie = /(msie|trident)/i.test(navigator.userAgent);
+        var urlParsingNode = document.createElement("a");
+        var originURL;
+        function resolveURL(url) {
+          var href = url;
+          if (msie) {
+            urlParsingNode.setAttribute("href", href);
+            href = urlParsingNode.href;
+          }
           urlParsingNode.setAttribute("href", href);
-          href = urlParsingNode.href;
+          return {
+            href: urlParsingNode.href,
+            protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, "") : "",
+            host: urlParsingNode.host,
+            search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, "") : "",
+            hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, "") : "",
+            hostname: urlParsingNode.hostname,
+            port: urlParsingNode.port,
+            pathname: urlParsingNode.pathname.charAt(0) === "/" ? urlParsingNode.pathname : "/" + urlParsingNode.pathname
+          };
         }
-        urlParsingNode.setAttribute("href", href);
-        return {
-          href: urlParsingNode.href,
-          protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, "") : "",
-          host: urlParsingNode.host,
-          search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, "") : "",
-          hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, "") : "",
-          hostname: urlParsingNode.hostname,
-          port: urlParsingNode.port,
-          pathname: urlParsingNode.pathname.charAt(0) === "/" ? urlParsingNode.pathname : "/" + urlParsingNode.pathname
+        originURL = resolveURL(window.location.href);
+        return function isURLSameOrigin(requestURL) {
+          var parsed = utils.isString(requestURL) ? resolveURL(requestURL) : requestURL;
+          return parsed.protocol === originURL.protocol && parsed.host === originURL.host;
         };
-      }
-      originURL = resolveURL(window.location.href);
-      return function isURLSameOrigin(requestURL) {
-        var parsed = utils.isString(requestURL) ? resolveURL(requestURL) : requestURL;
-        return parsed.protocol === originURL.protocol && parsed.host === originURL.host;
-      };
-    }() : function nonStandardBrowserEnv() {
-      return function isURLSameOrigin() {
-        return true;
-      };
-    }();
+      }()
+    ) : (
+      // Non standard browser envs (web workers, react-native) lack needed support.
+      function nonStandardBrowserEnv() {
+        return function isURLSameOrigin() {
+          return true;
+        };
+      }()
+    );
   }
 });
 
@@ -18625,7 +19067,7 @@ var require_debug = __commonJS({
 var require_follow_redirects = __commonJS({
   "node_modules/follow-redirects/index.js"(exports, module2) {
     var url = require("url");
-    var URL2 = url.URL;
+    var URL3 = url.URL;
     var http = require("http");
     var https = require("https");
     var Writable = require("stream").Writable;
@@ -18832,7 +19274,11 @@ var require_follow_redirects = __commonJS({
       for (var event of events) {
         request.on(event, eventHandlers[event]);
       }
-      this._currentUrl = /^\//.test(this._options.path) ? url.format(this._options) : this._currentUrl = this._options.path;
+      this._currentUrl = /^\//.test(this._options.path) ? url.format(this._options) : (
+        // When making a request to a proxy, […]
+        // a client MUST send the target URI in absolute-form […].
+        this._currentUrl = this._options.path
+      );
       if (this._isRedirect) {
         var i = 0;
         var self2 = this;
@@ -18880,11 +19326,16 @@ var require_follow_redirects = __commonJS({
       var beforeRedirect = this._options.beforeRedirect;
       if (beforeRedirect) {
         requestHeaders = Object.assign({
+          // The Host header was set by nativeProtocol.request
           Host: response.req.getHeader("host")
         }, this._options.headers);
       }
       var method = this._options.method;
-      if ((statusCode === 301 || statusCode === 302) && this._options.method === "POST" || statusCode === 303 && !/^(?:GET|HEAD)$/.test(this._options.method)) {
+      if ((statusCode === 301 || statusCode === 302) && this._options.method === "POST" || // RFC7231§6.4.4: The 303 (See Other) status code indicates that
+      // the server is redirecting the user agent to a different resource […]
+      // A user agent can perform a retrieval request targeting that URI
+      // (a GET or HEAD request if using HTTP) […]
+      statusCode === 303 && !/^(?:GET|HEAD)$/.test(this._options.method)) {
         this._options.method = "GET";
         this._requestBodyBuffers = [];
         removeMatchingHeaders(/^content-/i, this._options.headers);
@@ -18945,11 +19396,11 @@ var require_follow_redirects = __commonJS({
           if (typeof input === "string") {
             var urlStr = input;
             try {
-              input = urlToOptions(new URL2(urlStr));
+              input = urlToOptions(new URL3(urlStr));
             } catch (err) {
               input = url.parse(urlStr);
             }
-          } else if (URL2 && input instanceof URL2) {
+          } else if (URL3 && input instanceof URL3) {
             input = urlToOptions(input);
           } else {
             callback = options;
@@ -18986,7 +19437,10 @@ var require_follow_redirects = __commonJS({
     function urlToOptions(urlObject) {
       var options = {
         protocol: urlObject.protocol,
-        hostname: urlObject.hostname.startsWith("[") ? urlObject.hostname.slice(1, -1) : urlObject.hostname,
+        hostname: urlObject.hostname.startsWith("[") ? (
+          /* istanbul ignore next */
+          urlObject.hostname.slice(1, -1)
+        ) : urlObject.hostname,
         hash: urlObject.hash,
         search: urlObject.search,
         pathname: urlObject.pathname,
@@ -28597,7 +29051,9 @@ var require_form_data = __commonJS({
       var contentType = this._getContentType(value, options);
       var contents = "";
       var headers = {
+        // add custom disposition as third element or keep it two elements if not
         "Content-Disposition": ["form-data", 'name="' + field + '"'].concat(contentDisposition || []),
+        // if no content type. allow it to be empty array
         "Content-Type": [].concat(contentType || [])
       };
       if (typeof options.header == "object") {
@@ -28899,6 +29355,10 @@ var require_defaults = __commonJS({
         }
         return data;
       }],
+      /**
+       * A timeout in milliseconds to abort a request. If set to 0 (default) a
+       * timeout is not created.
+       */
       timeout: 0,
       xsrfCookieName: "XSRF-TOKEN",
       xsrfHeaderName: "X-XSRF-TOKEN",
@@ -29113,23 +29573,23 @@ var require_validator = __commonJS({
       };
     });
     var deprecatedWarnings = {};
-    validators.transitional = function transitional(validator, version, message) {
+    validators.transitional = function transitional(validator, version2, message) {
       function formatMessage(opt, desc) {
         return "[Axios v" + VERSION + "] Transitional option '" + opt + "'" + desc + (message ? ". " + message : "");
       }
       return function(value, opt, opts) {
         if (validator === false) {
           throw new AxiosError(
-            formatMessage(opt, " has been removed" + (version ? " in " + version : "")),
+            formatMessage(opt, " has been removed" + (version2 ? " in " + version2 : "")),
             AxiosError.ERR_DEPRECATED
           );
         }
-        if (version && !deprecatedWarnings[opt]) {
+        if (version2 && !deprecatedWarnings[opt]) {
           deprecatedWarnings[opt] = true;
           console.warn(
             formatMessage(
               opt,
-              " has been deprecated since v" + version + " and will be removed in the near future"
+              " has been deprecated since v" + version2 + " and will be removed in the near future"
             )
           );
         }
@@ -29442,7 +29902,7 @@ var require_baseClient = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BaseClient = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var authenticationService_1 = require_authenticationService2();
     var axios_1 = require_axios2();
     var STRICT_GDPR_FLAG = "x-atlassian-force-account-id";
@@ -29533,7 +29993,7 @@ var require_announcementBanner = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AnnouncementBanner = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var AnnouncementBanner = class {
       constructor(client) {
         this.client = client;
@@ -29567,13 +30027,48 @@ var require_announcementBanner = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/applicationRoles.js
+var require_applicationRoles = __commonJS({
+  "node_modules/jira.js/out/version2/applicationRoles.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ApplicationRoles = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var ApplicationRoles = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getAllApplicationRoles(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/applicationrole",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getApplicationRole(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const key = typeof parameters === "string" ? parameters : parameters.key;
+          const config = {
+            url: `/rest/api/2/applicationrole/${key}`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.ApplicationRoles = ApplicationRoles;
+  }
+});
+
 // node_modules/jira.js/out/version2/appMigration.js
 var require_appMigration = __commonJS({
   "node_modules/jira.js/out/version2/appMigration.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AppMigration = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var AppMigration = class {
       constructor(client) {
         this.client = client;
@@ -29638,15 +30133,16 @@ var require_appProperties = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AppProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var AppProperties = class {
       constructor(client) {
         this.client = client;
       }
       getAddonProperties(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const addonKey = typeof parameters === "string" ? parameters : parameters.addonKey;
           const config = {
-            url: `/rest/atlassian-connect/1/addons/${parameters.addonKey}/properties`,
+            url: `/rest/atlassian-connect/1/addons/${addonKey}/properties`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -29684,47 +30180,13 @@ var require_appProperties = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version2/applicationRoles.js
-var require_applicationRoles = __commonJS({
-  "node_modules/jira.js/out/version2/applicationRoles.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ApplicationRoles = void 0;
-    var tslib_1 = require_tslib();
-    var ApplicationRoles = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getAllApplicationRoles(callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/applicationrole",
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getApplicationRole(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/applicationrole/${parameters.key}`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.ApplicationRoles = ApplicationRoles;
-  }
-});
-
 // node_modules/jira.js/out/version2/auditRecords.js
 var require_auditRecords = __commonJS({
   "node_modules/jira.js/out/version2/auditRecords.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AuditRecords = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var AuditRecords = class {
       constructor(client) {
         this.client = client;
@@ -29756,15 +30218,16 @@ var require_avatars = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Avatars = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Avatars = class {
       constructor(client) {
         this.client = client;
       }
       getAllSystemAvatars(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const type3 = typeof parameters === "string" ? parameters : parameters.type;
           const config = {
-            url: `/rest/api/2/avatar/${parameters.type}/system`,
+            url: `/rest/api/2/avatar/${type3}/system`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -29804,12 +30267,13 @@ var require_avatars = __commonJS({
       }
       getAvatarImageByType(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const type3 = typeof parameters === "string" ? parameters : parameters.type;
           const config = {
-            url: `/rest/api/2/universal_avatar/view/type/${parameters.type}`,
+            url: `/rest/api/2/universal_avatar/view/type/${type3}`,
             method: "GET",
             params: {
-              size: parameters.size,
-              format: parameters.format
+              size: typeof parameters !== "string" && parameters.size,
+              format: typeof parameters !== "string" && parameters.format
             }
           };
           return this.client.sendRequest(config, callback);
@@ -29871,7 +30335,7 @@ var require_dashboards = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Dashboards = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var paramSerializer_1 = require_paramSerializer();
     var Dashboards = class {
       constructor(client) {
@@ -30033,8 +30497,9 @@ var require_dashboards = __commonJS({
       }
       getDashboard(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/dashboard/${parameters.id}`,
+            url: `/rest/api/2/dashboard/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -30057,8 +30522,9 @@ var require_dashboards = __commonJS({
       }
       deleteDashboard(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/dashboard/${parameters.id}`,
+            url: `/rest/api/2/dashboard/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -30090,7 +30556,7 @@ var require_dynamicModules = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DynamicModules = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var DynamicModules = class {
       constructor(client) {
         this.client = client;
@@ -30133,95 +30599,13 @@ var require_dynamicModules = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version2/filterSharing.js
-var require_filterSharing = __commonJS({
-  "node_modules/jira.js/out/version2/filterSharing.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.FilterSharing = void 0;
-    var tslib_1 = require_tslib();
-    var FilterSharing = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getDefaultShareScope(callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/filter/defaultShareScope",
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      setDefaultShareScope(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/filter/defaultShareScope",
-            method: "PUT",
-            data: {
-              scope: parameters === null || parameters === void 0 ? void 0 : parameters.scope
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getSharePermissions(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/filter/${parameters.id}/permission`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      addSharePermission(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/filter/${parameters.id}/permission`,
-            method: "POST",
-            data: {
-              type: parameters.type,
-              projectId: parameters.projectId,
-              groupname: parameters.groupname,
-              projectRoleId: parameters.projectRoleId,
-              accountId: parameters.accountId,
-              rights: parameters.rights,
-              groupId: parameters.groupId
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getSharePermission(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/filter/${parameters.id}/permission/${parameters.permissionId}`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      deleteSharePermission(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/filter/${parameters.id}/permission/${parameters.permissionId}`,
-            method: "DELETE"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.FilterSharing = FilterSharing;
-  }
-});
-
 // node_modules/jira.js/out/version2/filters.js
 var require_filters = __commonJS({
   "node_modules/jira.js/out/version2/filters.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Filters = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Filters = class {
       constructor(client) {
         this.client = client;
@@ -30317,12 +30701,13 @@ var require_filters = __commonJS({
       }
       getFilter(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/filter/${parameters.id}`,
+            url: `/rest/api/2/filter/${id}`,
             method: "GET",
             params: {
-              expand: parameters.expand,
-              overrideSharePermissions: parameters.overrideSharePermissions
+              expand: typeof parameters !== "string" && parameters.expand,
+              overrideSharePermissions: typeof parameters !== "string" && parameters.overrideSharePermissions
             }
           };
           return this.client.sendRequest(config, callback);
@@ -30350,8 +30735,9 @@ var require_filters = __commonJS({
       }
       deleteFilter(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/filter/${parameters.id}`,
+            url: `/rest/api/2/filter/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -30359,8 +30745,9 @@ var require_filters = __commonJS({
       }
       getColumns(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/filter/${parameters.id}/columns`,
+            url: `/rest/api/2/filter/${id}/columns`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -30370,7 +30757,8 @@ var require_filters = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/2/filter/${parameters.id}/columns`,
-            method: "PUT"
+            method: "PUT",
+            data: parameters.columns
           };
           return this.client.sendRequest(config, callback);
         });
@@ -30386,11 +30774,12 @@ var require_filters = __commonJS({
       }
       setFavouriteForFilter(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/filter/${parameters.id}/favourite`,
+            url: `/rest/api/2/filter/${id}/favourite`,
             method: "PUT",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -30398,11 +30787,12 @@ var require_filters = __commonJS({
       }
       deleteFavouriteForFilter(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/filter/${parameters.id}/favourite`,
+            url: `/rest/api/2/filter/${id}/favourite`,
             method: "DELETE",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -30425,13 +30815,97 @@ var require_filters = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/filterSharing.js
+var require_filterSharing = __commonJS({
+  "node_modules/jira.js/out/version2/filterSharing.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.FilterSharing = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var FilterSharing = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getDefaultShareScope(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/filter/defaultShareScope",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      setDefaultShareScope(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const scope = typeof parameters === "string" ? parameters : parameters.scope;
+          const config = {
+            url: "/rest/api/2/filter/defaultShareScope",
+            method: "PUT",
+            data: {
+              scope
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getSharePermissions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
+          const config = {
+            url: `/rest/api/2/filter/${id}/permission`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      addSharePermission(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/filter/${parameters.id}/permission`,
+            method: "POST",
+            data: {
+              type: parameters.type,
+              projectId: parameters.projectId,
+              groupname: parameters.groupname,
+              projectRoleId: parameters.projectRoleId,
+              accountId: parameters.accountId,
+              rights: parameters.rights,
+              groupId: parameters.groupId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getSharePermission(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/filter/${parameters.id}/permission/${parameters.permissionId}`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteSharePermission(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/filter/${parameters.id}/permission/${parameters.permissionId}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.FilterSharing = FilterSharing;
+  }
+});
+
 // node_modules/jira.js/out/version2/groupAndUserPicker.js
 var require_groupAndUserPicker = __commonJS({
   "node_modules/jira.js/out/version2/groupAndUserPicker.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GroupAndUserPicker = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var GroupAndUserPicker = class {
       constructor(client) {
         this.client = client;
@@ -30467,7 +30941,7 @@ var require_groups = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Groups = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Groups = class {
       constructor(client) {
         this.client = client;
@@ -30587,6 +31061,7 @@ var require_groups = __commonJS({
               exclude: parameters === null || parameters === void 0 ? void 0 : parameters.exclude,
               excludeId: parameters === null || parameters === void 0 ? void 0 : parameters.excludeId,
               maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              caseInsensitive: parameters === null || parameters === void 0 ? void 0 : parameters.caseInsensitive,
               userName: parameters === null || parameters === void 0 ? void 0 : parameters.userName
             }
           };
@@ -30604,7 +31079,7 @@ var require_instanceInformation = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.InstanceInformation = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var InstanceInformation = class {
       constructor(client) {
         this.client = client;
@@ -30629,7 +31104,7 @@ var require_issueAdjustmentsApps = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueAdjustmentsApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueAdjustmentsApps = class {
       constructor(client) {
         this.client = client;
@@ -30698,7 +31173,7 @@ var require_issueAttachments = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueAttachments = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var FormData2 = require_form_data();
     var IssueAttachments = class {
       constructor(client) {
@@ -30706,11 +31181,12 @@ var require_issueAttachments = __commonJS({
       }
       getAttachmentContent(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/attachment/content/${parameters.id}`,
+            url: `/rest/api/2/attachment/content/${id}`,
             method: "GET",
             params: {
-              redirect: parameters.redirect
+              redirect: typeof parameters !== "string" && parameters.redirect
             },
             responseType: "arraybuffer"
           };
@@ -30728,14 +31204,15 @@ var require_issueAttachments = __commonJS({
       }
       getAttachmentThumbnail(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/attachment/thumbnail/${parameters.id}`,
+            url: `/rest/api/2/attachment/thumbnail/${id}`,
             method: "GET",
             params: {
-              redirect: parameters.redirect,
-              fallbackToDefault: parameters.fallbackToDefault,
-              width: parameters.width,
-              height: parameters.height
+              redirect: typeof parameters !== "string" && parameters.redirect,
+              fallbackToDefault: typeof parameters !== "string" && parameters.fallbackToDefault,
+              width: typeof parameters !== "string" && parameters.width,
+              height: typeof parameters !== "string" && parameters.height
             },
             responseType: "arraybuffer"
           };
@@ -30744,8 +31221,9 @@ var require_issueAttachments = __commonJS({
       }
       getAttachment(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/attachment/${parameters.id}`,
+            url: `/rest/api/2/attachment/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -30753,8 +31231,9 @@ var require_issueAttachments = __commonJS({
       }
       removeAttachment(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/attachment/${parameters.id}`,
+            url: `/rest/api/2/attachment/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -30762,8 +31241,9 @@ var require_issueAttachments = __commonJS({
       }
       expandAttachmentForHumans(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/attachment/${parameters.id}/expand/human`,
+            url: `/rest/api/2/attachment/${id}/expand/human`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -30771,8 +31251,9 @@ var require_issueAttachments = __commonJS({
       }
       expandAttachmentForMachines(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/attachment/${parameters.id}/expand/raw`,
+            url: `/rest/api/2/attachment/${id}/expand/raw`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -30806,15 +31287,16 @@ var require_issueCommentProperties = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCommentProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCommentProperties = class {
       constructor(client) {
         this.client = client;
       }
       getCommentPropertyKeys(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const commentId = typeof parameters === "string" ? parameters : parameters.commentId;
           const config = {
-            url: `/rest/api/2/comment/${parameters.commentId}/properties`,
+            url: `/rest/api/2/comment/${commentId}/properties`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -30833,7 +31315,8 @@ var require_issueCommentProperties = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/2/comment/${parameters.commentId}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            data: parameters.property
           };
           return this.client.sendRequest(config, callback);
         });
@@ -30858,7 +31341,7 @@ var require_issueComments = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueComments = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueComments = class {
       constructor(client) {
         this.client = client;
@@ -30869,10 +31352,10 @@ var require_issueComments = __commonJS({
             url: "/rest/api/2/comment/list",
             method: "POST",
             params: {
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
+              expand: parameters.expand
             },
             data: {
-              ids: parameters === null || parameters === void 0 ? void 0 : parameters.ids
+              ids: parameters.ids
             }
           };
           return this.client.sendRequest(config, callback);
@@ -30880,14 +31363,15 @@ var require_issueComments = __commonJS({
       }
       getComments(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/comment`,
+            url: `/rest/api/2/issue/${issueIdOrKey}/comment`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              orderBy: parameters.orderBy,
-              expand: parameters.expand
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              orderBy: typeof parameters !== "string" && parameters.orderBy,
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -30970,7 +31454,7 @@ var require_issueCustomFieldConfigurationApps = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldConfigurationApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldConfigurationApps = class {
       constructor(client) {
         this.client = client;
@@ -31017,22 +31501,23 @@ var require_issueCustomFieldContexts = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldContexts = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldContexts = class {
       constructor(client) {
         this.client = client;
       }
       getContextsForField(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/2/field/${parameters.fieldId}/context`,
+            url: `/rest/api/2/field/${fieldId}/context`,
             method: "GET",
             params: {
-              isAnyIssueType: parameters.isAnyIssueType,
-              isGlobalContext: parameters.isGlobalContext,
-              contextId: parameters.contextId,
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              isAnyIssueType: typeof parameters !== "string" && parameters.isAnyIssueType,
+              isGlobalContext: typeof parameters !== "string" && parameters.isGlobalContext,
+              contextId: typeof parameters !== "string" && parameters.contextId,
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31056,13 +31541,14 @@ var require_issueCustomFieldContexts = __commonJS({
       }
       getDefaultValues(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/2/field/${parameters.fieldId}/context/defaultValue`,
+            url: `/rest/api/2/field/${fieldId}/context/defaultValue`,
             method: "GET",
             params: {
-              contextId: parameters.contextId,
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              contextId: typeof parameters !== "string" && parameters.contextId,
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31082,13 +31568,14 @@ var require_issueCustomFieldContexts = __commonJS({
       }
       getIssueTypeMappingsForContexts(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/2/field/${parameters.fieldId}/context/issuetypemapping`,
+            url: `/rest/api/2/field/${fieldId}/context/issuetypemapping`,
             method: "GET",
             params: {
-              contextId: parameters.contextId,
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              contextId: typeof parameters !== "string" && parameters.contextId,
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31112,13 +31599,14 @@ var require_issueCustomFieldContexts = __commonJS({
       }
       getProjectContextMapping(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/2/field/${parameters.fieldId}/context/projectmapping`,
+            url: `/rest/api/2/field/${fieldId}/context/projectmapping`,
             method: "GET",
             params: {
-              contextId: parameters.contextId,
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              contextId: typeof parameters !== "string" && parameters.contextId,
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31205,7 +31693,7 @@ var require_issueCustomFieldOptions = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldOptions = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldOptions = class {
       constructor(client) {
         this.client = client;
@@ -31249,8 +31737,9 @@ var require_issueCustomFieldOptions = __commonJS({
       }
       getCustomFieldOption(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/customFieldOption/${parameters.id}`,
+            url: `/rest/api/2/customFieldOption/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -31329,19 +31818,20 @@ var require_issueCustomFieldOptionsApps = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldOptionsApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldOptionsApps = class {
       constructor(client) {
         this.client = client;
       }
       getAllIssueFieldOptions(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldKey = typeof parameters === "string" ? parameters : parameters.fieldKey;
           const config = {
-            url: `/rest/api/2/field/${parameters.fieldKey}/option`,
+            url: `/rest/api/2/field/${fieldKey}/option`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31363,13 +31853,14 @@ var require_issueCustomFieldOptionsApps = __commonJS({
       }
       getSelectableIssueFieldOptions(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldKey = typeof parameters === "string" ? parameters : parameters.fieldKey;
           const config = {
-            url: `/rest/api/2/field/${parameters.fieldKey}/option/suggestions/edit`,
+            url: `/rest/api/2/field/${fieldKey}/option/suggestions/edit`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              projectId: parameters.projectId
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              projectId: typeof parameters !== "string" && parameters.projectId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31377,13 +31868,14 @@ var require_issueCustomFieldOptionsApps = __commonJS({
       }
       getVisibleIssueFieldOptions(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldKey = typeof parameters === "string" ? parameters : parameters.fieldKey;
           const config = {
-            url: `/rest/api/2/field/${parameters.fieldKey}/option/suggestions/search`,
+            url: `/rest/api/2/field/${fieldKey}/option/suggestions/search`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              projectId: parameters.projectId
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              projectId: typeof parameters !== "string" && parameters.projectId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31448,7 +31940,7 @@ var require_issueCustomFieldValuesApps = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldValuesApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldValuesApps = class {
       constructor(client) {
         this.client = client;
@@ -31459,10 +31951,10 @@ var require_issueCustomFieldValuesApps = __commonJS({
             url: "/rest/api/2/app/field/value",
             method: "POST",
             params: {
-              generateChangelog: parameters === null || parameters === void 0 ? void 0 : parameters.generateChangelog
+              generateChangelog: parameters.generateChangelog
             },
             data: {
-              updates: parameters === null || parameters === void 0 ? void 0 : parameters.updates
+              updates: parameters.updates
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31494,7 +31986,7 @@ var require_issueFieldConfigurations = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueFieldConfigurations = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueFieldConfigurations = class {
       constructor(client) {
         this.client = client;
@@ -31543,8 +32035,9 @@ var require_issueFieldConfigurations = __commonJS({
       }
       deleteFieldConfiguration(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/fieldconfiguration/${parameters.id}`,
+            url: `/rest/api/2/fieldconfiguration/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -31552,12 +32045,13 @@ var require_issueFieldConfigurations = __commonJS({
       }
       getFieldConfigurationItems(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/fieldconfiguration/${parameters.id}/fields`,
+            url: `/rest/api/2/fieldconfiguration/${id}/fields`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31636,8 +32130,8 @@ var require_issueFieldConfigurations = __commonJS({
             url: "/rest/api/2/fieldconfigurationscheme/project",
             method: "PUT",
             data: {
-              fieldConfigurationSchemeId: parameters === null || parameters === void 0 ? void 0 : parameters.fieldConfigurationSchemeId,
-              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId
+              fieldConfigurationSchemeId: parameters.fieldConfigurationSchemeId,
+              projectId: parameters.projectId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -31658,8 +32152,9 @@ var require_issueFieldConfigurations = __commonJS({
       }
       deleteFieldConfigurationScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/fieldconfigurationscheme/${parameters.id}`,
+            url: `/rest/api/2/fieldconfigurationscheme/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -31700,7 +32195,7 @@ var require_issueFields = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueFields = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueFields = class {
       constructor(client) {
         this.client = client;
@@ -31757,6 +32252,7 @@ var require_issueFields = __commonJS({
               maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
               id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
               query: parameters === null || parameters === void 0 ? void 0 : parameters.query,
+              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
               orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy
             }
           };
@@ -31822,13 +32318,64 @@ var require_issueFields = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/issueLinks.js
+var require_issueLinks = __commonJS({
+  "node_modules/jira.js/out/version2/issueLinks.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.IssueLinks = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var IssueLinks = class {
+      constructor(client) {
+        this.client = client;
+      }
+      linkIssues(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issueLink",
+            method: "POST",
+            data: {
+              type: parameters.type,
+              inwardIssue: parameters.inwardIssue,
+              outwardIssue: parameters.outwardIssue,
+              comment: parameters.comment
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getIssueLink(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const linkId = typeof parameters === "string" ? parameters : parameters.linkId;
+          const config = {
+            url: `/rest/api/2/issueLink/${linkId}`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteIssueLink(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const linkId = typeof parameters === "string" ? parameters : parameters.linkId;
+          const config = {
+            url: `/rest/api/2/issueLink/${linkId}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.IssueLinks = IssueLinks;
+  }
+});
+
 // node_modules/jira.js/out/version2/issueLinkTypes.js
 var require_issueLinkTypes = __commonJS({
   "node_modules/jira.js/out/version2/issueLinkTypes.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueLinkTypes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueLinkTypes = class {
       constructor(client) {
         this.client = client;
@@ -31860,8 +32407,9 @@ var require_issueLinkTypes = __commonJS({
       }
       getIssueLinkType(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueLinkTypeId = typeof parameters === "string" ? parameters : parameters.issueLinkTypeId;
           const config = {
-            url: `/rest/api/2/issueLinkType/${parameters.issueLinkTypeId}`,
+            url: `/rest/api/2/issueLinkType/${issueLinkTypeId}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -31885,8 +32433,9 @@ var require_issueLinkTypes = __commonJS({
       }
       deleteIssueLinkType(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueLinkTypeId = typeof parameters === "string" ? parameters : parameters.issueLinkTypeId;
           const config = {
-            url: `/rest/api/2/issueLinkType/${parameters.issueLinkTypeId}`,
+            url: `/rest/api/2/issueLinkType/${issueLinkTypeId}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -31897,62 +32446,13 @@ var require_issueLinkTypes = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version2/issueLinks.js
-var require_issueLinks = __commonJS({
-  "node_modules/jira.js/out/version2/issueLinks.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.IssueLinks = void 0;
-    var tslib_1 = require_tslib();
-    var IssueLinks = class {
-      constructor(client) {
-        this.client = client;
-      }
-      linkIssues(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/issueLink",
-            method: "POST",
-            data: {
-              type: parameters === null || parameters === void 0 ? void 0 : parameters.type,
-              inwardIssue: parameters === null || parameters === void 0 ? void 0 : parameters.inwardIssue,
-              outwardIssue: parameters === null || parameters === void 0 ? void 0 : parameters.outwardIssue,
-              comment: parameters === null || parameters === void 0 ? void 0 : parameters.comment
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getIssueLink(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issueLink/${parameters.linkId}`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      deleteIssueLink(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issueLink/${parameters.linkId}`,
-            method: "DELETE"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.IssueLinks = IssueLinks;
-  }
-});
-
 // node_modules/jira.js/out/version2/issueNavigatorSettings.js
 var require_issueNavigatorSettings = __commonJS({
   "node_modules/jira.js/out/version2/issueNavigatorSettings.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueNavigatorSettings = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueNavigatorSettings = class {
       constructor(client) {
         this.client = client;
@@ -31986,7 +32486,7 @@ var require_issueNotificationSchemes = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueNotificationSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueNotificationSchemes = class {
       constructor(client) {
         this.client = client;
@@ -31999,7 +32499,39 @@ var require_issueNotificationSchemes = __commonJS({
             params: {
               startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
               maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
+              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId,
+              onlyDefault: parameters === null || parameters === void 0 ? void 0 : parameters.onlyDefault,
               expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createNotificationScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/notificationscheme",
+            method: "POST",
+            data: {
+              description: parameters.description,
+              name: parameters.name,
+              notificationSchemeEvents: parameters.notificationSchemeEvents
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getNotificationSchemeToProjectMappings(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/notificationscheme/project",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              notificationSchemeId: parameters === null || parameters === void 0 ? void 0 : parameters.notificationSchemeId,
+              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -32007,12 +32539,56 @@ var require_issueNotificationSchemes = __commonJS({
       }
       getNotificationScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/notificationscheme/${parameters.id}`,
+            url: `/rest/api/2/notificationscheme/${id}`,
             method: "GET",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateNotificationScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/notificationscheme/${parameters.id}`,
+            method: "PUT",
+            data: {
+              description: parameters.description,
+              name: parameters.name
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      addNotifications(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/notificationscheme/${parameters.id}/notification`,
+            method: "PUT",
+            data: {
+              notificationSchemeEvents: parameters.notificationSchemeEvents
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteNotificationScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/notificationscheme/${parameters.notificationSchemeId}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      removeNotificationFromNotificationScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/notificationscheme/${parameters.notificationSchemeId}/notification/${parameters.notificationId}`,
+            method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
         });
@@ -32028,7 +32604,7 @@ var require_issuePriorities = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssuePriorities = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssuePriorities = class {
       constructor(client) {
         this.client = client;
@@ -32100,8 +32676,9 @@ var require_issuePriorities = __commonJS({
       }
       getPriority(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/priority/${parameters.id}`,
+            url: `/rest/api/2/priority/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -32128,7 +32705,8 @@ var require_issuePriorities = __commonJS({
             url: `/rest/api/2/priority/${parameters.id}`,
             method: "DELETE",
             params: {
-              newPriority: parameters.newPriority
+              newPriority: parameters.newPriority,
+              replaceWith: parameters.replaceWith
             }
           };
           return this.client.sendRequest(config, callback);
@@ -32145,7 +32723,7 @@ var require_issueProperties = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueProperties = class {
       constructor(client) {
         this.client = client;
@@ -32204,8 +32782,9 @@ var require_issueProperties = __commonJS({
       }
       getIssuePropertyKeys(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/properties`,
+            url: `/rest/api/2/issue/${issueIdOrKey}/properties`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -32249,18 +32828,19 @@ var require_issueRemoteLinks = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueRemoteLinks = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueRemoteLinks = class {
       constructor(client) {
         this.client = client;
       }
       getRemoteIssueLinks(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/remotelink`,
+            url: `/rest/api/2/issue/${issueIdOrKey}/remotelink`,
             method: "GET",
             params: {
-              globalId: parameters.globalId
+              globalId: typeof parameters !== "string" && parameters.globalId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -32283,11 +32863,12 @@ var require_issueRemoteLinks = __commonJS({
       }
       deleteRemoteIssueLinkByGlobalId(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/remotelink`,
+            url: `/rest/api/2/issue/${issueIdOrKey}/remotelink`,
             method: "DELETE",
             params: {
-              globalId: parameters.globalId
+              globalId: typeof parameters !== "string" && parameters.globalId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -32337,7 +32918,7 @@ var require_issueResolutions = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueResolutions = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueResolutions = class {
       constructor(client) {
         this.client = client;
@@ -32404,8 +32985,9 @@ var require_issueResolutions = __commonJS({
       }
       getResolution(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/resolution/${parameters.id}`,
+            url: `/rest/api/2/resolution/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -32438,13 +33020,250 @@ var require_issueResolutions = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/issues.js
+var require_issues = __commonJS({
+  "node_modules/jira.js/out/version2/issues.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Issues = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var Issues = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getEvents(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/events",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createIssue(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issue",
+            method: "POST",
+            params: {
+              updateHistory: parameters.updateHistory
+            },
+            data: {
+              transition: parameters.transition,
+              fields: parameters.fields,
+              update: parameters.update,
+              historyMetadata: parameters.historyMetadata,
+              properties: parameters.properties
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createIssues(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issue/bulk",
+            method: "POST",
+            data: {
+              issueUpdates: parameters === null || parameters === void 0 ? void 0 : parameters.issueUpdates
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getCreateIssueMeta(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issue/createmeta",
+            method: "GET",
+            params: {
+              projectIds: parameters === null || parameters === void 0 ? void 0 : parameters.projectIds,
+              projectKeys: parameters === null || parameters === void 0 ? void 0 : parameters.projectKeys,
+              issuetypeIds: parameters === null || parameters === void 0 ? void 0 : parameters.issuetypeIds,
+              issuetypeNames: parameters === null || parameters === void 0 ? void 0 : parameters.issuetypeNames,
+              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getIssue(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
+          const config = {
+            url: `/rest/api/2/issue/${issueIdOrKey}`,
+            method: "GET",
+            params: {
+              fields: typeof parameters !== "string" && parameters.fields,
+              fieldsByKeys: typeof parameters !== "string" && parameters.fieldsByKeys,
+              expand: typeof parameters !== "string" && parameters.expand,
+              properties: typeof parameters !== "string" && parameters.properties,
+              updateHistory: typeof parameters !== "string" && parameters.updateHistory
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      editIssue(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issue/${parameters.issueIdOrKey}`,
+            method: "PUT",
+            params: {
+              notifyUsers: parameters.notifyUsers,
+              overrideScreenSecurity: parameters.overrideScreenSecurity,
+              overrideEditableFlag: parameters.overrideEditableFlag
+            },
+            data: {
+              transition: parameters.transition,
+              fields: parameters.fields,
+              update: parameters.update,
+              historyMetadata: parameters.historyMetadata,
+              properties: parameters.properties
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteIssue(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
+          const config = {
+            url: `/rest/api/2/issue/${issueIdOrKey}`,
+            method: "DELETE",
+            params: {
+              deleteSubtasks: typeof parameters !== "string" && parameters.deleteSubtasks
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      assignIssue(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/assignee`,
+            method: "PUT",
+            data: {
+              self: parameters.self,
+              key: parameters.key,
+              accountId: parameters.accountId,
+              accountType: parameters.accountType,
+              name: parameters.name,
+              emailAddress: parameters.emailAddress,
+              avatarUrls: parameters.avatarUrls,
+              displayName: parameters.displayName,
+              active: parameters.active,
+              timeZone: parameters.timeZone,
+              locale: parameters.locale,
+              groups: parameters.groups,
+              applicationRoles: parameters.applicationRoles,
+              expand: parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getChangeLogs(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
+          const config = {
+            url: `/rest/api/2/issue/${issueIdOrKey}/changelog`,
+            method: "GET",
+            params: {
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getChangeLogsByIds(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/changelog/list`,
+            method: "POST",
+            data: {
+              changelogIds: parameters.changelogIds
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getEditIssueMeta(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
+          const config = {
+            url: `/rest/api/2/issue/${issueIdOrKey}/editmeta`,
+            method: "GET",
+            params: {
+              overrideScreenSecurity: typeof parameters !== "string" && parameters.overrideScreenSecurity,
+              overrideEditableFlag: typeof parameters !== "string" && parameters.overrideEditableFlag
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      notify(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/notify`,
+            method: "POST",
+            data: {
+              subject: parameters.subject,
+              textBody: parameters.textBody,
+              htmlBody: parameters.htmlBody,
+              to: parameters.to,
+              restrict: parameters.restrict
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getTransitions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
+          const config = {
+            url: `/rest/api/2/issue/${issueIdOrKey}/transitions`,
+            method: "GET",
+            params: {
+              expand: typeof parameters !== "string" && parameters.expand,
+              transitionId: typeof parameters !== "string" && parameters.transitionId,
+              skipRemoteOnlyCondition: typeof parameters !== "string" && parameters.skipRemoteOnlyCondition,
+              includeUnavailableTransitions: typeof parameters !== "string" && parameters.includeUnavailableTransitions,
+              sortByOpsBarAndStatus: typeof parameters !== "string" && parameters.sortByOpsBarAndStatus
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      doTransition(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/transitions`,
+            method: "POST",
+            data: {
+              transition: parameters.transition,
+              fields: parameters.fields,
+              update: parameters.update,
+              historyMetadata: parameters.historyMetadata,
+              properties: parameters.properties
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.Issues = Issues;
+  }
+});
+
 // node_modules/jira.js/out/version2/issueSearch.js
 var require_issueSearch = __commonJS({
   "node_modules/jira.js/out/version2/issueSearch.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueSearch = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueSearch = class {
       constructor(client) {
         this.client = client;
@@ -32528,21 +33347,22 @@ var require_issueSecurityLevel = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueSecurityLevel = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueSecurityLevel = class {
       constructor(client) {
         this.client = client;
       }
       getIssueSecurityLevelMembers(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueSecuritySchemeId = typeof parameters === "string" ? parameters : parameters.issueSecuritySchemeId;
           const config = {
-            url: `/rest/api/2/issuesecurityschemes/${parameters.issueSecuritySchemeId}/members`,
+            url: `/rest/api/2/issuesecurityschemes/${issueSecuritySchemeId}/members`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              issueSecurityLevelId: parameters.issueSecurityLevelId,
-              expand: parameters.expand
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              issueSecurityLevelId: typeof parameters !== "string" && parameters.issueSecurityLevelId,
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -32550,8 +33370,9 @@ var require_issueSecurityLevel = __commonJS({
       }
       getIssueSecurityLevel(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/securitylevel/${parameters.id}`,
+            url: `/rest/api/2/securitylevel/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -32568,7 +33389,7 @@ var require_issueSecuritySchemes = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueSecuritySchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueSecuritySchemes = class {
       constructor(client) {
         this.client = client;
@@ -32584,8 +33405,9 @@ var require_issueSecuritySchemes = __commonJS({
       }
       getIssueSecurityScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/issuesecurityschemes/${parameters.id}`,
+            url: `/rest/api/2/issuesecurityschemes/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -32602,15 +33424,16 @@ var require_issueTypeProperties = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueTypeProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueTypeProperties = class {
       constructor(client) {
         this.client = client;
       }
       getIssueTypePropertyKeys(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueTypeId = typeof parameters === "string" ? parameters : parameters.issueTypeId;
           const config = {
-            url: `/rest/api/2/issuetype/${parameters.issueTypeId}/properties`,
+            url: `/rest/api/2/issuetype/${issueTypeId}/properties`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -32629,7 +33452,8 @@ var require_issueTypeProperties = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/2/issuetype/${parameters.issueTypeId}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            data: parameters.body
           };
           return this.client.sendRequest(config, callback);
         });
@@ -32648,13 +33472,127 @@ var require_issueTypeProperties = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/issueTypes.js
+var require_issueTypes = __commonJS({
+  "node_modules/jira.js/out/version2/issueTypes.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.IssueTypes = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var IssueTypes = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getIssueAllTypes(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issuetype",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createIssueType(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issuetype",
+            method: "POST",
+            data: {
+              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
+              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
+              type: parameters === null || parameters === void 0 ? void 0 : parameters.type,
+              hierarchyLevel: parameters === null || parameters === void 0 ? void 0 : parameters.hierarchyLevel
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getIssueTypesForProject(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issuetype/project",
+            method: "GET",
+            params: {
+              projectId: parameters.projectId,
+              level: parameters.level
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getIssueType(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
+          const config = {
+            url: `/rest/api/2/issuetype/${id}`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateIssueType(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issuetype/${parameters.id}`,
+            method: "PUT",
+            data: {
+              name: parameters.name,
+              description: parameters.description,
+              avatarId: parameters.avatarId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteIssueType(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
+          const config = {
+            url: `/rest/api/2/issuetype/${id}`,
+            method: "DELETE",
+            params: {
+              alternativeIssueTypeId: typeof parameters !== "string" && parameters.alternativeIssueTypeId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getAlternativeIssueTypes(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
+          const config = {
+            url: `/rest/api/2/issuetype/${id}/alternatives`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createIssueTypeAvatar(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issuetype/${parameters.id}/avatar2`,
+            method: "POST",
+            params: {
+              x: parameters.x,
+              y: parameters.y,
+              size: parameters.size
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.IssueTypes = IssueTypes;
+  }
+});
+
 // node_modules/jira.js/out/version2/issueTypeSchemes.js
 var require_issueTypeSchemes = __commonJS({
   "node_modules/jira.js/out/version2/issueTypeSchemes.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueTypeSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueTypeSchemes = class {
       constructor(client) {
         this.client = client;
@@ -32748,8 +33686,9 @@ var require_issueTypeSchemes = __commonJS({
       }
       deleteIssueTypeScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueTypeSchemeId = typeof parameters === "string" ? parameters : parameters.issueTypeSchemeId;
           const config = {
-            url: `/rest/api/2/issuetypescheme/${parameters.issueTypeSchemeId}`,
+            url: `/rest/api/2/issuetypescheme/${issueTypeSchemeId}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -32801,7 +33740,7 @@ var require_issueTypeScreenSchemes = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueTypeScreenSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueTypeScreenSchemes = class {
       constructor(client) {
         this.client = client;
@@ -32893,8 +33832,9 @@ var require_issueTypeScreenSchemes = __commonJS({
       }
       deleteIssueTypeScreenScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueTypeScreenSchemeId = typeof parameters === "string" ? parameters : parameters.issueTypeScreenSchemeId;
           const config = {
-            url: `/rest/api/2/issuetypescreenscheme/${parameters.issueTypeScreenSchemeId}`,
+            url: `/rest/api/2/issuetypescreenscheme/${issueTypeScreenSchemeId}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -32938,13 +33878,14 @@ var require_issueTypeScreenSchemes = __commonJS({
       }
       getProjectsForIssueTypeScreenScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueTypeScreenSchemeId = typeof parameters === "string" ? parameters : parameters.issueTypeScreenSchemeId;
           const config = {
-            url: `/rest/api/2/issuetypescreenscheme/${parameters.issueTypeScreenSchemeId}/project`,
+            url: `/rest/api/2/issuetypescreenscheme/${issueTypeScreenSchemeId}/project`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              query: parameters.query
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              query: typeof parameters !== "string" && parameters.query
             }
           };
           return this.client.sendRequest(config, callback);
@@ -32955,132 +33896,22 @@ var require_issueTypeScreenSchemes = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version2/issueTypes.js
-var require_issueTypes = __commonJS({
-  "node_modules/jira.js/out/version2/issueTypes.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.IssueTypes = void 0;
-    var tslib_1 = require_tslib();
-    var IssueTypes = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getIssueAllTypes(callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/issuetype",
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      createIssueType(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/issuetype",
-            method: "POST",
-            data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              type: parameters === null || parameters === void 0 ? void 0 : parameters.type,
-              hierarchyLevel: parameters === null || parameters === void 0 ? void 0 : parameters.hierarchyLevel
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getIssueTypesForProject(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/issuetype/project",
-            method: "GET",
-            params: {
-              projectId: parameters.projectId,
-              level: parameters.level
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getIssueType(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issuetype/${parameters.id}`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      updateIssueType(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issuetype/${parameters.id}`,
-            method: "PUT",
-            data: {
-              name: parameters.name,
-              description: parameters.description,
-              avatarId: parameters.avatarId
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      deleteIssueType(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issuetype/${parameters.id}`,
-            method: "DELETE",
-            params: {
-              alternativeIssueTypeId: parameters.alternativeIssueTypeId
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getAlternativeIssueTypes(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issuetype/${parameters.id}/alternatives`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      createIssueTypeAvatar(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issuetype/${parameters.id}/avatar2`,
-            method: "POST",
-            params: {
-              x: parameters.x,
-              y: parameters.y,
-              size: parameters.size
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.IssueTypes = IssueTypes;
-  }
-});
-
 // node_modules/jira.js/out/version2/issueVotes.js
 var require_issueVotes = __commonJS({
   "node_modules/jira.js/out/version2/issueVotes.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueVotes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueVotes = class {
       constructor(client) {
         this.client = client;
       }
       getVotes(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/votes`,
+            url: `/rest/api/2/issue/${issueIdOrKey}/votes`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -33088,8 +33919,9 @@ var require_issueVotes = __commonJS({
       }
       addVote(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/votes`,
+            url: `/rest/api/2/issue/${issueIdOrKey}/votes`,
             method: "POST",
             headers: {
               "Content-Type": "application/json"
@@ -33100,8 +33932,9 @@ var require_issueVotes = __commonJS({
       }
       removeVote(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/votes`,
+            url: `/rest/api/2/issue/${issueIdOrKey}/votes`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -33118,7 +33951,7 @@ var require_issueWatchers = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueWatchers = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueWatchers = class {
       constructor(client) {
         this.client = client;
@@ -33137,8 +33970,9 @@ var require_issueWatchers = __commonJS({
       }
       getIssueWatchers(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/watchers`,
+            url: `/rest/api/2/issue/${issueIdOrKey}/watchers`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -33181,7 +34015,7 @@ var require_issueWorklogProperties = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueWorklogProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueWorklogProperties = class {
       constructor(client) {
         this.client = client;
@@ -33233,22 +34067,23 @@ var require_issueWorklogs = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueWorklogs = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueWorklogs = class {
       constructor(client) {
         this.client = client;
       }
       getIssueWorklog(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/worklog`,
+            url: `/rest/api/2/issue/${issueIdOrKey}/worklog`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              startedAfter: parameters.startedAfter,
-              startedBefore: parameters.startedBefore,
-              expand: parameters.expand
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              startedAfter: typeof parameters !== "string" && parameters.startedAfter,
+              startedBefore: typeof parameters !== "string" && parameters.startedBefore,
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -33383,235 +34218,109 @@ var require_issueWorklogs = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version2/issues.js
-var require_issues = __commonJS({
-  "node_modules/jira.js/out/version2/issues.js"(exports) {
+// node_modules/jira.js/out/version2/jiraExpressions.js
+var require_jiraExpressions = __commonJS({
+  "node_modules/jira.js/out/version2/jiraExpressions.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Issues = void 0;
-    var tslib_1 = require_tslib();
-    var Issues = class {
+    exports.JiraExpressions = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var JiraExpressions = class {
       constructor(client) {
         this.client = client;
       }
-      getEvents(callback) {
+      analyseExpression(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
-            url: "/rest/api/2/events",
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      createIssue(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/issue",
+            url: "/rest/api/2/expression/analyse",
             method: "POST",
             params: {
-              updateHistory: parameters === null || parameters === void 0 ? void 0 : parameters.updateHistory
+              check: parameters === null || parameters === void 0 ? void 0 : parameters.check
             },
             data: {
-              transition: parameters === null || parameters === void 0 ? void 0 : parameters.transition,
-              fields: parameters === null || parameters === void 0 ? void 0 : parameters.fields,
-              update: parameters === null || parameters === void 0 ? void 0 : parameters.update,
-              historyMetadata: parameters === null || parameters === void 0 ? void 0 : parameters.historyMetadata,
-              properties: parameters === null || parameters === void 0 ? void 0 : parameters.properties
+              expressions: parameters === null || parameters === void 0 ? void 0 : parameters.expressions,
+              contextVariables: parameters === null || parameters === void 0 ? void 0 : parameters.contextVariables
             }
           };
           return this.client.sendRequest(config, callback);
         });
       }
-      createIssues(parameters, callback) {
+      evaluateJiraExpression(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
-            url: "/rest/api/2/issue/bulk",
+            url: "/rest/api/2/expression/eval",
             method: "POST",
-            data: {
-              issueUpdates: parameters === null || parameters === void 0 ? void 0 : parameters.issueUpdates
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getCreateIssueMeta(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/issue/createmeta",
-            method: "GET",
             params: {
-              projectIds: parameters === null || parameters === void 0 ? void 0 : parameters.projectIds,
-              projectKeys: parameters === null || parameters === void 0 ? void 0 : parameters.projectKeys,
-              issuetypeIds: parameters === null || parameters === void 0 ? void 0 : parameters.issuetypeIds,
-              issuetypeNames: parameters === null || parameters === void 0 ? void 0 : parameters.issuetypeNames,
               expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getIssue(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}`,
-            method: "GET",
-            params: {
-              fields: parameters.fields,
-              fieldsByKeys: parameters.fieldsByKeys,
-              expand: parameters.expand,
-              properties: parameters.properties,
-              updateHistory: parameters.updateHistory
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      editIssue(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}`,
-            method: "PUT",
-            params: {
-              notifyUsers: parameters.notifyUsers,
-              overrideScreenSecurity: parameters.overrideScreenSecurity,
-              overrideEditableFlag: parameters.overrideEditableFlag
             },
             data: {
-              transition: parameters.transition,
-              fields: parameters.fields,
-              update: parameters.update,
-              historyMetadata: parameters.historyMetadata,
-              properties: parameters.properties
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      deleteIssue(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}`,
-            method: "DELETE",
-            params: {
-              deleteSubtasks: parameters.deleteSubtasks
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      assignIssue(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/assignee`,
-            method: "PUT",
-            data: {
-              self: parameters.self,
-              key: parameters.key,
-              accountId: parameters.accountId,
-              accountType: parameters.accountType,
-              name: parameters.name,
-              emailAddress: parameters.emailAddress,
-              avatarUrls: parameters.avatarUrls,
-              displayName: parameters.displayName,
-              active: parameters.active,
-              timeZone: parameters.timeZone,
-              locale: parameters.locale,
-              groups: parameters.groups,
-              applicationRoles: parameters.applicationRoles,
-              expand: parameters.expand
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getChangeLogs(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/changelog`,
-            method: "GET",
-            params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getChangeLogsByIds(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/changelog/list`,
-            method: "POST",
-            data: {
-              changelogIds: parameters.changelogIds
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getEditIssueMeta(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/editmeta`,
-            method: "GET",
-            params: {
-              overrideScreenSecurity: parameters.overrideScreenSecurity,
-              overrideEditableFlag: parameters.overrideEditableFlag
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      notify(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/notify`,
-            method: "POST",
-            data: {
-              subject: parameters.subject,
-              textBody: parameters.textBody,
-              htmlBody: parameters.htmlBody,
-              to: parameters.to,
-              restrict: parameters.restrict
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getTransitions(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/transitions`,
-            method: "GET",
-            params: {
-              expand: parameters.expand,
-              transitionId: parameters.transitionId,
-              skipRemoteOnlyCondition: parameters.skipRemoteOnlyCondition,
-              includeUnavailableTransitions: parameters.includeUnavailableTransitions,
-              sortByOpsBarAndStatus: parameters.sortByOpsBarAndStatus
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      doTransition(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/issue/${parameters.issueIdOrKey}/transitions`,
-            method: "POST",
-            data: {
-              transition: parameters.transition,
-              fields: parameters.fields,
-              update: parameters.update,
-              historyMetadata: parameters.historyMetadata,
-              properties: parameters.properties
+              expression: parameters === null || parameters === void 0 ? void 0 : parameters.expression,
+              context: parameters === null || parameters === void 0 ? void 0 : parameters.context
             }
           };
           return this.client.sendRequest(config, callback);
         });
       }
     };
-    exports.Issues = Issues;
+    exports.JiraExpressions = JiraExpressions;
+  }
+});
+
+// node_modules/jira.js/out/version2/jiraSettings.js
+var require_jiraSettings = __commonJS({
+  "node_modules/jira.js/out/version2/jiraSettings.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.JiraSettings = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var JiraSettings = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getApplicationProperty(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/application-properties",
+            method: "GET",
+            params: {
+              key: parameters === null || parameters === void 0 ? void 0 : parameters.key,
+              permissionLevel: parameters === null || parameters === void 0 ? void 0 : parameters.permissionLevel,
+              keyFilter: parameters === null || parameters === void 0 ? void 0 : parameters.keyFilter
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getAdvancedSettings(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/application-properties/advanced-settings",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      setApplicationProperty(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/application-properties/${parameters.id}`,
+            method: "PUT",
+            data: parameters.body
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getConfiguration(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/configuration",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.JiraSettings = JiraSettings;
   }
 });
 
@@ -33621,7 +34330,7 @@ var require_jQL = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.JQL = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var JQL = class {
       constructor(client) {
         this.client = client;
@@ -33641,8 +34350,8 @@ var require_jQL = __commonJS({
             url: "/rest/api/2/jql/autocompletedata",
             method: "POST",
             data: {
-              projectIds: parameters === null || parameters === void 0 ? void 0 : parameters.projectIds,
-              includeCollapsedFields: parameters === null || parameters === void 0 ? void 0 : parameters.includeCollapsedFields
+              includeCollapsedFields: parameters === null || parameters === void 0 ? void 0 : parameters.includeCollapsedFields,
+              projectIds: parameters === null || parameters === void 0 ? void 0 : parameters.projectIds
             }
           };
           return this.client.sendRequest(config, callback);
@@ -33702,114 +34411,36 @@ var require_jQL = __commonJS({
           return this.client.sendRequest(config, callback);
         });
       }
-    };
-    exports.JQL = JQL;
-  }
-});
-
-// node_modules/jira.js/out/version2/jiraExpressions.js
-var require_jiraExpressions = __commonJS({
-  "node_modules/jira.js/out/version2/jiraExpressions.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.JiraExpressions = void 0;
-    var tslib_1 = require_tslib();
-    var JiraExpressions = class {
-      constructor(client) {
-        this.client = client;
-      }
-      analyseExpression(parameters, callback) {
+      getPrecomputations(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
-            url: "/rest/api/2/expression/analyse",
-            method: "POST",
-            params: {
-              check: parameters === null || parameters === void 0 ? void 0 : parameters.check
-            },
-            data: {
-              expressions: parameters === null || parameters === void 0 ? void 0 : parameters.expressions,
-              contextVariables: parameters === null || parameters === void 0 ? void 0 : parameters.contextVariables
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      evaluateJiraExpression(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/expression/eval",
-            method: "POST",
-            params: {
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
-            },
-            data: {
-              expression: parameters === null || parameters === void 0 ? void 0 : parameters.expression,
-              context: parameters === null || parameters === void 0 ? void 0 : parameters.context
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.JiraExpressions = JiraExpressions;
-  }
-});
-
-// node_modules/jira.js/out/version2/jiraSettings.js
-var require_jiraSettings = __commonJS({
-  "node_modules/jira.js/out/version2/jiraSettings.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.JiraSettings = void 0;
-    var tslib_1 = require_tslib();
-    var JiraSettings = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getApplicationProperty(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/application-properties",
+            url: "/rest/api/2/jql/function/computation",
             method: "GET",
             params: {
-              key: parameters === null || parameters === void 0 ? void 0 : parameters.key,
-              permissionLevel: parameters === null || parameters === void 0 ? void 0 : parameters.permissionLevel,
-              keyFilter: parameters === null || parameters === void 0 ? void 0 : parameters.keyFilter
+              functionKey: parameters === null || parameters === void 0 ? void 0 : parameters.functionKey,
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy,
+              filter: parameters === null || parameters === void 0 ? void 0 : parameters.filter
             }
           };
           return this.client.sendRequest(config, callback);
         });
       }
-      getAdvancedSettings(callback) {
+      updatePrecomputations(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
-            url: "/rest/api/2/application-properties/advanced-settings",
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      setApplicationProperty(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/application-properties/${parameters.id}`,
-            method: "PUT",
-            data: parameters.body
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getConfiguration(callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/configuration",
-            method: "GET"
+            url: "/rest/api/2/jql/function/computation",
+            method: "POST",
+            data: {
+              values: parameters.values
+            }
           };
           return this.client.sendRequest(config, callback);
         });
       }
     };
-    exports.JiraSettings = JiraSettings;
+    exports.JQL = JQL;
   }
 });
 
@@ -33819,7 +34450,7 @@ var require_labels = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Labels = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Labels = class {
       constructor(client) {
         this.client = client;
@@ -33842,13 +34473,47 @@ var require_labels = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/licenseMetrics.js
+var require_licenseMetrics = __commonJS({
+  "node_modules/jira.js/out/version2/licenseMetrics.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.LicenseMetrics = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var LicenseMetrics = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getApproximateLicenseCount(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/license/approximateLicenseCount",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getApproximateApplicationLicenseCount(applicationKey, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/license/approximateLicenseCount/product/${applicationKey}`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.LicenseMetrics = LicenseMetrics;
+  }
+});
+
 // node_modules/jira.js/out/version2/myself.js
 var require_myself = __commonJS({
   "node_modules/jira.js/out/version2/myself.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Myself = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Myself = class {
       constructor(client) {
         this.client = client;
@@ -33870,9 +34535,13 @@ var require_myself = __commonJS({
           const config = {
             url: "/rest/api/2/mypreferences",
             method: "PUT",
+            headers: {
+              "Content-Type": typeof parameters.value === "string" ? "text/plain" : "application/json"
+            },
             params: {
               key: parameters.key
-            }
+            },
+            data: parameters.value
           };
           return this.client.sendRequest(config, callback);
         });
@@ -33936,13 +34605,83 @@ var require_myself = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/permissions.js
+var require_permissions = __commonJS({
+  "node_modules/jira.js/out/version2/permissions.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Permissions = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var Permissions = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getMyPermissions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/mypermissions",
+            method: "GET",
+            params: {
+              projectKey: parameters === null || parameters === void 0 ? void 0 : parameters.projectKey,
+              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId,
+              issueKey: parameters === null || parameters === void 0 ? void 0 : parameters.issueKey,
+              issueId: parameters === null || parameters === void 0 ? void 0 : parameters.issueId,
+              permissions: parameters === null || parameters === void 0 ? void 0 : parameters.permissions,
+              projectUuid: parameters === null || parameters === void 0 ? void 0 : parameters.projectUuid,
+              projectConfigurationUuid: parameters === null || parameters === void 0 ? void 0 : parameters.projectConfigurationUuid,
+              commentId: parameters === null || parameters === void 0 ? void 0 : parameters.commentId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getAllPermissions(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/permissions",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getBulkPermissions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/permissions/check",
+            method: "POST",
+            data: {
+              projectPermissions: parameters === null || parameters === void 0 ? void 0 : parameters.projectPermissions,
+              globalPermissions: parameters === null || parameters === void 0 ? void 0 : parameters.globalPermissions,
+              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getPermittedProjects(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/permissions/project",
+            method: "POST",
+            data: {
+              permissions: parameters === null || parameters === void 0 ? void 0 : parameters.permissions
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.Permissions = Permissions;
+  }
+});
+
 // node_modules/jira.js/out/version2/permissionSchemes.js
 var require_permissionSchemes = __commonJS({
   "node_modules/jira.js/out/version2/permissionSchemes.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.PermissionSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var PermissionSchemes = class {
       constructor(client) {
         this.client = client;
@@ -33974,11 +34713,12 @@ var require_permissionSchemes = __commonJS({
       }
       getPermissionScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const schemeId = typeof parameters === "string" ? parameters : parameters.schemeId;
           const config = {
-            url: `/rest/api/2/permissionscheme/${parameters.schemeId}`,
+            url: `/rest/api/2/permissionscheme/${schemeId}`,
             method: "GET",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34062,83 +34802,13 @@ var require_permissionSchemes = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version2/permissions.js
-var require_permissions = __commonJS({
-  "node_modules/jira.js/out/version2/permissions.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Permissions = void 0;
-    var tslib_1 = require_tslib();
-    var Permissions = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getMyPermissions(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/mypermissions",
-            method: "GET",
-            params: {
-              projectKey: parameters === null || parameters === void 0 ? void 0 : parameters.projectKey,
-              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId,
-              issueKey: parameters === null || parameters === void 0 ? void 0 : parameters.issueKey,
-              issueId: parameters === null || parameters === void 0 ? void 0 : parameters.issueId,
-              permissions: parameters === null || parameters === void 0 ? void 0 : parameters.permissions,
-              projectUuid: parameters === null || parameters === void 0 ? void 0 : parameters.projectUuid,
-              projectConfigurationUuid: parameters === null || parameters === void 0 ? void 0 : parameters.projectConfigurationUuid,
-              commentId: parameters === null || parameters === void 0 ? void 0 : parameters.commentId
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getAllPermissions(callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/permissions",
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getBulkPermissions(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/permissions/check",
-            method: "POST",
-            data: {
-              projectPermissions: parameters === null || parameters === void 0 ? void 0 : parameters.projectPermissions,
-              globalPermissions: parameters === null || parameters === void 0 ? void 0 : parameters.globalPermissions,
-              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getPermittedProjects(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/permissions/project",
-            method: "POST",
-            data: {
-              permissions: parameters === null || parameters === void 0 ? void 0 : parameters.permissions
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.Permissions = Permissions;
-  }
-});
-
 // node_modules/jira.js/out/version2/projectAvatars.js
 var require_projectAvatars = __commonJS({
   "node_modules/jira.js/out/version2/projectAvatars.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectAvatars = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectAvatars = class {
       constructor(client) {
         this.client = client;
@@ -34179,15 +34849,17 @@ var require_projectAvatars = __commonJS({
               x: parameters.x,
               y: parameters.y,
               size: parameters.size
-            }
+            },
+            data: parameters.avatar
           };
           return this.client.sendRequest(config, callback);
         });
       }
       getAllProjectAvatars(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/avatars`,
+            url: `/rest/api/2/project/${projectIdOrKey}/avatars`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34204,7 +34876,7 @@ var require_projectCategories = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectCategories = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectCategories = class {
       constructor(client) {
         this.client = client;
@@ -34224,10 +34896,10 @@ var require_projectCategories = __commonJS({
             url: "/rest/api/2/projectCategory",
             method: "POST",
             data: {
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description
+              description: parameters.description,
+              id: parameters.id,
+              name: parameters.name,
+              self: parameters.self
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34235,8 +34907,9 @@ var require_projectCategories = __commonJS({
       }
       getProjectCategoryById(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/projectCategory/${parameters.id}`,
+            url: `/rest/api/2/projectCategory/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34257,8 +34930,9 @@ var require_projectCategories = __commonJS({
       }
       removeProjectCategory(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/projectCategory/${parameters.id}`,
+            url: `/rest/api/2/projectCategory/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -34275,7 +34949,7 @@ var require_projectComponents = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectComponents = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectComponents = class {
       constructor(client) {
         this.client = client;
@@ -34286,20 +34960,20 @@ var require_projectComponents = __commonJS({
             url: "/rest/api/2/component",
             method: "POST",
             data: {
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              lead: parameters === null || parameters === void 0 ? void 0 : parameters.lead,
-              leadUserName: parameters === null || parameters === void 0 ? void 0 : parameters.leadUserName,
-              leadAccountId: parameters === null || parameters === void 0 ? void 0 : parameters.leadAccountId,
-              assigneeType: parameters === null || parameters === void 0 ? void 0 : parameters.assigneeType,
-              assignee: parameters === null || parameters === void 0 ? void 0 : parameters.assignee,
-              realAssigneeType: parameters === null || parameters === void 0 ? void 0 : parameters.realAssigneeType,
-              realAssignee: parameters === null || parameters === void 0 ? void 0 : parameters.realAssignee,
-              isAssigneeTypeValid: parameters === null || parameters === void 0 ? void 0 : parameters.isAssigneeTypeValid,
-              project: parameters === null || parameters === void 0 ? void 0 : parameters.project,
-              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId
+              assignee: parameters.assignee,
+              assigneeType: parameters.assigneeType,
+              description: parameters.description,
+              id: parameters.id,
+              isAssigneeTypeValid: parameters.isAssigneeTypeValid,
+              lead: parameters.lead,
+              leadAccountId: parameters.leadAccountId,
+              leadUserName: parameters.leadUserName,
+              name: parameters.name,
+              project: parameters.project,
+              projectId: parameters.projectId,
+              realAssignee: parameters.realAssignee,
+              realAssigneeType: parameters.realAssigneeType,
+              self: parameters.self
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34307,8 +34981,9 @@ var require_projectComponents = __commonJS({
       }
       getComponent(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/component/${parameters.id}`,
+            url: `/rest/api/2/component/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34333,11 +35008,12 @@ var require_projectComponents = __commonJS({
       }
       deleteComponent(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/component/${parameters.id}`,
+            url: `/rest/api/2/component/${id}`,
             method: "DELETE",
             params: {
-              moveIssuesTo: parameters.moveIssuesTo
+              moveIssuesTo: typeof parameters !== "string" && parameters.moveIssuesTo
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34345,8 +35021,9 @@ var require_projectComponents = __commonJS({
       }
       getComponentRelatedIssues(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/component/${parameters.id}/relatedIssueCounts`,
+            url: `/rest/api/2/component/${id}/relatedIssueCounts`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34369,8 +35046,9 @@ var require_projectComponents = __commonJS({
       }
       getProjectComponents(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/components`,
+            url: `/rest/api/2/project/${projectIdOrKey}/components`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34387,15 +35065,16 @@ var require_projectEmail = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectEmail = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectEmail = class {
       constructor(client) {
         this.client = client;
       }
       getProjectEmail(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectId = typeof parameters === "string" ? parameters : parameters.projectId;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectId}/email`,
+            url: `/rest/api/2/project/${projectId}/email`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34425,15 +35104,16 @@ var require_projectFeatures = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectFeatures = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectFeatures = class {
       constructor(client) {
         this.client = client;
       }
       getFeaturesForProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/features`,
+            url: `/rest/api/2/project/${projectIdOrKey}/features`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34462,18 +35142,19 @@ var require_projectKeyAndNameValidation = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectKeyAndNameValidation = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectKeyAndNameValidation = class {
       constructor(client) {
         this.client = client;
       }
       validateProjectKey(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const key = typeof parameters === "string" ? parameters : parameters === null || parameters === void 0 ? void 0 : parameters.key;
           const config = {
             url: "/rest/api/2/projectvalidate/key",
             method: "GET",
             params: {
-              key: parameters === null || parameters === void 0 ? void 0 : parameters.key
+              key
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34481,11 +35162,12 @@ var require_projectKeyAndNameValidation = __commonJS({
       }
       getValidProjectKey(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const key = typeof parameters === "string" ? parameters : parameters === null || parameters === void 0 ? void 0 : parameters.key;
           const config = {
             url: "/rest/api/2/projectvalidate/validProjectKey",
             method: "GET",
             params: {
-              key: parameters === null || parameters === void 0 ? void 0 : parameters.key
+              key
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34493,11 +35175,12 @@ var require_projectKeyAndNameValidation = __commonJS({
       }
       getValidProjectName(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const name = typeof parameters === "string" ? parameters : parameters.name;
           const config = {
             url: "/rest/api/2/projectvalidate/validProjectName",
             method: "GET",
             params: {
-              name: parameters.name
+              name
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34514,15 +35197,16 @@ var require_projectPermissionSchemes = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectPermissionSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectPermissionSchemes = class {
       constructor(client) {
         this.client = client;
       }
       getProjectIssueSecurityScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectKeyOrId = typeof parameters === "string" ? parameters : parameters.projectKeyOrId;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectKeyOrId}/issuesecuritylevelscheme`,
+            url: `/rest/api/2/project/${projectKeyOrId}/issuesecuritylevelscheme`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34530,11 +35214,12 @@ var require_projectPermissionSchemes = __commonJS({
       }
       getAssignedPermissionScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectKeyOrId = typeof parameters === "string" ? parameters : parameters.projectKeyOrId;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectKeyOrId}/permissionscheme`,
+            url: `/rest/api/2/project/${projectKeyOrId}/permissionscheme`,
             method: "GET",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34557,8 +35242,9 @@ var require_projectPermissionSchemes = __commonJS({
       }
       getSecurityLevelsForProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectKeyOrId = typeof parameters === "string" ? parameters : parameters.projectKeyOrId;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectKeyOrId}/securitylevel`,
+            url: `/rest/api/2/project/${projectKeyOrId}/securitylevel`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34575,15 +35261,16 @@ var require_projectProperties = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectProperties = class {
       constructor(client) {
         this.client = client;
       }
       getProjectPropertyKeys(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/properties`,
+            url: `/rest/api/2/project/${projectIdOrKey}/properties`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34602,7 +35289,8 @@ var require_projectProperties = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/2/project/${parameters.projectIdOrKey}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            data: parameters.property
           };
           return this.client.sendRequest(config, callback);
         });
@@ -34627,7 +35315,7 @@ var require_projectRoleActors = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectRoleActors = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectRoleActors = class {
       constructor(client) {
         this.client = client;
@@ -34674,8 +35362,9 @@ var require_projectRoleActors = __commonJS({
       }
       getProjectRoleActorsForRole(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/role/${parameters.id}/actors`,
+            url: `/rest/api/2/role/${id}/actors`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34720,15 +35409,16 @@ var require_projectRoles = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectRoles = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectRoles = class {
       constructor(client) {
         this.client = client;
       }
       getProjectRoles(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/role`,
+            url: `/rest/api/2/project/${projectIdOrKey}/role`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34748,12 +35438,13 @@ var require_projectRoles = __commonJS({
       }
       getProjectRoleDetails(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/roledetails`,
+            url: `/rest/api/2/project/${projectIdOrKey}/roledetails`,
             method: "GET",
             params: {
-              currentMember: parameters.currentMember,
-              excludeConnectAddons: parameters.excludeConnectAddons
+              currentMember: typeof parameters !== "string" && parameters.currentMember,
+              excludeConnectAddons: typeof parameters !== "string" && parameters.excludeConnectAddons
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34774,8 +35465,8 @@ var require_projectRoles = __commonJS({
             url: "/rest/api/2/role",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description
+              name: parameters.name,
+              description: parameters.description
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34783,8 +35474,9 @@ var require_projectRoles = __commonJS({
       }
       getProjectRoleById(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/role/${parameters.id}`,
+            url: `/rest/api/2/role/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -34818,11 +35510,12 @@ var require_projectRoles = __commonJS({
       }
       deleteProjectRole(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/role/${parameters.id}`,
+            url: `/rest/api/2/role/${id}`,
             method: "DELETE",
             params: {
-              swap: parameters.swap
+              swap: typeof parameters !== "string" && parameters.swap
             }
           };
           return this.client.sendRequest(config, callback);
@@ -34833,238 +35526,13 @@ var require_projectRoles = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version2/projectTypes.js
-var require_projectTypes = __commonJS({
-  "node_modules/jira.js/out/version2/projectTypes.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ProjectTypes = void 0;
-    var tslib_1 = require_tslib();
-    var ProjectTypes = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getAllProjectTypes(callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/project/type",
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getAllAccessibleProjectTypes(callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/project/type/accessible",
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getProjectTypeByKey(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/project/type/${parameters.projectTypeKey}`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getAccessibleProjectTypeByKey(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/project/type/${parameters.projectTypeKey}/accessible`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.ProjectTypes = ProjectTypes;
-  }
-});
-
-// node_modules/jira.js/out/version2/projectVersions.js
-var require_projectVersions = __commonJS({
-  "node_modules/jira.js/out/version2/projectVersions.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ProjectVersions = void 0;
-    var tslib_1 = require_tslib();
-    var ProjectVersions = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getProjectVersionsPaginated(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/version`,
-            method: "GET",
-            params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              orderBy: parameters.orderBy,
-              query: parameters.query,
-              status: parameters.status,
-              expand: parameters.expand
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getProjectVersions(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/versions`,
-            method: "GET",
-            params: {
-              expand: parameters.expand
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      createVersion(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/version",
-            method: "POST",
-            data: {
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              archived: parameters === null || parameters === void 0 ? void 0 : parameters.archived,
-              released: parameters === null || parameters === void 0 ? void 0 : parameters.released,
-              startDate: parameters === null || parameters === void 0 ? void 0 : parameters.startDate,
-              releaseDate: parameters === null || parameters === void 0 ? void 0 : parameters.releaseDate,
-              overdue: parameters === null || parameters === void 0 ? void 0 : parameters.overdue,
-              userStartDate: parameters === null || parameters === void 0 ? void 0 : parameters.userStartDate,
-              userReleaseDate: parameters === null || parameters === void 0 ? void 0 : parameters.userReleaseDate,
-              project: parameters === null || parameters === void 0 ? void 0 : parameters.project,
-              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId,
-              moveUnfixedIssuesTo: parameters === null || parameters === void 0 ? void 0 : parameters.moveUnfixedIssuesTo,
-              operations: parameters === null || parameters === void 0 ? void 0 : parameters.operations,
-              issuesStatusForFixVersion: parameters === null || parameters === void 0 ? void 0 : parameters.issuesStatusForFixVersion
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getVersion(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/version/${parameters.id}`,
-            method: "GET",
-            params: {
-              expand: parameters.expand
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      updateVersion(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/version/${parameters.id}`,
-            method: "PUT",
-            data: {
-              expand: parameters.expand,
-              description: parameters.description,
-              name: parameters.name,
-              archived: parameters.archived,
-              released: parameters.released,
-              startDate: parameters.startDate,
-              releaseDate: parameters.releaseDate,
-              project: parameters.project,
-              projectId: parameters.projectId,
-              moveUnfixedIssuesTo: parameters.moveUnfixedIssuesTo
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      deleteVersion(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/version/${parameters.id}`,
-            method: "DELETE",
-            params: {
-              moveFixIssuesTo: parameters.moveFixIssuesTo,
-              moveAffectedIssuesTo: parameters.moveAffectedIssuesTo
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      mergeVersions(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/version/${parameters.id}/mergeto/${parameters.moveIssuesTo}`,
-            method: "PUT"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      moveVersion(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/version/${parameters.id}/move`,
-            method: "POST",
-            data: {
-              after: parameters.after,
-              position: parameters.position
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getVersionRelatedIssues(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/version/${parameters.id}/relatedIssueCounts`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      deleteAndReplaceVersion(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/version/${parameters.id}/removeAndSwap`,
-            method: "POST",
-            data: {
-              moveFixIssuesTo: parameters.moveFixIssuesTo,
-              moveAffectedIssuesTo: parameters.moveAffectedIssuesTo,
-              customFieldReplacementList: parameters.customFieldReplacementList
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getVersionUnresolvedIssues(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/version/${parameters.id}/unresolvedIssueCount`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.ProjectVersions = ProjectVersions;
-  }
-});
-
 // node_modules/jira.js/out/version2/projects.js
 var require_projects2 = __commonJS({
   "node_modules/jira.js/out/version2/projects.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Projects = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Projects = class {
       constructor(client) {
         this.client = client;
@@ -35151,12 +35619,13 @@ var require_projects2 = __commonJS({
       }
       getProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}`,
+            url: `/rest/api/2/project/${projectIdOrKey}`,
             method: "GET",
             params: {
-              expand: parameters.expand,
-              properties: parameters.properties
+              expand: typeof parameters !== "string" && parameters.expand,
+              properties: typeof parameters !== "string" && parameters.properties
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35192,11 +35661,12 @@ var require_projects2 = __commonJS({
       }
       deleteProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}`,
+            url: `/rest/api/2/project/${projectIdOrKey}`,
             method: "DELETE",
             params: {
-              enableUndo: parameters.enableUndo
+              enableUndo: typeof parameters !== "string" && parameters.enableUndo
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35204,8 +35674,9 @@ var require_projects2 = __commonJS({
       }
       archiveProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/archive`,
+            url: `/rest/api/2/project/${projectIdOrKey}/archive`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -35213,8 +35684,9 @@ var require_projects2 = __commonJS({
       }
       deleteProjectAsynchronously(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/delete`,
+            url: `/rest/api/2/project/${projectIdOrKey}/delete`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -35222,8 +35694,9 @@ var require_projects2 = __commonJS({
       }
       restore(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/restore`,
+            url: `/rest/api/2/project/${projectIdOrKey}/restore`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -35231,8 +35704,9 @@ var require_projects2 = __commonJS({
       }
       getAllStatuses(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectIdOrKey}/statuses`,
+            url: `/rest/api/2/project/${projectIdOrKey}/statuses`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -35249,8 +35723,9 @@ var require_projects2 = __commonJS({
       }
       getHierarchy(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectId = typeof parameters === "string" ? parameters : parameters.projectId;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectId}/hierarchy`,
+            url: `/rest/api/2/project/${projectId}/hierarchy`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -35258,11 +35733,12 @@ var require_projects2 = __commonJS({
       }
       getNotificationSchemeForProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectKeyOrId = typeof parameters === "string" ? parameters : parameters.projectKeyOrId;
           const config = {
-            url: `/rest/api/2/project/${parameters.projectKeyOrId}/notificationscheme`,
+            url: `/rest/api/2/project/${projectKeyOrId}/notificationscheme`,
             method: "GET",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35273,13 +35749,349 @@ var require_projects2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/projectTypes.js
+var require_projectTypes = __commonJS({
+  "node_modules/jira.js/out/version2/projectTypes.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ProjectTypes = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var ProjectTypes = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getAllProjectTypes(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/project/type",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getAllAccessibleProjectTypes(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/project/type/accessible",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getProjectTypeByKey(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectTypeKey = typeof parameters === "string" ? parameters : parameters.projectTypeKey;
+          const config = {
+            url: `/rest/api/2/project/type/${projectTypeKey}`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getAccessibleProjectTypeByKey(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectTypeKey = typeof parameters === "string" ? parameters : parameters.projectTypeKey;
+          const config = {
+            url: `/rest/api/2/project/type/${projectTypeKey}/accessible`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.ProjectTypes = ProjectTypes;
+  }
+});
+
+// node_modules/jira.js/out/version2/projectVersions.js
+var require_projectVersions = __commonJS({
+  "node_modules/jira.js/out/version2/projectVersions.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ProjectVersions = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var ProjectVersions = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getProjectVersionsPaginated(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
+          const config = {
+            url: `/rest/api/2/project/${projectIdOrKey}/version`,
+            method: "GET",
+            params: {
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              orderBy: typeof parameters !== "string" && parameters.orderBy,
+              query: typeof parameters !== "string" && parameters.query,
+              status: typeof parameters !== "string" && parameters.status,
+              expand: typeof parameters !== "string" && parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getProjectVersions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
+          const config = {
+            url: `/rest/api/2/project/${projectIdOrKey}/versions`,
+            method: "GET",
+            params: {
+              expand: typeof parameters !== "string" && parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createVersion(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/version",
+            method: "POST",
+            data: {
+              expand: parameters.expand,
+              self: parameters.self,
+              id: parameters.id,
+              description: parameters.description,
+              name: parameters.name,
+              archived: parameters.archived,
+              released: parameters.released,
+              startDate: parameters.startDate,
+              releaseDate: parameters.releaseDate,
+              overdue: parameters.overdue,
+              userStartDate: parameters.userStartDate,
+              userReleaseDate: parameters.userReleaseDate,
+              project: parameters.project,
+              projectId: parameters.projectId,
+              moveUnfixedIssuesTo: parameters.moveUnfixedIssuesTo,
+              operations: parameters.operations,
+              issuesStatusForFixVersion: parameters.issuesStatusForFixVersion
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getVersion(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
+          const config = {
+            url: `/rest/api/2/version/${id}`,
+            method: "GET",
+            params: {
+              expand: typeof parameters !== "string" && parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateVersion(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/version/${parameters.id}`,
+            method: "PUT",
+            data: {
+              expand: parameters.expand,
+              description: parameters.description,
+              name: parameters.name,
+              archived: parameters.archived,
+              released: parameters.released,
+              startDate: parameters.startDate,
+              releaseDate: parameters.releaseDate,
+              project: parameters.project,
+              projectId: parameters.projectId,
+              moveUnfixedIssuesTo: parameters.moveUnfixedIssuesTo
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteVersion(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/version/${parameters.id}`,
+            method: "DELETE",
+            params: {
+              moveFixIssuesTo: parameters.moveFixIssuesTo,
+              moveAffectedIssuesTo: parameters.moveAffectedIssuesTo
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      mergeVersions(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/version/${parameters.id}/mergeto/${parameters.moveIssuesTo}`,
+            method: "PUT"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      moveVersion(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/version/${parameters.id}/move`,
+            method: "POST",
+            data: {
+              after: parameters.after,
+              position: parameters.position
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getVersionRelatedIssues(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
+          const config = {
+            url: `/rest/api/2/version/${id}/relatedIssueCounts`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteAndReplaceVersion(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/version/${parameters.id}/removeAndSwap`,
+            method: "POST",
+            data: {
+              moveFixIssuesTo: parameters.moveFixIssuesTo,
+              moveAffectedIssuesTo: parameters.moveAffectedIssuesTo,
+              customFieldReplacementList: parameters.customFieldReplacementList
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getVersionUnresolvedIssues(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
+          const config = {
+            url: `/rest/api/2/version/${id}/unresolvedIssueCount`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.ProjectVersions = ProjectVersions;
+  }
+});
+
+// node_modules/jira.js/out/version2/screens.js
+var require_screens = __commonJS({
+  "node_modules/jira.js/out/version2/screens.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Screens = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var Screens = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getScreensForField(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
+          const config = {
+            url: `/rest/api/2/field/${fieldId}/screens`,
+            method: "GET",
+            params: {
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              expand: typeof parameters !== "string" && parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getScreens(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/screens",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
+              queryString: parameters === null || parameters === void 0 ? void 0 : parameters.queryString,
+              scope: parameters === null || parameters === void 0 ? void 0 : parameters.scope,
+              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createScreen(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/screens",
+            method: "POST",
+            data: {
+              name: parameters.name,
+              description: parameters.description
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      addFieldToDefaultScreen(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
+          const config = {
+            url: `/rest/api/2/screens/addToDefault/${fieldId}`,
+            method: "POST"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateScreen(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/screens/${parameters.screenId}`,
+            method: "PUT",
+            data: {
+              name: parameters.name,
+              description: parameters.description
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteScreen(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const screenId = typeof parameters === "string" ? parameters : parameters.screenId;
+          const config = {
+            url: `/rest/api/2/screens/${screenId}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getAvailableScreenFields(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const screenId = typeof parameters === "string" ? parameters : parameters.screenId;
+          const config = {
+            url: `/rest/api/2/screens/${screenId}/availableFields`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.Screens = Screens;
+  }
+});
+
 // node_modules/jira.js/out/version2/screenSchemes.js
 var require_screenSchemes = __commonJS({
   "node_modules/jira.js/out/version2/screenSchemes.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScreenSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ScreenSchemes = class {
       constructor(client) {
         this.client = client;
@@ -35303,13 +36115,14 @@ var require_screenSchemes = __commonJS({
       }
       createScreenScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const name = typeof parameters === "string" ? parameters : parameters.name;
           const config = {
             url: "/rest/api/2/screenscheme",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              screens: parameters === null || parameters === void 0 ? void 0 : parameters.screens
+              name,
+              description: typeof parameters !== "string" && parameters.description,
+              screens: typeof parameters !== "string" && parameters.screens
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35331,8 +36144,9 @@ var require_screenSchemes = __commonJS({
       }
       deleteScreenScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const screenSchemeId = typeof parameters === "string" ? parameters : parameters.screenSchemeId;
           const config = {
-            url: `/rest/api/2/screenscheme/${parameters.screenSchemeId}`,
+            url: `/rest/api/2/screenscheme/${screenSchemeId}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -35349,7 +36163,7 @@ var require_screenTabFields = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScreenTabFields = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ScreenTabFields = class {
       constructor(client) {
         this.client = client;
@@ -35411,18 +36225,19 @@ var require_screenTabs = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScreenTabs = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ScreenTabs = class {
       constructor(client) {
         this.client = client;
       }
       getAllScreenTabs(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const screenId = typeof parameters === "string" ? parameters : parameters.screenId;
           const config = {
-            url: `/rest/api/2/screens/${parameters.screenId}/tabs`,
+            url: `/rest/api/2/screens/${screenId}/tabs`,
             method: "GET",
             params: {
-              projectKey: parameters.projectKey
+              projectKey: typeof parameters !== "string" && parameters.projectKey
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35477,113 +36292,13 @@ var require_screenTabs = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version2/screens.js
-var require_screens = __commonJS({
-  "node_modules/jira.js/out/version2/screens.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Screens = void 0;
-    var tslib_1 = require_tslib();
-    var Screens = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getScreensForField(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/field/${parameters.fieldId}/screens`,
-            method: "GET",
-            params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              expand: parameters.expand
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getScreens(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/screens",
-            method: "GET",
-            params: {
-              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
-              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
-              queryString: parameters === null || parameters === void 0 ? void 0 : parameters.queryString,
-              scope: parameters === null || parameters === void 0 ? void 0 : parameters.scope,
-              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      createScreen(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/screens",
-            method: "POST",
-            data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      addFieldToDefaultScreen(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/screens/addToDefault/${parameters.fieldId}`,
-            method: "POST"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      updateScreen(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/screens/${parameters.screenId}`,
-            method: "PUT",
-            data: {
-              name: parameters.name,
-              description: parameters.description
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      deleteScreen(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/screens/${parameters.screenId}`,
-            method: "DELETE"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getAvailableScreenFields(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/screens/${parameters.screenId}/availableFields`,
-            method: "GET"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.Screens = Screens;
-  }
-});
-
 // node_modules/jira.js/out/version2/serverInfo.js
 var require_serverInfo = __commonJS({
   "node_modules/jira.js/out/version2/serverInfo.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ServerInfo = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ServerInfo = class {
       constructor(client) {
         this.client = client;
@@ -35608,19 +36323,20 @@ var require_status = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Status = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Status = class {
       constructor(client) {
         this.client = client;
       }
       getStatusesById(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
             url: "/rest/api/2/statuses",
             method: "GET",
             params: {
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id
+              id,
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35632,8 +36348,8 @@ var require_status = __commonJS({
             url: "/rest/api/2/statuses",
             method: "POST",
             data: {
-              statuses: parameters === null || parameters === void 0 ? void 0 : parameters.statuses,
-              scope: parameters === null || parameters === void 0 ? void 0 : parameters.scope
+              statuses: parameters.statuses,
+              scope: parameters.scope
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35645,7 +36361,7 @@ var require_status = __commonJS({
             url: "/rest/api/2/statuses",
             method: "PUT",
             data: {
-              statuses: parameters === null || parameters === void 0 ? void 0 : parameters.statuses
+              statuses: parameters.statuses
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35653,11 +36369,12 @@ var require_status = __commonJS({
       }
       deleteStatusesById(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
             url: "/rest/api/2/statuses",
             method: "DELETE",
             params: {
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id
+              id
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35691,15 +36408,16 @@ var require_tasks = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Tasks = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Tasks = class {
       constructor(client) {
         this.client = client;
       }
       getTask(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const taskId = typeof parameters === "string" ? parameters : parameters.taskId;
           const config = {
-            url: `/rest/api/2/task/${parameters.taskId}`,
+            url: `/rest/api/2/task/${taskId}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -35707,8 +36425,9 @@ var require_tasks = __commonJS({
       }
       cancelTask(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const taskId = typeof parameters === "string" ? parameters : parameters.taskId;
           const config = {
-            url: `/rest/api/2/task/${parameters.taskId}/cancel`,
+            url: `/rest/api/2/task/${taskId}/cancel`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -35725,7 +36444,7 @@ var require_timeTracking = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TimeTracking = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var TimeTracking = class {
       constructor(client) {
         this.client = client;
@@ -35797,7 +36516,7 @@ var require_uIModificationsApps = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UIModificationsApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var UIModificationsApps = class {
       constructor(client) {
         this.client = client;
@@ -35822,10 +36541,10 @@ var require_uIModificationsApps = __commonJS({
             url: "/rest/api/2/uiModifications",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              data: parameters === null || parameters === void 0 ? void 0 : parameters.data,
-              contexts: parameters === null || parameters === void 0 ? void 0 : parameters.contexts
+              name: parameters.name,
+              description: parameters.description,
+              data: parameters.data,
+              contexts: parameters.contexts
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35848,8 +36567,9 @@ var require_uIModificationsApps = __commonJS({
       }
       deleteUiModification(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const uiModificationId = typeof parameters === "string" ? parameters : parameters.uiModificationId;
           const config = {
-            url: `/rest/api/2/uiModifications/${parameters.uiModificationId}`,
+            url: `/rest/api/2/uiModifications/${uiModificationId}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -35866,7 +36586,7 @@ var require_userProperties = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UserProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var UserProperties = class {
       constructor(client) {
         this.client = client;
@@ -35908,7 +36628,8 @@ var require_userProperties = __commonJS({
               accountId: parameters.accountId,
               userKey: parameters.userKey,
               username: parameters.username
-            }
+            },
+            data: parameters.propertyValue
           };
           return this.client.sendRequest(config, callback);
         });
@@ -35932,13 +36653,214 @@ var require_userProperties = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/users.js
+var require_users = __commonJS({
+  "node_modules/jira.js/out/version2/users.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Users = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var paramSerializer_1 = require_paramSerializer();
+    var Users = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getUser(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/user",
+            method: "GET",
+            params: {
+              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId,
+              username: parameters === null || parameters === void 0 ? void 0 : parameters.username,
+              key: parameters === null || parameters === void 0 ? void 0 : parameters.key,
+              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createUser(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/user",
+            method: "POST",
+            data: {
+              self: parameters.self,
+              key: parameters.key,
+              name: parameters.name,
+              password: parameters.password,
+              emailAddress: parameters.emailAddress,
+              displayName: parameters.displayName,
+              applicationKeys: parameters.applicationKeys
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      removeUser(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/user",
+            method: "DELETE",
+            params: {
+              accountId: parameters.accountId,
+              username: parameters.username,
+              key: parameters.key
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      bulkGetUsers(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/user/bulk",
+            method: "GET",
+            params: {
+              startAt: parameters.startAt,
+              maxResults: parameters.maxResults,
+              username: parameters.username,
+              key: parameters.key,
+              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      bulkGetUsersMigration(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/user/bulk/migration",
+            method: "GET",
+            params: {
+              startAt: parameters.startAt,
+              maxResults: parameters.maxResults,
+              username: (0, paramSerializer_1.paramSerializer)("username", parameters.username),
+              key: (0, paramSerializer_1.paramSerializer)("key", parameters.key)
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getUserDefaultColumns(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/user/columns",
+            method: "GET",
+            params: {
+              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId,
+              username: parameters === null || parameters === void 0 ? void 0 : parameters.username
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      setUserColumns(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/user/columns",
+            method: "PUT",
+            params: {
+              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId
+            },
+            data: parameters === null || parameters === void 0 ? void 0 : parameters.columns
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      resetUserColumns(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/user/columns",
+            method: "DELETE",
+            params: {
+              accountId: parameters.accountId,
+              username: parameters.username
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getUserEmail(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const accountId = typeof parameters === "string" ? parameters : parameters.accountId;
+          const config = {
+            url: "/rest/api/2/user/email",
+            method: "GET",
+            params: {
+              accountId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getUserEmailBulk(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const accountId = typeof parameters === "string" ? parameters : parameters.accountId;
+          const config = {
+            url: "/rest/api/2/user/email/bulk",
+            method: "GET",
+            params: {
+              accountId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getUserGroups(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/user/groups",
+            method: "GET",
+            params: {
+              accountId: parameters.accountId,
+              username: parameters.username,
+              key: parameters.key
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getAllUsersDefault(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/users",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getAllUsers(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/users/search",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.Users = Users;
+  }
+});
+
 // node_modules/jira.js/out/version2/userSearch.js
 var require_userSearch = __commonJS({
   "node_modules/jira.js/out/version2/userSearch.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UserSearch = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var paramSerializer_1 = require_paramSerializer();
     var UserSearch = class {
       constructor(client) {
         this.client = client;
@@ -36010,7 +36932,7 @@ var require_userSearch = __commonJS({
               maxResults: parameters.maxResults,
               showAvatar: parameters.showAvatar,
               exclude: parameters.exclude,
-              excludeAccountIds: parameters.excludeAccountIds,
+              excludeAccountIds: (0, paramSerializer_1.paramSerializer)("excludeAccountIds", parameters.excludeAccountIds),
               avatarSize: parameters.avatarSize,
               excludeConnectUsers: parameters.excludeConnectUsers
             }
@@ -36086,210 +37008,13 @@ var require_userSearch = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version2/users.js
-var require_users = __commonJS({
-  "node_modules/jira.js/out/version2/users.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Users = void 0;
-    var tslib_1 = require_tslib();
-    var paramSerializer_1 = require_paramSerializer();
-    var Users = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getUser(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user",
-            method: "GET",
-            params: {
-              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId,
-              username: parameters === null || parameters === void 0 ? void 0 : parameters.username,
-              key: parameters === null || parameters === void 0 ? void 0 : parameters.key,
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      createUser(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user",
-            method: "POST",
-            data: {
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              key: parameters === null || parameters === void 0 ? void 0 : parameters.key,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              password: parameters === null || parameters === void 0 ? void 0 : parameters.password,
-              emailAddress: parameters === null || parameters === void 0 ? void 0 : parameters.emailAddress,
-              displayName: parameters === null || parameters === void 0 ? void 0 : parameters.displayName,
-              applicationKeys: parameters === null || parameters === void 0 ? void 0 : parameters.applicationKeys
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      removeUser(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user",
-            method: "DELETE",
-            params: {
-              accountId: parameters.accountId,
-              username: parameters.username,
-              key: parameters.key
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      bulkGetUsers(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user/bulk",
-            method: "GET",
-            params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              username: parameters.username,
-              key: parameters.key,
-              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      bulkGetUsersMigration(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user/bulk/migration",
-            method: "GET",
-            params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              username: (0, paramSerializer_1.paramSerializer)("username", parameters.username),
-              key: (0, paramSerializer_1.paramSerializer)("key", parameters.key)
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getUserDefaultColumns(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user/columns",
-            method: "GET",
-            params: {
-              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId,
-              username: parameters === null || parameters === void 0 ? void 0 : parameters.username
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      setUserColumns(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user/columns",
-            method: "PUT",
-            params: {
-              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      resetUserColumns(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user/columns",
-            method: "DELETE",
-            params: {
-              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId,
-              username: parameters === null || parameters === void 0 ? void 0 : parameters.username
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getUserEmail(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user/email",
-            method: "GET",
-            params: {
-              accountId: parameters.accountId
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getUserEmailBulk(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user/email/bulk",
-            method: "GET",
-            params: {
-              accountId: parameters.accountId
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getUserGroups(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/user/groups",
-            method: "GET",
-            params: {
-              accountId: parameters.accountId,
-              username: parameters.username,
-              key: parameters.key
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getAllUsersDefault(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/users",
-            method: "GET",
-            params: {
-              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
-              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getAllUsers(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/users/search",
-            method: "GET",
-            params: {
-              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
-              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.Users = Users;
-  }
-});
-
 // node_modules/jira.js/out/version2/webhooks.js
 var require_webhooks = __commonJS({
   "node_modules/jira.js/out/version2/webhooks.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Webhooks = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Webhooks = class {
       constructor(client) {
         this.client = client;
@@ -36313,8 +37038,8 @@ var require_webhooks = __commonJS({
             url: "/rest/api/2/webhook",
             method: "POST",
             data: {
-              webhooks: parameters === null || parameters === void 0 ? void 0 : parameters.webhooks,
-              url: parameters === null || parameters === void 0 ? void 0 : parameters.url
+              webhooks: parameters.webhooks,
+              url: parameters.url
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36326,7 +37051,7 @@ var require_webhooks = __commonJS({
             url: "/rest/api/2/webhook",
             method: "DELETE",
             data: {
-              webhookIds: parameters === null || parameters === void 0 ? void 0 : parameters.webhookIds
+              webhookIds: parameters.webhookIds
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36351,7 +37076,7 @@ var require_webhooks = __commonJS({
             url: "/rest/api/2/webhook/refresh",
             method: "PUT",
             data: {
-              webhookIds: parameters === null || parameters === void 0 ? void 0 : parameters.webhookIds
+              webhookIds: parameters.webhookIds
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36362,21 +37087,94 @@ var require_webhooks = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/workflows.js
+var require_workflows = __commonJS({
+  "node_modules/jira.js/out/version2/workflows.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Workflows = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var paramSerializer_1 = require_paramSerializer();
+    var Workflows = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getAllWorkflows(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/workflow",
+            method: "GET",
+            params: {
+              workflowName: parameters === null || parameters === void 0 ? void 0 : parameters.workflowName
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createWorkflow(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/workflow",
+            method: "POST",
+            data: {
+              name: parameters.name,
+              description: parameters.description,
+              transitions: parameters.transitions,
+              statuses: parameters.statuses
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getWorkflowsPaginated(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/workflow/search",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              workflowName: (0, paramSerializer_1.paramSerializer)("workflowName", parameters === null || parameters === void 0 ? void 0 : parameters.workflowName),
+              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
+              queryString: parameters === null || parameters === void 0 ? void 0 : parameters.queryString,
+              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy,
+              isActive: parameters === null || parameters === void 0 ? void 0 : parameters.isActive
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteInactiveWorkflow(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const entityId = typeof parameters === "string" ? parameters : parameters.entityId;
+          const config = {
+            url: `/rest/api/2/workflow/${entityId}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.Workflows = Workflows;
+  }
+});
+
 // node_modules/jira.js/out/version2/workflowSchemeDrafts.js
 var require_workflowSchemeDrafts = __commonJS({
   "node_modules/jira.js/out/version2/workflowSchemeDrafts.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowSchemeDrafts = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowSchemeDrafts = class {
       constructor(client) {
         this.client = client;
       }
       createWorkflowSchemeDraftFromParent(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/createdraft`,
+            url: `/rest/api/2/workflowscheme/${id}/createdraft`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -36384,8 +37182,9 @@ var require_workflowSchemeDrafts = __commonJS({
       }
       getWorkflowSchemeDraft(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/draft`,
+            url: `/rest/api/2/workflowscheme/${id}/draft`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -36409,8 +37208,9 @@ var require_workflowSchemeDrafts = __commonJS({
       }
       deleteWorkflowSchemeDraft(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/draft`,
+            url: `/rest/api/2/workflowscheme/${id}/draft`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -36418,8 +37218,9 @@ var require_workflowSchemeDrafts = __commonJS({
       }
       getDraftDefaultWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/draft/default`,
+            url: `/rest/api/2/workflowscheme/${id}/draft/default`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -36440,8 +37241,9 @@ var require_workflowSchemeDrafts = __commonJS({
       }
       deleteDraftDefaultWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/draft/default`,
+            url: `/rest/api/2/workflowscheme/${id}/draft/default`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -36477,14 +37279,15 @@ var require_workflowSchemeDrafts = __commonJS({
       }
       publishDraftWorkflowScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/draft/publish`,
+            url: `/rest/api/2/workflowscheme/${id}/draft/publish`,
             method: "POST",
             params: {
-              validateOnly: parameters.validateOnly
+              validateOnly: typeof parameters !== "string" && parameters.validateOnly
             },
             data: {
-              statusMappings: parameters.statusMappings
+              statusMappings: typeof parameters !== "string" && parameters.statusMappings
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36543,7 +37346,7 @@ var require_workflowSchemeProjectAssociations = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowSchemeProjectAssociations = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowSchemeProjectAssociations = class {
       constructor(client) {
         this.client = client;
@@ -36589,7 +37392,7 @@ var require_workflowSchemes = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowSchemes = class {
       constructor(client) {
         this.client = client;
@@ -36613,19 +37416,19 @@ var require_workflowSchemes = __commonJS({
             url: "/rest/api/2/workflowscheme",
             method: "POST",
             data: {
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              defaultWorkflow: parameters === null || parameters === void 0 ? void 0 : parameters.defaultWorkflow,
-              issueTypeMappings: parameters === null || parameters === void 0 ? void 0 : parameters.issueTypeMappings,
-              originalDefaultWorkflow: parameters === null || parameters === void 0 ? void 0 : parameters.originalDefaultWorkflow,
-              originalIssueTypeMappings: parameters === null || parameters === void 0 ? void 0 : parameters.originalIssueTypeMappings,
-              draft: parameters === null || parameters === void 0 ? void 0 : parameters.draft,
-              lastModifiedUser: parameters === null || parameters === void 0 ? void 0 : parameters.lastModifiedUser,
-              lastModified: parameters === null || parameters === void 0 ? void 0 : parameters.lastModified,
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              updateDraftIfNeeded: parameters === null || parameters === void 0 ? void 0 : parameters.updateDraftIfNeeded,
-              issueTypes: parameters === null || parameters === void 0 ? void 0 : parameters.issueTypes
+              id: parameters.id,
+              name: parameters.name,
+              description: parameters.description,
+              defaultWorkflow: parameters.defaultWorkflow,
+              issueTypeMappings: parameters.issueTypeMappings,
+              originalDefaultWorkflow: parameters.originalDefaultWorkflow,
+              originalIssueTypeMappings: parameters.originalIssueTypeMappings,
+              draft: parameters.draft,
+              lastModifiedUser: parameters.lastModifiedUser,
+              lastModified: parameters.lastModified,
+              self: parameters.self,
+              updateDraftIfNeeded: parameters.updateDraftIfNeeded,
+              issueTypes: parameters.issueTypes
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36633,11 +37436,12 @@ var require_workflowSchemes = __commonJS({
       }
       getWorkflowScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}`,
+            url: `/rest/api/2/workflowscheme/${id}`,
             method: "GET",
             params: {
-              returnDraftIfExists: parameters.returnDraftIfExists
+              returnDraftIfExists: typeof parameters !== "string" && parameters.returnDraftIfExists
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36661,8 +37465,9 @@ var require_workflowSchemes = __commonJS({
       }
       deleteWorkflowScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}`,
+            url: `/rest/api/2/workflowscheme/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -36670,11 +37475,12 @@ var require_workflowSchemes = __commonJS({
       }
       getDefaultWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/default`,
+            url: `/rest/api/2/workflowscheme/${id}/default`,
             method: "GET",
             params: {
-              returnDraftIfExists: parameters.returnDraftIfExists
+              returnDraftIfExists: typeof parameters !== "string" && parameters.returnDraftIfExists
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36695,11 +37501,12 @@ var require_workflowSchemes = __commonJS({
       }
       deleteDefaultWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/default`,
+            url: `/rest/api/2/workflowscheme/${id}/default`,
             method: "DELETE",
             params: {
-              updateDraftIfNeeded: parameters.updateDraftIfNeeded
+              updateDraftIfNeeded: typeof parameters !== "string" && parameters.updateDraftIfNeeded
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36741,12 +37548,13 @@ var require_workflowSchemes = __commonJS({
       }
       getWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/workflow`,
+            url: `/rest/api/2/workflowscheme/${id}/workflow`,
             method: "GET",
             params: {
-              workflowName: parameters.workflowName,
-              returnDraftIfExists: parameters.returnDraftIfExists
+              workflowName: typeof parameters !== "string" && parameters.workflowName,
+              returnDraftIfExists: typeof parameters !== "string" && parameters.returnDraftIfExists
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36772,12 +37580,13 @@ var require_workflowSchemes = __commonJS({
       }
       deleteWorkflowMapping(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/2/workflowscheme/${parameters.id}/workflow`,
+            url: `/rest/api/2/workflowscheme/${id}/workflow`,
             method: "DELETE",
             params: {
-              workflowName: parameters.workflowName,
-              updateDraftIfNeeded: parameters.updateDraftIfNeeded
+              workflowName: typeof parameters !== "string" && parameters.workflowName,
+              updateDraftIfNeeded: typeof parameters !== "string" && parameters.updateDraftIfNeeded
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36794,7 +37603,7 @@ var require_workflowStatusCategories = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowStatusCategories = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowStatusCategories = class {
       constructor(client) {
         this.client = client;
@@ -36810,8 +37619,9 @@ var require_workflowStatusCategories = __commonJS({
       }
       getStatusCategory(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const idOrKey = typeof parameters === "string" ? parameters : parameters.idOrKey;
           const config = {
-            url: `/rest/api/2/statuscategory/${parameters.idOrKey}`,
+            url: `/rest/api/2/statuscategory/${idOrKey}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -36828,7 +37638,7 @@ var require_workflowStatuses = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowStatuses = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowStatuses = class {
       constructor(client) {
         this.client = client;
@@ -36844,8 +37654,9 @@ var require_workflowStatuses = __commonJS({
       }
       getStatus(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const idOrName = typeof parameters === "string" ? parameters : parameters.idOrName;
           const config = {
-            url: `/rest/api/2/status/${parameters.idOrName}`,
+            url: `/rest/api/2/status/${idOrName}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -36862,7 +37673,7 @@ var require_workflowTransitionProperties = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowTransitionProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowTransitionProperties = class {
       constructor(client) {
         this.client = client;
@@ -36937,7 +37748,7 @@ var require_workflowTransitionRules = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowTransitionRules = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowTransitionRules = class {
       constructor(client) {
         this.client = client;
@@ -36967,7 +37778,7 @@ var require_workflowTransitionRules = __commonJS({
             url: "/rest/api/2/workflow/rule/config",
             method: "PUT",
             data: {
-              workflows: parameters === null || parameters === void 0 ? void 0 : parameters.workflows
+              workflows: parameters.workflows
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36987,77 +37798,6 @@ var require_workflowTransitionRules = __commonJS({
       }
     };
     exports.WorkflowTransitionRules = WorkflowTransitionRules;
-  }
-});
-
-// node_modules/jira.js/out/version2/workflows.js
-var require_workflows = __commonJS({
-  "node_modules/jira.js/out/version2/workflows.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Workflows = void 0;
-    var tslib_1 = require_tslib();
-    var paramSerializer_1 = require_paramSerializer();
-    var Workflows = class {
-      constructor(client) {
-        this.client = client;
-      }
-      getAllWorkflows(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/workflow",
-            method: "GET",
-            params: {
-              workflowName: parameters === null || parameters === void 0 ? void 0 : parameters.workflowName
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      createWorkflow(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/workflow",
-            method: "POST",
-            data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              transitions: parameters === null || parameters === void 0 ? void 0 : parameters.transitions,
-              statuses: parameters === null || parameters === void 0 ? void 0 : parameters.statuses
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      getWorkflowsPaginated(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: "/rest/api/2/workflow/search",
-            method: "GET",
-            params: {
-              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
-              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
-              workflowName: (0, paramSerializer_1.paramSerializer)("workflowName", parameters === null || parameters === void 0 ? void 0 : parameters.workflowName),
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
-              queryString: parameters === null || parameters === void 0 ? void 0 : parameters.queryString,
-              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy,
-              isActive: parameters === null || parameters === void 0 ? void 0 : parameters.isActive
-            }
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-      deleteInactiveWorkflow(parameters, callback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          const config = {
-            url: `/rest/api/2/workflow/${parameters.entityId}`,
-            method: "DELETE"
-          };
-          return this.client.sendRequest(config, callback);
-        });
-      }
-    };
-    exports.Workflows = Workflows;
   }
 });
 
@@ -37088,6 +37828,14 @@ var require_addField = __commonJS({
 // node_modules/jira.js/out/version2/models/addGroup.js
 var require_addGroup = __commonJS({
   "node_modules/jira.js/out/version2/models/addGroup.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/addNotificationsDetails.js
+var require_addNotificationsDetails = __commonJS({
+  "node_modules/jira.js/out/version2/models/addNotificationsDetails.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -37501,6 +38249,14 @@ var require_connectWorkflowTransitionRule = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/containerForProjectFeatures.js
+var require_containerForProjectFeatures = __commonJS({
+  "node_modules/jira.js/out/version2/models/containerForProjectFeatures.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/containerForRegisteredWebhooks.js
 var require_containerForRegisteredWebhooks = __commonJS({
   "node_modules/jira.js/out/version2/models/containerForRegisteredWebhooks.js"(exports) {
@@ -37584,6 +38340,14 @@ var require_createdIssues = __commonJS({
 // node_modules/jira.js/out/version2/models/createIssueAdjustmentDetails.js
 var require_createIssueAdjustmentDetails = __commonJS({
   "node_modules/jira.js/out/version2/models/createIssueAdjustmentDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/createNotificationSchemeDetails.js
+var require_createNotificationSchemeDetails = __commonJS({
+  "node_modules/jira.js/out/version2/models/createNotificationSchemeDetails.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -38941,6 +39705,14 @@ var require_jiraStatus = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/jqlFunctionPrecomputationUpdateRequest.js
+var require_jqlFunctionPrecomputationUpdateRequest = __commonJS({
+  "node_modules/jira.js/out/version2/models/jqlFunctionPrecomputationUpdateRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/jQLPersonalDataMigrationRequest.js
 var require_jQLPersonalDataMigrationRequest = __commonJS({
   "node_modules/jira.js/out/version2/models/jQLPersonalDataMigrationRequest.js"(exports) {
@@ -39101,6 +39873,14 @@ var require_licensedApplication = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/licenseMetric.js
+var require_licenseMetric = __commonJS({
+  "node_modules/jira.js/out/version2/models/licenseMetric.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/linkedIssue.js
 var require_linkedIssue = __commonJS({
   "node_modules/jira.js/out/version2/models/linkedIssue.js"(exports) {
@@ -39245,9 +40025,25 @@ var require_notificationScheme = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/notificationSchemeAndProjectMappingPage.js
+var require_notificationSchemeAndProjectMappingPage = __commonJS({
+  "node_modules/jira.js/out/version2/models/notificationSchemeAndProjectMappingPage.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/notificationSchemeEvent.js
 var require_notificationSchemeEvent = __commonJS({
   "node_modules/jira.js/out/version2/models/notificationSchemeEvent.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/notificationSchemeId.js
+var require_notificationSchemeId = __commonJS({
+  "node_modules/jira.js/out/version2/models/notificationSchemeId.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -39528,6 +40324,14 @@ var require_pageIssueTypeScreenSchemesProjects = __commonJS({
 // node_modules/jira.js/out/version2/models/pageIssueTypeToContextMapping.js
 var require_pageIssueTypeToContextMapping = __commonJS({
   "node_modules/jira.js/out/version2/models/pageIssueTypeToContextMapping.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/pageJqlFunctionPrecomputation.js
+var require_pageJqlFunctionPrecomputation = __commonJS({
+  "node_modules/jira.js/out/version2/models/pageJqlFunctionPrecomputation.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -39840,6 +40644,14 @@ var require_projectAvatars2 = __commonJS({
 // node_modules/jira.js/out/version2/models/projectCategory.js
 var require_projectCategory = __commonJS({
   "node_modules/jira.js/out/version2/models/projectCategory.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/projectComponent.js
+var require_projectComponent = __commonJS({
+  "node_modules/jira.js/out/version2/models/projectComponent.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -40693,6 +41505,14 @@ var require_updateIssueAdjustmentDetails = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/updateNotificationSchemeDetails.js
+var require_updateNotificationSchemeDetails = __commonJS({
+  "node_modules/jira.js/out/version2/models/updateNotificationSchemeDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/updatePriorityDetails.js
 var require_updatePriorityDetails = __commonJS({
   "node_modules/jira.js/out/version2/models/updatePriorityDetails.js"(exports) {
@@ -40838,7 +41658,7 @@ var require_valueOperand = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/models/version.js
-var require_version3 = __commonJS({
+var require_version2 = __commonJS({
   "node_modules/jira.js/out/version2/models/version.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -41154,11 +41974,12 @@ var require_models2 = __commonJS({
   "node_modules/jira.js/out/version2/models/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_actorInput(), exports);
     tslib_1.__exportStar(require_actorsMap(), exports);
     tslib_1.__exportStar(require_addField(), exports);
     tslib_1.__exportStar(require_addGroup(), exports);
+    tslib_1.__exportStar(require_addNotificationsDetails(), exports);
     tslib_1.__exportStar(require_announcementBannerConfiguration(), exports);
     tslib_1.__exportStar(require_announcementBannerConfigurationUpdate(), exports);
     tslib_1.__exportStar(require_application(), exports);
@@ -41210,6 +42031,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_connectModule(), exports);
     tslib_1.__exportStar(require_connectModules(), exports);
     tslib_1.__exportStar(require_connectWorkflowTransitionRule(), exports);
+    tslib_1.__exportStar(require_containerForProjectFeatures(), exports);
     tslib_1.__exportStar(require_containerForRegisteredWebhooks(), exports);
     tslib_1.__exportStar(require_containerForWebhookIDs(), exports);
     tslib_1.__exportStar(require_containerOfWorkflowSchemeAssociations(), exports);
@@ -41221,6 +42043,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_createdIssue(), exports);
     tslib_1.__exportStar(require_createdIssues(), exports);
     tslib_1.__exportStar(require_createIssueAdjustmentDetails(), exports);
+    tslib_1.__exportStar(require_createNotificationSchemeDetails(), exports);
     tslib_1.__exportStar(require_createPriorityDetails(), exports);
     tslib_1.__exportStar(require_createProjectDetails(), exports);
     tslib_1.__exportStar(require_createResolutionDetails(), exports);
@@ -41390,6 +42213,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_jiraExpressionsComplexityValue(), exports);
     tslib_1.__exportStar(require_jiraExpressionValidationError(), exports);
     tslib_1.__exportStar(require_jiraStatus(), exports);
+    tslib_1.__exportStar(require_jqlFunctionPrecomputationUpdateRequest(), exports);
     tslib_1.__exportStar(require_jQLPersonalDataMigrationRequest(), exports);
     tslib_1.__exportStar(require_jqlQueriesToParse(), exports);
     tslib_1.__exportStar(require_jqlQueriesToSanitize(), exports);
@@ -41410,6 +42234,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_keywordOperand(), exports);
     tslib_1.__exportStar(require_license(), exports);
     tslib_1.__exportStar(require_licensedApplication(), exports);
+    tslib_1.__exportStar(require_licenseMetric(), exports);
     tslib_1.__exportStar(require_linkedIssue(), exports);
     tslib_1.__exportStar(require_linkGroup2(), exports);
     tslib_1.__exportStar(require_linkIssueRequestJson(), exports);
@@ -41428,7 +42253,9 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_notificationRecipients(), exports);
     tslib_1.__exportStar(require_notificationRecipientsRestrictions(), exports);
     tslib_1.__exportStar(require_notificationScheme(), exports);
+    tslib_1.__exportStar(require_notificationSchemeAndProjectMappingPage(), exports);
     tslib_1.__exportStar(require_notificationSchemeEvent(), exports);
+    tslib_1.__exportStar(require_notificationSchemeId(), exports);
     tslib_1.__exportStar(require_operationMessage(), exports);
     tslib_1.__exportStar(require_operations(), exports);
     tslib_1.__exportStar(require_orderOfCustomFieldOptions(), exports);
@@ -41464,6 +42291,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_pageIssueTypeScreenSchemeItem(), exports);
     tslib_1.__exportStar(require_pageIssueTypeScreenSchemesProjects(), exports);
     tslib_1.__exportStar(require_pageIssueTypeToContextMapping(), exports);
+    tslib_1.__exportStar(require_pageJqlFunctionPrecomputation(), exports);
     tslib_1.__exportStar(require_pageNotificationScheme(), exports);
     tslib_1.__exportStar(require_pageOfChangelogs(), exports);
     tslib_1.__exportStar(require_pageOfComments(), exports);
@@ -41503,6 +42331,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_project2(), exports);
     tslib_1.__exportStar(require_projectAvatars2(), exports);
     tslib_1.__exportStar(require_projectCategory(), exports);
+    tslib_1.__exportStar(require_projectComponent(), exports);
     tslib_1.__exportStar(require_projectDetails(), exports);
     tslib_1.__exportStar(require_projectEmailAddress(), exports);
     tslib_1.__exportStar(require_projectFeature(), exports);
@@ -41609,6 +42438,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_updatedProjectCategory(), exports);
     tslib_1.__exportStar(require_updateFieldConfigurationSchemeDetails(), exports);
     tslib_1.__exportStar(require_updateIssueAdjustmentDetails(), exports);
+    tslib_1.__exportStar(require_updateNotificationSchemeDetails(), exports);
     tslib_1.__exportStar(require_updatePriorityDetails(), exports);
     tslib_1.__exportStar(require_updateProjectDetails(), exports);
     tslib_1.__exportStar(require_updateResolutionDetails(), exports);
@@ -41627,7 +42457,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_userPermission(), exports);
     tslib_1.__exportStar(require_userPickerUser(), exports);
     tslib_1.__exportStar(require_valueOperand(), exports);
-    tslib_1.__exportStar(require_version3(), exports);
+    tslib_1.__exportStar(require_version2(), exports);
     tslib_1.__exportStar(require_versionIssueCounts(), exports);
     tslib_1.__exportStar(require_versionIssuesStatus(), exports);
     tslib_1.__exportStar(require_versionMove(), exports);
@@ -41720,6 +42550,14 @@ var require_addIssueTypesToContext = __commonJS({
 // node_modules/jira.js/out/version2/parameters/addIssueTypesToIssueTypeScheme.js
 var require_addIssueTypesToIssueTypeScheme = __commonJS({
   "node_modules/jira.js/out/version2/parameters/addIssueTypesToIssueTypeScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/addNotifications.js
+var require_addNotifications = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/addNotifications.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -42104,6 +42942,14 @@ var require_createIssueTypeScheme = __commonJS({
 // node_modules/jira.js/out/version2/parameters/createIssueTypeScreenScheme.js
 var require_createIssueTypeScreenScheme = __commonJS({
   "node_modules/jira.js/out/version2/parameters/createIssueTypeScreenScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/createNotificationScheme.js
+var require_createNotificationScheme = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/createNotificationScheme.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -42496,6 +43342,14 @@ var require_deleteIssueTypeScheme = __commonJS({
 // node_modules/jira.js/out/version2/parameters/deleteIssueTypeScreenScheme.js
 var require_deleteIssueTypeScreenScheme = __commonJS({
   "node_modules/jira.js/out/version2/parameters/deleteIssueTypeScreenScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/deleteNotificationScheme.js
+var require_deleteNotificationScheme = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/deleteNotificationScheme.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -43765,6 +44619,14 @@ var require_getNotificationSchemes = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/getNotificationSchemeToProjectMappings.js
+var require_getNotificationSchemeToProjectMappings = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/getNotificationSchemeToProjectMappings.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/getOptionsForContext.js
 var require_getOptionsForContext = __commonJS({
   "node_modules/jira.js/out/version2/parameters/getOptionsForContext.js"(exports) {
@@ -43808,6 +44670,14 @@ var require_getPermissionSchemeGrants = __commonJS({
 // node_modules/jira.js/out/version2/parameters/getPermittedProjects.js
 var require_getPermittedProjects = __commonJS({
   "node_modules/jira.js/out/version2/parameters/getPermittedProjects.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/getPrecomputations.js
+var require_getPrecomputations = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/getPrecomputations.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -44573,6 +45443,14 @@ var require_removeModules = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/removeNotificationFromNotificationScheme.js
+var require_removeNotificationFromNotificationScheme = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/removeNotificationFromNotificationScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/removePreference.js
 var require_removePreference = __commonJS({
   "node_modules/jira.js/out/version2/parameters/removePreference.js"(exports) {
@@ -45181,9 +46059,25 @@ var require_updateMultipleCustomFieldValues = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/updateNotificationScheme.js
+var require_updateNotificationScheme = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/updateNotificationScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/updatePermissionScheme.js
 var require_updatePermissionScheme = __commonJS({
   "node_modules/jira.js/out/version2/parameters/updatePermissionScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/updatePrecomputations.js
+var require_updatePrecomputations = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/updatePrecomputations.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -45362,7 +46256,7 @@ var require_parameters2 = __commonJS({
   "node_modules/jira.js/out/version2/parameters/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_addActorUsers(), exports);
     tslib_1.__exportStar(require_addAttachment(), exports);
     tslib_1.__exportStar(require_addComment(), exports);
@@ -45370,6 +46264,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_addGadget(), exports);
     tslib_1.__exportStar(require_addIssueTypesToContext(), exports);
     tslib_1.__exportStar(require_addIssueTypesToIssueTypeScheme(), exports);
+    tslib_1.__exportStar(require_addNotifications(), exports);
     tslib_1.__exportStar(require_addProjectRoleActorsToRole(), exports);
     tslib_1.__exportStar(require_addScreenTab(), exports);
     tslib_1.__exportStar(require_addScreenTabField(), exports);
@@ -45418,6 +46313,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_createIssueTypeAvatar(), exports);
     tslib_1.__exportStar(require_createIssueTypeScheme(), exports);
     tslib_1.__exportStar(require_createIssueTypeScreenScheme(), exports);
+    tslib_1.__exportStar(require_createNotificationScheme(), exports);
     tslib_1.__exportStar(require_createOrUpdateRemoteIssueLink(), exports);
     tslib_1.__exportStar(require_createPermissionGrant(), exports);
     tslib_1.__exportStar(require_createPermissionScheme(), exports);
@@ -45467,6 +46363,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_deleteIssueTypeProperty(), exports);
     tslib_1.__exportStar(require_deleteIssueTypeScheme(), exports);
     tslib_1.__exportStar(require_deleteIssueTypeScreenScheme(), exports);
+    tslib_1.__exportStar(require_deleteNotificationScheme(), exports);
     tslib_1.__exportStar(require_deletePermissionScheme(), exports);
     tslib_1.__exportStar(require_deletePermissionSchemeEntity(), exports);
     tslib_1.__exportStar(require_deletePriority(), exports);
@@ -45620,12 +46517,14 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_getNotificationScheme(), exports);
     tslib_1.__exportStar(require_getNotificationSchemeForProject(), exports);
     tslib_1.__exportStar(require_getNotificationSchemes(), exports);
+    tslib_1.__exportStar(require_getNotificationSchemeToProjectMappings(), exports);
     tslib_1.__exportStar(require_getOptionsForContext(), exports);
     tslib_1.__exportStar(require_getOptionsForField(), exports);
     tslib_1.__exportStar(require_getPermissionScheme(), exports);
     tslib_1.__exportStar(require_getPermissionSchemeGrant(), exports);
     tslib_1.__exportStar(require_getPermissionSchemeGrants(), exports);
     tslib_1.__exportStar(require_getPermittedProjects(), exports);
+    tslib_1.__exportStar(require_getPrecomputations(), exports);
     tslib_1.__exportStar(require_getPreference(), exports);
     tslib_1.__exportStar(require_getPriority(), exports);
     tslib_1.__exportStar(require_getProject(), exports);
@@ -45662,6 +46561,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_getStatusesById(), exports);
     tslib_1.__exportStar(require_getTask(), exports);
     tslib_1.__exportStar(require_getTransitions(), exports);
+    tslib_1.__exportStar(require_getTrashedFieldsPaginated(), exports);
     tslib_1.__exportStar(require_getTrashedFieldsPaginated(), exports);
     tslib_1.__exportStar(require_getUiModifications(), exports);
     tslib_1.__exportStar(require_getUser(), exports);
@@ -45718,6 +46618,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_removeIssueTypesFromGlobalFieldConfigurationScheme(), exports);
     tslib_1.__exportStar(require_removeMappingsFromIssueTypeScreenScheme(), exports);
     tslib_1.__exportStar(require_removeModules(), exports);
+    tslib_1.__exportStar(require_removeNotificationFromNotificationScheme(), exports);
     tslib_1.__exportStar(require_removePreference(), exports);
     tslib_1.__exportStar(require_removeProjectCategory(), exports);
     tslib_1.__exportStar(require_removeScreenTabField(), exports);
@@ -45795,7 +46696,9 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_updateIssueTypeScheme(), exports);
     tslib_1.__exportStar(require_updateIssueTypeScreenScheme(), exports);
     tslib_1.__exportStar(require_updateMultipleCustomFieldValues(), exports);
+    tslib_1.__exportStar(require_updateNotificationScheme(), exports);
     tslib_1.__exportStar(require_updatePermissionScheme(), exports);
+    tslib_1.__exportStar(require_updatePrecomputations(), exports);
     tslib_1.__exportStar(require_updatePriority(), exports);
     tslib_1.__exportStar(require_updateProject(), exports);
     tslib_1.__exportStar(require_updateProjectAvatar(), exports);
@@ -45879,6 +46782,7 @@ var require_version2Client = __commonJS({
         this.jiraSettings = new __1.JiraSettings(this);
         this.jql = new __1.JQL(this);
         this.labels = new __1.Labels(this);
+        this.licenseMetrics = new __1.LicenseMetrics(this);
         this.myself = new __1.Myself(this);
         this.permissions = new __1.Permissions(this);
         this.permissionSchemes = new __1.PermissionSchemes(this);
@@ -45927,7 +46831,7 @@ var require_client2 = __commonJS({
   "node_modules/jira.js/out/version2/client/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_version2Client(), exports);
   }
 });
@@ -45938,17 +46842,17 @@ var require_version22 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Version2Parameters = exports.Version2Models = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_announcementBanner(), exports);
+    tslib_1.__exportStar(require_applicationRoles(), exports);
     tslib_1.__exportStar(require_appMigration(), exports);
     tslib_1.__exportStar(require_appProperties(), exports);
-    tslib_1.__exportStar(require_applicationRoles(), exports);
     tslib_1.__exportStar(require_auditRecords(), exports);
     tslib_1.__exportStar(require_avatars(), exports);
     tslib_1.__exportStar(require_dashboards(), exports);
     tslib_1.__exportStar(require_dynamicModules(), exports);
-    tslib_1.__exportStar(require_filterSharing(), exports);
     tslib_1.__exportStar(require_filters(), exports);
+    tslib_1.__exportStar(require_filterSharing(), exports);
     tslib_1.__exportStar(require_groupAndUserPicker(), exports);
     tslib_1.__exportStar(require_groups(), exports);
     tslib_1.__exportStar(require_instanceInformation(), exports);
@@ -45963,33 +46867,34 @@ var require_version22 = __commonJS({
     tslib_1.__exportStar(require_issueCustomFieldValuesApps(), exports);
     tslib_1.__exportStar(require_issueFieldConfigurations(), exports);
     tslib_1.__exportStar(require_issueFields(), exports);
-    tslib_1.__exportStar(require_issueLinkTypes(), exports);
     tslib_1.__exportStar(require_issueLinks(), exports);
+    tslib_1.__exportStar(require_issueLinkTypes(), exports);
     tslib_1.__exportStar(require_issueNavigatorSettings(), exports);
     tslib_1.__exportStar(require_issueNotificationSchemes(), exports);
     tslib_1.__exportStar(require_issuePriorities(), exports);
     tslib_1.__exportStar(require_issueProperties(), exports);
     tslib_1.__exportStar(require_issueRemoteLinks(), exports);
     tslib_1.__exportStar(require_issueResolutions(), exports);
+    tslib_1.__exportStar(require_issues(), exports);
     tslib_1.__exportStar(require_issueSearch(), exports);
     tslib_1.__exportStar(require_issueSecurityLevel(), exports);
     tslib_1.__exportStar(require_issueSecuritySchemes(), exports);
     tslib_1.__exportStar(require_issueTypeProperties(), exports);
+    tslib_1.__exportStar(require_issueTypes(), exports);
     tslib_1.__exportStar(require_issueTypeSchemes(), exports);
     tslib_1.__exportStar(require_issueTypeScreenSchemes(), exports);
-    tslib_1.__exportStar(require_issueTypes(), exports);
     tslib_1.__exportStar(require_issueVotes(), exports);
     tslib_1.__exportStar(require_issueWatchers(), exports);
     tslib_1.__exportStar(require_issueWorklogProperties(), exports);
     tslib_1.__exportStar(require_issueWorklogs(), exports);
-    tslib_1.__exportStar(require_issues(), exports);
-    tslib_1.__exportStar(require_jQL(), exports);
     tslib_1.__exportStar(require_jiraExpressions(), exports);
     tslib_1.__exportStar(require_jiraSettings(), exports);
+    tslib_1.__exportStar(require_jQL(), exports);
     tslib_1.__exportStar(require_labels(), exports);
+    tslib_1.__exportStar(require_licenseMetrics(), exports);
     tslib_1.__exportStar(require_myself(), exports);
-    tslib_1.__exportStar(require_permissionSchemes(), exports);
     tslib_1.__exportStar(require_permissions(), exports);
+    tslib_1.__exportStar(require_permissionSchemes(), exports);
     tslib_1.__exportStar(require_projectAvatars(), exports);
     tslib_1.__exportStar(require_projectCategories(), exports);
     tslib_1.__exportStar(require_projectComponents(), exports);
@@ -46000,22 +46905,23 @@ var require_version22 = __commonJS({
     tslib_1.__exportStar(require_projectProperties(), exports);
     tslib_1.__exportStar(require_projectRoleActors(), exports);
     tslib_1.__exportStar(require_projectRoles(), exports);
+    tslib_1.__exportStar(require_projects2(), exports);
     tslib_1.__exportStar(require_projectTypes(), exports);
     tslib_1.__exportStar(require_projectVersions(), exports);
-    tslib_1.__exportStar(require_projects2(), exports);
+    tslib_1.__exportStar(require_screens(), exports);
     tslib_1.__exportStar(require_screenSchemes(), exports);
     tslib_1.__exportStar(require_screenTabFields(), exports);
     tslib_1.__exportStar(require_screenTabs(), exports);
-    tslib_1.__exportStar(require_screens(), exports);
     tslib_1.__exportStar(require_serverInfo(), exports);
     tslib_1.__exportStar(require_status(), exports);
     tslib_1.__exportStar(require_tasks(), exports);
     tslib_1.__exportStar(require_timeTracking(), exports);
     tslib_1.__exportStar(require_uIModificationsApps(), exports);
     tslib_1.__exportStar(require_userProperties(), exports);
-    tslib_1.__exportStar(require_userSearch(), exports);
     tslib_1.__exportStar(require_users(), exports);
+    tslib_1.__exportStar(require_userSearch(), exports);
     tslib_1.__exportStar(require_webhooks(), exports);
+    tslib_1.__exportStar(require_workflows(), exports);
     tslib_1.__exportStar(require_workflowSchemeDrafts(), exports);
     tslib_1.__exportStar(require_workflowSchemeProjectAssociations(), exports);
     tslib_1.__exportStar(require_workflowSchemes(), exports);
@@ -46023,7 +46929,6 @@ var require_version22 = __commonJS({
     tslib_1.__exportStar(require_workflowStatuses(), exports);
     tslib_1.__exportStar(require_workflowTransitionProperties(), exports);
     tslib_1.__exportStar(require_workflowTransitionRules(), exports);
-    tslib_1.__exportStar(require_workflows(), exports);
     exports.Version2Models = require_models2();
     exports.Version2Parameters = require_parameters2();
     tslib_1.__exportStar(require_client2(), exports);
@@ -46036,7 +46941,7 @@ var require_announcementBanner2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AnnouncementBanner = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var AnnouncementBanner = class {
       constructor(client) {
         this.client = client;
@@ -46076,7 +46981,7 @@ var require_applicationRoles2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ApplicationRoles = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ApplicationRoles = class {
       constructor(client) {
         this.client = client;
@@ -46092,8 +46997,9 @@ var require_applicationRoles2 = __commonJS({
       }
       getApplicationRole(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const key = typeof parameters === "string" ? parameters : parameters.key;
           const config = {
-            url: `/rest/api/3/applicationrole/${parameters.key}`,
+            url: `/rest/api/3/applicationrole/${key}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -46110,7 +47016,7 @@ var require_appMigration2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AppMigration = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var AppMigration = class {
       constructor(client) {
         this.client = client;
@@ -46175,15 +47081,16 @@ var require_appProperties2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AppProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var AppProperties = class {
       constructor(client) {
         this.client = client;
       }
       getAddonProperties(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const addonKey = typeof parameters === "string" ? parameters : parameters.addonKey;
           const config = {
-            url: `/rest/atlassian-connect/1/addons/${parameters.addonKey}/properties`,
+            url: `/rest/atlassian-connect/1/addons/${addonKey}/properties`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -46227,7 +47134,7 @@ var require_auditRecords3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AuditRecords = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var AuditRecords = class {
       constructor(client) {
         this.client = client;
@@ -46259,15 +47166,16 @@ var require_avatars3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Avatars = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Avatars = class {
       constructor(client) {
         this.client = client;
       }
       getAllSystemAvatars(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const type3 = typeof parameters === "string" ? parameters : parameters.type;
           const config = {
-            url: `/rest/api/3/avatar/${parameters.type}/system`,
+            url: `/rest/api/3/avatar/${type3}/system`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -46307,12 +47215,13 @@ var require_avatars3 = __commonJS({
       }
       getAvatarImageByType(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const type3 = typeof parameters === "string" ? parameters : parameters.type;
           const config = {
-            url: `/rest/api/3/universal_avatar/view/type/${parameters.type}`,
+            url: `/rest/api/3/universal_avatar/view/type/${type3}`,
             method: "GET",
             params: {
-              size: parameters.size,
-              format: parameters.format
+              size: typeof parameters !== "string" && parameters.size,
+              format: typeof parameters !== "string" && parameters.format
             }
           };
           return this.client.sendRequest(config, callback);
@@ -46355,7 +47264,7 @@ var require_dashboards2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Dashboards = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Dashboards = class {
       constructor(client) {
         this.client = client;
@@ -46422,13 +47331,14 @@ var require_dashboards2 = __commonJS({
       }
       getAllGadgets(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const dashboardId = typeof parameters === "string" ? parameters : parameters.dashboardId;
           const config = {
-            url: `/rest/api/3/dashboard/${parameters.dashboardId}/gadget`,
+            url: `/rest/api/3/dashboard/${dashboardId}/gadget`,
             method: "GET",
             params: {
-              moduleKey: parameters.moduleKey,
-              uri: parameters.uri,
-              gadgetId: parameters.gadgetId
+              moduleKey: typeof parameters !== "string" && parameters.moduleKey,
+              uri: typeof parameters !== "string" && parameters.uri,
+              gadgetId: typeof parameters !== "string" && parameters.gadgetId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -46516,8 +47426,9 @@ var require_dashboards2 = __commonJS({
       }
       getDashboard(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/dashboard/${parameters.id}`,
+            url: `/rest/api/3/dashboard/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -46540,8 +47451,9 @@ var require_dashboards2 = __commonJS({
       }
       deleteDashboard(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/dashboard/${parameters.id}`,
+            url: `/rest/api/3/dashboard/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -46573,7 +47485,7 @@ var require_dynamicModules2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DynamicModules = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var DynamicModules = class {
       constructor(client) {
         this.client = client;
@@ -46622,7 +47534,7 @@ var require_filters2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Filters = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Filters = class {
       constructor(client) {
         this.client = client;
@@ -46718,12 +47630,13 @@ var require_filters2 = __commonJS({
       }
       getFilter(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/filter/${parameters.id}`,
+            url: `/rest/api/3/filter/${id}`,
             method: "GET",
             params: {
-              expand: parameters.expand,
-              overrideSharePermissions: parameters.overrideSharePermissions
+              expand: typeof parameters !== "string" && parameters.expand,
+              overrideSharePermissions: typeof parameters !== "string" && parameters.overrideSharePermissions
             }
           };
           return this.client.sendRequest(config, callback);
@@ -46751,8 +47664,9 @@ var require_filters2 = __commonJS({
       }
       deleteFilter(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/filter/${parameters.id}`,
+            url: `/rest/api/3/filter/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -46760,8 +47674,9 @@ var require_filters2 = __commonJS({
       }
       getColumns(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/filter/${parameters.id}/columns`,
+            url: `/rest/api/3/filter/${id}/columns`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -46771,15 +47686,17 @@ var require_filters2 = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/3/filter/${parameters.id}/columns`,
-            method: "PUT"
+            method: "PUT",
+            data: parameters.columns
           };
           return this.client.sendRequest(config, callback);
         });
       }
       resetColumns(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/filter/${parameters.id}/columns`,
+            url: `/rest/api/3/filter/${id}/columns`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -46787,11 +47704,12 @@ var require_filters2 = __commonJS({
       }
       setFavouriteForFilter(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/filter/${parameters.id}/favourite`,
+            url: `/rest/api/3/filter/${id}/favourite`,
             method: "PUT",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -46799,11 +47717,12 @@ var require_filters2 = __commonJS({
       }
       deleteFavouriteForFilter(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/filter/${parameters.id}/favourite`,
+            url: `/rest/api/3/filter/${id}/favourite`,
             method: "DELETE",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -46832,7 +47751,7 @@ var require_filterSharing2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.FilterSharing = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var FilterSharing = class {
       constructor(client) {
         this.client = client;
@@ -46848,11 +47767,12 @@ var require_filterSharing2 = __commonJS({
       }
       setDefaultShareScope(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const scope = typeof parameters === "string" ? parameters : parameters.scope;
           const config = {
             url: "/rest/api/3/filter/defaultShareScope",
             method: "PUT",
             data: {
-              scope: parameters === null || parameters === void 0 ? void 0 : parameters.scope
+              scope
             }
           };
           return this.client.sendRequest(config, callback);
@@ -46860,8 +47780,9 @@ var require_filterSharing2 = __commonJS({
       }
       getSharePermissions(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/filter/${parameters.id}/permission`,
+            url: `/rest/api/3/filter/${id}/permission`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -46914,7 +47835,7 @@ var require_groupAndUserPicker2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GroupAndUserPicker = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var GroupAndUserPicker = class {
       constructor(client) {
         this.client = client;
@@ -46950,7 +47871,7 @@ var require_groups2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Groups = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Groups = class {
       constructor(client) {
         this.client = client;
@@ -47066,10 +47987,11 @@ var require_groups2 = __commonJS({
             method: "GET",
             params: {
               accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId,
-              query: parameters === null || parameters === void 0 ? void 0 : parameters.query,
+              caseInsensitive: parameters === null || parameters === void 0 ? void 0 : parameters.caseInsensitive,
               exclude: parameters === null || parameters === void 0 ? void 0 : parameters.exclude,
               excludeId: parameters === null || parameters === void 0 ? void 0 : parameters.excludeId,
               maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              query: parameters === null || parameters === void 0 ? void 0 : parameters.query,
               userName: parameters === null || parameters === void 0 ? void 0 : parameters.userName
             }
           };
@@ -47087,7 +48009,7 @@ var require_instanceInformation2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.InstanceInformation = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var InstanceInformation = class {
       constructor(client) {
         this.client = client;
@@ -47112,7 +48034,7 @@ var require_issueAdjustmentsApps2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueAdjustmentsApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueAdjustmentsApps = class {
       constructor(client) {
         this.client = client;
@@ -47181,7 +48103,7 @@ var require_issueAttachments2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueAttachments = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var FormData2 = require_form_data();
     var IssueAttachments = class {
       constructor(client) {
@@ -47189,11 +48111,12 @@ var require_issueAttachments2 = __commonJS({
       }
       getAttachmentContent(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/attachment/content/${parameters.id}`,
+            url: `/rest/api/3/attachment/content/${id}`,
             method: "GET",
             params: {
-              redirect: parameters.redirect
+              redirect: typeof parameters !== "string" && parameters.redirect
             },
             responseType: "arraybuffer"
           };
@@ -47211,14 +48134,15 @@ var require_issueAttachments2 = __commonJS({
       }
       getAttachmentThumbnail(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/attachment/thumbnail/${parameters.id}`,
+            url: `/rest/api/3/attachment/thumbnail/${id}`,
             method: "GET",
             params: {
-              redirect: parameters.redirect,
-              fallbackToDefault: parameters.fallbackToDefault,
-              width: parameters.width,
-              height: parameters.height
+              redirect: typeof parameters !== "string" && parameters.redirect,
+              fallbackToDefault: typeof parameters !== "string" && parameters.fallbackToDefault,
+              width: typeof parameters !== "string" && parameters.width,
+              height: typeof parameters !== "string" && parameters.height
             },
             responseType: "arraybuffer"
           };
@@ -47227,8 +48151,9 @@ var require_issueAttachments2 = __commonJS({
       }
       getAttachment(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/attachment/${parameters.id}`,
+            url: `/rest/api/3/attachment/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -47236,8 +48161,9 @@ var require_issueAttachments2 = __commonJS({
       }
       removeAttachment(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/attachment/${parameters.id}`,
+            url: `/rest/api/3/attachment/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -47245,8 +48171,9 @@ var require_issueAttachments2 = __commonJS({
       }
       expandAttachmentForHumans(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/attachment/${parameters.id}/expand/human`,
+            url: `/rest/api/3/attachment/${id}/expand/human`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -47254,8 +48181,9 @@ var require_issueAttachments2 = __commonJS({
       }
       expandAttachmentForMachines(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/attachment/${parameters.id}/expand/raw`,
+            url: `/rest/api/3/attachment/${id}/expand/raw`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -47289,15 +48217,16 @@ var require_issueCommentProperties2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCommentProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCommentProperties = class {
       constructor(client) {
         this.client = client;
       }
       getCommentPropertyKeys(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const commentId = typeof parameters === "string" ? parameters : parameters.commentId;
           const config = {
-            url: `/rest/api/3/comment/${parameters.commentId}/properties`,
+            url: `/rest/api/3/comment/${commentId}/properties`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -47316,7 +48245,8 @@ var require_issueCommentProperties2 = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/3/comment/${parameters.commentId}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            data: parameters.property
           };
           return this.client.sendRequest(config, callback);
         });
@@ -47341,7 +48271,7 @@ var require_issueComments2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueComments = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueComments = class {
       constructor(client) {
         this.client = client;
@@ -47352,10 +48282,10 @@ var require_issueComments2 = __commonJS({
             url: "/rest/api/3/comment/list",
             method: "POST",
             params: {
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
+              expand: parameters.expand
             },
             data: {
-              ids: parameters === null || parameters === void 0 ? void 0 : parameters.ids
+              ids: parameters.ids
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47363,14 +48293,15 @@ var require_issueComments2 = __commonJS({
       }
       getComments(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const issueIdOrKey = typeof parameters === "string" ? parameters : parameters.issueIdOrKey;
           const config = {
-            url: `/rest/api/3/issue/${parameters.issueIdOrKey}/comment`,
+            url: `/rest/api/3/issue/${issueIdOrKey}/comment`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              orderBy: parameters.orderBy,
-              expand: parameters.expand
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              orderBy: typeof parameters !== "string" && parameters.orderBy,
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47453,25 +48384,26 @@ var require_issueCustomFieldConfigurationApps2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldConfigurationApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldConfigurationApps = class {
       constructor(client) {
         this.client = client;
       }
       getCustomFieldConfiguration(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldIdOrKey = typeof parameters === "string" ? parameters : parameters.fieldIdOrKey;
           const config = {
-            url: `/rest/api/3/app/field/${parameters.fieldIdOrKey}/context/configuration`,
+            url: `/rest/api/3/app/field/${fieldIdOrKey}/context/configuration`,
             method: "GET",
             params: {
-              id: parameters.id,
-              contextId: parameters.contextId,
-              fieldContextId: parameters.fieldContextId,
-              issueId: parameters.issueId,
-              projectKeyOrId: parameters.projectKeyOrId,
-              issueTypeId: parameters.issueTypeId,
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              id: typeof parameters !== "string" && parameters.id,
+              contextId: typeof parameters !== "string" && parameters.contextId,
+              fieldContextId: typeof parameters !== "string" && parameters.fieldContextId,
+              issueId: typeof parameters !== "string" && parameters.issueId,
+              projectKeyOrId: typeof parameters !== "string" && parameters.projectKeyOrId,
+              issueTypeId: typeof parameters !== "string" && parameters.issueTypeId,
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47500,22 +48432,23 @@ var require_issueCustomFieldContexts2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldContexts = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldContexts = class {
       constructor(client) {
         this.client = client;
       }
       getContextsForField(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/3/field/${parameters.fieldId}/context`,
+            url: `/rest/api/3/field/${fieldId}/context`,
             method: "GET",
             params: {
-              isAnyIssueType: parameters.isAnyIssueType,
-              isGlobalContext: parameters.isGlobalContext,
-              contextId: parameters.contextId,
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              isAnyIssueType: typeof parameters !== "string" && parameters.isAnyIssueType,
+              isGlobalContext: typeof parameters !== "string" && parameters.isGlobalContext,
+              contextId: typeof parameters !== "string" && parameters.contextId,
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47539,13 +48472,14 @@ var require_issueCustomFieldContexts2 = __commonJS({
       }
       getDefaultValues(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/3/field/${parameters.fieldId}/context/defaultValue`,
+            url: `/rest/api/3/field/${fieldId}/context/defaultValue`,
             method: "GET",
             params: {
-              contextId: parameters.contextId,
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              contextId: typeof parameters !== "string" && parameters.contextId,
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47565,13 +48499,14 @@ var require_issueCustomFieldContexts2 = __commonJS({
       }
       getIssueTypeMappingsForContexts(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/3/field/${parameters.fieldId}/context/issuetypemapping`,
+            url: `/rest/api/3/field/${fieldId}/context/issuetypemapping`,
             method: "GET",
             params: {
-              contextId: parameters.contextId,
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              contextId: typeof parameters !== "string" && parameters.contextId,
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47595,13 +48530,14 @@ var require_issueCustomFieldContexts2 = __commonJS({
       }
       getProjectContextMapping(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/3/field/${parameters.fieldId}/context/projectmapping`,
+            url: `/rest/api/3/field/${fieldId}/context/projectmapping`,
             method: "GET",
             params: {
-              contextId: parameters.contextId,
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              contextId: typeof parameters !== "string" && parameters.contextId,
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47688,19 +48624,20 @@ var require_issueCustomFieldOptions2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldOptions = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldOptions = class {
       constructor(client) {
         this.client = client;
       }
       getOptionsForField(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/3/customField/${parameters.fieldId}/option`,
+            url: `/rest/api/3/customField/${fieldId}/option`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47732,8 +48669,9 @@ var require_issueCustomFieldOptions2 = __commonJS({
       }
       getCustomFieldOption(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/customFieldOption/${parameters.id}`,
+            url: `/rest/api/3/customFieldOption/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -47812,19 +48750,20 @@ var require_issueCustomFieldOptionsApps2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldOptionsApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldOptionsApps = class {
       constructor(client) {
         this.client = client;
       }
       getAllIssueFieldOptions(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldKey = typeof parameters === "string" ? parameters : parameters.fieldKey;
           const config = {
-            url: `/rest/api/3/field/${parameters.fieldKey}/option`,
+            url: `/rest/api/3/field/${fieldKey}/option`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47846,13 +48785,14 @@ var require_issueCustomFieldOptionsApps2 = __commonJS({
       }
       getSelectableIssueFieldOptions(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldKey = typeof parameters === "string" ? parameters : parameters.fieldKey;
           const config = {
-            url: `/rest/api/3/field/${parameters.fieldKey}/option/suggestions/edit`,
+            url: `/rest/api/3/field/${fieldKey}/option/suggestions/edit`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              projectId: parameters.projectId
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              projectId: typeof parameters !== "string" && parameters.projectId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47860,13 +48800,14 @@ var require_issueCustomFieldOptionsApps2 = __commonJS({
       }
       getVisibleIssueFieldOptions(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldKey = typeof parameters === "string" ? parameters : parameters.fieldKey;
           const config = {
-            url: `/rest/api/3/field/${parameters.fieldKey}/option/suggestions/search`,
+            url: `/rest/api/3/field/${fieldKey}/option/suggestions/search`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              projectId: parameters.projectId
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              projectId: typeof parameters !== "string" && parameters.projectId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47931,7 +48872,7 @@ var require_issueCustomFieldValuesApps2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueCustomFieldValuesApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueCustomFieldValuesApps = class {
       constructor(client) {
         this.client = client;
@@ -47942,10 +48883,10 @@ var require_issueCustomFieldValuesApps2 = __commonJS({
             url: "/rest/api/3/app/field/value",
             method: "POST",
             params: {
-              generateChangelog: parameters === null || parameters === void 0 ? void 0 : parameters.generateChangelog
+              generateChangelog: parameters.generateChangelog
             },
             data: {
-              updates: parameters === null || parameters === void 0 ? void 0 : parameters.updates
+              updates: parameters.updates
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47977,7 +48918,7 @@ var require_issueFieldConfigurations2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueFieldConfigurations = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueFieldConfigurations = class {
       constructor(client) {
         this.client = client;
@@ -48183,7 +49124,7 @@ var require_issueFields2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueFields = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueFields = class {
       constructor(client) {
         this.client = client;
@@ -48240,6 +49181,7 @@ var require_issueFields2 = __commonJS({
               maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
               id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
               query: parameters === null || parameters === void 0 ? void 0 : parameters.query,
+              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
               orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy
             }
           };
@@ -48311,7 +49253,7 @@ var require_issueLinks2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueLinks = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueLinks = class {
       constructor(client) {
         this.client = client;
@@ -48360,7 +49302,7 @@ var require_issueLinkTypes3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueLinkTypes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueLinkTypes = class {
       constructor(client) {
         this.client = client;
@@ -48435,7 +49377,7 @@ var require_issueNavigatorSettings2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueNavigatorSettings = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueNavigatorSettings = class {
       constructor(client) {
         this.client = client;
@@ -48469,7 +49411,7 @@ var require_issueNotificationSchemes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueNotificationSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueNotificationSchemes = class {
       constructor(client) {
         this.client = client;
@@ -48482,7 +49424,39 @@ var require_issueNotificationSchemes2 = __commonJS({
             params: {
               startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
               maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
+              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId,
+              onlyDefault: parameters === null || parameters === void 0 ? void 0 : parameters.onlyDefault,
               expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      createNotificationScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/notificationscheme",
+            method: "POST",
+            data: {
+              description: parameters.description,
+              name: parameters.name,
+              notificationSchemeEvents: parameters.notificationSchemeEvents
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getNotificationSchemeToProjectMappings(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/notificationscheme/project",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              notificationSchemeId: parameters === null || parameters === void 0 ? void 0 : parameters.notificationSchemeId,
+              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -48490,12 +49464,56 @@ var require_issueNotificationSchemes2 = __commonJS({
       }
       getNotificationScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/notificationscheme/${parameters.id}`,
+            url: `/rest/api/3/notificationscheme/${id}`,
             method: "GET",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateNotificationScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/notificationscheme/${parameters.id}`,
+            method: "PUT",
+            data: {
+              description: parameters.description,
+              name: parameters.name
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      addNotifications(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/notificationscheme/${parameters.id}/notification`,
+            method: "PUT",
+            data: {
+              notificationSchemeEvents: parameters.notificationSchemeEvents
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteNotificationScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/notificationscheme/${parameters.notificationSchemeId}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      removeNotificationFromNotificationScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/notificationscheme/${parameters.notificationSchemeId}/notification/${parameters.notificationId}`,
+            method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
         });
@@ -48511,7 +49529,7 @@ var require_issuePriorities2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssuePriorities = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssuePriorities = class {
       constructor(client) {
         this.client = client;
@@ -48611,7 +49629,8 @@ var require_issuePriorities2 = __commonJS({
             url: `/rest/api/3/priority/${parameters.id}`,
             method: "DELETE",
             params: {
-              newPriority: parameters.newPriority
+              newPriority: parameters.newPriority,
+              replaceWith: parameters.replaceWith
             }
           };
           return this.client.sendRequest(config, callback);
@@ -48628,7 +49647,7 @@ var require_issueProperties2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueProperties = class {
       constructor(client) {
         this.client = client;
@@ -48732,7 +49751,7 @@ var require_issueRemoteLinks2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueRemoteLinks = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueRemoteLinks = class {
       constructor(client) {
         this.client = client;
@@ -48820,7 +49839,7 @@ var require_issueResolutions2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueResolutions = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueResolutions = class {
       constructor(client) {
         this.client = client;
@@ -48927,7 +49946,7 @@ var require_issues2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Issues = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Issues = class {
       constructor(client) {
         this.client = client;
@@ -49214,7 +50233,7 @@ var require_issueSearch2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueSearch = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueSearch = class {
       constructor(client) {
         this.client = client;
@@ -49298,7 +50317,7 @@ var require_issueSecurityLevel2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueSecurityLevel = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueSecurityLevel = class {
       constructor(client) {
         this.client = client;
@@ -49338,7 +50357,7 @@ var require_issueSecuritySchemes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueSecuritySchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueSecuritySchemes = class {
       constructor(client) {
         this.client = client;
@@ -49372,7 +50391,7 @@ var require_issueTypeProperties2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueTypeProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueTypeProperties = class {
       constructor(client) {
         this.client = client;
@@ -49424,7 +50443,7 @@ var require_issueTypes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueTypes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueTypes = class {
       constructor(client) {
         this.client = client;
@@ -49535,7 +50554,7 @@ var require_issueTypeSchemes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueTypeSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueTypeSchemes = class {
       constructor(client) {
         this.client = client;
@@ -49682,7 +50701,7 @@ var require_issueTypeScreenSchemes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueTypeScreenSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueTypeScreenSchemes = class {
       constructor(client) {
         this.client = client;
@@ -49842,7 +50861,7 @@ var require_issueVotes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueVotes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueVotes = class {
       constructor(client) {
         this.client = client;
@@ -49888,7 +50907,7 @@ var require_issueWatchers2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueWatchers = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueWatchers = class {
       constructor(client) {
         this.client = client;
@@ -49951,7 +50970,7 @@ var require_issueWorklogProperties2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueWorklogProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueWorklogProperties = class {
       constructor(client) {
         this.client = client;
@@ -50003,7 +51022,7 @@ var require_issueWorklogs2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueWorklogs = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var IssueWorklogs = class {
       constructor(client) {
         this.client = client;
@@ -50199,7 +51218,7 @@ var require_jiraExpressions2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.JiraExpressions = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var JiraExpressions = class {
       constructor(client) {
         this.client = client;
@@ -50247,7 +51266,7 @@ var require_jiraSettings2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.JiraSettings = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var JiraSettings = class {
       constructor(client) {
         this.client = client;
@@ -50305,7 +51324,7 @@ var require_jQL2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.JQL = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var JQL = class {
       constructor(client) {
         this.client = client;
@@ -50386,6 +51405,34 @@ var require_jQL2 = __commonJS({
           return this.client.sendRequest(config, callback);
         });
       }
+      getPrecomputations(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/jql/function/computation",
+            method: "GET",
+            params: {
+              functionKey: parameters === null || parameters === void 0 ? void 0 : parameters.functionKey,
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy,
+              filter: parameters === null || parameters === void 0 ? void 0 : parameters.filter
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updatePrecomputations(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/jql/function/computation",
+            method: "POST",
+            data: {
+              values: parameters.values
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
     };
     exports.JQL = JQL;
   }
@@ -50397,7 +51444,7 @@ var require_labels2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Labels = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Labels = class {
       constructor(client) {
         this.client = client;
@@ -50420,13 +51467,47 @@ var require_labels2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/licenseMetrics.js
+var require_licenseMetrics2 = __commonJS({
+  "node_modules/jira.js/out/version3/licenseMetrics.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.LicenseMetrics = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var LicenseMetrics = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getApproximateLicenseCount(callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/license/approximateLicenseCount",
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getApproximateApplicationLicenseCount(applicationKey, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/license/approximateLicenseCount/product/${applicationKey}`,
+            method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.LicenseMetrics = LicenseMetrics;
+  }
+});
+
 // node_modules/jira.js/out/version3/myself.js
 var require_myself2 = __commonJS({
   "node_modules/jira.js/out/version3/myself.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Myself = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Myself = class {
       constructor(client) {
         this.client = client;
@@ -50520,7 +51601,7 @@ var require_permissions3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Permissions = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Permissions = class {
       constructor(client) {
         this.client = client;
@@ -50590,7 +51671,7 @@ var require_permissionSchemes3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.PermissionSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var PermissionSchemes = class {
       constructor(client) {
         this.client = client;
@@ -50716,7 +51797,7 @@ var require_projectAvatars3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectAvatars = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectAvatars = class {
       constructor(client) {
         this.client = client;
@@ -50757,7 +51838,8 @@ var require_projectAvatars3 = __commonJS({
               x: parameters.x,
               y: parameters.y,
               size: parameters.size
-            }
+            },
+            data: parameters.avatar
           };
           return this.client.sendRequest(config, callback);
         });
@@ -50782,7 +51864,7 @@ var require_projectCategories2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectCategories = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectCategories = class {
       constructor(client) {
         this.client = client;
@@ -50802,10 +51884,10 @@ var require_projectCategories2 = __commonJS({
             url: "/rest/api/3/projectCategory",
             method: "POST",
             data: {
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description
+              description: parameters.description,
+              id: parameters.id,
+              name: parameters.name,
+              self: parameters.self
             }
           };
           return this.client.sendRequest(config, callback);
@@ -50853,7 +51935,7 @@ var require_projectComponents2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectComponents = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectComponents = class {
       constructor(client) {
         this.client = client;
@@ -50864,20 +51946,20 @@ var require_projectComponents2 = __commonJS({
             url: "/rest/api/3/component",
             method: "POST",
             data: {
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              lead: parameters === null || parameters === void 0 ? void 0 : parameters.lead,
-              leadUserName: parameters === null || parameters === void 0 ? void 0 : parameters.leadUserName,
-              leadAccountId: parameters === null || parameters === void 0 ? void 0 : parameters.leadAccountId,
-              assigneeType: parameters === null || parameters === void 0 ? void 0 : parameters.assigneeType,
               assignee: parameters === null || parameters === void 0 ? void 0 : parameters.assignee,
-              realAssigneeType: parameters === null || parameters === void 0 ? void 0 : parameters.realAssigneeType,
-              realAssignee: parameters === null || parameters === void 0 ? void 0 : parameters.realAssignee,
+              assigneeType: parameters === null || parameters === void 0 ? void 0 : parameters.assigneeType,
+              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
               isAssigneeTypeValid: parameters === null || parameters === void 0 ? void 0 : parameters.isAssigneeTypeValid,
+              lead: parameters === null || parameters === void 0 ? void 0 : parameters.lead,
+              leadAccountId: parameters === null || parameters === void 0 ? void 0 : parameters.leadAccountId,
+              leadUserName: parameters === null || parameters === void 0 ? void 0 : parameters.leadUserName,
+              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
               project: parameters === null || parameters === void 0 ? void 0 : parameters.project,
-              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId
+              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId,
+              realAssignee: parameters === null || parameters === void 0 ? void 0 : parameters.realAssignee,
+              realAssigneeType: parameters === null || parameters === void 0 ? void 0 : parameters.realAssigneeType,
+              self: parameters === null || parameters === void 0 ? void 0 : parameters.self
             }
           };
           return this.client.sendRequest(config, callback);
@@ -50965,15 +52047,16 @@ var require_projectEmail2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectEmail = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectEmail = class {
       constructor(client) {
         this.client = client;
       }
       getProjectEmail(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectId = typeof parameters === "string" ? parameters : parameters.projectId;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectId}/email`,
+            url: `/rest/api/3/project/${projectId}/email`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51003,15 +52086,16 @@ var require_projectFeatures3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectFeatures = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectFeatures = class {
       constructor(client) {
         this.client = client;
       }
       getFeaturesForProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/features`,
+            url: `/rest/api/3/project/${projectIdOrKey}/features`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51040,18 +52124,19 @@ var require_projectKeyAndNameValidation2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectKeyAndNameValidation = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectKeyAndNameValidation = class {
       constructor(client) {
         this.client = client;
       }
       validateProjectKey(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const key = typeof parameters === "string" ? parameters : parameters === null || parameters === void 0 ? void 0 : parameters.key;
           const config = {
             url: "/rest/api/3/projectvalidate/key",
             method: "GET",
             params: {
-              key: parameters === null || parameters === void 0 ? void 0 : parameters.key
+              key
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51059,11 +52144,12 @@ var require_projectKeyAndNameValidation2 = __commonJS({
       }
       getValidProjectKey(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const key = typeof parameters === "string" ? parameters : parameters === null || parameters === void 0 ? void 0 : parameters.key;
           const config = {
             url: "/rest/api/3/projectvalidate/validProjectKey",
             method: "GET",
             params: {
-              key: parameters === null || parameters === void 0 ? void 0 : parameters.key
+              key
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51071,11 +52157,12 @@ var require_projectKeyAndNameValidation2 = __commonJS({
       }
       getValidProjectName(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const name = typeof parameters === "string" ? parameters : parameters.name;
           const config = {
             url: "/rest/api/3/projectvalidate/validProjectName",
             method: "GET",
             params: {
-              name: parameters.name
+              name
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51092,15 +52179,16 @@ var require_projectPermissionSchemes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectPermissionSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectPermissionSchemes = class {
       constructor(client) {
         this.client = client;
       }
       getProjectIssueSecurityScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectKeyOrId = typeof parameters === "string" ? parameters : parameters.projectKeyOrId;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectKeyOrId}/issuesecuritylevelscheme`,
+            url: `/rest/api/3/project/${projectKeyOrId}/issuesecuritylevelscheme`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51108,11 +52196,12 @@ var require_projectPermissionSchemes2 = __commonJS({
       }
       getAssignedPermissionScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectKeyOrId = typeof parameters === "string" ? parameters : parameters.projectKeyOrId;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectKeyOrId}/permissionscheme`,
+            url: `/rest/api/3/project/${projectKeyOrId}/permissionscheme`,
             method: "GET",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51135,8 +52224,9 @@ var require_projectPermissionSchemes2 = __commonJS({
       }
       getSecurityLevelsForProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectKeyOrId = typeof parameters === "string" ? parameters : parameters.projectKeyOrId;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectKeyOrId}/securitylevel`,
+            url: `/rest/api/3/project/${projectKeyOrId}/securitylevel`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51153,15 +52243,16 @@ var require_projectProperties2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectProperties = class {
       constructor(client) {
         this.client = client;
       }
       getProjectPropertyKeys(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/properties`,
+            url: `/rest/api/3/project/${projectIdOrKey}/properties`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51180,7 +52271,8 @@ var require_projectProperties2 = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/3/project/${parameters.projectIdOrKey}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            data: parameters.property
           };
           return this.client.sendRequest(config, callback);
         });
@@ -51205,7 +52297,7 @@ var require_projectRoleActors2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectRoleActors = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectRoleActors = class {
       constructor(client) {
         this.client = client;
@@ -51252,8 +52344,9 @@ var require_projectRoleActors2 = __commonJS({
       }
       getProjectRoleActorsForRole(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/role/${parameters.id}/actors`,
+            url: `/rest/api/3/role/${id}/actors`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51298,15 +52391,16 @@ var require_projectRoles2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectRoles = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectRoles = class {
       constructor(client) {
         this.client = client;
       }
       getProjectRoles(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/role`,
+            url: `/rest/api/3/project/${projectIdOrKey}/role`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51326,12 +52420,13 @@ var require_projectRoles2 = __commonJS({
       }
       getProjectRoleDetails(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/roledetails`,
+            url: `/rest/api/3/project/${projectIdOrKey}/roledetails`,
             method: "GET",
             params: {
-              currentMember: parameters.currentMember,
-              excludeConnectAddons: parameters.excludeConnectAddons
+              currentMember: typeof parameters !== "string" && parameters.currentMember,
+              excludeConnectAddons: typeof parameters !== "string" && parameters.excludeConnectAddons
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51352,8 +52447,8 @@ var require_projectRoles2 = __commonJS({
             url: "/rest/api/3/role",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description
+              name: parameters.name,
+              description: parameters.description
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51361,8 +52456,9 @@ var require_projectRoles2 = __commonJS({
       }
       getProjectRoleById(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/role/${parameters.id}`,
+            url: `/rest/api/3/role/${id}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51396,11 +52492,12 @@ var require_projectRoles2 = __commonJS({
       }
       deleteProjectRole(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/role/${parameters.id}`,
+            url: `/rest/api/3/role/${id}`,
             method: "DELETE",
             params: {
-              swap: parameters.swap
+              swap: typeof parameters !== "string" && parameters.swap
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51417,7 +52514,7 @@ var require_projects3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Projects = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Projects = class {
       constructor(client) {
         this.client = client;
@@ -51504,12 +52601,13 @@ var require_projects3 = __commonJS({
       }
       getProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}`,
+            url: `/rest/api/3/project/${projectIdOrKey}`,
             method: "GET",
             params: {
-              expand: parameters.expand,
-              properties: parameters.properties
+              expand: typeof parameters !== "string" && parameters.expand,
+              properties: typeof parameters !== "string" && parameters.properties
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51545,11 +52643,12 @@ var require_projects3 = __commonJS({
       }
       deleteProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}`,
+            url: `/rest/api/3/project/${projectIdOrKey}`,
             method: "DELETE",
             params: {
-              enableUndo: parameters.enableUndo
+              enableUndo: typeof parameters !== "string" && parameters.enableUndo
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51557,8 +52656,9 @@ var require_projects3 = __commonJS({
       }
       archiveProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/archive`,
+            url: `/rest/api/3/project/${projectIdOrKey}/archive`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -51566,8 +52666,9 @@ var require_projects3 = __commonJS({
       }
       deleteProjectAsynchronously(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/delete`,
+            url: `/rest/api/3/project/${projectIdOrKey}/delete`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -51575,8 +52676,9 @@ var require_projects3 = __commonJS({
       }
       restore(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/restore`,
+            url: `/rest/api/3/project/${projectIdOrKey}/restore`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -51584,8 +52686,9 @@ var require_projects3 = __commonJS({
       }
       getAllStatuses(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/statuses`,
+            url: `/rest/api/3/project/${projectIdOrKey}/statuses`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51602,8 +52705,9 @@ var require_projects3 = __commonJS({
       }
       getHierarchy(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectId = typeof parameters === "string" ? parameters : parameters.projectId;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectId}/hierarchy`,
+            url: `/rest/api/3/project/${projectId}/hierarchy`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51611,11 +52715,12 @@ var require_projects3 = __commonJS({
       }
       getNotificationSchemeForProject(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectKeyOrId = typeof parameters === "string" ? parameters : parameters.projectKeyOrId;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectKeyOrId}/notificationscheme`,
+            url: `/rest/api/3/project/${projectKeyOrId}/notificationscheme`,
             method: "GET",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51632,7 +52737,7 @@ var require_projectTypes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectTypes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectTypes = class {
       constructor(client) {
         this.client = client;
@@ -51657,8 +52762,9 @@ var require_projectTypes2 = __commonJS({
       }
       getProjectTypeByKey(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectTypeKey = typeof parameters === "string" ? parameters : parameters.projectTypeKey;
           const config = {
-            url: `/rest/api/3/project/type/${parameters.projectTypeKey}`,
+            url: `/rest/api/3/project/type/${projectTypeKey}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51666,8 +52772,9 @@ var require_projectTypes2 = __commonJS({
       }
       getAccessibleProjectTypeByKey(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectTypeKey = typeof parameters === "string" ? parameters : parameters.projectTypeKey;
           const config = {
-            url: `/rest/api/3/project/type/${parameters.projectTypeKey}/accessible`,
+            url: `/rest/api/3/project/type/${projectTypeKey}/accessible`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51684,23 +52791,24 @@ var require_projectVersions2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProjectVersions = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ProjectVersions = class {
       constructor(client) {
         this.client = client;
       }
       getProjectVersionsPaginated(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/version`,
+            url: `/rest/api/3/project/${projectIdOrKey}/version`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              orderBy: parameters.orderBy,
-              query: parameters.query,
-              status: parameters.status,
-              expand: parameters.expand
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              orderBy: typeof parameters !== "string" && parameters.orderBy,
+              query: typeof parameters !== "string" && parameters.query,
+              status: typeof parameters !== "string" && parameters.status,
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51708,11 +52816,12 @@ var require_projectVersions2 = __commonJS({
       }
       getProjectVersions(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const projectIdOrKey = typeof parameters === "string" ? parameters : parameters.projectIdOrKey;
           const config = {
-            url: `/rest/api/3/project/${parameters.projectIdOrKey}/versions`,
+            url: `/rest/api/3/project/${projectIdOrKey}/versions`,
             method: "GET",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51724,23 +52833,23 @@ var require_projectVersions2 = __commonJS({
             url: "/rest/api/3/version",
             method: "POST",
             data: {
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              archived: parameters === null || parameters === void 0 ? void 0 : parameters.archived,
-              released: parameters === null || parameters === void 0 ? void 0 : parameters.released,
-              startDate: parameters === null || parameters === void 0 ? void 0 : parameters.startDate,
-              releaseDate: parameters === null || parameters === void 0 ? void 0 : parameters.releaseDate,
-              overdue: parameters === null || parameters === void 0 ? void 0 : parameters.overdue,
-              userStartDate: parameters === null || parameters === void 0 ? void 0 : parameters.userStartDate,
-              userReleaseDate: parameters === null || parameters === void 0 ? void 0 : parameters.userReleaseDate,
-              project: parameters === null || parameters === void 0 ? void 0 : parameters.project,
-              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId,
-              moveUnfixedIssuesTo: parameters === null || parameters === void 0 ? void 0 : parameters.moveUnfixedIssuesTo,
-              operations: parameters === null || parameters === void 0 ? void 0 : parameters.operations,
-              issuesStatusForFixVersion: parameters === null || parameters === void 0 ? void 0 : parameters.issuesStatusForFixVersion
+              expand: parameters.expand,
+              self: parameters.self,
+              id: parameters.id,
+              description: parameters.description,
+              name: parameters.name,
+              archived: parameters.archived,
+              released: parameters.released,
+              startDate: parameters.startDate,
+              releaseDate: parameters.releaseDate,
+              overdue: parameters.overdue,
+              userStartDate: parameters.userStartDate,
+              userReleaseDate: parameters.userReleaseDate,
+              project: parameters.project,
+              projectId: parameters.projectId,
+              moveUnfixedIssuesTo: parameters.moveUnfixedIssuesTo,
+              operations: parameters.operations,
+              issuesStatusForFixVersion: parameters.issuesStatusForFixVersion
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51748,11 +52857,12 @@ var require_projectVersions2 = __commonJS({
       }
       getVersion(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/version/${parameters.id}`,
+            url: `/rest/api/3/version/${id}`,
             method: "GET",
             params: {
-              expand: parameters.expand
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51816,8 +52926,9 @@ var require_projectVersions2 = __commonJS({
       }
       getVersionRelatedIssues(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/version/${parameters.id}/relatedIssueCounts`,
+            url: `/rest/api/3/version/${id}/relatedIssueCounts`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51839,8 +52950,9 @@ var require_projectVersions2 = __commonJS({
       }
       getVersionUnresolvedIssues(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/version/${parameters.id}/unresolvedIssueCount`,
+            url: `/rest/api/3/version/${id}/unresolvedIssueCount`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51857,20 +52969,21 @@ var require_screens2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Screens = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Screens = class {
       constructor(client) {
         this.client = client;
       }
       getScreensForField(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/3/field/${parameters.fieldId}/screens`,
+            url: `/rest/api/3/field/${fieldId}/screens`,
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              expand: parameters.expand
+              startAt: typeof parameters !== "string" && parameters.startAt,
+              maxResults: typeof parameters !== "string" && parameters.maxResults,
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51899,8 +53012,8 @@ var require_screens2 = __commonJS({
             url: "/rest/api/3/screens",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description
+              name: parameters.name,
+              description: parameters.description
             }
           };
           return this.client.sendRequest(config, callback);
@@ -51908,8 +53021,9 @@ var require_screens2 = __commonJS({
       }
       addFieldToDefaultScreen(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const fieldId = typeof parameters === "string" ? parameters : parameters.fieldId;
           const config = {
-            url: `/rest/api/3/screens/addToDefault/${parameters.fieldId}`,
+            url: `/rest/api/3/screens/addToDefault/${fieldId}`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -51930,8 +53044,9 @@ var require_screens2 = __commonJS({
       }
       deleteScreen(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const screenId = typeof parameters === "string" ? parameters : parameters.screenId;
           const config = {
-            url: `/rest/api/3/screens/${parameters.screenId}`,
+            url: `/rest/api/3/screens/${screenId}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -51939,8 +53054,9 @@ var require_screens2 = __commonJS({
       }
       getAvailableScreenFields(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const screenId = typeof parameters === "string" ? parameters : parameters.screenId;
           const config = {
-            url: `/rest/api/3/screens/${parameters.screenId}/availableFields`,
+            url: `/rest/api/3/screens/${screenId}/availableFields`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -51957,7 +53073,7 @@ var require_screenSchemes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScreenSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ScreenSchemes = class {
       constructor(client) {
         this.client = client;
@@ -51981,13 +53097,14 @@ var require_screenSchemes2 = __commonJS({
       }
       createScreenScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const name = typeof parameters === "string" ? parameters : parameters.name;
           const config = {
             url: "/rest/api/3/screenscheme",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              screens: parameters === null || parameters === void 0 ? void 0 : parameters.screens
+              name,
+              description: typeof parameters !== "string" && parameters.description,
+              screens: typeof parameters !== "string" && parameters.screens
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52009,8 +53126,9 @@ var require_screenSchemes2 = __commonJS({
       }
       deleteScreenScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const screenSchemeId = typeof parameters === "string" ? parameters : parameters.screenSchemeId;
           const config = {
-            url: `/rest/api/3/screenscheme/${parameters.screenSchemeId}`,
+            url: `/rest/api/3/screenscheme/${screenSchemeId}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -52027,7 +53145,7 @@ var require_screenTabFields2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScreenTabFields = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ScreenTabFields = class {
       constructor(client) {
         this.client = client;
@@ -52089,18 +53207,19 @@ var require_screenTabs2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScreenTabs = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ScreenTabs = class {
       constructor(client) {
         this.client = client;
       }
       getAllScreenTabs(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const screenId = typeof parameters === "string" ? parameters : parameters.screenId;
           const config = {
-            url: `/rest/api/3/screens/${parameters.screenId}/tabs`,
+            url: `/rest/api/3/screens/${screenId}/tabs`,
             method: "GET",
             params: {
-              projectKey: parameters.projectKey
+              projectKey: typeof parameters !== "string" && parameters.projectKey
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52161,7 +53280,7 @@ var require_serverInfo2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ServerInfo = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var ServerInfo = class {
       constructor(client) {
         this.client = client;
@@ -52186,19 +53305,20 @@ var require_status3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Status = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Status = class {
       constructor(client) {
         this.client = client;
       }
       getStatusesById(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
             url: "/rest/api/3/statuses",
             method: "GET",
             params: {
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id
+              id,
+              expand: typeof parameters !== "string" && parameters.expand
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52210,8 +53330,8 @@ var require_status3 = __commonJS({
             url: "/rest/api/3/statuses",
             method: "POST",
             data: {
-              statuses: parameters === null || parameters === void 0 ? void 0 : parameters.statuses,
-              scope: parameters === null || parameters === void 0 ? void 0 : parameters.scope
+              statuses: parameters.statuses,
+              scope: parameters.scope
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52223,7 +53343,7 @@ var require_status3 = __commonJS({
             url: "/rest/api/3/statuses",
             method: "PUT",
             data: {
-              statuses: parameters === null || parameters === void 0 ? void 0 : parameters.statuses
+              statuses: parameters.statuses
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52231,11 +53351,12 @@ var require_status3 = __commonJS({
       }
       deleteStatusesById(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
             url: "/rest/api/3/statuses",
             method: "DELETE",
             params: {
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id
+              id
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52269,15 +53390,16 @@ var require_tasks2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Tasks = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Tasks = class {
       constructor(client) {
         this.client = client;
       }
       getTask(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const taskId = typeof parameters === "string" ? parameters : parameters.taskId;
           const config = {
-            url: `/rest/api/3/task/${parameters.taskId}`,
+            url: `/rest/api/3/task/${taskId}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -52285,8 +53407,9 @@ var require_tasks2 = __commonJS({
       }
       cancelTask(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const taskId = typeof parameters === "string" ? parameters : parameters.taskId;
           const config = {
-            url: `/rest/api/3/task/${parameters.taskId}/cancel`,
+            url: `/rest/api/3/task/${taskId}/cancel`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -52303,7 +53426,7 @@ var require_timeTracking2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TimeTracking = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var TimeTracking = class {
       constructor(client) {
         this.client = client;
@@ -52375,7 +53498,7 @@ var require_uIModificationsApps2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UIModificationsApps = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var UIModificationsApps = class {
       constructor(client) {
         this.client = client;
@@ -52400,10 +53523,10 @@ var require_uIModificationsApps2 = __commonJS({
             url: "/rest/api/3/uiModifications",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              data: parameters === null || parameters === void 0 ? void 0 : parameters.data,
-              contexts: parameters === null || parameters === void 0 ? void 0 : parameters.contexts
+              name: parameters.name,
+              description: parameters.description,
+              data: parameters.data,
+              contexts: parameters.contexts
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52426,8 +53549,9 @@ var require_uIModificationsApps2 = __commonJS({
       }
       deleteUiModification(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const uiModificationId = typeof parameters === "string" ? parameters : parameters.uiModificationId;
           const config = {
-            url: `/rest/api/3/uiModifications/${parameters.uiModificationId}`,
+            url: `/rest/api/3/uiModifications/${uiModificationId}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -52444,7 +53568,7 @@ var require_userProperties2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UserProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var UserProperties = class {
       constructor(client) {
         this.client = client;
@@ -52486,7 +53610,8 @@ var require_userProperties2 = __commonJS({
               accountId: parameters.accountId,
               userKey: parameters.userKey,
               username: parameters.username
-            }
+            },
+            data: parameters.propertyValue
           };
           return this.client.sendRequest(config, callback);
         });
@@ -52516,7 +53641,7 @@ var require_users2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Users = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var paramSerializer_1 = require_paramSerializer();
     var Users = class {
       constructor(client) {
@@ -52543,13 +53668,13 @@ var require_users2 = __commonJS({
             url: "/rest/api/3/user",
             method: "POST",
             data: {
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              key: parameters === null || parameters === void 0 ? void 0 : parameters.key,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              password: parameters === null || parameters === void 0 ? void 0 : parameters.password,
-              emailAddress: parameters === null || parameters === void 0 ? void 0 : parameters.emailAddress,
-              displayName: parameters === null || parameters === void 0 ? void 0 : parameters.displayName,
-              applicationKeys: parameters === null || parameters === void 0 ? void 0 : parameters.applicationKeys
+              self: parameters.self,
+              key: parameters.key,
+              name: parameters.name,
+              password: parameters.password,
+              emailAddress: parameters.emailAddress,
+              displayName: parameters.displayName,
+              applicationKeys: parameters.applicationKeys
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52620,7 +53745,8 @@ var require_users2 = __commonJS({
             method: "PUT",
             params: {
               accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId
-            }
+            },
+            data: parameters === null || parameters === void 0 ? void 0 : parameters.columns
           };
           return this.client.sendRequest(config, callback);
         });
@@ -52631,8 +53757,8 @@ var require_users2 = __commonJS({
             url: "/rest/api/3/user/columns",
             method: "DELETE",
             params: {
-              accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId,
-              username: parameters === null || parameters === void 0 ? void 0 : parameters.username
+              accountId: parameters.accountId,
+              username: parameters.username
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52640,11 +53766,12 @@ var require_users2 = __commonJS({
       }
       getUserEmail(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const accountId = typeof parameters === "string" ? parameters : parameters.accountId;
           const config = {
             url: "/rest/api/3/user/email",
             method: "GET",
             params: {
-              accountId: parameters.accountId
+              accountId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52652,11 +53779,12 @@ var require_users2 = __commonJS({
       }
       getUserEmailBulk(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const accountId = typeof parameters === "string" ? parameters : parameters.accountId;
           const config = {
             url: "/rest/api/3/user/email/bulk",
             method: "GET",
             params: {
-              accountId: parameters.accountId
+              accountId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52713,7 +53841,8 @@ var require_userSearch2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UserSearch = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var paramSerializer_1 = require_paramSerializer();
     var UserSearch = class {
       constructor(client) {
         this.client = client;
@@ -52785,7 +53914,7 @@ var require_userSearch2 = __commonJS({
               maxResults: parameters.maxResults,
               showAvatar: parameters.showAvatar,
               exclude: parameters.exclude,
-              excludeAccountIds: parameters.excludeAccountIds,
+              excludeAccountIds: (0, paramSerializer_1.paramSerializer)("excludeAccountIds", parameters.excludeAccountIds),
               avatarSize: parameters.avatarSize,
               excludeConnectUsers: parameters.excludeConnectUsers
             }
@@ -52867,7 +53996,7 @@ var require_webhooks2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Webhooks = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Webhooks = class {
       constructor(client) {
         this.client = client;
@@ -52891,8 +54020,8 @@ var require_webhooks2 = __commonJS({
             url: "/rest/api/3/webhook",
             method: "POST",
             data: {
-              webhooks: parameters === null || parameters === void 0 ? void 0 : parameters.webhooks,
-              url: parameters === null || parameters === void 0 ? void 0 : parameters.url
+              webhooks: parameters.webhooks,
+              url: parameters.url
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52904,7 +54033,7 @@ var require_webhooks2 = __commonJS({
             url: "/rest/api/3/webhook",
             method: "DELETE",
             data: {
-              webhookIds: parameters === null || parameters === void 0 ? void 0 : parameters.webhookIds
+              webhookIds: parameters.webhookIds
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52929,7 +54058,7 @@ var require_webhooks2 = __commonJS({
             url: "/rest/api/3/webhook/refresh",
             method: "PUT",
             data: {
-              webhookIds: parameters === null || parameters === void 0 ? void 0 : parameters.webhookIds
+              webhookIds: parameters.webhookIds
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52946,7 +54075,7 @@ var require_workflows2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Workflows = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var paramSerializer_1 = require_paramSerializer();
     var Workflows = class {
       constructor(client) {
@@ -52970,10 +54099,10 @@ var require_workflows2 = __commonJS({
             url: "/rest/api/3/workflow",
             method: "POST",
             data: {
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              transitions: parameters === null || parameters === void 0 ? void 0 : parameters.transitions,
-              statuses: parameters === null || parameters === void 0 ? void 0 : parameters.statuses
+              name: parameters.name,
+              description: parameters.description,
+              transitions: parameters.transitions,
+              statuses: parameters.statuses
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52999,8 +54128,9 @@ var require_workflows2 = __commonJS({
       }
       deleteInactiveWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const entityId = typeof parameters === "string" ? parameters : parameters.entityId;
           const config = {
-            url: `/rest/api/3/workflow/${parameters.entityId}`,
+            url: `/rest/api/3/workflow/${entityId}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -53017,15 +54147,16 @@ var require_workflowSchemeDrafts2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowSchemeDrafts = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowSchemeDrafts = class {
       constructor(client) {
         this.client = client;
       }
       createWorkflowSchemeDraftFromParent(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/createdraft`,
+            url: `/rest/api/3/workflowscheme/${id}/createdraft`,
             method: "POST"
           };
           return this.client.sendRequest(config, callback);
@@ -53033,8 +54164,9 @@ var require_workflowSchemeDrafts2 = __commonJS({
       }
       getWorkflowSchemeDraft(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/draft`,
+            url: `/rest/api/3/workflowscheme/${id}/draft`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -53058,8 +54190,9 @@ var require_workflowSchemeDrafts2 = __commonJS({
       }
       deleteWorkflowSchemeDraft(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/draft`,
+            url: `/rest/api/3/workflowscheme/${id}/draft`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -53067,8 +54200,9 @@ var require_workflowSchemeDrafts2 = __commonJS({
       }
       getDraftDefaultWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/draft/default`,
+            url: `/rest/api/3/workflowscheme/${id}/draft/default`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -53089,8 +54223,9 @@ var require_workflowSchemeDrafts2 = __commonJS({
       }
       deleteDraftDefaultWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/draft/default`,
+            url: `/rest/api/3/workflowscheme/${id}/draft/default`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -53126,14 +54261,15 @@ var require_workflowSchemeDrafts2 = __commonJS({
       }
       publishDraftWorkflowScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/draft/publish`,
+            url: `/rest/api/3/workflowscheme/${id}/draft/publish`,
             method: "POST",
             params: {
-              validateOnly: parameters.validateOnly
+              validateOnly: typeof parameters !== "string" && parameters.validateOnly
             },
             data: {
-              statusMappings: parameters.statusMappings
+              statusMappings: typeof parameters !== "string" && parameters.statusMappings
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53192,7 +54328,7 @@ var require_workflowSchemeProjectAssociations2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowSchemeProjectAssociations = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowSchemeProjectAssociations = class {
       constructor(client) {
         this.client = client;
@@ -53238,7 +54374,7 @@ var require_workflowSchemes2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowSchemes = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowSchemes = class {
       constructor(client) {
         this.client = client;
@@ -53262,19 +54398,19 @@ var require_workflowSchemes2 = __commonJS({
             url: "/rest/api/3/workflowscheme",
             method: "POST",
             data: {
-              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
-              name: parameters === null || parameters === void 0 ? void 0 : parameters.name,
-              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
-              defaultWorkflow: parameters === null || parameters === void 0 ? void 0 : parameters.defaultWorkflow,
-              issueTypeMappings: parameters === null || parameters === void 0 ? void 0 : parameters.issueTypeMappings,
-              originalDefaultWorkflow: parameters === null || parameters === void 0 ? void 0 : parameters.originalDefaultWorkflow,
-              originalIssueTypeMappings: parameters === null || parameters === void 0 ? void 0 : parameters.originalIssueTypeMappings,
-              draft: parameters === null || parameters === void 0 ? void 0 : parameters.draft,
-              lastModifiedUser: parameters === null || parameters === void 0 ? void 0 : parameters.lastModifiedUser,
-              lastModified: parameters === null || parameters === void 0 ? void 0 : parameters.lastModified,
-              self: parameters === null || parameters === void 0 ? void 0 : parameters.self,
-              updateDraftIfNeeded: parameters === null || parameters === void 0 ? void 0 : parameters.updateDraftIfNeeded,
-              issueTypes: parameters === null || parameters === void 0 ? void 0 : parameters.issueTypes
+              id: parameters.id,
+              name: parameters.name,
+              description: parameters.description,
+              defaultWorkflow: parameters.defaultWorkflow,
+              issueTypeMappings: parameters.issueTypeMappings,
+              originalDefaultWorkflow: parameters.originalDefaultWorkflow,
+              originalIssueTypeMappings: parameters.originalIssueTypeMappings,
+              draft: parameters.draft,
+              lastModifiedUser: parameters.lastModifiedUser,
+              lastModified: parameters.lastModified,
+              self: parameters.self,
+              updateDraftIfNeeded: parameters.updateDraftIfNeeded,
+              issueTypes: parameters.issueTypes
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53282,11 +54418,12 @@ var require_workflowSchemes2 = __commonJS({
       }
       getWorkflowScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}`,
+            url: `/rest/api/3/workflowscheme/${id}`,
             method: "GET",
             params: {
-              returnDraftIfExists: parameters.returnDraftIfExists
+              returnDraftIfExists: typeof parameters !== "string" && parameters.returnDraftIfExists
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53310,8 +54447,9 @@ var require_workflowSchemes2 = __commonJS({
       }
       deleteWorkflowScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}`,
+            url: `/rest/api/3/workflowscheme/${id}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -53319,11 +54457,12 @@ var require_workflowSchemes2 = __commonJS({
       }
       getDefaultWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/default`,
+            url: `/rest/api/3/workflowscheme/${id}/default`,
             method: "GET",
             params: {
-              returnDraftIfExists: parameters.returnDraftIfExists
+              returnDraftIfExists: typeof parameters !== "string" && parameters.returnDraftIfExists
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53344,11 +54483,12 @@ var require_workflowSchemes2 = __commonJS({
       }
       deleteDefaultWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/default`,
+            url: `/rest/api/3/workflowscheme/${id}/default`,
             method: "DELETE",
             params: {
-              updateDraftIfNeeded: parameters.updateDraftIfNeeded
+              updateDraftIfNeeded: typeof parameters !== "string" && parameters.updateDraftIfNeeded
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53390,12 +54530,13 @@ var require_workflowSchemes2 = __commonJS({
       }
       getWorkflow(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/workflow`,
+            url: `/rest/api/3/workflowscheme/${id}/workflow`,
             method: "GET",
             params: {
-              workflowName: parameters.workflowName,
-              returnDraftIfExists: parameters.returnDraftIfExists
+              workflowName: typeof parameters !== "string" && parameters.workflowName,
+              returnDraftIfExists: typeof parameters !== "string" && parameters.returnDraftIfExists
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53421,12 +54562,13 @@ var require_workflowSchemes2 = __commonJS({
       }
       deleteWorkflowMapping(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
-            url: `/rest/api/3/workflowscheme/${parameters.id}/workflow`,
+            url: `/rest/api/3/workflowscheme/${id}/workflow`,
             method: "DELETE",
             params: {
-              workflowName: parameters.workflowName,
-              updateDraftIfNeeded: parameters.updateDraftIfNeeded
+              workflowName: typeof parameters !== "string" && parameters.workflowName,
+              updateDraftIfNeeded: typeof parameters !== "string" && parameters.updateDraftIfNeeded
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53443,7 +54585,7 @@ var require_workflowStatusCategories2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowStatusCategories = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowStatusCategories = class {
       constructor(client) {
         this.client = client;
@@ -53459,8 +54601,9 @@ var require_workflowStatusCategories2 = __commonJS({
       }
       getStatusCategory(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const idOrKey = typeof parameters === "string" ? parameters : parameters.idOrKey;
           const config = {
-            url: `/rest/api/3/statuscategory/${parameters.idOrKey}`,
+            url: `/rest/api/3/statuscategory/${idOrKey}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -53477,7 +54620,7 @@ var require_workflowStatuses2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowStatuses = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowStatuses = class {
       constructor(client) {
         this.client = client;
@@ -53493,8 +54636,9 @@ var require_workflowStatuses2 = __commonJS({
       }
       getStatus(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const idOrName = typeof parameters === "string" ? parameters : parameters.idOrName;
           const config = {
-            url: `/rest/api/3/status/${parameters.idOrName}`,
+            url: `/rest/api/3/status/${idOrName}`,
             method: "GET"
           };
           return this.client.sendRequest(config, callback);
@@ -53511,7 +54655,7 @@ var require_workflowTransitionProperties2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowTransitionProperties = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowTransitionProperties = class {
       constructor(client) {
         this.client = client;
@@ -53586,7 +54730,7 @@ var require_workflowTransitionRules3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WorkflowTransitionRules = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var WorkflowTransitionRules = class {
       constructor(client) {
         this.client = client;
@@ -53616,7 +54760,7 @@ var require_workflowTransitionRules3 = __commonJS({
             url: "/rest/api/3/workflow/rule/config",
             method: "PUT",
             data: {
-              workflows: parameters === null || parameters === void 0 ? void 0 : parameters.workflows
+              workflows: parameters.workflows
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53698,6 +54842,7 @@ var require_version3Client = __commonJS({
         this.jiraSettings = new __1.JiraSettings(this);
         this.jql = new __1.JQL(this);
         this.labels = new __1.Labels(this);
+        this.licenseMetrics = new __1.LicenseMetrics(this);
         this.myself = new __1.Myself(this);
         this.permissions = new __1.Permissions(this);
         this.permissionSchemes = new __1.PermissionSchemes(this);
@@ -53746,7 +54891,7 @@ var require_client3 = __commonJS({
   "node_modules/jira.js/out/version3/client/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_version3Client(), exports);
   }
 });
@@ -53855,9 +55000,89 @@ var require_attachmentArchive2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/containerForProjectFeatures.js
+var require_containerForProjectFeatures2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/containerForProjectFeatures.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/projectComponent.js
+var require_projectComponent2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/projectComponent.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/licenseMetric.js
+var require_licenseMetric2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/licenseMetric.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationUpdateRequest.js
+var require_jqlFunctionPrecomputationUpdateRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationUpdateRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationPage.js
+var require_jqlFunctionPrecomputationPage = __commonJS({
+  "node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationPage.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/attachmentArchiveEntry.js
 var require_attachmentArchiveEntry2 = __commonJS({
   "node_modules/jira.js/out/version3/models/attachmentArchiveEntry.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/notificationSchemeId.js
+var require_notificationSchemeId2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/notificationSchemeId.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/createNotificationSchemeDetails.js
+var require_createNotificationSchemeDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/createNotificationSchemeDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/notificationSchemeAndProjectMappingPage.js
+var require_notificationSchemeAndProjectMappingPage2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/notificationSchemeAndProjectMappingPage.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/updateNotificationSchemeDetails.js
+var require_updateNotificationSchemeDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/updateNotificationSchemeDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/addNotificationsDetails.js
+var require_addNotificationsDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/addNotificationsDetails.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -57596,7 +58821,7 @@ var require_valueOperand2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/models/version.js
-var require_version4 = __commonJS({
+var require_version3 = __commonJS({
   "node_modules/jira.js/out/version3/models/version.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -57912,7 +59137,7 @@ var require_models3 = __commonJS({
   "node_modules/jira.js/out/version3/models/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_actorInput2(), exports);
     tslib_1.__exportStar(require_actorsMap2(), exports);
     tslib_1.__exportStar(require_addField2(), exports);
@@ -57926,7 +59151,17 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_associateFieldConfigurationsWithIssueTypesRequest2(), exports);
     tslib_1.__exportStar(require_attachment2(), exports);
     tslib_1.__exportStar(require_attachmentArchive2(), exports);
+    tslib_1.__exportStar(require_containerForProjectFeatures2(), exports);
+    tslib_1.__exportStar(require_projectComponent2(), exports);
+    tslib_1.__exportStar(require_licenseMetric2(), exports);
+    tslib_1.__exportStar(require_jqlFunctionPrecomputationUpdateRequest2(), exports);
+    tslib_1.__exportStar(require_jqlFunctionPrecomputationPage(), exports);
     tslib_1.__exportStar(require_attachmentArchiveEntry2(), exports);
+    tslib_1.__exportStar(require_notificationSchemeId2(), exports);
+    tslib_1.__exportStar(require_createNotificationSchemeDetails2(), exports);
+    tslib_1.__exportStar(require_notificationSchemeAndProjectMappingPage2(), exports);
+    tslib_1.__exportStar(require_updateNotificationSchemeDetails2(), exports);
+    tslib_1.__exportStar(require_addNotificationsDetails2(), exports);
     tslib_1.__exportStar(require_attachmentArchiveImpl2(), exports);
     tslib_1.__exportStar(require_attachmentArchiveItemReadable2(), exports);
     tslib_1.__exportStar(require_attachmentArchiveMetadataReadable2(), exports);
@@ -58393,7 +59628,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_userPickerUser2(), exports);
     tslib_1.__exportStar(require_userWrite(), exports);
     tslib_1.__exportStar(require_valueOperand2(), exports);
-    tslib_1.__exportStar(require_version4(), exports);
+    tslib_1.__exportStar(require_version3(), exports);
     tslib_1.__exportStar(require_versionIssueCounts2(), exports);
     tslib_1.__exportStar(require_versionIssuesStatus2(), exports);
     tslib_1.__exportStar(require_versionMove2(), exports);
@@ -58555,9 +59790,73 @@ var require_addWorklog2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/updatePrecomputations.js
+var require_updatePrecomputations2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/updatePrecomputations.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/getPrecomputations.js
+var require_getPrecomputations2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/getPrecomputations.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/createNotificationScheme.js
+var require_createNotificationScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/createNotificationScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/getNotificationSchemeToProjectMappings.js
+var require_getNotificationSchemeToProjectMappings2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/getNotificationSchemeToProjectMappings.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/updateNotificationScheme.js
+var require_updateNotificationScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/updateNotificationScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/addNotifications.js
+var require_addNotifications2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/addNotifications.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/analyseExpression.js
 var require_analyseExpression2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/analyseExpression.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/deleteNotificationScheme.js
+var require_deleteNotificationScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/deleteNotificationScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/removeNotificationFromNotificationScheme.js
+var require_removeNotificationFromNotificationScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/removeNotificationFromNotificationScheme.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -62111,7 +63410,7 @@ var require_parameters3 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_addActorUsers2(), exports);
     tslib_1.__exportStar(require_addAttachment2(), exports);
     tslib_1.__exportStar(require_addComment2(), exports);
@@ -62127,7 +63426,15 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_addVote2(), exports);
     tslib_1.__exportStar(require_addWatcher2(), exports);
     tslib_1.__exportStar(require_addWorklog2(), exports);
+    tslib_1.__exportStar(require_updatePrecomputations2(), exports);
+    tslib_1.__exportStar(require_getPrecomputations2(), exports);
+    tslib_1.__exportStar(require_createNotificationScheme2(), exports);
+    tslib_1.__exportStar(require_getNotificationSchemeToProjectMappings2(), exports);
+    tslib_1.__exportStar(require_updateNotificationScheme2(), exports);
+    tslib_1.__exportStar(require_addNotifications2(), exports);
     tslib_1.__exportStar(require_analyseExpression2(), exports);
+    tslib_1.__exportStar(require_deleteNotificationScheme2(), exports);
+    tslib_1.__exportStar(require_removeNotificationFromNotificationScheme2(), exports);
     tslib_1.__exportStar(require_appendMappingsForIssueTypeScreenScheme2(), exports);
     tslib_1.__exportStar(require_archiveProject2(), exports);
     tslib_1.__exportStar(require_assignFieldConfigurationSchemeToProject2(), exports);
@@ -62583,7 +63890,7 @@ var require_version32 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Version3Parameters = exports.Version3Models = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_announcementBanner2(), exports);
     tslib_1.__exportStar(require_applicationRoles2(), exports);
     tslib_1.__exportStar(require_appMigration2(), exports);
@@ -62632,6 +63939,7 @@ var require_version32 = __commonJS({
     tslib_1.__exportStar(require_jiraSettings2(), exports);
     tslib_1.__exportStar(require_jQL2(), exports);
     tslib_1.__exportStar(require_labels2(), exports);
+    tslib_1.__exportStar(require_licenseMetrics2(), exports);
     tslib_1.__exportStar(require_myself2(), exports);
     tslib_1.__exportStar(require_permissions3(), exports);
     tslib_1.__exportStar(require_permissionSchemes3(), exports);
@@ -62681,7 +63989,7 @@ var require_customer = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Customer = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Customer = class {
       constructor(client) {
         this.client = client;
@@ -62710,7 +64018,7 @@ var require_info = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Info = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Info = class {
       constructor(client) {
         this.client = client;
@@ -62735,7 +64043,7 @@ var require_insight = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Insight = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Insight = class {
       constructor(client) {
         this.client = client;
@@ -62764,7 +64072,7 @@ var require_knowledgeBase = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.KnowledgeBase = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var KnowledgeBase = class {
       constructor(client) {
         this.client = client;
@@ -62798,7 +64106,7 @@ var require_organization = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Organization = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Organization = class {
       constructor(client) {
         this.client = client;
@@ -62969,7 +64277,7 @@ var require_request = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Request = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var Request = class {
       constructor(client) {
         this.client = client;
@@ -63339,7 +64647,7 @@ var require_requestType = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RequestType = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var RequestType = class {
       constructor(client) {
         this.client = client;
@@ -63374,7 +64682,7 @@ var require_serviceDesk = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ServiceDesk = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var FormData2 = require_form_data();
     var ServiceDesk = class {
       constructor(client) {
@@ -64437,7 +65745,7 @@ var require_models4 = __commonJS({
   "node_modules/jira.js/out/serviceDesk/models/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_additionalComment(), exports);
     tslib_1.__exportStar(require_approval(), exports);
     tslib_1.__exportStar(require_approvalDecisionRequest(), exports);
@@ -65055,7 +66363,7 @@ var require_parameters4 = __commonJS({
   "node_modules/jira.js/out/serviceDesk/parameters/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_addCustomers(), exports);
     tslib_1.__exportStar(require_addOrganization(), exports);
     tslib_1.__exportStar(require_addRequestParticipants(), exports);
@@ -65166,7 +66474,7 @@ var require_client4 = __commonJS({
   "node_modules/jira.js/out/serviceDesk/client/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_serviceDeskClient(), exports);
   }
 });
@@ -65177,7 +66485,7 @@ var require_serviceDesk3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ServiceDeskParameters = exports.ServiceDeskModels = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_customer(), exports);
     tslib_1.__exportStar(require_info(), exports);
     tslib_1.__exportStar(require_insight(), exports);
@@ -65198,7 +66506,7 @@ var require_clients = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ServiceDeskParameters = exports.ServiceDeskModels = exports.ServiceDeskClient = exports.Version3Parameters = exports.Version3Models = exports.Version3Client = exports.Version2Parameters = exports.Version2Models = exports.Version2Client = exports.AgileParameters = exports.AgileModels = exports.AgileClient = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_baseClient(), exports);
     tslib_1.__exportStar(require_client(), exports);
     var agile_1 = require_agile();
@@ -65265,6 +66573,7 @@ var require_agileClient = __commonJS({
         this.issue = new __1.Issue(this);
         this.project = new __1.Project(this);
         this.remoteLinks = new __1.RemoteLinks(this);
+        this.securityInformation = new __1.SecurityInformation(this);
         this.sprint = new __1.Sprint(this);
       }
     };
@@ -65277,7 +66586,7 @@ var require_client5 = __commonJS({
   "node_modules/jira.js/out/agile/client/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_agileClient(), exports);
   }
 });
@@ -65288,7 +66597,7 @@ var require_agile = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AgileParameters = exports.AgileModels = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_backlog(), exports);
     tslib_1.__exportStar(require_board(), exports);
     tslib_1.__exportStar(require_builds(), exports);
@@ -65299,6 +66608,7 @@ var require_agile = __commonJS({
     tslib_1.__exportStar(require_issue(), exports);
     tslib_1.__exportStar(require_project(), exports);
     tslib_1.__exportStar(require_remoteLinks(), exports);
+    tslib_1.__exportStar(require_securityInformation(), exports);
     tslib_1.__exportStar(require_sprint(), exports);
     exports.AgileModels = require_models();
     exports.AgileParameters = require_parameters();
@@ -65388,7 +66698,7 @@ var require_out = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ServiceDesk = exports.Version3 = exports.Version2 = exports.Agile = void 0;
-    var tslib_1 = require_tslib();
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_createClient(), exports);
     tslib_1.__exportStar(require_clients(), exports);
     tslib_1.__exportStar(require_utilityTypes(), exports);
@@ -65407,7 +66717,7 @@ var require_out = __commonJS({
 var require_io_util = __commonJS({
   "node_modules/@actions/io/lib/io-util.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -65418,24 +66728,24 @@ var require_io_util = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter2 = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -65464,13 +66774,15 @@ var require_io_util = __commonJS({
     };
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rename = exports.readlink = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
-    var fs = __importStar(require("fs"));
-    var path3 = __importStar(require("path"));
-    _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
+    exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.READONLY = exports.UV_FS_O_EXLOCK = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rm = exports.rename = exports.readlink = exports.readdir = exports.open = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
+    var fs = __importStar2(require("fs"));
+    var path3 = __importStar2(require("path"));
+    _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.open = _a.open, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rm = _a.rm, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
     exports.IS_WINDOWS = process.platform === "win32";
+    exports.UV_FS_O_EXLOCK = 268435456;
+    exports.READONLY = fs.constants.O_RDONLY;
     function exists(fsPath) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         try {
           yield exports.stat(fsPath);
         } catch (err) {
@@ -65484,7 +66796,7 @@ var require_io_util = __commonJS({
     }
     exports.exists = exists;
     function isDirectory(fsPath, useStat = false) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         const stats = useStat ? yield exports.stat(fsPath) : yield exports.lstat(fsPath);
         return stats.isDirectory();
       });
@@ -65502,7 +66814,7 @@ var require_io_util = __commonJS({
     }
     exports.isRooted = isRooted;
     function tryGetExecutablePath(filePath, extensions) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         let stats = void 0;
         try {
           stats = yield exports.stat(filePath);
@@ -65583,7 +66895,7 @@ var require_io_util = __commonJS({
 var require_io = __commonJS({
   "node_modules/@actions/io/lib/io.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -65594,24 +66906,24 @@ var require_io = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter2 = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -65641,14 +66953,10 @@ var require_io = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.findInPath = exports.which = exports.mkdirP = exports.rmRF = exports.mv = exports.cp = void 0;
     var assert_1 = require("assert");
-    var childProcess = __importStar(require("child_process"));
-    var path3 = __importStar(require("path"));
-    var util_1 = require("util");
-    var ioUtil = __importStar(require_io_util());
-    var exec2 = util_1.promisify(childProcess.exec);
-    var execFile = util_1.promisify(childProcess.execFile);
+    var path3 = __importStar2(require("path"));
+    var ioUtil = __importStar2(require_io_util());
     function cp(source, dest, options = {}) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         const { force, recursive, copySourceDirectory } = readCopyOptions(options);
         const destStat = (yield ioUtil.exists(dest)) ? yield ioUtil.stat(dest) : null;
         if (destStat && destStat.isFile() && !force) {
@@ -65675,7 +66983,7 @@ var require_io = __commonJS({
     }
     exports.cp = cp;
     function mv(source, dest, options = {}) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         if (yield ioUtil.exists(dest)) {
           let destExists = true;
           if (yield ioUtil.isDirectory(dest)) {
@@ -65696,59 +67004,34 @@ var require_io = __commonJS({
     }
     exports.mv = mv;
     function rmRF(inputPath) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         if (ioUtil.IS_WINDOWS) {
           if (/[*"<>|]/.test(inputPath)) {
             throw new Error('File path must not contain `*`, `"`, `<`, `>` or `|` on Windows');
           }
-          try {
-            const cmdPath = ioUtil.getCmdPath();
-            if (yield ioUtil.isDirectory(inputPath, true)) {
-              yield exec2(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
-                env: { inputPath }
-              });
-            } else {
-              yield exec2(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
-                env: { inputPath }
-              });
-            }
-          } catch (err) {
-            if (err.code !== "ENOENT")
-              throw err;
-          }
-          try {
-            yield ioUtil.unlink(inputPath);
-          } catch (err) {
-            if (err.code !== "ENOENT")
-              throw err;
-          }
-        } else {
-          let isDir = false;
-          try {
-            isDir = yield ioUtil.isDirectory(inputPath);
-          } catch (err) {
-            if (err.code !== "ENOENT")
-              throw err;
-            return;
-          }
-          if (isDir) {
-            yield execFile(`rm`, [`-rf`, `${inputPath}`]);
-          } else {
-            yield ioUtil.unlink(inputPath);
-          }
+        }
+        try {
+          yield ioUtil.rm(inputPath, {
+            force: true,
+            maxRetries: 3,
+            recursive: true,
+            retryDelay: 300
+          });
+        } catch (err) {
+          throw new Error(`File was unable to be removed ${err}`);
         }
       });
     }
     exports.rmRF = rmRF;
     function mkdirP(fsPath) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         assert_1.ok(fsPath, "a path argument must be provided");
         yield ioUtil.mkdir(fsPath, { recursive: true });
       });
     }
     exports.mkdirP = mkdirP;
     function which(tool, check) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         if (!tool) {
           throw new Error("parameter 'tool' is required");
         }
@@ -65772,7 +67055,7 @@ var require_io = __commonJS({
     }
     exports.which = which;
     function findInPath(tool) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         if (!tool) {
           throw new Error("parameter 'tool' is required");
         }
@@ -65820,7 +67103,7 @@ var require_io = __commonJS({
       return { force, recursive, copySourceDirectory };
     }
     function cpDirRecursive(sourceDir, destDir, currentDepth, force) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         if (currentDepth >= 255)
           return;
         currentDepth++;
@@ -65840,7 +67123,7 @@ var require_io = __commonJS({
       });
     }
     function copyFile(srcFile, destFile, force) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         if ((yield ioUtil.lstat(srcFile)).isSymbolicLink()) {
           try {
             yield ioUtil.lstat(destFile);
@@ -65865,7 +67148,7 @@ var require_io = __commonJS({
 var require_toolrunner = __commonJS({
   "node_modules/@actions/exec/lib/toolrunner.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -65876,24 +67159,24 @@ var require_toolrunner = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter2 = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -65922,12 +67205,12 @@ var require_toolrunner = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.argStringToArray = exports.ToolRunner = void 0;
-    var os = __importStar(require("os"));
-    var events = __importStar(require("events"));
-    var child = __importStar(require("child_process"));
-    var path3 = __importStar(require("path"));
-    var io = __importStar(require_io());
-    var ioUtil = __importStar(require_io_util());
+    var os = __importStar2(require("os"));
+    var events = __importStar2(require("events"));
+    var child = __importStar2(require("child_process"));
+    var path3 = __importStar2(require("path"));
+    var io = __importStar2(require_io());
+    var ioUtil = __importStar2(require_io_util());
     var timers_1 = require("timers");
     var IS_WINDOWS = process.platform === "win32";
     var ToolRunner = class extends events.EventEmitter {
@@ -66128,13 +67411,22 @@ var require_toolrunner = __commonJS({
         }
         return result;
       }
+      /**
+       * Exec a tool.
+       * Output will be streamed to the live console.
+       * Returns promise with return code
+       *
+       * @param     tool     path to tool to exec
+       * @param     options  optional exec options.  See ExecOptions
+       * @returns   number
+       */
       exec() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter2(this, void 0, void 0, function* () {
           if (!ioUtil.isRooted(this.toolPath) && (this.toolPath.includes("/") || IS_WINDOWS && this.toolPath.includes("\\"))) {
             this.toolPath = path3.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
           }
           this.toolPath = yield io.which(this.toolPath, true);
-          return new Promise((resolve, reject3) => __awaiter(this, void 0, void 0, function* () {
+          return new Promise((resolve, reject3) => __awaiter2(this, void 0, void 0, function* () {
             this._debug(`exec tool: ${this.toolPath}`);
             this._debug("arguments:");
             for (const arg of this.args) {
@@ -66345,7 +67637,7 @@ var require_toolrunner = __commonJS({
 var require_exec = __commonJS({
   "node_modules/@actions/exec/lib/exec.js"(exports) {
     "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
@@ -66356,24 +67648,24 @@ var require_exec = __commonJS({
         k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault2 = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
     });
-    var __importStar = exports && exports.__importStar || function(mod) {
+    var __importStar2 = exports && exports.__importStar || function(mod) {
       if (mod && mod.__esModule)
         return mod;
       var result = {};
       if (mod != null) {
         for (var k in mod)
           if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+            __createBinding2(result, mod, k);
       }
-      __setModuleDefault(result, mod);
+      __setModuleDefault2(result, mod);
       return result;
     };
-    var __awaiter = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter2 = exports && exports.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
         return value instanceof P ? value : new P(function(resolve) {
           resolve(value);
@@ -66403,9 +67695,9 @@ var require_exec = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getExecOutput = exports.exec = void 0;
     var string_decoder_1 = require("string_decoder");
-    var tr = __importStar(require_toolrunner());
+    var tr = __importStar2(require_toolrunner());
     function exec2(commandLine, args, options) {
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         const commandArgs = tr.argStringToArray(commandLine);
         if (commandArgs.length === 0) {
           throw new Error(`Parameter 'commandLine' cannot be null or empty.`);
@@ -66419,7 +67711,7 @@ var require_exec = __commonJS({
     exports.exec = exec2;
     function getExecOutput2(commandLine, args, options) {
       var _a, _b;
-      return __awaiter(this, void 0, void 0, function* () {
+      return __awaiter2(this, void 0, void 0, function* () {
         let stdout = "";
         let stderr = "";
         const stdoutDecoder = new string_decoder_1.StringDecoder("utf8");
@@ -66458,7 +67750,8 @@ var require_constants = __commonJS({
   "node_modules/semver/internal/constants.js"(exports, module2) {
     var SEMVER_SPEC_VERSION = "2.0.0";
     var MAX_LENGTH = 256;
-    var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
+    var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || /* istanbul ignore next */
+    9007199254740991;
     var MAX_SAFE_COMPONENT_LENGTH = 16;
     module2.exports = {
       SEMVER_SPEC_VERSION,
@@ -66583,31 +67876,31 @@ var require_semver = __commonJS({
     var parseOptions = require_parse_options();
     var { compareIdentifiers } = require_identifiers();
     var SemVer = class {
-      constructor(version, options) {
+      constructor(version2, options) {
         options = parseOptions(options);
-        if (version instanceof SemVer) {
-          if (version.loose === !!options.loose && version.includePrerelease === !!options.includePrerelease) {
-            return version;
+        if (version2 instanceof SemVer) {
+          if (version2.loose === !!options.loose && version2.includePrerelease === !!options.includePrerelease) {
+            return version2;
           } else {
-            version = version.version;
+            version2 = version2.version;
           }
-        } else if (typeof version !== "string") {
-          throw new TypeError(`Invalid Version: ${version}`);
+        } else if (typeof version2 !== "string") {
+          throw new TypeError(`Invalid Version: ${version2}`);
         }
-        if (version.length > MAX_LENGTH) {
+        if (version2.length > MAX_LENGTH) {
           throw new TypeError(
             `version is longer than ${MAX_LENGTH} characters`
           );
         }
-        debug("SemVer", version, options);
+        debug("SemVer", version2, options);
         this.options = options;
         this.loose = !!options.loose;
         this.includePrerelease = !!options.includePrerelease;
-        const m = version.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
+        const m = version2.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
         if (!m) {
-          throw new TypeError(`Invalid Version: ${version}`);
+          throw new TypeError(`Invalid Version: ${version2}`);
         }
-        this.raw = version;
+        this.raw = version2;
         this.major = +m[1];
         this.minor = +m[2];
         this.patch = +m[3];
@@ -66716,6 +68009,8 @@ var require_semver = __commonJS({
           }
         } while (++i);
       }
+      // preminor will bump the version up to the next minor release, and immediately
+      // down to pre-release. premajor and prepatch work the same way.
       inc(release2, identifier) {
         switch (release2) {
           case "premajor":
@@ -66801,43 +68096,43 @@ var require_semver = __commonJS({
 });
 
 // node_modules/semver/functions/parse.js
-var require_parse2 = __commonJS({
+var require_parse = __commonJS({
   "node_modules/semver/functions/parse.js"(exports, module2) {
     var { MAX_LENGTH } = require_constants();
     var { re, t } = require_re();
     var SemVer = require_semver();
     var parseOptions = require_parse_options();
-    var parse = (version, options) => {
+    var parse2 = (version2, options) => {
       options = parseOptions(options);
-      if (version instanceof SemVer) {
-        return version;
+      if (version2 instanceof SemVer) {
+        return version2;
       }
-      if (typeof version !== "string") {
+      if (typeof version2 !== "string") {
         return null;
       }
-      if (version.length > MAX_LENGTH) {
+      if (version2.length > MAX_LENGTH) {
         return null;
       }
       const r = options.loose ? re[t.LOOSE] : re[t.FULL];
-      if (!r.test(version)) {
+      if (!r.test(version2)) {
         return null;
       }
       try {
-        return new SemVer(version, options);
+        return new SemVer(version2, options);
       } catch (er) {
         return null;
       }
     };
-    module2.exports = parse;
+    module2.exports = parse2;
   }
 });
 
 // node_modules/semver/functions/valid.js
 var require_valid = __commonJS({
   "node_modules/semver/functions/valid.js"(exports, module2) {
-    var parse = require_parse2();
-    var valid = (version, options) => {
-      const v = parse(version, options);
+    var parse2 = require_parse();
+    var valid = (version2, options) => {
+      const v = parse2(version2, options);
       return v ? v.version : null;
     };
     module2.exports = valid;
@@ -66847,9 +68142,9 @@ var require_valid = __commonJS({
 // node_modules/semver/functions/clean.js
 var require_clean = __commonJS({
   "node_modules/semver/functions/clean.js"(exports, module2) {
-    var parse = require_parse2();
-    var clean = (version, options) => {
-      const s = parse(version.trim().replace(/^[=v]+/, ""), options);
+    var parse2 = require_parse();
+    var clean = (version2, options) => {
+      const s = parse2(version2.trim().replace(/^[=v]+/, ""), options);
       return s ? s.version : null;
     };
     module2.exports = clean;
@@ -66860,14 +68155,14 @@ var require_clean = __commonJS({
 var require_inc = __commonJS({
   "node_modules/semver/functions/inc.js"(exports, module2) {
     var SemVer = require_semver();
-    var inc = (version, release2, options, identifier) => {
+    var inc = (version2, release2, options, identifier) => {
       if (typeof options === "string") {
         identifier = options;
         options = void 0;
       }
       try {
         return new SemVer(
-          version instanceof SemVer ? version.version : version,
+          version2 instanceof SemVer ? version2.version : version2,
           options
         ).inc(release2, identifier).version;
       } catch (er) {
@@ -66899,20 +68194,20 @@ var require_eq = __commonJS({
 // node_modules/semver/functions/diff.js
 var require_diff = __commonJS({
   "node_modules/semver/functions/diff.js"(exports, module2) {
-    var parse = require_parse2();
+    var parse2 = require_parse();
     var eq = require_eq();
     var diff = (version1, version2) => {
       if (eq(version1, version2)) {
         return null;
       } else {
-        const v1 = parse(version1);
-        const v2 = parse(version2);
-        const hasPre = v1.prerelease.length || v2.prerelease.length;
+        const v12 = parse2(version1);
+        const v2 = parse2(version2);
+        const hasPre = v12.prerelease.length || v2.prerelease.length;
         const prefix = hasPre ? "pre" : "";
         const defaultResult = hasPre ? "prerelease" : "";
-        for (const key in v1) {
+        for (const key in v12) {
           if (key === "major" || key === "minor" || key === "patch") {
-            if (v1[key] !== v2[key]) {
+            if (v12[key] !== v2[key]) {
               return prefix + key;
             }
           }
@@ -66954,9 +68249,9 @@ var require_patch = __commonJS({
 // node_modules/semver/functions/prerelease.js
 var require_prerelease = __commonJS({
   "node_modules/semver/functions/prerelease.js"(exports, module2) {
-    var parse = require_parse2();
-    var prerelease = (version, options) => {
-      const parsed = parse(version, options);
+    var parse2 = require_parse();
+    var prerelease = (version2, options) => {
+      const parsed = parse2(version2, options);
       return parsed && parsed.prerelease.length ? parsed.prerelease : null;
     };
     module2.exports = prerelease;
@@ -67110,25 +68405,25 @@ var require_cmp = __commonJS({
 var require_coerce = __commonJS({
   "node_modules/semver/functions/coerce.js"(exports, module2) {
     var SemVer = require_semver();
-    var parse = require_parse2();
+    var parse2 = require_parse();
     var { re, t } = require_re();
-    var coerce = (version, options) => {
-      if (version instanceof SemVer) {
-        return version;
+    var coerce = (version2, options) => {
+      if (version2 instanceof SemVer) {
+        return version2;
       }
-      if (typeof version === "number") {
-        version = String(version);
+      if (typeof version2 === "number") {
+        version2 = String(version2);
       }
-      if (typeof version !== "string") {
+      if (typeof version2 !== "string") {
         return null;
       }
       options = options || {};
       let match = null;
       if (!options.rtl) {
-        match = version.match(re[t.COERCE]);
+        match = version2.match(re[t.COERCE]);
       } else {
         let next;
-        while ((next = re[t.COERCERTL].exec(version)) && (!match || match.index + match[0].length !== version.length)) {
+        while ((next = re[t.COERCERTL].exec(version2)) && (!match || match.index + match[0].length !== version2.length)) {
           if (!match || next.index + next[0].length !== match.index + match[0].length) {
             match = next;
           }
@@ -67139,7 +68434,7 @@ var require_coerce = __commonJS({
       if (match === null) {
         return null;
       }
-      return parse(`${match[2]}.${match[3] || "0"}.${match[4] || "0"}`, options);
+      return parse2(`${match[2]}.${match[3] || "0"}.${match[4] || "0"}`, options);
     };
     module2.exports = coerce;
   }
@@ -67564,6 +68859,7 @@ var require_lru_cache = __commonJS({
         this[UPDATE_AGE_ON_GET] = options.updateAgeOnGet || false;
         this.reset();
       }
+      // resize the cache when the max changes.
       set max(mL) {
         if (typeof mL !== "number" || mL < 0)
           throw new TypeError("max must be a non-negative number");
@@ -67588,6 +68884,7 @@ var require_lru_cache = __commonJS({
       get maxAge() {
         return this[MAX_AGE];
       }
+      // resize the cache when the lengthCalculator changes.
       set lengthCalculator(lC) {
         if (typeof lC !== "function")
           lC = naiveLength;
@@ -67902,19 +69199,20 @@ var require_range = __commonJS({
           });
         });
       }
-      test(version) {
-        if (!version) {
+      // if ANY of the sets match ALL of its comparators, then pass
+      test(version2) {
+        if (!version2) {
           return false;
         }
-        if (typeof version === "string") {
+        if (typeof version2 === "string") {
           try {
-            version = new SemVer(version, this.options);
+            version2 = new SemVer(version2, this.options);
           } catch (er) {
             return false;
           }
         }
         for (let i = 0; i < this.set.length; i++) {
-          if (testSet(this.set[i], version, this.options)) {
+          if (testSet(this.set[i], version2, this.options)) {
             return true;
           }
         }
@@ -68129,13 +69427,13 @@ var require_range = __commonJS({
       }
       return `${from} ${to}`.trim();
     };
-    var testSet = (set, version, options) => {
+    var testSet = (set, version2, options) => {
       for (let i = 0; i < set.length; i++) {
-        if (!set[i].test(version)) {
+        if (!set[i].test(version2)) {
           return false;
         }
       }
-      if (version.prerelease.length && !options.includePrerelease) {
+      if (version2.prerelease.length && !options.includePrerelease) {
         for (let i = 0; i < set.length; i++) {
           debug(set[i].semver);
           if (set[i].semver === Comparator.ANY) {
@@ -68143,7 +69441,7 @@ var require_range = __commonJS({
           }
           if (set[i].semver.prerelease.length > 0) {
             const allowed = set[i].semver;
-            if (allowed.major === version.major && allowed.minor === version.minor && allowed.patch === version.patch) {
+            if (allowed.major === version2.major && allowed.minor === version2.minor && allowed.patch === version2.patch) {
               return true;
             }
           }
@@ -68202,19 +69500,19 @@ var require_comparator = __commonJS({
       toString() {
         return this.value;
       }
-      test(version) {
-        debug("Comparator.test", version, this.options.loose);
-        if (this.semver === ANY || version === ANY) {
+      test(version2) {
+        debug("Comparator.test", version2, this.options.loose);
+        if (this.semver === ANY || version2 === ANY) {
           return true;
         }
-        if (typeof version === "string") {
+        if (typeof version2 === "string") {
           try {
-            version = new SemVer(version, this.options);
+            version2 = new SemVer(version2, this.options);
           } catch (er) {
             return false;
           }
         }
-        return cmp(version, this.operator, this.semver, this.options);
+        return cmp(version2, this.operator, this.semver, this.options);
       }
       intersects(comp, options) {
         if (!(comp instanceof Comparator)) {
@@ -68260,13 +69558,13 @@ var require_comparator = __commonJS({
 var require_satisfies = __commonJS({
   "node_modules/semver/functions/satisfies.js"(exports, module2) {
     var Range = require_range();
-    var satisfies = (version, range, options) => {
+    var satisfies = (version2, range, options) => {
       try {
         range = new Range(range, options);
       } catch (er) {
         return false;
       }
-      return range.test(version);
+      return range.test(version2);
     };
     module2.exports = satisfies;
   }
@@ -68420,8 +69718,8 @@ var require_outside = __commonJS({
     var lt = require_lt();
     var lte = require_lte();
     var gte = require_gte();
-    var outside = (version, range, hilo, options) => {
-      version = new SemVer(version, options);
+    var outside = (version2, range, hilo, options) => {
+      version2 = new SemVer(version2, options);
       range = new Range(range, options);
       let gtfn, ltefn, ltfn, comp, ecomp;
       switch (hilo) {
@@ -68442,7 +69740,7 @@ var require_outside = __commonJS({
         default:
           throw new TypeError('Must provide a hilo val of "<" or ">"');
       }
-      if (satisfies(version, range, options)) {
+      if (satisfies(version2, range, options)) {
         return false;
       }
       for (let i = 0; i < range.set.length; ++i) {
@@ -68464,9 +69762,9 @@ var require_outside = __commonJS({
         if (high.operator === comp || high.operator === ecomp) {
           return false;
         }
-        if ((!low.operator || low.operator === comp) && ltefn(version, low.semver)) {
+        if ((!low.operator || low.operator === comp) && ltefn(version2, low.semver)) {
           return false;
-        } else if (low.operator === ecomp && ltfn(version, low.semver)) {
+        } else if (low.operator === ecomp && ltfn(version2, low.semver)) {
           return false;
         }
       }
@@ -68480,7 +69778,7 @@ var require_outside = __commonJS({
 var require_gtr = __commonJS({
   "node_modules/semver/ranges/gtr.js"(exports, module2) {
     var outside = require_outside();
-    var gtr = (version, range, options) => outside(version, range, ">", options);
+    var gtr = (version2, range, options) => outside(version2, range, ">", options);
     module2.exports = gtr;
   }
 });
@@ -68489,7 +69787,7 @@ var require_gtr = __commonJS({
 var require_ltr = __commonJS({
   "node_modules/semver/ranges/ltr.js"(exports, module2) {
     var outside = require_outside();
-    var ltr = (version, range, options) => outside(version, range, "<", options);
+    var ltr = (version2, range, options) => outside(version2, range, "<", options);
     module2.exports = ltr;
   }
 });
@@ -68517,12 +69815,12 @@ var require_simplify = __commonJS({
       let first = null;
       let prev = null;
       const v = versions.sort((a, b) => compare(a, b, options));
-      for (const version of v) {
-        const included = satisfies(version, range, options);
+      for (const version2 of v) {
+        const included = satisfies(version2, range, options);
         if (included) {
-          prev = version;
+          prev = version2;
           if (!first) {
-            first = version;
+            first = version2;
           }
         } else {
           if (prev) {
@@ -68723,7 +70021,7 @@ var require_semver2 = __commonJS({
     var constants = require_constants();
     var SemVer = require_semver();
     var identifiers = require_identifiers();
-    var parse = require_parse2();
+    var parse2 = require_parse();
     var valid = require_valid();
     var clean = require_clean();
     var inc = require_inc();
@@ -68761,7 +70059,7 @@ var require_semver2 = __commonJS({
     var simplifyRange = require_simplify();
     var subset = require_subset();
     module2.exports = {
-      parse,
+      parse: parse2,
       valid,
       clean,
       inc,
@@ -69421,14 +70719,15 @@ var XAll = /* @__PURE__ */ function() {
   };
   return XAll2;
 }();
-var _xall = /* @__PURE__ */ _curry2(function _xall2(f, xf) {
-  return new XAll(f, xf);
-});
-var xall_default = _xall;
+function _xall(f) {
+  return function(xf) {
+    return new XAll(f, xf);
+  };
+}
 
 // node_modules/ramda/es/all.js
 var all = /* @__PURE__ */ _curry2(
-  /* @__PURE__ */ _dispatchable(["all"], xall_default, function all2(fn, list) {
+  /* @__PURE__ */ _dispatchable(["all"], _xall, function all2(fn, list) {
     var idx = 0;
     while (idx < list.length) {
       if (!fn(list[idx])) {
@@ -69441,149 +70740,49 @@ var all = /* @__PURE__ */ _curry2(
 );
 var all_default = all;
 
-// node_modules/ramda/es/internal/_map.js
-function _map(fn, functor) {
-  var idx = 0;
-  var len = functor.length;
-  var result = Array(len);
-  while (idx < len) {
-    result[idx] = fn(functor[idx]);
-    idx += 1;
+// node_modules/ramda/es/internal/_arrayFromIterator.js
+function _arrayFromIterator(iter) {
+  var list = [];
+  var next;
+  while (!(next = iter.next()).done) {
+    list.push(next.value);
   }
-  return result;
+  return list;
 }
 
-// node_modules/ramda/es/internal/_isString.js
-function _isString(x) {
-  return Object.prototype.toString.call(x) === "[object String]";
-}
-
-// node_modules/ramda/es/internal/_isArrayLike.js
-var _isArrayLike = /* @__PURE__ */ _curry1(function isArrayLike(x) {
-  if (isArray_default(x)) {
-    return true;
-  }
-  if (!x) {
-    return false;
-  }
-  if (typeof x !== "object") {
-    return false;
-  }
-  if (_isString(x)) {
-    return false;
-  }
-  if (x.length === 0) {
-    return true;
-  }
-  if (x.length > 0) {
-    return x.hasOwnProperty(0) && x.hasOwnProperty(x.length - 1);
-  }
-  return false;
-});
-var isArrayLike_default = _isArrayLike;
-
-// node_modules/ramda/es/internal/_xwrap.js
-var XWrap = /* @__PURE__ */ function() {
-  function XWrap2(fn) {
-    this.f = fn;
-  }
-  XWrap2.prototype["@@transducer/init"] = function() {
-    throw new Error("init not implemented on XWrap");
-  };
-  XWrap2.prototype["@@transducer/result"] = function(acc) {
-    return acc;
-  };
-  XWrap2.prototype["@@transducer/step"] = function(acc, x) {
-    return this.f(acc, x);
-  };
-  return XWrap2;
-}();
-function _xwrap(fn) {
-  return new XWrap(fn);
-}
-
-// node_modules/ramda/es/bind.js
-var bind = /* @__PURE__ */ _curry2(function bind2(fn, thisObj) {
-  return _arity(fn.length, function() {
-    return fn.apply(thisObj, arguments);
-  });
-});
-var bind_default = bind;
-
-// node_modules/ramda/es/internal/_reduce.js
-function _arrayReduce(xf, acc, list) {
+// node_modules/ramda/es/internal/_includesWith.js
+function _includesWith(pred, x, list) {
   var idx = 0;
   var len = list.length;
   while (idx < len) {
-    acc = xf["@@transducer/step"](acc, list[idx]);
-    if (acc && acc["@@transducer/reduced"]) {
-      acc = acc["@@transducer/value"];
-      break;
+    if (pred(x, list[idx])) {
+      return true;
     }
     idx += 1;
   }
-  return xf["@@transducer/result"](acc);
-}
-function _iterableReduce(xf, acc, iter) {
-  var step = iter.next();
-  while (!step.done) {
-    acc = xf["@@transducer/step"](acc, step.value);
-    if (acc && acc["@@transducer/reduced"]) {
-      acc = acc["@@transducer/value"];
-      break;
-    }
-    step = iter.next();
-  }
-  return xf["@@transducer/result"](acc);
-}
-function _methodReduce(xf, acc, obj, methodName) {
-  return xf["@@transducer/result"](obj[methodName](bind_default(xf["@@transducer/step"], xf), acc));
-}
-var symIterator = typeof Symbol !== "undefined" ? Symbol.iterator : "@@iterator";
-function _reduce(fn, acc, list) {
-  if (typeof fn === "function") {
-    fn = _xwrap(fn);
-  }
-  if (isArrayLike_default(list)) {
-    return _arrayReduce(fn, acc, list);
-  }
-  if (typeof list["fantasy-land/reduce"] === "function") {
-    return _methodReduce(fn, acc, list, "fantasy-land/reduce");
-  }
-  if (list[symIterator] != null) {
-    return _iterableReduce(fn, acc, list[symIterator]());
-  }
-  if (typeof list.next === "function") {
-    return _iterableReduce(fn, acc, list);
-  }
-  if (typeof list.reduce === "function") {
-    return _methodReduce(fn, acc, list, "reduce");
-  }
-  throw new TypeError("reduce: list must be array or iterable");
+  return false;
 }
 
-// node_modules/ramda/es/internal/_xmap.js
-var XMap = /* @__PURE__ */ function() {
-  function XMap2(f, xf) {
-    this.xf = xf;
-    this.f = f;
-  }
-  XMap2.prototype["@@transducer/init"] = xfBase_default.init;
-  XMap2.prototype["@@transducer/result"] = xfBase_default.result;
-  XMap2.prototype["@@transducer/step"] = function(result, input) {
-    return this.xf["@@transducer/step"](result, this.f(input));
-  };
-  return XMap2;
-}();
-var _xmap = /* @__PURE__ */ _curry2(function _xmap2(f, xf) {
-  return new XMap(f, xf);
-});
-var xmap_default = _xmap;
+// node_modules/ramda/es/internal/_functionName.js
+function _functionName(f) {
+  var match = String(f).match(/^function (\w*)/);
+  return match == null ? "" : match[1];
+}
 
 // node_modules/ramda/es/internal/_has.js
 function _has(prop3, obj) {
   return Object.prototype.hasOwnProperty.call(obj, prop3);
 }
+
+// node_modules/ramda/es/internal/_objectIs.js
+function _objectIs(a, b) {
+  if (a === b) {
+    return a !== 0 || 1 / a === 1 / b;
+  } else {
+    return a !== a && b !== b;
+  }
+}
+var objectIs_default = typeof Object.is === "function" ? Object.is : _objectIs;
 
 // node_modules/ramda/es/internal/_isArguments.js
 var toString = Object.prototype.toString;
@@ -69643,315 +70842,11 @@ var keys = typeof Object.keys === "function" && !hasArgsEnumBug ? /* @__PURE__ *
 });
 var keys_default = keys;
 
-// node_modules/ramda/es/map.js
-var map = /* @__PURE__ */ _curry2(
-  /* @__PURE__ */ _dispatchable(["fantasy-land/map", "map"], xmap_default, function map2(fn, functor) {
-    switch (Object.prototype.toString.call(functor)) {
-      case "[object Function]":
-        return curryN_default(functor.length, function() {
-          return fn.call(this, functor.apply(this, arguments));
-        });
-      case "[object Object]":
-        return _reduce(function(acc, key) {
-          acc[key] = fn(functor[key]);
-          return acc;
-        }, {}, keys_default(functor));
-      default:
-        return _map(fn, functor);
-    }
-  })
-);
-var map_default = map;
-
-// node_modules/ramda/es/internal/_isInteger.js
-var isInteger_default = Number.isInteger || function _isInteger(n) {
-  return n << 0 === n;
-};
-
-// node_modules/ramda/es/nth.js
-var nth = /* @__PURE__ */ _curry2(function nth2(offset, list) {
-  var idx = offset < 0 ? list.length + offset : offset;
-  return _isString(list) ? list.charAt(idx) : list[idx];
-});
-var nth_default = nth;
-
-// node_modules/ramda/es/prop.js
-var prop = /* @__PURE__ */ _curry2(function prop2(p, obj) {
-  if (obj == null) {
-    return;
-  }
-  return isInteger_default(p) ? nth_default(p, obj) : obj[p];
-});
-var prop_default = prop;
-
-// node_modules/ramda/es/reduce.js
-var reduce = /* @__PURE__ */ _curry3(_reduce);
-var reduce_default = reduce;
-
-// node_modules/ramda/es/and.js
-var and = /* @__PURE__ */ _curry2(function and2(a, b) {
-  return a && b;
-});
-var and_default = and;
-
-// node_modules/ramda/es/internal/_xany.js
-var XAny = /* @__PURE__ */ function() {
-  function XAny2(f, xf) {
-    this.xf = xf;
-    this.f = f;
-    this.any = false;
-  }
-  XAny2.prototype["@@transducer/init"] = xfBase_default.init;
-  XAny2.prototype["@@transducer/result"] = function(result) {
-    if (!this.any) {
-      result = this.xf["@@transducer/step"](result, false);
-    }
-    return this.xf["@@transducer/result"](result);
-  };
-  XAny2.prototype["@@transducer/step"] = function(result, input) {
-    if (this.f(input)) {
-      this.any = true;
-      result = _reduced(this.xf["@@transducer/step"](result, true));
-    }
-    return result;
-  };
-  return XAny2;
-}();
-var _xany = /* @__PURE__ */ _curry2(function _xany2(f, xf) {
-  return new XAny(f, xf);
-});
-var xany_default = _xany;
-
-// node_modules/ramda/es/any.js
-var any = /* @__PURE__ */ _curry2(
-  /* @__PURE__ */ _dispatchable(["any"], xany_default, function any2(fn, list) {
-    var idx = 0;
-    while (idx < list.length) {
-      if (fn(list[idx])) {
-        return true;
-      }
-      idx += 1;
-    }
-    return false;
-  })
-);
-var any_default = any;
-
-// node_modules/ramda/es/ap.js
-var ap = /* @__PURE__ */ _curry2(function ap2(applyF, applyX) {
-  return typeof applyX["fantasy-land/ap"] === "function" ? applyX["fantasy-land/ap"](applyF) : typeof applyF.ap === "function" ? applyF.ap(applyX) : typeof applyF === "function" ? function(x) {
-    return applyF(x)(applyX(x));
-  } : _reduce(function(acc, f) {
-    return _concat(acc, map_default(f, applyX));
-  }, [], applyF);
-});
-var ap_default = ap;
-
-// node_modules/ramda/es/internal/_isFunction.js
-function _isFunction(x) {
-  var type3 = Object.prototype.toString.call(x);
-  return type3 === "[object Function]" || type3 === "[object AsyncFunction]" || type3 === "[object GeneratorFunction]" || type3 === "[object AsyncGeneratorFunction]";
-}
-
-// node_modules/ramda/es/liftN.js
-var liftN = /* @__PURE__ */ _curry2(function liftN2(arity, fn) {
-  var lifted = curryN_default(arity, fn);
-  return curryN_default(arity, function() {
-    return _reduce(ap_default, map_default(lifted, arguments[0]), Array.prototype.slice.call(arguments, 1));
-  });
-});
-var liftN_default = liftN;
-
-// node_modules/ramda/es/lift.js
-var lift = /* @__PURE__ */ _curry1(function lift2(fn) {
-  return liftN_default(fn.length, fn);
-});
-var lift_default = lift;
-
-// node_modules/ramda/es/both.js
-var both = /* @__PURE__ */ _curry2(function both2(f, g) {
-  return _isFunction(f) ? function _both() {
-    return f.apply(this, arguments) && g.apply(this, arguments);
-  } : lift_default(and_default)(f, g);
-});
-var both_default = both;
-
-// node_modules/ramda/es/internal/_makeFlat.js
-function _makeFlat(recursive) {
-  return function flatt(list) {
-    var value, jlen, j;
-    var result = [];
-    var idx = 0;
-    var ilen = list.length;
-    while (idx < ilen) {
-      if (isArrayLike_default(list[idx])) {
-        value = recursive ? flatt(list[idx]) : list[idx];
-        j = 0;
-        jlen = value.length;
-        while (j < jlen) {
-          result[result.length] = value[j];
-          j += 1;
-        }
-      } else {
-        result[result.length] = list[idx];
-      }
-      idx += 1;
-    }
-    return result;
-  };
-}
-
-// node_modules/ramda/es/internal/_forceReduced.js
-function _forceReduced(x) {
-  return {
-    "@@transducer/value": x,
-    "@@transducer/reduced": true
-  };
-}
-
-// node_modules/ramda/es/internal/_flatCat.js
-var preservingReduced = function(xf) {
-  return {
-    "@@transducer/init": xfBase_default.init,
-    "@@transducer/result": function(result) {
-      return xf["@@transducer/result"](result);
-    },
-    "@@transducer/step": function(result, input) {
-      var ret = xf["@@transducer/step"](result, input);
-      return ret["@@transducer/reduced"] ? _forceReduced(ret) : ret;
-    }
-  };
-};
-var _flatCat = function _xcat(xf) {
-  var rxf = preservingReduced(xf);
-  return {
-    "@@transducer/init": xfBase_default.init,
-    "@@transducer/result": function(result) {
-      return rxf["@@transducer/result"](result);
-    },
-    "@@transducer/step": function(result, input) {
-      return !isArrayLike_default(input) ? _reduce(rxf, result, [input]) : _reduce(rxf, result, input);
-    }
-  };
-};
-var flatCat_default = _flatCat;
-
-// node_modules/ramda/es/internal/_xchain.js
-var _xchain = /* @__PURE__ */ _curry2(function _xchain2(f, xf) {
-  return map_default(f, flatCat_default(xf));
-});
-var xchain_default = _xchain;
-
-// node_modules/ramda/es/chain.js
-var chain = /* @__PURE__ */ _curry2(
-  /* @__PURE__ */ _dispatchable(["fantasy-land/chain", "chain"], xchain_default, function chain2(fn, monad) {
-    if (typeof monad === "function") {
-      return function(x) {
-        return fn(monad(x))(x);
-      };
-    }
-    return _makeFlat(false)(map_default(fn, monad));
-  })
-);
-var chain_default = chain;
-
 // node_modules/ramda/es/type.js
 var type = /* @__PURE__ */ _curry1(function type2(val) {
   return val === null ? "Null" : val === void 0 ? "Undefined" : Object.prototype.toString.call(val).slice(8, -1);
 });
 var type_default = type;
-
-// node_modules/ramda/es/internal/_pipe.js
-function _pipe(f, g) {
-  return function() {
-    return g.call(this, f.apply(this, arguments));
-  };
-}
-
-// node_modules/ramda/es/internal/_checkForMethod.js
-function _checkForMethod(methodname, fn) {
-  return function() {
-    var length = arguments.length;
-    if (length === 0) {
-      return fn();
-    }
-    var obj = arguments[length - 1];
-    return isArray_default(obj) || typeof obj[methodname] !== "function" ? fn.apply(this, arguments) : obj[methodname].apply(obj, Array.prototype.slice.call(arguments, 0, length - 1));
-  };
-}
-
-// node_modules/ramda/es/slice.js
-var slice = /* @__PURE__ */ _curry3(
-  /* @__PURE__ */ _checkForMethod("slice", function slice2(fromIndex, toIndex, list) {
-    return Array.prototype.slice.call(list, fromIndex, toIndex);
-  })
-);
-var slice_default = slice;
-
-// node_modules/ramda/es/tail.js
-var tail = /* @__PURE__ */ _curry1(
-  /* @__PURE__ */ _checkForMethod(
-    "tail",
-    /* @__PURE__ */ slice_default(1, Infinity)
-  )
-);
-var tail_default = tail;
-
-// node_modules/ramda/es/pipe.js
-function pipe() {
-  if (arguments.length === 0) {
-    throw new Error("pipe requires at least one argument");
-  }
-  return _arity(arguments[0].length, reduce_default(_pipe, arguments[0], tail_default(arguments)));
-}
-
-// node_modules/ramda/es/internal/_identity.js
-function _identity(x) {
-  return x;
-}
-
-// node_modules/ramda/es/identity.js
-var identity = /* @__PURE__ */ _curry1(_identity);
-var identity_default = identity;
-
-// node_modules/ramda/es/internal/_arrayFromIterator.js
-function _arrayFromIterator(iter) {
-  var list = [];
-  var next;
-  while (!(next = iter.next()).done) {
-    list.push(next.value);
-  }
-  return list;
-}
-
-// node_modules/ramda/es/internal/_includesWith.js
-function _includesWith(pred, x, list) {
-  var idx = 0;
-  var len = list.length;
-  while (idx < len) {
-    if (pred(x, list[idx])) {
-      return true;
-    }
-    idx += 1;
-  }
-  return false;
-}
-
-// node_modules/ramda/es/internal/_functionName.js
-function _functionName(f) {
-  var match = String(f).match(/^function (\w*)/);
-  return match == null ? "" : match[1];
-}
-
-// node_modules/ramda/es/internal/_objectIs.js
-function _objectIs(a, b) {
-  if (a === b) {
-    return a !== 0 || 1 / a === 1 / b;
-  } else {
-    return a !== a && b !== b;
-  }
-}
-var objectIs_default = typeof Object.is === "function" ? Object.is : _objectIs;
 
 // node_modules/ramda/es/internal/_equals.js
 function _uniqContentEquals(aIterator, bIterator, stackA, stackB) {
@@ -70122,6 +71017,18 @@ function _includes(a, list) {
   return _indexOf(list, a, 0) >= 0;
 }
 
+// node_modules/ramda/es/internal/_map.js
+function _map(fn, functor) {
+  var idx = 0;
+  var len = functor.length;
+  var result = Array(len);
+  while (idx < len) {
+    result[idx] = fn(functor[idx]);
+    idx += 1;
+  }
+  return result;
+}
+
 // node_modules/ramda/es/internal/_quote.js
 function _quote(s) {
   var escaped = s.replace(/\\/g, "\\\\").replace(/[\b]/g, "\\b").replace(/\f/g, "\\f").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\v/g, "\\v").replace(/\0/g, "\\0");
@@ -70144,6 +71051,17 @@ function _complement(f) {
   return function() {
     return !f.apply(this, arguments);
   };
+}
+
+// node_modules/ramda/es/internal/_arrayReduce.js
+function _arrayReduce(reducer, acc, list) {
+  var index = 0;
+  var length = list.length;
+  while (index < length) {
+    acc = reducer(acc, list[index]);
+    index += 1;
+  }
+  return acc;
 }
 
 // node_modules/ramda/es/internal/_filter.js
@@ -70178,20 +71096,24 @@ var XFilter = /* @__PURE__ */ function() {
   };
   return XFilter2;
 }();
-var _xfilter = /* @__PURE__ */ _curry2(function _xfilter2(f, xf) {
-  return new XFilter(f, xf);
-});
-var xfilter_default = _xfilter;
+function _xfilter(f) {
+  return function(xf) {
+    return new XFilter(f, xf);
+  };
+}
 
 // node_modules/ramda/es/filter.js
 var filter = /* @__PURE__ */ _curry2(
-  /* @__PURE__ */ _dispatchable(["fantasy-land/filter", "filter"], xfilter_default, function(pred, filterable) {
-    return _isObject(filterable) ? _reduce(function(acc, key) {
+  /* @__PURE__ */ _dispatchable(["fantasy-land/filter", "filter"], _xfilter, function(pred, filterable) {
+    return _isObject(filterable) ? _arrayReduce(function(acc, key) {
       if (pred(filterable[key])) {
         acc[key] = filterable[key];
       }
       return acc;
-    }, {}, keys_default(filterable)) : _filter(pred, filterable);
+    }, {}, keys_default(filterable)) : (
+      // else
+      _filter(pred, filterable)
+    );
   })
 );
 var filter_default = filter;
@@ -70224,10 +71146,14 @@ function _toString(x, seen) {
       return typeof x === "object" ? "new Boolean(" + recur(x.valueOf()) + ")" : x.toString();
     case "[object Date]":
       return "new Date(" + (isNaN(x.valueOf()) ? recur(NaN) : _quote(toISOString_default(x))) + ")";
+    case "[object Map]":
+      return "new Map(" + recur(Array.from(x)) + ")";
     case "[object Null]":
       return "null";
     case "[object Number]":
       return typeof x === "object" ? "new Number(" + recur(x.valueOf()) + ")" : 1 / x === -Infinity ? "-0" : x.toString(10);
+    case "[object Set]":
+      return "new Set(" + recur(Array.from(x).sort()) + ")";
     case "[object String]":
       return typeof x === "object" ? "new String(" + recur(x.valueOf()) + ")" : _quote(x);
     case "[object Undefined]":
@@ -70248,6 +71174,432 @@ var toString2 = /* @__PURE__ */ _curry1(function toString3(val) {
   return _toString(val, []);
 });
 var toString_default = toString2;
+
+// node_modules/ramda/es/internal/_xmap.js
+var XMap = /* @__PURE__ */ function() {
+  function XMap2(f, xf) {
+    this.xf = xf;
+    this.f = f;
+  }
+  XMap2.prototype["@@transducer/init"] = xfBase_default.init;
+  XMap2.prototype["@@transducer/result"] = xfBase_default.result;
+  XMap2.prototype["@@transducer/step"] = function(result, input) {
+    return this.xf["@@transducer/step"](result, this.f(input));
+  };
+  return XMap2;
+}();
+var _xmap = function _xmap2(f) {
+  return function(xf) {
+    return new XMap(f, xf);
+  };
+};
+var xmap_default = _xmap;
+
+// node_modules/ramda/es/map.js
+var map = /* @__PURE__ */ _curry2(
+  /* @__PURE__ */ _dispatchable(["fantasy-land/map", "map"], xmap_default, function map2(fn, functor) {
+    switch (Object.prototype.toString.call(functor)) {
+      case "[object Function]":
+        return curryN_default(functor.length, function() {
+          return fn.call(this, functor.apply(this, arguments));
+        });
+      case "[object Object]":
+        return _arrayReduce(function(acc, key) {
+          acc[key] = fn(functor[key]);
+          return acc;
+        }, {}, keys_default(functor));
+      default:
+        return _map(fn, functor);
+    }
+  })
+);
+var map_default = map;
+
+// node_modules/ramda/es/internal/_isInteger.js
+var isInteger_default = Number.isInteger || function _isInteger(n) {
+  return n << 0 === n;
+};
+
+// node_modules/ramda/es/internal/_isString.js
+function _isString(x) {
+  return Object.prototype.toString.call(x) === "[object String]";
+}
+
+// node_modules/ramda/es/nth.js
+var nth = /* @__PURE__ */ _curry2(function nth2(offset, list) {
+  var idx = offset < 0 ? list.length + offset : offset;
+  return _isString(list) ? list.charAt(idx) : list[idx];
+});
+var nth_default = nth;
+
+// node_modules/ramda/es/prop.js
+var prop = /* @__PURE__ */ _curry2(function prop2(p, obj) {
+  if (obj == null) {
+    return;
+  }
+  return isInteger_default(p) ? nth_default(p, obj) : obj[p];
+});
+var prop_default = prop;
+
+// node_modules/ramda/es/internal/_isArrayLike.js
+var _isArrayLike = /* @__PURE__ */ _curry1(function isArrayLike(x) {
+  if (isArray_default(x)) {
+    return true;
+  }
+  if (!x) {
+    return false;
+  }
+  if (typeof x !== "object") {
+    return false;
+  }
+  if (_isString(x)) {
+    return false;
+  }
+  if (x.length === 0) {
+    return true;
+  }
+  if (x.length > 0) {
+    return x.hasOwnProperty(0) && x.hasOwnProperty(x.length - 1);
+  }
+  return false;
+});
+var isArrayLike_default = _isArrayLike;
+
+// node_modules/ramda/es/internal/_createReduce.js
+var symIterator = typeof Symbol !== "undefined" ? Symbol.iterator : "@@iterator";
+function _createReduce(arrayReduce, methodReduce, iterableReduce) {
+  return function _reduce2(xf, acc, list) {
+    if (isArrayLike_default(list)) {
+      return arrayReduce(xf, acc, list);
+    }
+    if (list == null) {
+      return acc;
+    }
+    if (typeof list["fantasy-land/reduce"] === "function") {
+      return methodReduce(xf, acc, list, "fantasy-land/reduce");
+    }
+    if (list[symIterator] != null) {
+      return iterableReduce(xf, acc, list[symIterator]());
+    }
+    if (typeof list.next === "function") {
+      return iterableReduce(xf, acc, list);
+    }
+    if (typeof list.reduce === "function") {
+      return methodReduce(xf, acc, list, "reduce");
+    }
+    throw new TypeError("reduce: list must be array or iterable");
+  };
+}
+
+// node_modules/ramda/es/internal/_xArrayReduce.js
+function _xArrayReduce(xf, acc, list) {
+  var idx = 0;
+  var len = list.length;
+  while (idx < len) {
+    acc = xf["@@transducer/step"](acc, list[idx]);
+    if (acc && acc["@@transducer/reduced"]) {
+      acc = acc["@@transducer/value"];
+      break;
+    }
+    idx += 1;
+  }
+  return xf["@@transducer/result"](acc);
+}
+
+// node_modules/ramda/es/bind.js
+var bind = /* @__PURE__ */ _curry2(function bind2(fn, thisObj) {
+  return _arity(fn.length, function() {
+    return fn.apply(thisObj, arguments);
+  });
+});
+var bind_default = bind;
+
+// node_modules/ramda/es/internal/_xReduce.js
+function _xIterableReduce(xf, acc, iter) {
+  var step = iter.next();
+  while (!step.done) {
+    acc = xf["@@transducer/step"](acc, step.value);
+    if (acc && acc["@@transducer/reduced"]) {
+      acc = acc["@@transducer/value"];
+      break;
+    }
+    step = iter.next();
+  }
+  return xf["@@transducer/result"](acc);
+}
+function _xMethodReduce(xf, acc, obj, methodName) {
+  return xf["@@transducer/result"](obj[methodName](bind_default(xf["@@transducer/step"], xf), acc));
+}
+var _xReduce = /* @__PURE__ */ _createReduce(_xArrayReduce, _xMethodReduce, _xIterableReduce);
+var xReduce_default = _xReduce;
+
+// node_modules/ramda/es/internal/_xwrap.js
+var XWrap = /* @__PURE__ */ function() {
+  function XWrap2(fn) {
+    this.f = fn;
+  }
+  XWrap2.prototype["@@transducer/init"] = function() {
+    throw new Error("init not implemented on XWrap");
+  };
+  XWrap2.prototype["@@transducer/result"] = function(acc) {
+    return acc;
+  };
+  XWrap2.prototype["@@transducer/step"] = function(acc, x) {
+    return this.f(acc, x);
+  };
+  return XWrap2;
+}();
+function _xwrap(fn) {
+  return new XWrap(fn);
+}
+
+// node_modules/ramda/es/reduce.js
+var reduce = /* @__PURE__ */ _curry3(function(xf, acc, list) {
+  return xReduce_default(typeof xf === "function" ? _xwrap(xf) : xf, acc, list);
+});
+var reduce_default = reduce;
+
+// node_modules/ramda/es/and.js
+var and = /* @__PURE__ */ _curry2(function and2(a, b) {
+  return a && b;
+});
+var and_default = and;
+
+// node_modules/ramda/es/internal/_xany.js
+var XAny = /* @__PURE__ */ function() {
+  function XAny2(f, xf) {
+    this.xf = xf;
+    this.f = f;
+    this.any = false;
+  }
+  XAny2.prototype["@@transducer/init"] = xfBase_default.init;
+  XAny2.prototype["@@transducer/result"] = function(result) {
+    if (!this.any) {
+      result = this.xf["@@transducer/step"](result, false);
+    }
+    return this.xf["@@transducer/result"](result);
+  };
+  XAny2.prototype["@@transducer/step"] = function(result, input) {
+    if (this.f(input)) {
+      this.any = true;
+      result = _reduced(this.xf["@@transducer/step"](result, true));
+    }
+    return result;
+  };
+  return XAny2;
+}();
+function _xany(f) {
+  return function(xf) {
+    return new XAny(f, xf);
+  };
+}
+
+// node_modules/ramda/es/any.js
+var any = /* @__PURE__ */ _curry2(
+  /* @__PURE__ */ _dispatchable(["any"], _xany, function any2(fn, list) {
+    var idx = 0;
+    while (idx < list.length) {
+      if (fn(list[idx])) {
+        return true;
+      }
+      idx += 1;
+    }
+    return false;
+  })
+);
+var any_default = any;
+
+// node_modules/ramda/es/internal/_reduce.js
+function _iterableReduce(reducer, acc, iter) {
+  var step = iter.next();
+  while (!step.done) {
+    acc = reducer(acc, step.value);
+    step = iter.next();
+  }
+  return acc;
+}
+function _methodReduce(reducer, acc, obj, methodName) {
+  return obj[methodName](reducer, acc);
+}
+var _reduce = /* @__PURE__ */ _createReduce(_arrayReduce, _methodReduce, _iterableReduce);
+var reduce_default2 = _reduce;
+
+// node_modules/ramda/es/ap.js
+var ap = /* @__PURE__ */ _curry2(function ap2(applyF, applyX) {
+  return typeof applyX["fantasy-land/ap"] === "function" ? applyX["fantasy-land/ap"](applyF) : typeof applyF.ap === "function" ? applyF.ap(applyX) : typeof applyF === "function" ? function(x) {
+    return applyF(x)(applyX(x));
+  } : reduce_default2(function(acc, f) {
+    return _concat(acc, map_default(f, applyX));
+  }, [], applyF);
+});
+var ap_default = ap;
+
+// node_modules/ramda/es/internal/_isFunction.js
+function _isFunction(x) {
+  var type3 = Object.prototype.toString.call(x);
+  return type3 === "[object Function]" || type3 === "[object AsyncFunction]" || type3 === "[object GeneratorFunction]" || type3 === "[object AsyncGeneratorFunction]";
+}
+
+// node_modules/ramda/es/liftN.js
+var liftN = /* @__PURE__ */ _curry2(function liftN2(arity, fn) {
+  var lifted = curryN_default(arity, fn);
+  return curryN_default(arity, function() {
+    return _arrayReduce(ap_default, map_default(lifted, arguments[0]), Array.prototype.slice.call(arguments, 1));
+  });
+});
+var liftN_default = liftN;
+
+// node_modules/ramda/es/lift.js
+var lift = /* @__PURE__ */ _curry1(function lift2(fn) {
+  return liftN_default(fn.length, fn);
+});
+var lift_default = lift;
+
+// node_modules/ramda/es/both.js
+var both = /* @__PURE__ */ _curry2(function both2(f, g) {
+  return _isFunction(f) ? function _both() {
+    return f.apply(this, arguments) && g.apply(this, arguments);
+  } : lift_default(and_default)(f, g);
+});
+var both_default = both;
+
+// node_modules/ramda/es/internal/_makeFlat.js
+function _makeFlat(recursive) {
+  return function flatt(list) {
+    var value, jlen, j;
+    var result = [];
+    var idx = 0;
+    var ilen = list.length;
+    while (idx < ilen) {
+      if (isArrayLike_default(list[idx])) {
+        value = recursive ? flatt(list[idx]) : list[idx];
+        j = 0;
+        jlen = value.length;
+        while (j < jlen) {
+          result[result.length] = value[j];
+          j += 1;
+        }
+      } else {
+        result[result.length] = list[idx];
+      }
+      idx += 1;
+    }
+    return result;
+  };
+}
+
+// node_modules/ramda/es/internal/_forceReduced.js
+function _forceReduced(x) {
+  return {
+    "@@transducer/value": x,
+    "@@transducer/reduced": true
+  };
+}
+
+// node_modules/ramda/es/internal/_flatCat.js
+var tInit = "@@transducer/init";
+var tStep = "@@transducer/step";
+var tResult = "@@transducer/result";
+var XPreservingReduced = /* @__PURE__ */ function() {
+  function XPreservingReduced2(xf) {
+    this.xf = xf;
+  }
+  XPreservingReduced2.prototype[tInit] = xfBase_default.init;
+  XPreservingReduced2.prototype[tResult] = xfBase_default.result;
+  XPreservingReduced2.prototype[tStep] = function(result, input) {
+    var ret = this.xf[tStep](result, input);
+    return ret["@@transducer/reduced"] ? _forceReduced(ret) : ret;
+  };
+  return XPreservingReduced2;
+}();
+var XFlatCat = /* @__PURE__ */ function() {
+  function XFlatCat2(xf) {
+    this.xf = new XPreservingReduced(xf);
+  }
+  XFlatCat2.prototype[tInit] = xfBase_default.init;
+  XFlatCat2.prototype[tResult] = xfBase_default.result;
+  XFlatCat2.prototype[tStep] = function(result, input) {
+    return !isArrayLike_default(input) ? _xArrayReduce(this.xf, result, [input]) : xReduce_default(this.xf, result, input);
+  };
+  return XFlatCat2;
+}();
+var _flatCat = function _xcat(xf) {
+  return new XFlatCat(xf);
+};
+var flatCat_default = _flatCat;
+
+// node_modules/ramda/es/internal/_xchain.js
+function _xchain(f) {
+  return function(xf) {
+    return xmap_default(f)(flatCat_default(xf));
+  };
+}
+
+// node_modules/ramda/es/chain.js
+var chain = /* @__PURE__ */ _curry2(
+  /* @__PURE__ */ _dispatchable(["fantasy-land/chain", "chain"], _xchain, function chain2(fn, monad) {
+    if (typeof monad === "function") {
+      return function(x) {
+        return fn(monad(x))(x);
+      };
+    }
+    return _makeFlat(false)(map_default(fn, monad));
+  })
+);
+var chain_default = chain;
+
+// node_modules/ramda/es/internal/_pipe.js
+function _pipe(f, g) {
+  return function() {
+    return g.call(this, f.apply(this, arguments));
+  };
+}
+
+// node_modules/ramda/es/internal/_checkForMethod.js
+function _checkForMethod(methodname, fn) {
+  return function() {
+    var length = arguments.length;
+    if (length === 0) {
+      return fn();
+    }
+    var obj = arguments[length - 1];
+    return isArray_default(obj) || typeof obj[methodname] !== "function" ? fn.apply(this, arguments) : obj[methodname].apply(obj, Array.prototype.slice.call(arguments, 0, length - 1));
+  };
+}
+
+// node_modules/ramda/es/slice.js
+var slice = /* @__PURE__ */ _curry3(
+  /* @__PURE__ */ _checkForMethod("slice", function slice2(fromIndex, toIndex, list) {
+    return Array.prototype.slice.call(list, fromIndex, toIndex);
+  })
+);
+var slice_default = slice;
+
+// node_modules/ramda/es/tail.js
+var tail = /* @__PURE__ */ _curry1(
+  /* @__PURE__ */ _checkForMethod(
+    "tail",
+    /* @__PURE__ */ slice_default(1, Infinity)
+  )
+);
+var tail_default = tail;
+
+// node_modules/ramda/es/pipe.js
+function pipe() {
+  if (arguments.length === 0) {
+    throw new Error("pipe requires at least one argument");
+  }
+  return _arity(arguments[0].length, reduce_default(_pipe, arguments[0], tail_default(arguments)));
+}
+
+// node_modules/ramda/es/internal/_identity.js
+function _identity(x) {
+  return x;
+}
+
+// node_modules/ramda/es/identity.js
+var identity = /* @__PURE__ */ _curry1(_identity);
+var identity_default = identity;
 
 // node_modules/ramda/es/defaultTo.js
 var defaultTo = /* @__PURE__ */ _curry2(function defaultTo2(d, v) {
@@ -70418,14 +71770,15 @@ var XUniqBy = /* @__PURE__ */ function() {
   };
   return XUniqBy2;
 }();
-var _xuniqBy = /* @__PURE__ */ _curry2(function _xuniqBy2(f, xf) {
-  return new XUniqBy(f, xf);
-});
-var xuniqBy_default = _xuniqBy;
+function _xuniqBy(f) {
+  return function(xf) {
+    return new XUniqBy(f, xf);
+  };
+}
 
 // node_modules/ramda/es/uniqBy.js
 var uniqBy = /* @__PURE__ */ _curry2(
-  /* @__PURE__ */ _dispatchable([], xuniqBy_default, function(fn, list) {
+  /* @__PURE__ */ _dispatchable([], _xuniqBy, function(fn, list) {
     var set = new Set_default();
     var result = [];
     var idx = 0;
@@ -70507,7 +71860,7 @@ var pathOr = /* @__PURE__ */ _curry3(function pathOr2(d, p, obj) {
 var pathOr_default = pathOr;
 
 // node_modules/ramda/es/propEq.js
-var propEq = /* @__PURE__ */ _curry3(function propEq2(name, val, obj) {
+var propEq = /* @__PURE__ */ _curry3(function propEq2(val, name, obj) {
   return equals_default(val, prop_default(name, obj));
 });
 var propEq_default = propEq;
@@ -70970,9 +72323,9 @@ var import_promises2 = require("fs/promises");
 var import_core10 = __toESM(require_core());
 
 // release/src/common/formatChangelog.ts
-function formatPublicChangelog(version, issues) {
+function formatPublicChangelog(version2, issues) {
   return [
-    `## ${version}`,
+    `## ${version2}`,
     "",
     ...buildChangelogSection2("New features", features(issues)),
     "",
@@ -71058,7 +72411,7 @@ async function getIssuesFromIssueFile() {
 // release/src/common/writeLockFile.ts
 var import_console5 = require("console");
 var import_promises4 = require("fs/promises");
-async function writeLockFile(version) {
+async function writeLockFile(version2) {
   if (isDryRun()) {
     (0, import_console5.info)(`Dry run, not writing lockfile`);
   } else {
@@ -71066,7 +72419,7 @@ async function writeLockFile(version) {
     const octokit = getOctoKitClient();
     const lockFilePath = getLockFilePath();
     const lockfile = {
-      version,
+      version: version2,
       repositories: zipObj_default(
         repositories,
         await Promise.all(
@@ -71187,11 +72540,11 @@ async function getReleaseVersion() {
         projectIdOrKey: getJiraProjectId()
       }
     );
-    const version = releaseVersions.find(
-      (version2) => version2.name === lockfile.version.replace(/v/, "")
+    const version2 = releaseVersions.find(
+      (version3) => version3.name === lockfile.version.replace(/v/, "")
     );
-    if (version)
-      return version;
+    if (version2)
+      return version2;
   } catch (err) {
     throw new Error(
       `Could not connect with project versions: ${JSON.stringify(err)}`
@@ -71201,7 +72554,7 @@ async function getReleaseVersion() {
     const newVersion = await jiraClient2.projectVersions.createVersion({
       name: lockfile.version.replace(/v/, ""),
       projectId: getJiraProjectId(),
-      releaseDate: toDateString(new Date())
+      releaseDate: toDateString(/* @__PURE__ */ new Date())
     });
     return newVersion;
   } catch (err) {
@@ -71212,7 +72565,7 @@ async function getReleaseVersion() {
         {
           name: lockfile.version.replace(/v/, ""),
           projectId: getJiraProjectId(),
-          releaseDate: toDateString(new Date())
+          releaseDate: toDateString(/* @__PURE__ */ new Date())
         },
         null,
         2
@@ -71223,21 +72576,21 @@ async function getReleaseVersion() {
 async function updateIssueFixVersion(jiraIssueIds) {
   const jiraClient2 = getJiraClient();
   (0, import_console7.info)("Create project release version...");
-  const version = await getReleaseVersion();
-  if (!version)
+  const version2 = await getReleaseVersion();
+  if (!version2)
     return;
   (0, import_console7.info)("Update issues with version...");
   jiraIssueIds.forEach((issueIdOrKey) => {
     jiraClient2.issues.editIssue({
       issueIdOrKey,
       fields: {
-        fixVersions: [{ id: version.id }]
+        fixVersions: [{ id: version2.id }]
       }
     }).then(() => {
-      (0, import_console7.info)(`Set fix version of ${issueIdOrKey} to ${version.name}`);
+      (0, import_console7.info)(`Set fix version of ${issueIdOrKey} to ${version2.name}`);
     }).catch((err) => {
       (0, import_core11.warning)(
-        `failed to set fixVersion for issue ${issueIdOrKey} to ${version.name}: ${JSON.stringify(err)}`
+        `failed to set fixVersion for issue ${issueIdOrKey} to ${version2.name}: ${JSON.stringify(err)}`
       );
     });
   });
@@ -71273,41 +72626,53 @@ async function run() {
   return runModes[mode]();
 }
 run().catch(import_core12.setFailed);
-/*!
- * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
- *
- * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
- */
-/*!
- * jsUri
- * https://github.com/derek-watson/jsUri
- *
- * Copyright 2013, Derek Watson
- * Released under the MIT license.
- *
- * Includes parseUri regular expressions
- * http://blog.stevenlevithan.com/archives/parseuri
- * Copyright 2007, Steven Levithan
- * Released under the MIT license.
- */
-/*!
- * mime-db
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2015-2022 Douglas Christopher Wilson
- * MIT Licensed
- */
-/*!
- * mime-types
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2015 Douglas Christopher Wilson
- * MIT Licensed
- */
-/**
- * @license
- * Lodash <https://lodash.com/>
- * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
- * Released under MIT license <https://lodash.com/license>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- */
+/*! Bundled license information:
+
+is-plain-object/dist/is-plain-object.js:
+  (*!
+   * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
+   *
+   * Copyright (c) 2014-2017, Jon Schlinkert.
+   * Released under the MIT License.
+   *)
+
+lodash/lodash.js:
+  (**
+   * @license
+   * Lodash <https://lodash.com/>
+   * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
+   * Released under MIT license <https://lodash.com/license>
+   * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+   * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+   *)
+
+jsuri/Uri.js:
+  (*!
+   * jsUri
+   * https://github.com/derek-watson/jsUri
+   *
+   * Copyright 2013, Derek Watson
+   * Released under the MIT license.
+   *
+   * Includes parseUri regular expressions
+   * http://blog.stevenlevithan.com/archives/parseuri
+   * Copyright 2007, Steven Levithan
+   * Released under the MIT license.
+   *)
+
+mime-db/index.js:
+  (*!
+   * mime-db
+   * Copyright(c) 2014 Jonathan Ong
+   * Copyright(c) 2015-2022 Douglas Christopher Wilson
+   * MIT Licensed
+   *)
+
+mime-types/index.js:
+  (*!
+   * mime-types
+   * Copyright(c) 2014 Jonathan Ong
+   * Copyright(c) 2015 Douglas Christopher Wilson
+   * MIT Licensed
+   *)
+*/

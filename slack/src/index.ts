@@ -18,7 +18,9 @@ import { Blocks } from './types'
 
 const validStatuses = ['', 'success', 'failure', 'cancelled'] as const
 
-function isValidStatus(status: string): status is typeof validStatuses[number] {
+function isValidStatus(
+  status: string
+): status is (typeof validStatuses)[number] {
   return validStatuses.includes(status as any)
 }
 
