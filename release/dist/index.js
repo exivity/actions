@@ -72332,6 +72332,7 @@ var import_core10 = __toESM(require_core());
 
 // release/src/common/formatChangelog.ts
 function formatPublicChangelog(version2, issues) {
+  debug(`issues: ${JSON.stringify(features(issues), null, 2)}}`);
   debug(`features: ${JSON.stringify(features(issues), null, 2)}}`);
   debug(`fixes: ${JSON.stringify(fixes(issues), null, 2)}}`);
   return [
