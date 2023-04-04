@@ -70438,6 +70438,7 @@ var logIssues = (issues) => {
   issues.forEach(({ issue }) => {
     (0, import_console2.info)(issue);
   });
+  debug(`Issues: ${JSON.stringify(issues, null, 2)}`);
 };
 var logAvailableRequests = async () => {
   const octokit = getOctoKitClient();
@@ -72102,12 +72103,6 @@ var getRepoJiraIssues = async (repo) => {
             if (!issue || none_default(equals_default(issueType), ["feat", "fix"]))
               return [];
             const epic = getEpic(issue);
-            debug(`
-              Release note for ${issue.key}:
-              title: ${getReleaseNotesTitle(issue)}
-              description: ${getReleaseNotesDescription(issue)}
-              --------------------------------------------------
-            `);
             return {
               title: getReleaseNotesTitle(issue),
               description: getReleaseNotesDescription(issue),

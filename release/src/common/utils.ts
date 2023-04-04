@@ -1,11 +1,12 @@
 import { info } from 'console'
-import { getOctoKitClient } from './inputs'
+import { debug, getOctoKitClient } from './inputs'
 
 export const logIssues = (issues: { issue: string }[]) => {
   info(`Issues:`)
   issues.forEach(({ issue }) => {
     info(issue)
   })
+  debug(`Issues: ${JSON.stringify(issues, null, 2)}`)
 }
 
 export const logAvailableRequests = async () => {
