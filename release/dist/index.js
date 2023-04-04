@@ -1136,12 +1136,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info13 = this._prepareRequest(verb, parsedUrl, headers);
+          let info14 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info13, data);
+            response = yield this.requestRaw(info14, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -1151,7 +1151,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info13, data);
+                return authenticationHandler.handleAuthentication(this, info14, data);
               } else {
                 return response;
               }
@@ -1174,8 +1174,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info13 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info13, data);
+              info14 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info14, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -1204,7 +1204,7 @@ var require_lib = __commonJS({
        * @param info
        * @param data
        */
-      requestRaw(info13, data) {
+      requestRaw(info14, data) {
         return __awaiter2(this, void 0, void 0, function* () {
           return new Promise((resolve, reject3) => {
             function callbackForResult(err, res) {
@@ -1216,7 +1216,7 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info13, data, callbackForResult);
+            this.requestRawWithCallback(info14, data, callbackForResult);
           });
         });
       }
@@ -1226,12 +1226,12 @@ var require_lib = __commonJS({
        * @param data
        * @param onResult
        */
-      requestRawWithCallback(info13, data, onResult) {
+      requestRawWithCallback(info14, data, onResult) {
         if (typeof data === "string") {
-          if (!info13.options.headers) {
-            info13.options.headers = {};
+          if (!info14.options.headers) {
+            info14.options.headers = {};
           }
-          info13.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info14.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -1240,7 +1240,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info13.httpModule.request(info13.options, (msg) => {
+        const req = info14.httpModule.request(info14.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -1252,7 +1252,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info13.options.path}`));
+          handleResult(new Error(`Request timeout: ${info14.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -1279,27 +1279,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info13 = {};
-        info13.parsedUrl = requestUrl;
-        const usingSsl = info13.parsedUrl.protocol === "https:";
-        info13.httpModule = usingSsl ? https : http;
+        const info14 = {};
+        info14.parsedUrl = requestUrl;
+        const usingSsl = info14.parsedUrl.protocol === "https:";
+        info14.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info13.options = {};
-        info13.options.host = info13.parsedUrl.hostname;
-        info13.options.port = info13.parsedUrl.port ? parseInt(info13.parsedUrl.port) : defaultPort;
-        info13.options.path = (info13.parsedUrl.pathname || "") + (info13.parsedUrl.search || "");
-        info13.options.method = method;
-        info13.options.headers = this._mergeHeaders(headers);
+        info14.options = {};
+        info14.options.host = info14.parsedUrl.hostname;
+        info14.options.port = info14.parsedUrl.port ? parseInt(info14.parsedUrl.port) : defaultPort;
+        info14.options.path = (info14.parsedUrl.pathname || "") + (info14.parsedUrl.search || "");
+        info14.options.method = method;
+        info14.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info13.options.headers["user-agent"] = this.userAgent;
+          info14.options.headers["user-agent"] = this.userAgent;
         }
-        info13.options.agent = this._getAgent(info13.parsedUrl);
+        info14.options.agent = this._getAgent(info14.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info13.options);
+            handler.prepareRequest(info14.options);
           }
         }
-        return info13;
+        return info14;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -2143,10 +2143,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info13(message) {
+    function info14(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info13;
+    exports.info = info14;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -70111,7 +70111,7 @@ var require_semver2 = __commonJS({
 var import_core12 = __toESM(require_core());
 
 // release/src/common/utils.ts
-var import_console = require("console");
+var import_console2 = require("console");
 
 // release/src/common/inputs.ts
 var import_github = __toESM(require_github());
@@ -70119,6 +70119,7 @@ var import_core3 = __toESM(require_core());
 var import_jira = __toESM(require_out());
 var import_fs = require("fs");
 var import_promises = require("fs/promises");
+var import_console = require("console");
 
 // lib/github.ts
 var import_core = __toESM(require_core());
@@ -70424,18 +70425,24 @@ var getJiraClient = () => {
   }
   return jiraClient;
 };
+var debug = (text) => {
+  const shouldDebug = getBooleanInput("debug", false);
+  if (shouldDebug) {
+    (0, import_console.info)(text);
+  }
+};
 
 // release/src/common/utils.ts
 var logIssues = (issues) => {
-  (0, import_console.info)(`Issues:`);
+  (0, import_console2.info)(`Issues:`);
   issues.forEach(({ issue }) => {
-    (0, import_console.info)(issue);
+    (0, import_console2.info)(issue);
   });
 };
 var logAvailableRequests = async () => {
   const octokit = getOctoKitClient();
   const core = (await octokit.request("GET /rate_limit", {})).data.resources.core;
-  (0, import_console.info)(
+  (0, import_console2.info)(
     `Remaining github API calls: ${core.remaining}. Rate limit will reset at ${new Date(
       core.reset * 1e3
     ).toLocaleTimeString()}.`
@@ -70443,12 +70450,12 @@ var logAvailableRequests = async () => {
 };
 
 // release/src/ping.ts
-var import_console2 = require("console");
+var import_console3 = require("console");
 var prepareWorkflowId = "prepare-on-demand.yml";
 async function ping() {
   const repo = getReleaseRepo();
   if (isDryRun()) {
-    (0, import_console2.info)(
+    (0, import_console3.info)(
       `Would have dispatched workflow ${prepareWorkflowId} of exivity/${repo}#main`
     );
     return;
@@ -72048,7 +72055,6 @@ var getMissingReleaseNotes = pipe(
 );
 
 // release/src/jira/getRepoJiraIssues.ts
-var import_console3 = require("console");
 var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
 var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
 var getRepoJiraIssues = async (repo) => {
@@ -72096,7 +72102,7 @@ var getRepoJiraIssues = async (repo) => {
             if (!issue || none_default(equals_default(issueType), ["feat", "fix"]))
               return [];
             const epic = getEpic(issue);
-            (0, import_console3.debug)(`
+            debug(`
               Release note for ${issue.key}:
               title: ${getReleaseNotesTitle(issue)}
               description: ${getReleaseNotesDescription(issue)}
@@ -72370,6 +72376,7 @@ async function writeChangelog(upcomingVersion, issues) {
   const changelogPath = getChangeLogPath();
   const currentPublicChangelogContents = await getChangeLog();
   const publicChangelogContents = formatPublicChangelog(upcomingVersion, issues);
+  debug(`Changelog updates: ${publicChangelogContents}`);
   if (isDryRun()) {
     (0, import_core10.info)(`Dry run, not writing changelog`);
   } else {

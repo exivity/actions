@@ -29,7 +29,7 @@ import {
   getEpic,
   getIssueType,
 } from './utils'
-import { debug } from 'console'
+import { debug } from '../common/inputs'
 
 export const getFirstLine = pipe(split('\n'), pathOr('', [0]))
 export const removeFirstLine = pipe(split('\n'), tail, join('\n'))

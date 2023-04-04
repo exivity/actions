@@ -2,7 +2,7 @@ import { writeFile } from 'fs/promises'
 import { info } from '@actions/core'
 
 import { JiraIssue } from '../jira/getRepoJiraIssues'
-import { getChangeLog, getChangeLogPath, isDryRun } from './inputs'
+import { debug, getChangeLog, getChangeLogPath, isDryRun } from './inputs'
 import { formatPublicChangelog } from './formatChangelog'
 
 export async function writeChangelog(
@@ -14,6 +14,8 @@ export async function writeChangelog(
   const currentPublicChangelogContents = await getChangeLog()
 
   const publicChangelogContents = formatPublicChangelog(upcomingVersion, issues)
+
+  debug(`Changelog updates: ${publicChangelogContents}`)
 
   if (isDryRun()) {
     info(`Dry run, not writing changelog`)
