@@ -92,9 +92,9 @@ export const getRepoJiraIssues = async (repo: string) => {
             const epic = getEpic(issue)
 
             debug(`
-              Release note for ${issue.key}:\n
-              title: ${getReleaseNotesTitle(issue)}\n
-              description: ${getReleaseNotesDescription(issue)}\n
+              Release note for ${issue.key}:
+              title: ${getReleaseNotesTitle(issue)}
+              description: ${getReleaseNotesDescription(issue)}
               --------------------------------------------------
             `)
 

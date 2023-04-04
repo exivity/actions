@@ -72098,11 +72098,8 @@ var getRepoJiraIssues = async (repo) => {
             const epic = getEpic(issue);
             (0, import_console3.debug)(`
               Release note for ${issue.key}:
-
               title: ${getReleaseNotesTitle(issue)}
-
               description: ${getReleaseNotesDescription(issue)}
-
               --------------------------------------------------
             `);
             return {
