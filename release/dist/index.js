@@ -718,7 +718,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug("making CONNECT request");
+      debug2("making CONNECT request");
       var connectReq = self2.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -738,7 +738,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug(
+          debug2(
             "tunneling socket could not be established, statusCode=%d",
             res.statusCode
           );
@@ -750,7 +750,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug("got illegal response body from proxy");
+          debug2("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -758,13 +758,13 @@ var require_tunnel = __commonJS({
           self2.removeSocket(placeholder);
           return;
         }
-        debug("tunneling connection has established");
+        debug2("tunneling connection has established");
         self2.sockets[self2.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug(
+        debug2(
           "tunneling socket could not be established, cause=%s\n",
           cause.message,
           cause.stack
@@ -826,9 +826,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug;
+    var debug2;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug = function() {
+      debug2 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -838,10 +838,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug = function() {
+      debug2 = function() {
       };
     }
-    exports.debug = debug;
+    exports.debug = debug2;
   }
 });
 
@@ -2127,10 +2127,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug(message) {
+    function debug2(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug;
+    exports.debug = debug2;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -19046,19 +19046,19 @@ var require_xhr = __commonJS({
 // node_modules/follow-redirects/debug.js
 var require_debug = __commonJS({
   "node_modules/follow-redirects/debug.js"(exports, module2) {
-    var debug;
+    var debug2;
     module2.exports = function() {
-      if (!debug) {
+      if (!debug2) {
         try {
-          debug = require("debug")("follow-redirects");
+          debug2 = require("debug")("follow-redirects");
         } catch (error) {
         }
-        if (typeof debug !== "function") {
-          debug = function() {
+        if (typeof debug2 !== "function") {
+          debug2 = function() {
           };
         }
       }
-      debug.apply(null, arguments);
+      debug2.apply(null, arguments);
     };
   }
 });
@@ -19072,7 +19072,7 @@ var require_follow_redirects = __commonJS({
     var https = require("https");
     var Writable = require("stream").Writable;
     var assert = require("assert");
-    var debug = require_debug();
+    var debug2 = require_debug();
     var events = ["abort", "aborted", "connect", "error", "socket", "timeout"];
     var eventHandlers = /* @__PURE__ */ Object.create(null);
     events.forEach(function(event) {
@@ -19351,7 +19351,7 @@ var require_follow_redirects = __commonJS({
         this.emit("error", new RedirectionError(cause));
         return;
       }
-      debug("redirecting to", redirectUrl);
+      debug2("redirecting to", redirectUrl);
       this._isRedirect = true;
       var redirectUrlParts = url.parse(redirectUrl);
       Object.assign(this._options, redirectUrlParts);
@@ -19417,7 +19417,7 @@ var require_follow_redirects = __commonJS({
           }, input, options);
           options.nativeProtocols = nativeProtocols;
           assert.equal(options.protocol, protocol, "protocol mismatch");
-          debug("options", options);
+          debug2("options", options);
           return new RedirectableRequest(options, callback);
         }
         function get(input, options, callback) {
@@ -67765,9 +67765,9 @@ var require_constants = __commonJS({
 // node_modules/semver/internal/debug.js
 var require_debug2 = __commonJS({
   "node_modules/semver/internal/debug.js"(exports, module2) {
-    var debug = typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG) ? (...args) => console.error("SEMVER", ...args) : () => {
+    var debug2 = typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG) ? (...args) => console.error("SEMVER", ...args) : () => {
     };
-    module2.exports = debug;
+    module2.exports = debug2;
   }
 });
 
@@ -67775,7 +67775,7 @@ var require_debug2 = __commonJS({
 var require_re = __commonJS({
   "node_modules/semver/internal/re.js"(exports, module2) {
     var { MAX_SAFE_COMPONENT_LENGTH } = require_constants();
-    var debug = require_debug2();
+    var debug2 = require_debug2();
     exports = module2.exports = {};
     var re = exports.re = [];
     var src = exports.src = [];
@@ -67783,7 +67783,7 @@ var require_re = __commonJS({
     var R = 0;
     var createToken = (name, value, isGlobal) => {
       const index = R++;
-      debug(name, index, value);
+      debug2(name, index, value);
       t[name] = index;
       src[index] = value;
       re[index] = new RegExp(value, isGlobal ? "g" : void 0);
@@ -67870,7 +67870,7 @@ var require_identifiers = __commonJS({
 // node_modules/semver/classes/semver.js
 var require_semver = __commonJS({
   "node_modules/semver/classes/semver.js"(exports, module2) {
-    var debug = require_debug2();
+    var debug2 = require_debug2();
     var { MAX_LENGTH, MAX_SAFE_INTEGER } = require_constants();
     var { re, t } = require_re();
     var parseOptions = require_parse_options();
@@ -67892,7 +67892,7 @@ var require_semver = __commonJS({
             `version is longer than ${MAX_LENGTH} characters`
           );
         }
-        debug("SemVer", version2, options);
+        debug2("SemVer", version2, options);
         this.options = options;
         this.loose = !!options.loose;
         this.includePrerelease = !!options.includePrerelease;
@@ -67940,7 +67940,7 @@ var require_semver = __commonJS({
         return this.version;
       }
       compare(other) {
-        debug("SemVer.compare", this.version, this.options, other);
+        debug2("SemVer.compare", this.version, this.options, other);
         if (!(other instanceof SemVer)) {
           if (typeof other === "string" && other === this.version) {
             return 0;
@@ -67973,7 +67973,7 @@ var require_semver = __commonJS({
         do {
           const a = this.prerelease[i];
           const b = other.prerelease[i];
-          debug("prerelease compare", i, a, b);
+          debug2("prerelease compare", i, a, b);
           if (a === void 0 && b === void 0) {
             return 0;
           } else if (b === void 0) {
@@ -67995,7 +67995,7 @@ var require_semver = __commonJS({
         do {
           const a = this.build[i];
           const b = other.build[i];
-          debug("prerelease compare", i, a, b);
+          debug2("prerelease compare", i, a, b);
           if (a === void 0 && b === void 0) {
             return 0;
           } else if (b === void 0) {
@@ -69156,20 +69156,20 @@ var require_range = __commonJS({
         const loose = this.options.loose;
         const hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
         range = range.replace(hr, hyphenReplace(this.options.includePrerelease));
-        debug("hyphen replace", range);
+        debug2("hyphen replace", range);
         range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
-        debug("comparator trim", range);
+        debug2("comparator trim", range);
         range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
         range = range.replace(re[t.CARETTRIM], caretTrimReplace);
         range = range.split(/\s+/).join(" ");
         let rangeList = range.split(" ").map((comp) => parseComparator(comp, this.options)).join(" ").split(/\s+/).map((comp) => replaceGTE0(comp, this.options));
         if (loose) {
           rangeList = rangeList.filter((comp) => {
-            debug("loose invalid filter", comp, this.options);
+            debug2("loose invalid filter", comp, this.options);
             return !!comp.match(re[t.COMPARATORLOOSE]);
           });
         }
-        debug("range list", rangeList);
+        debug2("range list", rangeList);
         const rangeMap = /* @__PURE__ */ new Map();
         const comparators = rangeList.map((comp) => new Comparator(comp, this.options));
         for (const comp of comparators) {
@@ -69224,7 +69224,7 @@ var require_range = __commonJS({
     var cache = new LRU({ max: 1e3 });
     var parseOptions = require_parse_options();
     var Comparator = require_comparator();
-    var debug = require_debug2();
+    var debug2 = require_debug2();
     var SemVer = require_semver();
     var {
       re,
@@ -69248,15 +69248,15 @@ var require_range = __commonJS({
       return result;
     };
     var parseComparator = (comp, options) => {
-      debug("comp", comp, options);
+      debug2("comp", comp, options);
       comp = replaceCarets(comp, options);
-      debug("caret", comp);
+      debug2("caret", comp);
       comp = replaceTildes(comp, options);
-      debug("tildes", comp);
+      debug2("tildes", comp);
       comp = replaceXRanges(comp, options);
-      debug("xrange", comp);
+      debug2("xrange", comp);
       comp = replaceStars(comp, options);
-      debug("stars", comp);
+      debug2("stars", comp);
       return comp;
     };
     var isX = (id) => !id || id.toLowerCase() === "x" || id === "*";
@@ -69266,7 +69266,7 @@ var require_range = __commonJS({
     var replaceTilde = (comp, options) => {
       const r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
       return comp.replace(r, (_, M, m, p, pr) => {
-        debug("tilde", comp, _, M, m, p, pr);
+        debug2("tilde", comp, _, M, m, p, pr);
         let ret;
         if (isX(M)) {
           ret = "";
@@ -69275,12 +69275,12 @@ var require_range = __commonJS({
         } else if (isX(p)) {
           ret = `>=${M}.${m}.0 <${M}.${+m + 1}.0-0`;
         } else if (pr) {
-          debug("replaceTilde pr", pr);
+          debug2("replaceTilde pr", pr);
           ret = `>=${M}.${m}.${p}-${pr} <${M}.${+m + 1}.0-0`;
         } else {
           ret = `>=${M}.${m}.${p} <${M}.${+m + 1}.0-0`;
         }
-        debug("tilde return", ret);
+        debug2("tilde return", ret);
         return ret;
       });
     };
@@ -69288,11 +69288,11 @@ var require_range = __commonJS({
       return replaceCaret(c, options);
     }).join(" ");
     var replaceCaret = (comp, options) => {
-      debug("caret", comp, options);
+      debug2("caret", comp, options);
       const r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
       const z = options.includePrerelease ? "-0" : "";
       return comp.replace(r, (_, M, m, p, pr) => {
-        debug("caret", comp, _, M, m, p, pr);
+        debug2("caret", comp, _, M, m, p, pr);
         let ret;
         if (isX(M)) {
           ret = "";
@@ -69305,7 +69305,7 @@ var require_range = __commonJS({
             ret = `>=${M}.${m}.0${z} <${+M + 1}.0.0-0`;
           }
         } else if (pr) {
-          debug("replaceCaret pr", pr);
+          debug2("replaceCaret pr", pr);
           if (M === "0") {
             if (m === "0") {
               ret = `>=${M}.${m}.${p}-${pr} <${M}.${m}.${+p + 1}-0`;
@@ -69316,7 +69316,7 @@ var require_range = __commonJS({
             ret = `>=${M}.${m}.${p}-${pr} <${+M + 1}.0.0-0`;
           }
         } else {
-          debug("no pr");
+          debug2("no pr");
           if (M === "0") {
             if (m === "0") {
               ret = `>=${M}.${m}.${p}${z} <${M}.${m}.${+p + 1}-0`;
@@ -69327,12 +69327,12 @@ var require_range = __commonJS({
             ret = `>=${M}.${m}.${p} <${+M + 1}.0.0-0`;
           }
         }
-        debug("caret return", ret);
+        debug2("caret return", ret);
         return ret;
       });
     };
     var replaceXRanges = (comp, options) => {
-      debug("replaceXRanges", comp, options);
+      debug2("replaceXRanges", comp, options);
       return comp.split(/\s+/).map((c) => {
         return replaceXRange(c, options);
       }).join(" ");
@@ -69341,7 +69341,7 @@ var require_range = __commonJS({
       comp = comp.trim();
       const r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
       return comp.replace(r, (ret, gtlt, M, m, p, pr) => {
-        debug("xRange", comp, ret, gtlt, M, m, p, pr);
+        debug2("xRange", comp, ret, gtlt, M, m, p, pr);
         const xM = isX(M);
         const xm = xM || isX(m);
         const xp = xm || isX(p);
@@ -69388,16 +69388,16 @@ var require_range = __commonJS({
         } else if (xp) {
           ret = `>=${M}.${m}.0${pr} <${M}.${+m + 1}.0-0`;
         }
-        debug("xRange return", ret);
+        debug2("xRange return", ret);
         return ret;
       });
     };
     var replaceStars = (comp, options) => {
-      debug("replaceStars", comp, options);
+      debug2("replaceStars", comp, options);
       return comp.trim().replace(re[t.STAR], "");
     };
     var replaceGTE0 = (comp, options) => {
-      debug("replaceGTE0", comp, options);
+      debug2("replaceGTE0", comp, options);
       return comp.trim().replace(re[options.includePrerelease ? t.GTE0PRE : t.GTE0], "");
     };
     var hyphenReplace = (incPr) => ($0, from, fM, fm, fp, fpr, fb, to, tM, tm, tp, tpr, tb) => {
@@ -69435,7 +69435,7 @@ var require_range = __commonJS({
       }
       if (version2.prerelease.length && !options.includePrerelease) {
         for (let i = 0; i < set.length; i++) {
-          debug(set[i].semver);
+          debug2(set[i].semver);
           if (set[i].semver === Comparator.ANY) {
             continue;
           }
@@ -69470,7 +69470,7 @@ var require_comparator = __commonJS({
             comp = comp.value;
           }
         }
-        debug("comparator", comp, options);
+        debug2("comparator", comp, options);
         this.options = options;
         this.loose = !!options.loose;
         this.parse(comp);
@@ -69479,7 +69479,7 @@ var require_comparator = __commonJS({
         } else {
           this.value = this.operator + this.semver.version;
         }
-        debug("comp", this);
+        debug2("comp", this);
       }
       parse(comp) {
         const r = this.options.loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR];
@@ -69501,7 +69501,7 @@ var require_comparator = __commonJS({
         return this.value;
       }
       test(version2) {
-        debug("Comparator.test", version2, this.options.loose);
+        debug2("Comparator.test", version2, this.options.loose);
         if (this.semver === ANY || version2 === ANY) {
           return true;
         }
@@ -69548,7 +69548,7 @@ var require_comparator = __commonJS({
     var parseOptions = require_parse_options();
     var { re, t } = require_re();
     var cmp = require_cmp();
-    var debug = require_debug2();
+    var debug2 = require_debug2();
     var SemVer = require_semver();
     var Range = require_range();
   }
@@ -70463,7 +70463,7 @@ async function ping() {
 }
 
 // release/src/prepare.ts
-var import_console6 = require("console");
+var import_console7 = require("console");
 
 // node_modules/ramda/es/internal/_isPlaceholder.js
 function _isPlaceholder(a) {
@@ -72048,6 +72048,7 @@ var getMissingReleaseNotes = pipe(
 );
 
 // release/src/jira/getRepoJiraIssues.ts
+var import_console3 = require("console");
 var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
 var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
 var getRepoJiraIssues = async (repo) => {
@@ -72095,6 +72096,15 @@ var getRepoJiraIssues = async (repo) => {
             if (!issue || none_default(equals_default(issueType), ["feat", "fix"]))
               return [];
             const epic = getEpic(issue);
+            (0, import_console3.debug)(`
+              Release note for ${issue.key}:
+
+              title: ${getReleaseNotesTitle(issue)}
+
+              description: ${getReleaseNotesDescription(issue)}
+
+              --------------------------------------------------
+            `);
             return {
               title: getReleaseNotesTitle(issue),
               description: getReleaseNotesDescription(issue),
@@ -72117,7 +72127,7 @@ var getRepoJiraIssues = async (repo) => {
 
 // release/src/common/gitActions.ts
 var import_core8 = __toESM(require_core());
-var import_console3 = require("console");
+var import_console4 = require("console");
 
 // release/src/common/formatPrChangelog.ts
 var features = filter_default(
@@ -72176,22 +72186,22 @@ var releaseBranch = "main";
 var upcomingReleaseBranch = "chore/upcoming-release";
 async function switchToReleaseBranch() {
   if (isDryRun()) {
-    (0, import_console3.info)(`Dry run, not switching branches`);
+    (0, import_console4.info)(`Dry run, not switching branches`);
   } else if (await gitHasChanges()) {
-    (0, import_console3.info)("Detected uncommitted changes, aborting");
+    (0, import_console4.info)("Detected uncommitted changes, aborting");
   } else {
     await gitForceSwitchBranch(upcomingReleaseBranch, `origin/${releaseBranch}`);
   }
 }
 async function commitAndPush(title) {
   if (isDryRun()) {
-    (0, import_console3.info)(`Dry run, not committing and pushing changes`);
+    (0, import_console4.info)(`Dry run, not committing and pushing changes`);
   } else {
     await gitAdd();
     await gitSetAuthor("Exivity bot", "bot@exivity.com");
     await gitCommit(title);
     await gitPush(true);
-    (0, import_console3.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
+    (0, import_console4.info)(`Written changes to branch: ${upcomingReleaseBranch}`);
   }
   return title;
 }
@@ -72199,7 +72209,7 @@ async function tagRepositories(lockfile) {
   const octokit = getOctoKitClient();
   for (const [repository, sha] of Object.entries(lockfile.repositories)) {
     if (isDryRun()) {
-      (0, import_console3.info)(`Dry run, not tagging ${repository}`);
+      (0, import_console4.info)(`Dry run, not tagging ${repository}`);
     } else {
       try {
         await createLightweightTag({
@@ -72220,12 +72230,12 @@ async function tagAllRepositories() {
   const dryRun = isDryRun();
   const lockfile = await getLockFile();
   if (dryRun) {
-    (0, import_console3.info)(`Dry run, not tagging ${repository.fqn}`);
+    (0, import_console4.info)(`Dry run, not tagging ${repository.fqn}`);
   } else {
     try {
       await gitTag(lockfile.version);
       await gitPushTags();
-      (0, import_console3.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
+      (0, import_console4.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
     } catch (e) {
       (0, import_core8.warning)(`Could not push tag to ${repository.fqn}: ${e}`);
     }
@@ -72258,7 +72268,7 @@ async function createOrUpdatePullRequest({
       title,
       body
     });
-    (0, import_console3.info)(`Updated pull request #${pr.data.number}`);
+    (0, import_console4.info)(`Updated pull request #${pr.data.number}`);
     return pr.data;
   } else {
     const pr = await octokit.rest.pulls.create({
@@ -72269,7 +72279,7 @@ async function createOrUpdatePullRequest({
       head: upcomingReleaseBranch2,
       base: releaseBranch2
     });
-    (0, import_console3.info)(`Opened pull request #${pr.data.number}`);
+    (0, import_console4.info)(`Opened pull request #${pr.data.number}`);
     return pr.data;
   }
 }
@@ -72277,7 +72287,7 @@ async function updatePr(title, issues) {
   const octokit = getOctoKitClient();
   const prTemplate = await getPrTemplate();
   if (isDryRun()) {
-    (0, import_console3.info)(`Dry run, not creating pull request`);
+    (0, import_console4.info)(`Dry run, not creating pull request`);
   } else {
     const prChangelogContents = formatPrChangelog(issues);
     const pr = await createOrUpdatePullRequest({
@@ -72288,7 +72298,7 @@ async function updatePr(title, issues) {
       upcomingReleaseBranch,
       releaseBranch
     });
-    (0, import_console3.info)(pr.html_url);
+    (0, import_console4.info)(pr.html_url);
   }
 }
 
@@ -72382,19 +72392,19 @@ ${publicChangelogContents}
 }
 
 // release/src/common/writeIssueFile.ts
-var import_console4 = require("console");
+var import_console5 = require("console");
 var import_promises3 = require("fs/promises");
 async function writeIssueFile(jiraIssueKeys) {
   if (isDryRun()) {
-    (0, import_console4.info)(`Dry run, not writing release jira keys.`);
+    (0, import_console5.info)(`Dry run, not writing release jira keys.`);
   } else {
     await (0, import_promises3.writeFile)("releaseJiraKeys.md", jiraIssueKeys.join("\n"));
-    (0, import_console4.info)(`Written jira keys to: releaseJiraKeys.md`);
+    (0, import_console5.info)(`Written jira keys to: releaseJiraKeys.md`);
   }
 }
 async function getIssuesFromIssueFile() {
   if (isDryRun()) {
-    (0, import_console4.info)(`Dry run, not reading release jira keys.`);
+    (0, import_console5.info)(`Dry run, not reading release jira keys.`);
     return [];
   } else {
     try {
@@ -72409,11 +72419,11 @@ async function getIssuesFromIssueFile() {
 }
 
 // release/src/common/writeLockFile.ts
-var import_console5 = require("console");
+var import_console6 = require("console");
 var import_promises4 = require("fs/promises");
 async function writeLockFile(version2) {
   if (isDryRun()) {
-    (0, import_console5.info)(`Dry run, not writing lockfile`);
+    (0, import_console6.info)(`Dry run, not writing lockfile`);
   } else {
     const repositories = await getRepositories();
     const octokit = getOctoKitClient();
@@ -72435,7 +72445,7 @@ async function writeLockFile(version2) {
       )
     };
     await (0, import_promises4.writeFile)(lockFilePath, JSON.stringify(lockfile, null, 2) + "\n");
-    (0, import_console5.info)(`Written lockfile to: ${lockFilePath}`);
+    (0, import_console6.info)(`Written lockfile to: ${lockFilePath}`);
   }
 }
 
@@ -72448,7 +72458,7 @@ async function prepare() {
   const issuesPerRepo = await Promise.all(repositories.map(getRepoJiraIssues));
   const issues = issuesPerRepo.flatMap(issuesProp);
   if (isEmpty_default(issues)) {
-    (0, import_console6.info)(`No features or fixes to release`);
+    (0, import_console7.info)(`No features or fixes to release`);
     return;
   }
   logIssues(issues);
@@ -72471,7 +72481,7 @@ async function release() {
 
 // release/src/jira/jiraActions.ts
 var import_core11 = __toESM(require_core());
-var import_console7 = require("console");
+var import_console8 = require("console");
 var transitionIds = {
   "NoActionNeeded->New": "201",
   "New->Accepted": "171",
@@ -72524,7 +72534,7 @@ async function transitionToReleased(issueIdOrKey) {
         id: transitionIds[flowKey]
       }
     }).catch((err) => {
-      (0, import_console7.info)(`Could not transition ${issueIdOrKey}: ${JSON.stringify(err)}`);
+      (0, import_console8.info)(`Could not transition ${issueIdOrKey}: ${JSON.stringify(err)}`);
     });
   }
 }
@@ -72575,11 +72585,11 @@ async function getReleaseVersion() {
 }
 async function updateIssueFixVersion(jiraIssueIds) {
   const jiraClient2 = getJiraClient();
-  (0, import_console7.info)("Create project release version...");
+  (0, import_console8.info)("Create project release version...");
   const version2 = await getReleaseVersion();
   if (!version2)
     return;
-  (0, import_console7.info)("Update issues with version...");
+  (0, import_console8.info)("Update issues with version...");
   jiraIssueIds.forEach((issueIdOrKey) => {
     jiraClient2.issues.editIssue({
       issueIdOrKey,
@@ -72587,7 +72597,7 @@ async function updateIssueFixVersion(jiraIssueIds) {
         fixVersions: [{ id: version2.id }]
       }
     }).then(() => {
-      (0, import_console7.info)(`Set fix version of ${issueIdOrKey} to ${version2.name}`);
+      (0, import_console8.info)(`Set fix version of ${issueIdOrKey} to ${version2.name}`);
     }).catch((err) => {
       (0, import_core11.warning)(
         `failed to set fixVersion for issue ${issueIdOrKey} to ${version2.name}: ${JSON.stringify(err)}`
@@ -72598,11 +72608,11 @@ async function updateIssueFixVersion(jiraIssueIds) {
 async function updateIssuesStatusAndFixVersion() {
   const jiraIssues = await getIssuesFromIssueFile();
   if (isEmpty_default(jiraIssues) || isDryRun()) {
-    (0, import_console7.info)("No issues to transition");
+    (0, import_console8.info)("No issues to transition");
   }
-  (0, import_console7.info)("Transitioning issues...");
+  (0, import_console8.info)("Transitioning issues...");
   await Promise.all(jiraIssues.map(transitionToReleased));
-  (0, import_console7.info)("Add fix version to issues...");
+  (0, import_console8.info)("Add fix version to issues...");
   updateIssueFixVersion(jiraIssues);
 }
 

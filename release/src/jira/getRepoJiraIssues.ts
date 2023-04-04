@@ -29,6 +29,7 @@ import {
   getEpic,
   getIssueType,
 } from './utils'
+import { debug } from 'console'
 
 export const getFirstLine = pipe(split('\n'), pathOr('', [0]))
 export const removeFirstLine = pipe(split('\n'), tail, join('\n'))
@@ -89,6 +90,13 @@ export const getRepoJiraIssues = async (repo: string) => {
             if (!issue || none(equals(issueType), ['feat', 'fix'])) return []
 
             const epic = getEpic(issue)
+
+            debug(`
+              Release note for ${issue.key}:\n
+              title: ${getReleaseNotesTitle(issue)}\n
+              description: ${getReleaseNotesDescription(issue)}\n
+              --------------------------------------------------
+            `)
 
             return {
               title: getReleaseNotesTitle(issue),

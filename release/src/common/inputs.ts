@@ -3,6 +3,7 @@ import { getInput } from '@actions/core'
 import { Version2Client } from 'jira.js'
 import { existsSync } from 'fs'
 import { readFile } from 'fs/promises'
+import { info } from 'console'
 
 import { getToken } from '../../../lib/github'
 import { getBooleanInput } from '../../../lib/core'
@@ -95,4 +96,12 @@ export const getJiraClient = () => {
   }
 
   return jiraClient
+}
+
+export const debug = (text: string) => {
+  const shouldDebug = getBooleanInput('debug', false)
+
+  if (shouldDebug) {
+    info(text)
+  }
 }

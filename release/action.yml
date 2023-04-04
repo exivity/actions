@@ -41,6 +41,10 @@ inputs:
   jira-token:
     description: The Jira token (required in prepare and release mode)
     required: false
+  debug:
+    description: If enabled will give extra logging
+    required: false
+    default: 'false'
 runs:
   using: node16
   main: dist/index.js
