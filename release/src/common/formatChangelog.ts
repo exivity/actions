@@ -5,7 +5,7 @@ import { debug } from './inputs'
 
 export function formatPublicChangelog(version: string, issues: JiraIssue[]) {
   debug(`features: ${JSON.stringify(features(issues), null, 2)}}`)
-  debug(`fixes: ${JSON.stringify(features(issues), null, 2)}}`)
+  debug(`fixes: ${JSON.stringify(fixes(issues), null, 2)}}`)
 
   return [
     `## ${version}`,
