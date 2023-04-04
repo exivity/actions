@@ -72130,13 +72130,13 @@ var import_console4 = require("console");
 // release/src/common/formatPrChangelog.ts
 var features = filter_default(
   both_default(
-    propEq_default("type", "feat"),
+    propEq_default("feat", "type"),
     propEq_default("noReleaseNotesNeeded", false)
   )
 );
 var fixes = filter_default(
   both_default(
-    propEq_default("type", "fix"),
+    propEq_default("fix", "type"),
     propEq_default("noReleaseNotesNeeded", false)
   )
 );

@@ -2,16 +2,18 @@ import { both, filter, isEmpty, propEq } from 'ramda'
 
 import { JiraIssue } from '../jira/getRepoJiraIssues'
 
+// ramda types do not reflect new propEq yet 28.23
 export const features = filter(
   both<(issue: JiraIssue) => boolean>(
-    propEq('type', 'feat'),
+    propEq('feat', 'type'),
     propEq('noReleaseNotesNeeded', false)
   )
 )
 
+// ramda types do not reflect new propEq yet 28.23
 export const fixes = filter(
   both<(issue: JiraIssue) => boolean>(
-    propEq('type', 'fix'),
+    propEq('fix', 'type'),
     propEq('noReleaseNotesNeeded', false)
   )
 )
