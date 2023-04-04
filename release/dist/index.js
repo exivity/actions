@@ -72131,13 +72131,13 @@ var import_console4 = require("console");
 var features = filter_default(
   both_default(
     propEq_default("feat", "type"),
-    propEq_default("noReleaseNotesNeeded", false)
+    propEq_default(false, "noReleaseNotesNeeded")
   )
 );
 var fixes = filter_default(
   both_default(
     propEq_default("fix", "type"),
-    propEq_default("noReleaseNotesNeeded", false)
+    propEq_default(false, "noReleaseNotesNeeded")
   )
 );
 var noReleaseNotesNeeded2 = filter_default(propEq_default("noReleaseNotesNeeded", true));
@@ -72303,8 +72303,8 @@ async function updatePr(title, issues) {
 // release/src/common/inferVersionFromJiraIssues.ts
 var import_core9 = __toESM(require_core());
 var import_semver2 = __toESM(require_semver2());
-var containsFeature = any_default(propEq_default("type", "feat"));
-var containsBreakingChange = any_default(propEq_default("breaking", true));
+var containsFeature = any_default(propEq_default("feat", "type"));
+var containsBreakingChange = any_default(propEq_default(true, "breaking"));
 var description = {
   major: "major: breaking change detected",
   minor: "minor: new feature detected",

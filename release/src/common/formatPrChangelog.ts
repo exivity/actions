@@ -6,7 +6,7 @@ import { JiraIssue } from '../jira/getRepoJiraIssues'
 export const features = filter(
   both<(issue: JiraIssue) => boolean>(
     propEq('feat', 'type'),
-    propEq('noReleaseNotesNeeded', false)
+    propEq(false, 'noReleaseNotesNeeded')
   )
 )
 
@@ -14,7 +14,7 @@ export const features = filter(
 export const fixes = filter(
   both<(issue: JiraIssue) => boolean>(
     propEq('fix', 'type'),
-    propEq('noReleaseNotesNeeded', false)
+    propEq(false, 'noReleaseNotesNeeded')
   )
 )
 

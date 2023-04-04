@@ -4,8 +4,9 @@ import { any, propEq } from 'ramda'
 
 export type VersionIncrement = 'major' | 'minor' | 'patch'
 
-const containsFeature = any(propEq('type', 'feat'))
-const containsBreakingChange = any(propEq('breaking', true))
+// ramda types not updated for propEq yet 28.23
+const containsFeature = any(propEq('feat', 'type'))
+const containsBreakingChange = any(propEq(true, 'breaking'))
 
 const description = {
   major: 'major: breaking change detected',
