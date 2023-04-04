@@ -98,10 +98,10 @@ export const getJiraClient = () => {
   return jiraClient
 }
 
-export const debug = (text: string) => {
+export const debug = (text: string | (() => string)) => {
   const shouldDebug = getBooleanInput('debug', false)
 
   if (shouldDebug) {
-    info(text)
+    info(`[debug] ${typeof text === 'function' ? text() : text}`)
   }
 }

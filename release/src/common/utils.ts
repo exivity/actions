@@ -6,7 +6,7 @@ export const logIssues = (issues: { issue: string }[]) => {
   issues.forEach(({ issue }) => {
     info(issue)
   })
-  debug(`Issues: ${JSON.stringify(issues, null, 2)}`)
+  debug(() => `issues: ${JSON.stringify(issues, null, 2)}`)
 }
 
 export const logAvailableRequests = async () => {

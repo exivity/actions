@@ -70428,7 +70428,7 @@ var getJiraClient = () => {
 var debug = (text) => {
   const shouldDebug = getBooleanInput("debug", false);
   if (shouldDebug) {
-    (0, import_console.info)(text);
+    (0, import_console.info)(`[debug] ${typeof text === "function" ? text() : text}`);
   }
 };
 
@@ -70438,7 +70438,7 @@ var logIssues = (issues) => {
   issues.forEach(({ issue }) => {
     (0, import_console2.info)(issue);
   });
-  debug(`Issues: ${JSON.stringify(issues, null, 2)}`);
+  debug(() => `issues: ${JSON.stringify(issues, null, 2)}`);
 };
 var logAvailableRequests = async () => {
   const octokit = getOctoKitClient();
@@ -72332,9 +72332,9 @@ var import_core10 = __toESM(require_core());
 
 // release/src/common/formatChangelog.ts
 function formatPublicChangelog(version2, issues) {
-  debug(`issues: ${JSON.stringify(issues, null, 2)}`);
-  debug(`features: ${JSON.stringify(features(issues), null, 2)}`);
-  debug(`fixes: ${JSON.stringify(fixes(issues), null, 2)}`);
+  debug(() => `issues: ${JSON.stringify(issues, null, 2)}`);
+  debug(() => `features: ${JSON.stringify(features(issues), null, 2)}`);
+  debug(() => `fixes: ${JSON.stringify(fixes(issues), null, 2)}`);
   return [
     `## ${version2}`,
     "",
