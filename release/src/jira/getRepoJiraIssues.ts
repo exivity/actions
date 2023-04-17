@@ -18,7 +18,7 @@ import {
 } from '../../../lib/github'
 import { getLatestVersion } from '../../../lib/git'
 import { parseCommitMessage } from '../../../lib/conventionalCommits'
-import { getJiraClient, getOctoKitClient } from '../common/inputs'
+import { debug, getJiraClient, getOctoKitClient } from '../common/inputs'
 
 import {
   JIRA_KEY_RGX,
@@ -68,11 +68,16 @@ export const getRepoJiraIssues = async (repo: string) => {
           sha: commit.sha,
         })
 
+        debug(() => `PR.title: ${associatedPullRequest?.title}`)
+        debug(() => `PR.body: ${associatedPullRequest?.body}`)
+
         const jiraKeys = cleanJiraKeyMatches([
           commit.commit.message.match(JIRA_KEY_RGX),
           associatedPullRequest?.title.match(JIRA_KEY_RGX),
           associatedPullRequest?.body.match(JIRA_KEY_RGX),
         ])
+
+        debug(() => `Found jira keys: ${jiraKeys.join(', ')}`)
 
         jiraIssueKeys.push(...jiraKeys)
 
