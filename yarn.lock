@@ -275,19 +275,19 @@
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-methods/-/webhooks-methods-3.0.0.tgz#4f4443605233f46abc5f85a857ba105095aa1181"
   integrity sha512-FAIyAchH9JUKXugKMC17ERAXM/56vVJekwXOON46pmUDYfU7uXB4cFY8yc8nYr5ABqVI7KjRKfFt3mZF7OcyUA==
 
-"@octokit/webhooks-types@7.0.2":
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks-types/-/webhooks-types-7.0.2.tgz#cc35efc01bcf3e0f18da6eed6ddfe4aacc793701"
-  integrity sha512-lmxpnApoRaj8AEtHXp6Dso4IMHTL+YOphjCYYbu2G6BbXiqaO6tPQF5tO14ItpLkiwbgBiTj2m4xWGRkjAcT2A==
+"@octokit/webhooks-types@7.0.3":
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks-types/-/webhooks-types-7.0.3.tgz#7b7ee3e6a0814134cfe5ecb4736e8d1c6fdb6031"
+  integrity sha512-yDw/89TBaMotdT1/4gxVaiemBhswBd+jPazhL60/rS5WqXC6JZuj5CkDql7Dhc9vAbbkrJBkWsa2sppM/g8jxQ==
 
-"@octokit/webhooks@11.1.0":
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-11.1.0.tgz#295e46f12582e69f6db7f966d0b6a8fe62d9398e"
-  integrity sha512-Yw/e8Ja1Ewc+fxfa80OfeEea+Q/WLOh3rB1XqCfExi/+NuD5Z4IqpGCD1t1qR94wl7BdmPtJxA2PbtBJSxL0Yw==
+"@octokit/webhooks@11.1.1":
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-11.1.1.tgz#be88ed287c779e53007eb606cc311063a8c4c77f"
+  integrity sha512-f+Bnzwm9sLwOi/2/8TuWTkXAnU76fuzsY9VuIVoBVBMr+LO9y0x1wndbnD97w2rVAsD/7r0ZObzBQIqbkb5a9Q==
   dependencies:
     "@octokit/request-error" "^3.0.0"
     "@octokit/webhooks-methods" "^3.0.0"
-    "@octokit/webhooks-types" "7.0.2"
+    "@octokit/webhooks-types" "7.0.3"
     aggregate-error "^3.1.0"
 
 "@types/adm-zip@0.5.0":
