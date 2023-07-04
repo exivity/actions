@@ -45,7 +45,7 @@
     "form-data": "4.0.0",
     "glob": "8.1.0",
     "glob-promise": "6.0.3",
-    "jira.js": "2.19.0",
+    "jira.js": "2.19.1",
     "js-yaml": "4.1.0",
     "mime": "3.0.0",
     "minimatch": "8.0.3",

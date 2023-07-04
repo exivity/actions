@@ -870,16 +870,16 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-jira.js@2.19.0:
-  version "2.19.0"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-2.19.0.tgz#e19eda58fda1b2b7c81160797f5693b30a2504a0"
-  integrity sha512-c7LlUtKDMJpIz7i/oacx72IADPEdgZj80SA2xAwiggPbe0R6m6TeYNZzf5rS4TPlqtbkXnS7Qqy+CqsjdayXSg==
+jira.js@2.19.1:
+  version "2.19.1"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-2.19.1.tgz#78eff53c7a874f024a5b6be6802f7ce85c8516bf"
+  integrity sha512-OlO7Tj5V6xZyX62kPDCcqBtcJ2staNCkZpB8LlXiV8cKm6rjEQYuQ0ECcQ3N2IgsVVmNqrNN4hsY5jkWHhVCyg==
   dependencies:
     atlassian-jwt "^2.0.2"
     axios "^1.4.0"
     form-data "^4.0.0"
     oauth "^0.10.0"
-    tslib "^2.5.3"
+    tslib "^2.6.0"
 
 js-yaml@4.1.0:
   version "4.1.0"
@@ -1256,10 +1256,10 @@ ts-toolbelt@^9.6.0:
   resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-9.6.0.tgz#50a25426cfed500d4a09bd1b3afb6f28879edfd5"
   integrity sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==
 
-tslib@^2.5.3:
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.5.3.tgz#24944ba2d990940e6e982c4bea147aba80209913"
-  integrity sha512-mSxlJJwl3BMEQCUNnxXBU9jP4JBktcEGhURcPR6VQVlnP0FdDEsIaz0C35dXNGLyRfrATNofF0F5p2KPxQgB+w==
+tslib@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.0.tgz#b295854684dbda164e181d259a22cd779dcd7bc3"
+  integrity sha512-7At1WUettjcSRHXCyYtTselblcHl9PJFFVKiCAy/bY97+BPZXSQ2wbq0P9s8tK2G7dFQfNnlJnPAiArVBVBsfA==
 
 tunnel@0.0.6, tunnel@^0.0.6:
   version "0.0.6"
