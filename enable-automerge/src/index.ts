@@ -109,7 +109,7 @@ async function enableAutoMerge(
 
 function isValidMergeMethod(
   mergeMethod: string
-): mergeMethod is (typeof validMergeMethods)[number] {
+): mergeMethod is typeof validMergeMethods[number] {
   return validMergeMethods.includes(mergeMethod as any)
 }
 async function run() {

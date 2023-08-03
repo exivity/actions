@@ -11,7 +11,7 @@ import {
 
 const validEvents = ['APPROVE', 'COMMENT', 'REQUEST_CHANGES'] as const
 
-function isValidEvent(event: string): event is (typeof validEvents)[number] {
+function isValidEvent(event: string): event is typeof validEvents[number] {
   return validEvents.includes(event as any)
 }
 

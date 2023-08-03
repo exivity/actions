@@ -153,8 +153,9 @@ async function run() {
   if (isEvent(eventName, 'pull_request', eventData)) {
     // We need to check if required workflow has finished
     info('Checking if workflow constraint is satisfied...')
+    const isDraft = eventData['pull_request']['draft']
 
-    if (eventData['action'] !== 'ready_for_review') {
+    if (isDraft) {
       warning(
         `[accept] Skipping: the pull request is not ready for review (it's a draft).`
       )
