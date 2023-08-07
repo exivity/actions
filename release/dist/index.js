@@ -15619,8 +15619,8 @@ var require_lodash = __commonJS({
           if (object == null) {
             return {};
           }
-          var props = arrayMap(getAllKeysIn(object), function(prop3) {
-            return [prop3];
+          var props = arrayMap(getAllKeysIn(object), function(prop) {
+            return [prop];
           });
           predicate = getIteratee(predicate);
           return basePickBy(object, props, function(value, path3) {
@@ -27437,8 +27437,8 @@ var require_asynckit = __commonJS({
 var require_populate = __commonJS({
   "node_modules/form-data/lib/populate.js"(exports, module2) {
     module2.exports = function(dst, src) {
-      Object.keys(src).forEach(function(prop3) {
-        dst[prop3] = dst[prop3] || src[prop3];
+      Object.keys(src).forEach(function(prop) {
+        dst[prop] = dst[prop] || src[prop];
       });
       return dst;
     };
@@ -27558,10 +27558,10 @@ var require_form_data = __commonJS({
         populate(headers, options.header);
       }
       var header;
-      for (var prop3 in headers) {
-        if (!headers.hasOwnProperty(prop3))
+      for (var prop in headers) {
+        if (!headers.hasOwnProperty(prop))
           continue;
-        header = headers[prop3];
+        header = headers[prop];
         if (header == null) {
           continue;
         }
@@ -27569,7 +27569,7 @@ var require_form_data = __commonJS({
           header = [header];
         }
         if (header.length) {
-          contents += prop3 + ": " + header.join("; ") + FormData2.LINE_BREAK;
+          contents += prop + ": " + header.join("; ") + FormData2.LINE_BREAK;
         }
       }
       return "--" + this.getBoundary() + FormData2.LINE_BREAK + contents + FormData2.LINE_BREAK;
@@ -28469,7 +28469,7 @@ var require_axios = __commonJS({
     var toFlatObject = (sourceObj, destObj, filter2, propFilter) => {
       let props;
       let i;
-      let prop3;
+      let prop;
       const merged = {};
       destObj = destObj || {};
       if (sourceObj == null)
@@ -28478,10 +28478,10 @@ var require_axios = __commonJS({
         props = Object.getOwnPropertyNames(sourceObj);
         i = props.length;
         while (i-- > 0) {
-          prop3 = props[i];
-          if ((!propFilter || propFilter(prop3, sourceObj, destObj)) && !merged[prop3]) {
-            destObj[prop3] = sourceObj[prop3];
-            merged[prop3] = true;
+          prop = props[i];
+          if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
+            destObj[prop] = sourceObj[prop];
+            merged[prop] = true;
           }
         }
         sourceObj = filter2 !== false && getPrototypeOf(sourceObj);
@@ -28542,7 +28542,7 @@ var require_axios = __commonJS({
         }
       );
     };
-    var hasOwnProperty = (({ hasOwnProperty: hasOwnProperty2 }) => (obj, prop3) => hasOwnProperty2.call(obj, prop3))(Object.prototype);
+    var hasOwnProperty = (({ hasOwnProperty: hasOwnProperty2 }) => (obj, prop) => hasOwnProperty2.call(obj, prop))(Object.prototype);
     var isRegExp = kindOfTest("RegExp");
     var reduceDescriptors = (obj, reducer) => {
       const descriptors2 = Object.getOwnPropertyDescriptors(obj);
@@ -28746,8 +28746,8 @@ var require_axios = __commonJS({
       const axiosError = Object.create(prototype$1);
       utils.toFlatObject(error, axiosError, function filter2(obj) {
         return obj !== Error.prototype;
-      }, (prop3) => {
-        return prop3 !== "isAxiosError";
+      }, (prop) => {
+        return prop !== "isAxiosError";
       });
       AxiosError.call(axiosError, error.message, code, config, request, response);
       axiosError.cause = error;
@@ -28772,8 +28772,8 @@ var require_axios = __commonJS({
     function isFlatArray(arr) {
       return utils.isArray(arr) && !arr.some(isVisitable);
     }
-    var predicates = utils.toFlatObject(utils, {}, null, function filter2(prop3) {
-      return /^is[A-Z]/.test(prop3);
+    var predicates = utils.toFlatObject(utils, {}, null, function filter2(prop) {
+      return /^is[A-Z]/.test(prop);
     });
     function toFormData(obj, formData, options) {
       if (!utils.isObject(obj)) {
@@ -29566,8 +29566,8 @@ var require_axios = __commonJS({
           timeWindow: 500,
           ticksRate: 2,
           samplesCount: 15
-        }, null, (prop3, source) => {
-          return !utils.isUndefined(source[prop3]);
+        }, null, (prop, source) => {
+          return !utils.isUndefined(source[prop]);
         });
         super({
           readableHighWaterMark: options.chunkSize
@@ -30677,10 +30677,10 @@ var require_axios = __commonJS({
           return getMergedValue(void 0, a);
         }
       }
-      function mergeDirectKeys(a, b, prop3) {
-        if (prop3 in config2) {
+      function mergeDirectKeys(a, b, prop) {
+        if (prop in config2) {
           return getMergedValue(a, b);
-        } else if (prop3 in config1) {
+        } else if (prop in config1) {
           return getMergedValue(void 0, a);
         }
       }
@@ -30714,10 +30714,10 @@ var require_axios = __commonJS({
         validateStatus: mergeDirectKeys,
         headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
       };
-      utils.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop3) {
-        const merge2 = mergeMap[prop3] || mergeDeepProperties;
-        const configValue = merge2(config1[prop3], config2[prop3], prop3);
-        utils.isUndefined(configValue) && merge2 !== mergeDirectKeys || (config[prop3] = configValue);
+      utils.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop) {
+        const merge2 = mergeMap[prop] || mergeDeepProperties;
+        const configValue = merge2(config1[prop], config2[prop], prop);
+        utils.isUndefined(configValue) && merge2 !== mergeDirectKeys || (config[prop] = configValue);
       });
       return config;
     }
@@ -73245,8 +73245,8 @@ function _functionName(f) {
 }
 
 // node_modules/ramda/es/internal/_has.js
-function _has(prop3, obj) {
-  return Object.prototype.hasOwnProperty.call(obj, prop3);
+function _has(prop, obj) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
 // node_modules/ramda/es/internal/_objectIs.js
@@ -73295,20 +73295,20 @@ var keys = typeof Object.keys === "function" && !hasArgsEnumBug ? /* @__PURE__ *
   if (Object(obj) !== obj) {
     return [];
   }
-  var prop3, nIdx;
+  var prop, nIdx;
   var ks = [];
   var checkArgsLength = hasArgsEnumBug && isArguments_default(obj);
-  for (prop3 in obj) {
-    if (_has(prop3, obj) && (!checkArgsLength || prop3 !== "length")) {
-      ks[ks.length] = prop3;
+  for (prop in obj) {
+    if (_has(prop, obj) && (!checkArgsLength || prop !== "length")) {
+      ks[ks.length] = prop;
     }
   }
   if (hasEnumBug) {
     nIdx = nonEnumerableProps.length - 1;
     while (nIdx >= 0) {
-      prop3 = nonEnumerableProps[nIdx];
-      if (_has(prop3, obj) && !contains(ks, prop3)) {
-        ks[ks.length] = prop3;
+      prop = nonEnumerableProps[nIdx];
+      if (_has(prop, obj) && !contains(ks, prop)) {
+        ks[ks.length] = prop;
       }
       nIdx -= 1;
     }
@@ -73707,15 +73707,6 @@ var nth = /* @__PURE__ */ _curry2(function nth2(offset, list) {
 });
 var nth_default = nth;
 
-// node_modules/ramda/es/prop.js
-var prop = /* @__PURE__ */ _curry2(function prop2(p, obj) {
-  if (obj == null) {
-    return;
-  }
-  return isInteger_default(p) ? nth_default(p, obj) : obj[p];
-});
-var prop_default = prop;
-
 // node_modules/ramda/es/internal/_isArrayLike.js
 var _isArrayLike = /* @__PURE__ */ _curry1(function isArrayLike(x) {
   if (isArray_default(x)) {
@@ -73833,50 +73824,6 @@ var reduce = /* @__PURE__ */ _curry3(function(xf, acc, list) {
   return xReduce_default(typeof xf === "function" ? _xwrap(xf) : xf, acc, list);
 });
 var reduce_default = reduce;
-
-// node_modules/ramda/es/internal/_xany.js
-var XAny = /* @__PURE__ */ function() {
-  function XAny2(f, xf) {
-    this.xf = xf;
-    this.f = f;
-    this.any = false;
-  }
-  XAny2.prototype["@@transducer/init"] = xfBase_default.init;
-  XAny2.prototype["@@transducer/result"] = function(result) {
-    if (!this.any) {
-      result = this.xf["@@transducer/step"](result, false);
-    }
-    return this.xf["@@transducer/result"](result);
-  };
-  XAny2.prototype["@@transducer/step"] = function(result, input) {
-    if (this.f(input)) {
-      this.any = true;
-      result = _reduced(this.xf["@@transducer/step"](result, true));
-    }
-    return result;
-  };
-  return XAny2;
-}();
-function _xany(f) {
-  return function(xf) {
-    return new XAny(f, xf);
-  };
-}
-
-// node_modules/ramda/es/any.js
-var any = /* @__PURE__ */ _curry2(
-  /* @__PURE__ */ _dispatchable(["any"], _xany, function any2(fn, list) {
-    var idx = 0;
-    while (idx < list.length) {
-      if (fn(list[idx])) {
-        return true;
-      }
-      idx += 1;
-    }
-    return false;
-  })
-);
-var any_default = any;
 
 // node_modules/ramda/es/internal/_isFunction.js
 function _isFunction(x) {
@@ -74279,12 +74226,6 @@ var pathOr = /* @__PURE__ */ _curry3(function pathOr2(d, p, obj) {
   return defaultTo_default(d, path_default(p, obj));
 });
 var pathOr_default = pathOr;
-
-// node_modules/ramda/es/propEq.js
-var propEq = /* @__PURE__ */ _curry3(function propEq2(val, name, obj) {
-  return equals_default(val, prop_default(name, obj));
-});
-var propEq_default = propEq;
 
 // node_modules/ramda/es/split.js
 var split = /* @__PURE__ */ invoker_default(1, "split");
@@ -74715,8 +74656,8 @@ async function updatePr(title, issues) {
 // release/src/common/inferVersionFromJiraIssues.ts
 var import_core9 = __toESM(require_core());
 var import_semver2 = __toESM(require_semver2());
-var containsFeature = any_default(propEq_default("feat", "type"));
-var containsBreakingChange = any_default(propEq_default(true, "breaking"));
+var containsFeature = (issues) => issues.some((issue) => issue.type === "feat");
+var containsBreakingChange = (issues) => issues.some((issue) => issue.breaking);
 var description = {
   major: "major: breaking change detected",
   minor: "minor: new feature detected",

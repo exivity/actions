@@ -1,12 +1,13 @@
 import { info } from '@actions/core'
 import semver from 'semver'
-import { any, propEq } from 'ramda'
+import { JiraIssue } from '../jira/getRepoJiraIssues'
 
 export type VersionIncrement = 'major' | 'minor' | 'patch'
 
-// ramda types not updated for propEq yet 28.23
-const containsFeature = any(propEq('feat', 'type'))
-const containsBreakingChange = any(propEq(true, 'breaking'))
+const containsFeature = (issues: JiraIssue[]) =>
+  issues.some((issue) => issue.type === 'feat')
+const containsBreakingChange = (issues: JiraIssue[]) =>
+  issues.some((issue) => issue.breaking)
 
 const description = {
   major: 'major: breaking change detected',
