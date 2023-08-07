@@ -49,8 +49,9 @@ async function run() {
   const originalFilename = getInput('original-filename')
   const icon = getInput('icon')
   const requestedExecutionLevel =
-    (getInput('requested-execution-level') as typeof executionLevels[number]) ||
-    undefined
+    (getInput(
+      'requested-execution-level',
+    ) as (typeof executionLevels)[number]) || undefined
   const applicationManifest = getInput('application-manifest')
 
   // Assertions

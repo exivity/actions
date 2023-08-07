@@ -1,24 +1,23 @@
-import { both, filter, isEmpty, propEq } from 'ramda'
+import { isEmpty } from 'ramda'
 
 import { JiraIssue } from '../jira/getRepoJiraIssues'
 
-// ramda types do not reflect new propEq yet 28.23
-export const features = filter(
-  both<(issue: JiraIssue) => boolean>(
-    propEq('feat', 'type'),
-    propEq(false, 'noReleaseNotesNeeded')
+export const features = (issues: JiraIssue[]) =>
+  issues.filter(
+    (issue) => issue.type === 'feat' && issueNeedsReleaseNotes(issue),
   )
-)
-
-// ramda types do not reflect new propEq yet 28.23
-export const fixes = filter(
-  both<(issue: JiraIssue) => boolean>(
-    propEq('fix', 'type'),
-    propEq(false, 'noReleaseNotesNeeded')
+export const fixes = (issues: JiraIssue[]) =>
+  issues.filter(
+    (issue) => issue.type === 'fix' && issueNeedsReleaseNotes(issue),
   )
-)
 
-export const noReleaseNotesNeeded = filter(propEq('noReleaseNotesNeeded', true))
+const issueDoesntNeedReleaseNotes = (issue: JiraIssue) =>
+  issue.noReleaseNotesNeeded
+export const issueNeedsReleaseNotes = (issue: JiraIssue) =>
+  !issue.noReleaseNotesNeeded
+
+export const noReleaseNotesNeeded = (issues: JiraIssue[]) =>
+  issues.filter(issueDoesntNeedReleaseNotes)
 
 export function formatPrChangelog(issues: JiraIssue[]) {
   return [
@@ -28,7 +27,7 @@ export function formatPrChangelog(issues: JiraIssue[]) {
     '',
     ...buildChangelogSection(
       'No release notes needed',
-      noReleaseNotesNeeded(issues)
+      noReleaseNotesNeeded(issues),
     ),
     '',
   ].join('\n')
@@ -54,7 +53,7 @@ function buildChangelogSection(header: string, issues: JiraIssue[]) {
         `    - Milestone: ${issue.milestone}`,
         '  </details>',
         '',
-      ].join('\n')
+      ].join('\n'),
     ),
   ]
 }

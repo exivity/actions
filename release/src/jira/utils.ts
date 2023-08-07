@@ -42,7 +42,7 @@ export const cleanJiraKeyMatches = pipe(
   identity<(RegExpMatchArray | null | undefined)[]>,
   filter(isRegExpMatchArray),
   chain(identity),
-  uniq
+  uniq,
 )
 
 export function prIsNotAssociatedWithTicket(pr: {
@@ -60,7 +60,7 @@ export function getReleaseNotesTitle(issue: Version2Models.Issue): string {
 }
 
 export function noReleaseNotesTitlePresent(
-  issue: Version2Models.Issue
+  issue: Version2Models.Issue,
 ): boolean {
   if (issue.fields[JiraCustomFields.ReleaseNotesTitle] === null) return true
 
@@ -80,7 +80,7 @@ export function hasReleaseNotesTitle(issue: Version2Models.Issue): boolean {
 }
 
 export function getReleaseNotesDescription(
-  issue: Version2Models.Issue
+  issue: Version2Models.Issue,
 ): string {
   return issue.fields[JiraCustomFields.ReleaseNotesDescription] ?? ''
 }
@@ -100,12 +100,12 @@ export function getEpic(issue: Version2Models.Issue): string | null {
 const getMissingReleaseNotes = pipe(
   filter(
     (issue: Version2Models.Issue) =>
-      isFeatOrFix(issue.fields.issuetype.name) && releaseNotesAreMissing(issue)
+      isFeatOrFix(issue.fields.issuetype.name) && releaseNotesAreMissing(issue),
   ),
   map(
     ({ key }) =>
-      `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`
-  )
+      `Please [provide release notes](https://exivity.atlassian.net/browse/${key}) (title and an optional description) in Jira`,
+  ),
 )
 
 export const getPrMissingReleaseNotes = async (pr: {
@@ -126,7 +126,7 @@ export const getPrMissingReleaseNotes = async (pr: {
   info(`Found issues in PR body: \n${issues.join('\n')}`)
 
   return Promise.all(
-    issues.map((key) => jiraClient.issues.getIssue({ issueIdOrKey: key }))
+    issues.map((key) => jiraClient.issues.getIssue({ issueIdOrKey: key })),
   ).then((issues) => {
     issues.filter(hasReleaseNotesTitle).forEach((issue) => {
       info(`Issue type: ${issue.fields.issuetype.name}`)

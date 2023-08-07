@@ -22,7 +22,7 @@ export class Labels extends Diffable<'labels'> {
 
   find() {
     const options = this.github.rest.issues.listLabelsForRepo.endpoint.merge(
-      this.wrapAttrs({ per_page: 100 })
+      this.wrapAttrs({ per_page: 100 }),
     )
     return this.github.paginate(options) as Promise<Label[]>
   }
@@ -52,7 +52,7 @@ export class Labels extends Diffable<'labels'> {
   remove(existing: Label) {
     this.logRemove(`Removing label "${existing.name}"`)
     return this.github.rest.issues.deleteLabel(
-      this.wrapAttrs({ name: existing.name })
+      this.wrapAttrs({ name: existing.name }),
     )
   }
 

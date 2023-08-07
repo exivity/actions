@@ -58,7 +58,7 @@ async function run() {
   if (isEvent(eventName, 'workflow_run', eventData)) {
     if (eventData['action'] !== 'completed') {
       warning(
-        '[accept] Skipping: only the "workflow_run.completed" event is supported'
+        '[accept] Skipping: only the "workflow_run.completed" event is supported',
       )
       return
     }
@@ -92,17 +92,17 @@ async function run() {
   table('Ref', `${ref} https://github.com/exivity/${component}/tree/${ref}`)
   table(
     'Sha',
-    `${shortSha} https://github.com/exivity/${component}/commit/${sha}`
+    `${shortSha} https://github.com/exivity/${component}/commit/${sha}`,
   )
   table(
     'Pull request',
     pull_request
       ? `${pull_request} https://github.com/exivity/${component}/pull/${pull_request}`
-      : 'None'
+      : 'None',
   )
   table(
     'Jira issue',
-    issue ? `${issue} https://exivity.atlassian.net/browse/${issue}` : 'None'
+    issue ? `${issue} https://exivity.atlassian.net/browse/${issue}` : 'None',
   )
 
   // Debug
@@ -121,8 +121,8 @@ async function run() {
     })
     const someFilesMatch = (commit.files || []).some((file) =>
       filter.some((item) =>
-        minimatch(file.filename || file.previous_filename || 'unknown', item)
-      )
+        minimatch(file.filename || file.previous_filename || 'unknown', item),
+      ),
     )
 
     if (!someFilesMatch) {
@@ -157,14 +157,14 @@ async function run() {
 
     if (isDraft) {
       warning(
-        `[accept] Skipping: the pull request is not ready for review (it's a draft).`
+        `[accept] Skipping: the pull request is not ready for review (it's a draft).`,
       )
       return
     }
 
     if (!(await isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
       warning(
-        `[accept] Skipping: build artifacts are not ready yet, waiting for "build" workflow to finish.`
+        `[accept] Skipping: build artifacts are not ready yet, waiting for "build" workflow to finish.`,
       )
       return
     }

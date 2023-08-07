@@ -95,8 +95,8 @@ export class VirusTotal {
         `Parsed response from VirusTotal:\n${JSON.stringify(
           responseJson,
           undefined,
-          2
-        )}`
+          2,
+        )}`,
       )
     } catch (error) {
       throw new Error('Could parse read VirusTotal response')
@@ -126,8 +126,8 @@ export class VirusTotal {
       `Received response from VirusTotal:\n${JSON.stringify(
         response,
         undefined,
-        2
-      )}`
+        2,
+      )}`,
     )
     if (!response.result) {
       throw new Error(`Could not obtain a file upload URL`)
@@ -151,8 +151,8 @@ export class VirusTotal {
       `Received response from VirusTotal:\n${JSON.stringify(
         response,
         undefined,
-        2
-      )}`
+        2,
+      )}`,
     )
     if (!response.result) {
       throw new Error(`No result found for ${filehash}`)

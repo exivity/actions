@@ -133,7 +133,7 @@ function toQueryString(params: {
   return Object.entries(params)
     .map(
       ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
+        `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
     )
     .join('&')
 }
@@ -147,7 +147,7 @@ export class Slack {
 
   private async get<T>(
     method: string,
-    payload: { [key: string]: string | number | boolean }
+    payload: { [key: string]: string | number | boolean },
   ) {
     const url = `${SLACK_BASE_URL}/${method}?${toQueryString(payload)}`
     const response = await this.httpClient.getJson<Response<T>>(url, {
@@ -189,7 +189,7 @@ export class Slack {
         .message
     } catch (error) {
       debug(
-        `Received error from Slack:\n${(JSON.stringify(error), undefined, 2)}`
+        `Received error from Slack:\n${(JSON.stringify(error), undefined, 2)}`,
       )
       throw new Error('Could not send Slack message')
     }
@@ -210,7 +210,7 @@ export class Slack {
       return this.cachedConversations
     } catch (error) {
       debug(
-        `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`
+        `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`,
       )
       throw new Error('Could not retrieve Slack channels')
     }
@@ -230,7 +230,7 @@ export class Slack {
       return this.cachedUsers
     } catch (error) {
       debug(
-        `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`
+        `Received error from Slack:\n${JSON.stringify(error, undefined, 2)}`,
       )
       throw new Error('Could not retrieve Slack users')
     }
@@ -256,7 +256,7 @@ export class Slack {
         types: 'public_channel',
       })
       const channelMatch = channels.find(
-        (item) => item.name === value.substring(1)
+        (item) => item.name === value.substring(1),
       )
       return channelMatch?.id || null
     }
@@ -277,7 +277,7 @@ export class Slack {
         values.includes(item.profile.display_name_normalized) ||
         values.includes(item.profile.email) ||
         values.includes(item.profile.real_name) ||
-        values.includes(item.profile.real_name_normalized)
+        values.includes(item.profile.real_name_normalized),
     )
     return userMatch
   }

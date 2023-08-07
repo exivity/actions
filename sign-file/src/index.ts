@@ -10,7 +10,7 @@ const METHOD_SIGN_TOOL = 'signtool'
 async function signTool(
   filePath: string,
   certificatePath: string,
-  certificatePassword: string
+  certificatePassword: string,
 ) {
   /**
    * Path to SignTool.exe
@@ -111,7 +111,7 @@ async function run() {
       const certificatePath = resolve(tmpDir, 'cert.pfx')
       await fs.writeFile(
         certificatePath,
-        Buffer.from(encodedCertificate, 'base64')
+        Buffer.from(encodedCertificate, 'base64'),
       )
       debug(`Written temporary pfx file to "${certificatePath}"`)
 

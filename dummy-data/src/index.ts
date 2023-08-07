@@ -28,7 +28,7 @@ async function run() {
     .access(
       `${process.env['EXIVITY_PROGRAM_PATH']}/bin/transcript${
         os.platform() === 'win32' ? '.exe' : ''
-      }`
+      }`,
     )
     .catch(() => installComponent('transcript', octokit))
     .catch(setFailed)
@@ -37,7 +37,7 @@ async function run() {
     .access(
       `${process.env['EXIVITY_PROGRAM_PATH']}/bin/edify${
         os.platform() === 'win32' ? '.exe' : ''
-      }`
+      }`,
     )
     .catch(() => installComponent('edify', octokit))
     .catch(setFailed)
@@ -51,7 +51,7 @@ async function run() {
       await exec(
         `cp config.json ${process.env['EXIVITY_HOME_PATH']}/system/config.json`,
         undefined,
-        { cwd: path.resolve(__dirname, '..') }
+        { cwd: path.resolve(__dirname, '..') },
       )
     })
     .catch(setFailed)
@@ -68,7 +68,7 @@ async function run() {
 
 async function installComponent(
   component: string,
-  octokit: ReturnType<typeof getOctokit>
+  octokit: ReturnType<typeof getOctokit>,
 ) {
   await fs.mkdir(`${process.env['EXIVITY_PROGRAM_PATH']}/bin`, {
     recursive: true,
@@ -96,7 +96,7 @@ async function installComponent(
 
   if (os.platform() !== 'win32')
     await exec(
-      `sudo chmod 777 ${process.env['EXIVITY_PROGRAM_PATH']}/bin/${component}`
+      `sudo chmod 777 ${process.env['EXIVITY_PROGRAM_PATH']}/bin/${component}`,
     )
 
   await fs.mkdir(`${process.env['EXIVITY_HOME_PATH']}/log/${component}`, {

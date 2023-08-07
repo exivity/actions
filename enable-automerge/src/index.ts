@@ -14,7 +14,7 @@ const validMergeMethods = ['MERGE', 'SQUASH', 'REBASE'] as const
 
 async function getMergeMethod(
   client: ReturnType<typeof getOctokit>,
-  repo: ReturnType<typeof getRepository>
+  repo: ReturnType<typeof getRepository>,
 ) {
   // Merge is the default behaviour.
   let mergeMethod = 'MERGE'
@@ -32,7 +32,7 @@ async function getMergeMethod(
       {
         repository: repo.repo,
         owner: repo.owner,
-      }
+      },
     )) as any
     const viewerDefaultMergeMethod =
       repositorySettings?.repository?.viewerDefaultMergeMethod || undefined
@@ -50,7 +50,7 @@ async function getMergeMethod(
 async function enableAutoMerge(
   client: ReturnType<typeof getOctokit>,
   pullRequestId: string,
-  mergeMethod: string
+  mergeMethod: string,
 ) {
   const response = (await client.graphql(
     `
@@ -79,7 +79,7 @@ async function enableAutoMerge(
     {
       pullRequestId,
       mergeMethod,
-    }
+    },
   )) as any
 
   const enableAutoMergeResponse = {
@@ -99,8 +99,8 @@ async function enableAutoMerge(
   ) {
     throw new Error(
       `Failed to enable auto-merge: Received: ${JSON.stringify(
-        enableAutoMergeResponse
-      )}`
+        enableAutoMergeResponse,
+      )}`,
     )
   }
 
@@ -108,8 +108,8 @@ async function enableAutoMerge(
 }
 
 function isValidMergeMethod(
-  mergeMethod: string
-): mergeMethod is typeof validMergeMethods[number] {
+  mergeMethod: string,
+): mergeMethod is (typeof validMergeMethods)[number] {
   return validMergeMethods.includes(mergeMethod as any)
 }
 async function run() {
@@ -141,10 +141,10 @@ async function run() {
   const { enabledBy, enabledAt } = await enableAutoMerge(
     octokit,
     pullRequestId,
-    mergeMethod
+    mergeMethod,
   )
   info(
-    `Successfully enabled auto-merge for pull-request #${pullRequestNumber} as ${enabledBy} at ${enabledAt}`
+    `Successfully enabled auto-merge for pull-request #${pullRequestNumber} as ${enabledBy} at ${enabledAt}`,
   )
 }
 

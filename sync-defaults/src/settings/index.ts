@@ -56,8 +56,8 @@ export async function run<T extends EventName>({
           `Got config from "exivity/${repo}":\n${JSON.stringify(
             repoConfig,
             undefined,
-            2
-          )}`
+            2,
+          )}`,
         )
         if ('_extends' in repoConfig) {
           delete repoConfig._extends
@@ -65,12 +65,12 @@ export async function run<T extends EventName>({
         config = deepmerge(config, repoConfig, { arrayMerge })
       } else {
         debug(
-          `Could not get settings from "exivity/${repo}" (not a file), ignoring`
+          `Could not get settings from "exivity/${repo}" (not a file), ignoring`,
         )
       }
     } catch (error: unknown) {
       debug(
-        `Could not get settings from "exivity/${repo}" (fetch error), ignoring`
+        `Could not get settings from "exivity/${repo}" (fetch error), ignoring`,
       )
     }
   }
@@ -82,6 +82,6 @@ export async function run<T extends EventName>({
 
       const Plugin = PLUGINS[section as keyof typeof PLUGINS]
       return new Plugin(octokit, repo, sectionConfig as any).sync()
-    })
+    }),
   )
 }

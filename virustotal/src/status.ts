@@ -16,7 +16,7 @@ export type CommitStatus = Awaited<
 >['data'][number] & { sha: string }
 
 export async function getPendingVirusTotalStatuses(
-  octokit: ReturnType<typeof getOctokit>
+  octokit: ReturnType<typeof getOctokit>,
 ) {
   const ref = STANDARD_BRANCH
   const statuses: CommitStatus[] = []
@@ -40,7 +40,7 @@ export async function getPendingVirusTotalStatuses(
     // subsequent statuses
     const uniqueStatuses = data.filter(
       (status, i, arr) =>
-        arr.findIndex((s) => s.context === status.context) === i
+        arr.findIndex((s) => s.context === status.context) === i,
     )
     debug(`Total unique statuses: ${uniqueStatuses.length}`)
     if (!uniqueStatuses.length) {
@@ -75,7 +75,7 @@ export async function getPendingVirusTotalStatuses(
 export async function writeStatus(
   octokit: ReturnType<typeof getOctokit>,
   result: AnalysisResult,
-  sha?: string
+  sha?: string,
 ) {
   const { owner, repo } = getRepository()
   return writeStatusGitHub({
