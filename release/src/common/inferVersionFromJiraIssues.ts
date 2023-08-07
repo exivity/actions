@@ -15,10 +15,7 @@ const description = {
   patch: 'patch: only fixes and/or chores detected',
 } as const
 
-export function inferVersionFromJiraIssues(
-  from: string,
-  issues: { type: string; breaking: boolean }[],
-) {
+export function inferVersionFromJiraIssues(from: string, issues: JiraIssue[]) {
   const upcomingVersionIncrement: VersionIncrement = containsBreakingChange(
     issues,
   )
