@@ -1087,10 +1087,10 @@ ramda@0.29.0:
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.29.0.tgz#fbbb67a740a754c8a4cbb41e2a6e0eb8507f55fb"
   integrity sha512-BBea6L67bYLtdbOqfp8f58fPMqEwx0doL+pAi8TZyp2YWz8R9G8z9x75CZI8W+ftqhFHCpEX2cRnUUXK130iKA==
 
-rcedit@3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-3.0.2.tgz#ab742d4a2aecbf489ae9411789ac946767743133"
-  integrity sha512-JbPZ7ltZxMBa3ioBGDNGMWGpo0vOWMgnfsC1w/Fx7lWIoT+skCwSGCbVrBdFBXCoe8LtV5ut5l05mZZpkkrLTg==
+rcedit@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-3.1.0.tgz#1563ec7a5663de639f94c5dc85429db1da364b3e"
+  integrity sha512-WRlRdY1qZbu1L11DklT07KuHfRk42l0NFFJdaExELEu4fEQ982bP5Z6OWGPj/wLLIuKRQDCxZJGAwoFsxhZhNA==
   dependencies:
     cross-spawn-windows-exe "^1.1.0"
 
