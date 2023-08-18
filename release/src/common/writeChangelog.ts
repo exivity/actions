@@ -7,7 +7,7 @@ import { formatPublicChangelog } from './formatChangelog'
 
 export async function writeChangelog(
   upcomingVersion: string,
-  issues: JiraIssue[],
+  issues: JiraIssue[]
 ) {
   const changelogPath = getChangeLogPath()
 
@@ -24,8 +24,8 @@ export async function writeChangelog(
       changelogPath,
       currentPublicChangelogContents.replace(
         '# Changelog\n\n',
-        `# Changelog\n\n${publicChangelogContents}\n\n`,
-      ),
+        `# Changelog\n\n${publicChangelogContents}\n\n`
+      )
     )
 
     info(`Written changelog to: ${changelogPath}`)

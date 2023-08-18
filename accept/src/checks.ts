@@ -12,7 +12,7 @@ export async function isWorkflowDependencyDone(
   octokit: ReturnType<typeof getOctokit>,
   token: string,
   sha: string,
-  repo: string,
+  repo: string
 ) {
   info('Checking out repository to get workflow contents...')
 
@@ -28,7 +28,7 @@ export async function isWorkflowDependencyDone(
     workspacePath,
     '.github',
     'workflows',
-    `${workflowName}.yml`,
+    `${workflowName}.yml`
   )
 
   if (!existsSync(workflowPath)) {
@@ -45,7 +45,7 @@ export async function isWorkflowDependencyDone(
   const needsWorkflows = workflow.on?.workflow_run?.workflows || []
 
   info(
-    `on.workflow_run.workflows resolves to "${JSON.stringify(needsWorkflows)}"`,
+    `on.workflow_run.workflows resolves to "${JSON.stringify(needsWorkflows)}"`
   )
 
   const checks = await getChecks(octokit, sha, repo)
@@ -53,7 +53,7 @@ export async function isWorkflowDependencyDone(
     const { name, status, conclusion } = check
     if (
       needsWorkflows.some((workflowName) =>
-        workflowNameMatchesCheckName(workflowName, name),
+        workflowNameMatchesCheckName(workflowName, name)
       )
     ) {
       if (status === 'completed' && conclusion === 'success') {
@@ -76,7 +76,7 @@ export async function isWorkflowDependencyDone(
 
   const allPresent = needsWorkflows.every((workflow) => {
     return checks.some(({ name }) =>
-      workflowNameMatchesCheckName(workflow, name),
+      workflowNameMatchesCheckName(workflow, name)
     )
   })
 
@@ -103,7 +103,7 @@ function workflowNameMatchesCheckName(workflowName: string, checkName: string) {
 export async function getChecks(
   octokit: ReturnType<typeof getOctokit>,
   ref: string,
-  repo: string,
+  repo: string
 ) {
   return (
     await octokit.rest.checks.listForRef({

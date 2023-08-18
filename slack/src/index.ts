@@ -19,7 +19,7 @@ import { Blocks } from './types'
 const validStatuses = ['', 'success', 'failure', 'cancelled'] as const
 
 function isValidStatus(
-  status: string,
+  status: string
 ): status is (typeof validStatuses)[number] {
   return validStatuses.includes(status as any)
 }
@@ -75,11 +75,11 @@ async function run() {
     warning(
       `Please set the "channel" input or make sure this action can match the \
 author of the commit triggering this workflow to a Slack user (tried with \
-"${authorName}", "${authorEmail}" and "${context.action}").`,
+"${authorName}", "${authorEmail}" and "${context.action}").`
     )
     info(
       `This action will try to match the author of the commit using the Slack \
-user attributes "name", "display_name", "real_name" or "email".`,
+user attributes "name", "display_name", "real_name" or "email".`
     )
 
     if (fallbackChannel) {

@@ -46,7 +46,7 @@ async function run() {
   if (requiresJiraTicket && prIsNotAssociatedWithTicket(pr)) {
     throw new Error(
       `PR has not been associated with a Jira Ticket. 
-       A feat or fix always needs to associated with a Jira ticket in the PR body.`,
+       A feat or fix always needs to associated with a Jira ticket in the PR body.`
     )
   }
 

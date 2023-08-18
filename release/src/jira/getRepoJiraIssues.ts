@@ -85,8 +85,8 @@ export const getRepoJiraIssues = async (repo: string) => {
 
         return Promise.all(
           jiraKeys.map((key) =>
-            jiraClient.issues.getIssue({ issueIdOrKey: key }),
-          ),
+            jiraClient.issues.getIssue({ issueIdOrKey: key })
+          )
         ).then((tickets) =>
           tickets.flatMap((issue) => {
             const issueType = getIssueType(issue)
@@ -108,13 +108,13 @@ export const getRepoJiraIssues = async (repo: string) => {
               pullRequest: `[exivity/${repo}#${associatedPullRequest?.number}](${associatedPullRequest?.url})`,
               milestone: epic
                 ? `[${getEpic(
-                    issue,
+                    issue
                   )}](https://exivity.atlassian.net/browse/${getEpic(issue)})`
                 : 'No milestone',
             }
-          }),
+          })
         )
-      }),
+      })
     ).then(chain(identity)),
   }
 }

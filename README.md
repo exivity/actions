@@ -285,7 +285,7 @@ Edit resources of a Windows executable
 | `company-name`              |          | `"Exivity"`                       | Company that produced the executable                                                                                 |
 | `comments`                  |          |                                   | Additional information that should be displayed for diagnostic purposes                                              |
 | `internal-filename`         |          |                                   | Internal name of the file. Usually, this string should be the original filename, without the extension               |
-| `legal-copyright`           |          | `"© 2017 Exivity"`               | Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.           |
+| `legal-copyright`           |          | `"© 2017 Exivity"`                | Copyright notices that apply, including the full text of all notices, legal symbols, copyright dates, etc.           |
 | `legal-trademarks1`         |          |                                   | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
 | `legal-trademarks2`         |          |                                   | Trademarks and registered trademarks, including the full text of all notices, legal symbols, trademark numbers, etc. |
 | `original-filename`         |          |                                   | Original name of the file, not including a path                                                                      |

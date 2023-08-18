@@ -101,7 +101,7 @@ export function getOwnerInput(inputName = 'owner') {
 
 export function getRepoInput(
   inputName = 'repo',
-  fallbackInputName: string | undefined = 'component',
+  fallbackInputName: string | undefined = 'component'
 ) {
   return fallbackInputName
     ? getInput(inputName) || getInput(fallbackInputName) || getRepository().repo
@@ -166,7 +166,7 @@ export function getRef() {
   // Pull request with HEAD_REF unset
   if (ref && ref.startsWith('refs/pull/')) {
     throw new Error(
-      'Workflow triggered by pull request, but GITHUB_HEAD_REF is missing',
+      'Workflow triggered by pull request, but GITHUB_HEAD_REF is missing'
     )
   }
 
@@ -205,7 +205,7 @@ export function getToken(inputName = 'gh-token') {
  * to the type here.
  */
 export function getEventName<T extends EventName>(
-  supportedEvents?: readonly T[],
+  supportedEvents?: readonly T[]
 ) {
   const eventName = context.eventName
 
@@ -223,7 +223,7 @@ export function getEventName<T extends EventName>(
 export function isEvent<T extends EventName, U extends T>(
   input: T,
   compare: U,
-  eventData: EventData<T>,
+  eventData: EventData<T>
   // @ts-ignore
 ): eventData is EventData<U> {
   return input === compare
@@ -300,13 +300,13 @@ export async function getCommitForTag({
     const timestamp = commit.commit.author?.date
     if (typeof timestamp === 'undefined') {
       throw new Error(
-        `Could not find timestamp for commit ${commit.sha} in ${owner}/${repo}...`,
+        `Could not find timestamp for commit ${commit.sha} in ${owner}/${repo}...`
       )
     }
     return { ...commit, tag, timestamp }
   } catch (error: unknown) {
     throw new Error(
-      `Could not find commit for tag ${tag} in ${owner}/${repo}...`,
+      `Could not find commit for tag ${tag} in ${owner}/${repo}...`
     )
   }
 }
@@ -384,7 +384,7 @@ export async function getCommitsSince({
     })
   ).filter((commit) => commit.sha !== since.sha)
   info(
-    `  Found ${commits.length} commits since ${since.tag} in ${owner}/${repo}#${branch}`,
+    `  Found ${commits.length} commits since ${since.tag} in ${owner}/${repo}#${branch}`
   )
 
   return commits
@@ -477,8 +477,8 @@ export async function dispatchWorkflow({
     `Dispatching workflow "${workflow_id}" of repo ${owner}:${repo}#${ref} with inputs:\n${JSON.stringify(
       inputs,
       undefined,
-      2,
-    )}`,
+      2
+    )}`
   )
 
   // Create workflow-dispatch event
@@ -491,7 +491,7 @@ export async function dispatchWorkflow({
       workflow_id,
       ref,
       inputs,
-    },
+    }
   )
 }
 
@@ -570,13 +570,13 @@ query ($sha: String!, $repo: String!, $owner: String!) {
         owner,
         repo,
         sha,
-      },
+      }
     )
     return associatedPRs.repository?.commit?.associatedPullRequests?.edges[0]
       ?.node
   } catch (err: any) {
     throw new Error(
-      `Failed to fetch associated pull requests for ${owner}:${repo}@${sha}`,
+      `Failed to fetch associated pull requests for ${owner}:${repo}@${sha}`
     )
   }
 }

@@ -30,9 +30,9 @@ export async function writeLockFile(version: string) {
               owner: 'exivity',
               repo: repository,
               sha: STANDARD_BRANCH,
-            }),
-          ),
-        ),
+            })
+          )
+        )
       ),
     }
 
