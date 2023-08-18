@@ -40,7 +40,7 @@ export async function gitFetch(remote: string, branch: string) {
 
 export async function gitForceSwitchBranch(
   branch: string,
-  startPoint?: string,
+  startPoint?: string
 ) {
   return exec('git switch -C', [branch, startPoint || ''])
 }

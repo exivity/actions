@@ -50,7 +50,7 @@ async function run() {
   const icon = getInput('icon')
   const requestedExecutionLevel =
     (getInput(
-      'requested-execution-level',
+      'requested-execution-level'
     ) as (typeof executionLevels)[number]) || undefined
   const applicationManifest = getInput('application-manifest')
 

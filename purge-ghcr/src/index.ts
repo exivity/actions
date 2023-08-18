@@ -45,7 +45,7 @@ async function run() {
       package_type: 'container',
       package_name: name,
       per_page: 100,
-    },
+    }
   )
 
   info(`Got ${versions.length} package versions, matching with tags...`)
@@ -59,8 +59,8 @@ async function run() {
         `🗑️ Package version ${
           version.id
         } tagged with "${version.metadata?.container?.tags?.join(
-          '","',
-        )}" matches and will be deleted`,
+          '","'
+        )}" matches and will be deleted`
       )
       await octokit.rest.packages.deletePackageVersionForOrg({
         org,
@@ -73,8 +73,8 @@ async function run() {
         `ℹ️ Package version ${
           version.id
         } tagged with "${version.metadata?.container?.tags?.join(
-          '","',
-        )}" doesn't match any of the tags to delete`,
+          '","'
+        )}" doesn't match any of the tags to delete`
       )
     }
   }

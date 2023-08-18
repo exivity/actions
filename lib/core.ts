@@ -35,7 +35,7 @@ export function getBooleanInput(name: string, defaultValue: boolean) {
   }
 
   throw new Error(
-    `Can't parse input value (${JSON.stringify(inputValue)}) as boolean`,
+    `Can't parse input value (${JSON.stringify(inputValue)}) as boolean`
   )
 }
 
@@ -55,12 +55,12 @@ export async function unzipAll(path: string) {
  */
 export function shortCircuit<T, R>(
   input: T[],
-  predicate: (value: T, index: number, array: typeof input) => R | undefined,
+  predicate: (value: T, index: number, array: typeof input) => R | undefined
 ) {
   let output: R | undefined
 
   input.some(
-    (value, index, array) => !!(output = predicate(value, index, array)),
+    (value, index, array) => !!(output = predicate(value, index, array))
   )
 
   return output
@@ -71,7 +71,7 @@ export function table(key: string, value: string) {
 }
 
 export function isObject(
-  value: unknown,
+  value: unknown
 ): value is { [key: string | number | symbol]: unknown } {
   return !!(
     value &&
@@ -92,7 +92,7 @@ export async function exec(command: string, args?: string[]) {
         result.stdout.trim(),
         result.stdout.trim() && result.stderr.trim() ? '\n' : '',
         result.stderr.trim(),
-      ].join(''),
+      ].join('')
     )
     throw new Error(`Process completed with exit code ${result.exitCode}`)
   }

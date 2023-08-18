@@ -56,7 +56,7 @@ export async function dockerBuild({
   const ssh = useSSH ? '--ssh default' : ''
 
   const cmd = `/usr/bin/bash -c "docker build ${ssh} -f ${dockerfile} -t ${getImageFQN(
-    image,
+    image
   )} ${labelOptions} ${context}"`
   debug(`Executing command:\n${cmd}`)
 

@@ -24,10 +24,10 @@ async function analyse(vt: VirusTotal, filePath: string) {
 
 async function check(vt: VirusTotal, commitStatus: CommitStatus) {
   const result = await vt.getFileReport(
-    guiUrlToFilehash(commitStatus.target_url),
+    guiUrlToFilehash(commitStatus.target_url)
   )
   info(
-    `Current status is "${result.status}" with "${result.flagged}" flags from security vendors`,
+    `Current status is "${result.status}" with "${result.flagged}" flags from security vendors`
   )
   return result
 }

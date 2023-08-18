@@ -4,7 +4,7 @@ function findMatchingIndex(sourceItem: any, target: any) {
   if (Object.prototype.hasOwnProperty.call(sourceItem, 'name')) {
     return target
       .filter((targetItem: any) =>
-        Object.prototype.hasOwnProperty.call(targetItem, 'name'),
+        Object.prototype.hasOwnProperty.call(targetItem, 'name')
       )
       .findIndex((targetItem: any) => sourceItem.name === targetItem.name)
   }
@@ -19,7 +19,7 @@ export function arrayMerge(target: any, source: any, options: any) {
       destination[matchingIndex] = deepmerge(
         target[matchingIndex],
         sourceItem,
-        options,
+        options
       )
     } else {
       destination.push(sourceItem)

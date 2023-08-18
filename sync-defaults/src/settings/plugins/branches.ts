@@ -25,7 +25,7 @@ export class Branches extends GitHubSettingsPlugin<'branches'> {
             }
             return this.github.rest.repos.updateBranchProtection(updateParams)
           }
-        }),
+        })
     )
   }
 

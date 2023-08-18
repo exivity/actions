@@ -34,7 +34,7 @@ async function run() {
   // Validate PR title
   if (!isSemanticCommitMessage(pr.title)) {
     throw new Error(
-      `PR title "${pr.title}" is not semantic, see above for more details.`,
+      `PR title "${pr.title}" is not semantic, see above for more details.`
     )
   }
 
@@ -50,7 +50,7 @@ async function run() {
       owner,
       repo,
       pull_number: pr.number,
-    },
+    }
   )) {
     commits.push(...response.data)
 
@@ -71,13 +71,13 @@ async function run() {
     const commitTitle = nonMergeCommits[0].commit.message.split('\n')[0]
     if (!isSemanticCommitMessage(commitTitle)) {
       throw new Error(
-        `Pull request has only one commit and it's not semantic; this may lead to a non-semantic commit in the base branch (see https://github.community/t/how-to-change-the-default-squash-merge-commit-message/1155). Amend the commit message to match the pull request title, or add another commit.`,
+        `Pull request has only one commit and it's not semantic; this may lead to a non-semantic commit in the base branch (see https://github.community/t/how-to-change-the-default-squash-merge-commit-message/1155). Amend the commit message to match the pull request title, or add another commit.`
       )
     }
 
     if (commitTitle !== pr.title) {
       throw new Error(
-        `The pull request has only one (non-merge) commit and in this case Github will use it as the default commit message when merging. The pull request title doesn't match the commit though ("${pr.title}" vs. "${commitTitle}"). Please update the pull request title accordingly to avoid surprises.`,
+        `The pull request has only one (non-merge) commit and in this case Github will use it as the default commit message when merging. The pull request title doesn't match the commit though ("${pr.title}" vs. "${commitTitle}"). Please update the pull request title accordingly to avoid surprises.`
       )
     }
   }

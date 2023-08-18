@@ -35,7 +35,7 @@ export async function prepare() {
 
   const upcomingVersion = inferVersionFromJiraIssues(
     await getLatestVersion(),
-    issues,
+    issues
   )
 
   await writeIssueFile(issuesPerRepo.flatMap(jiraIssueKeysProp))
