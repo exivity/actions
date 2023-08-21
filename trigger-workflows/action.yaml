@@ -5,14 +5,9 @@ inputs:
     description: A GitHub token with access to the repositories
     required: false
     default: ${{ github.token }}
-  repos:
-    description:
-      'List of repositories to trigger (comma-separated, in the format repo)'
+  repo:
+    description: 'Repository to trigger the workflow in'
     required: true
-  event_type:
-    description: 'Event type to dispatch'
-    required: false
-    default: 'build-event'
 runs:
   using: 'node12'
   main: 'index.js'

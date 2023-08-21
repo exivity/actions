@@ -1,31 +1,20 @@
 import { getInput, setFailed } from '@actions/core'
 
+import { dispatchWorkflow } from '../../lib/github'
 import { getOctoKitClient } from '../../release/src/common/inputs'
 
 async function run() {
   try {
-    const repos = getInput('repos').split(',')
-    const eventType = getInput('event_type')
-
-    const octokit = getOctoKitClient()
-
-    for (const repo of repos) {
-      const repoName = repo.trim()
-
-      await octokit.rest.repos
-        .createDispatchEvent({
-          owner: 'exivity',
-          repo: repoName,
-          event_type: eventType,
-        })
-        .catch((error) => {
-          setFailed(error.message)
-        })
-
-      console.log(`Triggered ${eventType} in ${repo}`)
-    }
+    const repo = getInput('repo')
+    return dispatchWorkflow({
+      octokit: getOctoKitClient(),
+      owner: 'exivity',
+      repo,
+      ref: 'main',
+      workflow_id: 'build.yml',
+    })
   } catch (error) {
-    setFailed('Action failed to execute')
+    setFailed(`Couldn't dispatch build workflow`)
   }
 }
 
