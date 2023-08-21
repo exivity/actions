@@ -8,6 +8,10 @@ inputs:
   repo:
     description: 'Repository to trigger the workflow in'
     required: true
+  workflow:
+    description: 'Workflow to trigger'
+    required: false
+    default: 'build.yml'
 runs:
   using: 'node12'
   main: 'index.js'
