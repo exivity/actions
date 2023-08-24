@@ -40,7 +40,7 @@
     "@actions/exec": "1.1.1",
     "@actions/github": "5.1.1",
     "@actions/http-client": "2.1.1",
-    "checkout": "https://github.com/actions/checkout#v3.5.3",
+    "checkout": "https://github.com/actions/checkout#v3.6.0",
     "deepmerge": "^4.3.1",
     "form-data": "4.0.0",
     "glob": "8.1.0",
