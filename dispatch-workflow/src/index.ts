@@ -40,7 +40,7 @@ async function run() {
   if (typeof inputs !== 'undefined') {
     if (!isValidInputs(inputs))
       throw new Error(
-        'inputs input must be an object of type `Record<string, string>` encoded as JSON string'
+        'inputs input must be an object of type `Record<string, string>` encoded as JSON string',
       )
   }
 

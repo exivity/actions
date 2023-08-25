@@ -18,7 +18,7 @@ export const logAvailableRequests = async () => {
     `Remaining github API calls: ${
       core.remaining
     }. Rate limit will reset at ${new Date(
-      core.reset * 1000
-    ).toLocaleTimeString()}.`
+      core.reset * 1000,
+    ).toLocaleTimeString()}.`,
   )
 }

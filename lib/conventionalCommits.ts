@@ -93,7 +93,7 @@ export function isSemanticCommitMessage(message: string) {
 
   if (typeof parsed.type === 'undefined') {
     warning(
-      `Commit message can't be matched to the conventional commit pattern. See https://www.conventionalcommits.org/en/v1.0.0/ for more details.`
+      `Commit message can't be matched to the conventional commit pattern. See https://www.conventionalcommits.org/en/v1.0.0/ for more details.`,
     )
     return false
   }
@@ -115,7 +115,7 @@ export function isSemanticCommitMessage(message: string) {
       `\
 No release type found or not a valid release type. \
 Add a prefix to indicate what kind of release this pull request corresponds to. \
-${genericHelp}\n\n${typesHelp}`
+${genericHelp}\n\n${typesHelp}`,
     )
     return false
   }

@@ -85,17 +85,17 @@ async function getReleaseVersion() {
     const releaseVersions = await jiraClient.projectVersions.getProjectVersions(
       {
         projectIdOrKey: getJiraProjectId() as unknown as string,
-      }
+      },
     )
 
     const version = releaseVersions.find(
-      (version) => version.name === lockfile.version.replace(/v/, '')
+      (version) => version.name === lockfile.version.replace(/v/, ''),
     )
 
     if (version) return version
   } catch (err) {
     throw new Error(
-      `Could not connect with project versions: ${JSON.stringify(err)}`
+      `Could not connect with project versions: ${JSON.stringify(err)}`,
     )
   }
 
@@ -117,8 +117,8 @@ async function getReleaseVersion() {
           releaseDate: toDateString(new Date()),
         },
         null,
-        2
-      )}`
+        2,
+      )}`,
     )
   }
 }
@@ -146,7 +146,7 @@ export async function updateIssueFixVersion(jiraIssueIds: string[]) {
         warning(
           `failed to set fixVersion for issue ${issueIdOrKey} to ${
             version.name
-          }: ${JSON.stringify(err)}`
+          }: ${JSON.stringify(err)}`,
         )
       })
   })

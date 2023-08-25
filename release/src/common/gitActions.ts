@@ -122,7 +122,7 @@ export async function createOrUpdatePullRequest({
   })
   const body = prTemplate.replace(
     '<!-- CHANGELOG_CONTENTS -->',
-    changelogContents
+    changelogContents,
   )
   if (existingPullRequest) {
     const pr = await octokit.rest.pulls.update({

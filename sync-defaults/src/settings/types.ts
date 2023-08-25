@@ -113,7 +113,7 @@ export abstract class GitHubSettingsPlugin<T extends keyof Config> {
       owner: string
       repo: string
     },
-    public config: NonNullable<Config[T]>
+    public config: NonNullable<Config[T]>,
   ) {
     this.init()
   }

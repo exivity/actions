@@ -17,7 +17,7 @@ const description = {
 
 export function inferVersionFromJiraIssues(from: string, issues: JiraIssue[]) {
   const upcomingVersionIncrement: VersionIncrement = containsBreakingChange(
-    issues
+    issues,
   )
     ? 'major'
     : containsFeature(issues)
@@ -28,12 +28,12 @@ export function inferVersionFromJiraIssues(from: string, issues: JiraIssue[]) {
 
   if (upcomingVersion === null) {
     throw new Error(
-      `Could not calculate new version (incrementing ${from} to ${upcomingVersionIncrement})`
+      `Could not calculate new version (incrementing ${from} to ${upcomingVersionIncrement})`,
     )
   }
 
   info(
-    `Version increment (${description[upcomingVersionIncrement]}): ${from} -> v${upcomingVersion}`
+    `Version increment (${description[upcomingVersionIncrement]}): ${from} -> v${upcomingVersion}`,
   )
 
   return `v${upcomingVersion}`

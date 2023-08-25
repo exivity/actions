@@ -37,7 +37,7 @@ function buildChangelogSection(header: string, issues: JiraIssue[]) {
         `    - Milestone: ${issue.milestone}`,
         '-->',
         '',
-      ].join('\n')
+      ].join('\n'),
     ),
   ]
 }

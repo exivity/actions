@@ -4,11 +4,11 @@ import { JiraIssue } from '../jira/getRepoJiraIssues'
 
 export const features = (issues: JiraIssue[]) =>
   issues.filter(
-    (issue) => issue.type === 'feat' && issueNeedsReleaseNotes(issue)
+    (issue) => issue.type === 'feat' && issueNeedsReleaseNotes(issue),
   )
 export const fixes = (issues: JiraIssue[]) =>
   issues.filter(
-    (issue) => issue.type === 'fix' && issueNeedsReleaseNotes(issue)
+    (issue) => issue.type === 'fix' && issueNeedsReleaseNotes(issue),
   )
 
 const issueDoesntNeedReleaseNotes = (issue: JiraIssue) =>
@@ -27,7 +27,7 @@ export function formatPrChangelog(issues: JiraIssue[]) {
     '',
     ...buildChangelogSection(
       'No release notes needed',
-      noReleaseNotesNeeded(issues)
+      noReleaseNotesNeeded(issues),
     ),
     '',
   ].join('\n')
@@ -53,7 +53,7 @@ function buildChangelogSection(header: string, issues: JiraIssue[]) {
         `    - Milestone: ${issue.milestone}`,
         '  </details>',
         '',
-      ].join('\n')
+      ].join('\n'),
     ),
   ]
 }

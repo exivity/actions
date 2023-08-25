@@ -976,12 +976,12 @@ var require_lib = __commonJS({
     var RetryableHttpVerbs = ["OPTIONS", "GET", "DELETE", "HEAD"];
     var ExponentialBackoffCeiling = 10;
     var ExponentialBackoffTimeSlice = 5;
-    var HttpClientError = class extends Error {
+    var HttpClientError = class _HttpClientError extends Error {
       constructor(message, statusCode) {
         super(message);
         this.name = "HttpClientError";
         this.statusCode = statusCode;
-        Object.setPrototypeOf(this, HttpClientError.prototype);
+        Object.setPrototypeOf(this, _HttpClientError.prototype);
       }
     };
     exports.HttpClientError = HttpClientError;
@@ -1572,13 +1572,13 @@ var require_oidc_utils = __commonJS({
     var http_client_1 = require_lib();
     var auth_1 = require_auth();
     var core_1 = require_core();
-    var OidcClient = class {
+    var OidcClient = class _OidcClient {
       static createHttpClient(allowRetry = true, maxRetry = 10) {
         const requestOptions = {
           allowRetries: allowRetry,
           maxRetries: maxRetry
         };
-        return new http_client_1.HttpClient("actions/oidc-client", [new auth_1.BearerCredentialHandler(OidcClient.getRequestToken())], requestOptions);
+        return new http_client_1.HttpClient("actions/oidc-client", [new auth_1.BearerCredentialHandler(_OidcClient.getRequestToken())], requestOptions);
       }
       static getRequestToken() {
         const token = process.env["ACTIONS_ID_TOKEN_REQUEST_TOKEN"];
@@ -1597,7 +1597,7 @@ var require_oidc_utils = __commonJS({
       static getCall(id_token_url) {
         var _a;
         return __awaiter2(this, void 0, void 0, function* () {
-          const httpclient = OidcClient.createHttpClient();
+          const httpclient = _OidcClient.createHttpClient();
           const res = yield httpclient.getJson(id_token_url).catch((error) => {
             throw new Error(`Failed to get ID Token. 
  
@@ -1615,13 +1615,13 @@ var require_oidc_utils = __commonJS({
       static getIDToken(audience) {
         return __awaiter2(this, void 0, void 0, function* () {
           try {
-            let id_token_url = OidcClient.getIDTokenUrl();
+            let id_token_url = _OidcClient.getIDTokenUrl();
             if (audience) {
               const encodedAudience = encodeURIComponent(audience);
               id_token_url = `${id_token_url}&audience=${encodedAudience}`;
             }
             core_1.debug(`ID token url is ${id_token_url}`);
-            const id_token = yield OidcClient.getCall(id_token_url);
+            const id_token = yield _OidcClient.getCall(id_token_url);
             core_1.setSecret(id_token);
             return id_token;
           } catch (error) {
@@ -4595,7 +4595,7 @@ var require_lib3 = __commonJS({
     var Readable = Stream.Readable;
     var BUFFER = Symbol("buffer");
     var TYPE = Symbol("type");
-    var Blob2 = class {
+    var Blob2 = class _Blob {
       constructor() {
         this[TYPE] = "";
         const blobParts = arguments[0];
@@ -4614,7 +4614,7 @@ var require_lib3 = __commonJS({
               buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
             } else if (element instanceof ArrayBuffer) {
               buffer = Buffer.from(element);
-            } else if (element instanceof Blob2) {
+            } else if (element instanceof _Blob) {
               buffer = element[BUFFER];
             } else {
               buffer = Buffer.from(typeof element === "string" ? element : String(element));
@@ -4676,7 +4676,7 @@ var require_lib3 = __commonJS({
         const span = Math.max(relativeEnd - relativeStart, 0);
         const buffer = this[BUFFER];
         const slicedBuffer = buffer.slice(relativeStart, relativeStart + span);
-        const blob = new Blob2([], { type: arguments[2] });
+        const blob = new _Blob([], { type: arguments[2] });
         blob[BUFFER] = slicedBuffer;
         return blob;
       }
@@ -5053,7 +5053,7 @@ var require_lib3 = __commonJS({
       return void 0;
     }
     var MAP = Symbol("map");
-    var Headers = class {
+    var Headers = class _Headers {
       /**
        * Headers class
        *
@@ -5063,7 +5063,7 @@ var require_lib3 = __commonJS({
       constructor() {
         let init = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : void 0;
         this[MAP] = /* @__PURE__ */ Object.create(null);
-        if (init instanceof Headers) {
+        if (init instanceof _Headers) {
           const rawHeaders = init.raw();
           const headerNames = Object.keys(rawHeaders);
           for (const headerName of headerNames) {
@@ -5332,7 +5332,7 @@ var require_lib3 = __commonJS({
     }
     var INTERNALS$1 = Symbol("Response internals");
     var STATUS_CODES = http.STATUS_CODES;
-    var Response = class {
+    var Response = class _Response {
       constructor() {
         let body = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null;
         let opts = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
@@ -5380,7 +5380,7 @@ var require_lib3 = __commonJS({
        * @return  Response
        */
       clone() {
-        return new Response(clone(this), {
+        return new _Response(clone(this), {
           url: this.url,
           status: this.status,
           statusText: this.statusText,
@@ -5424,7 +5424,7 @@ var require_lib3 = __commonJS({
       const proto = signal && typeof signal === "object" && Object.getPrototypeOf(signal);
       return !!(proto && proto.constructor.name === "AbortSignal");
     }
-    var Request = class {
+    var Request = class _Request {
       constructor(input) {
         let init = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
         let parsedURL;
@@ -5494,7 +5494,7 @@ var require_lib3 = __commonJS({
        * @return  Request
        */
       clone() {
-        return new Request(this);
+        return new _Request(this);
       }
     };
     Body.mixIn(Request.prototype);
@@ -7696,9 +7696,10 @@ var require_github = __commonJS({
   }
 });
 
-// node_modules/tslib/tslib.es6.js
+// node_modules/tslib/tslib.es6.mjs
 var tslib_es6_exports = {};
 __export(tslib_es6_exports, {
+  __addDisposableResource: () => __addDisposableResource,
   __assign: () => __assign,
   __asyncDelegator: () => __asyncDelegator,
   __asyncGenerator: () => __asyncGenerator,
@@ -7710,6 +7711,7 @@ __export(tslib_es6_exports, {
   __classPrivateFieldSet: () => __classPrivateFieldSet,
   __createBinding: () => __createBinding,
   __decorate: () => __decorate,
+  __disposeResources: () => __disposeResources,
   __esDecorate: () => __esDecorate,
   __exportStar: () => __exportStar,
   __extends: () => __extends,
@@ -7727,7 +7729,8 @@ __export(tslib_es6_exports, {
   __spread: () => __spread,
   __spreadArray: () => __spreadArray,
   __spreadArrays: () => __spreadArrays,
-  __values: () => __values
+  __values: () => __values,
+  default: () => tslib_es6_default
 });
 function __extends(d, b) {
   if (typeof b !== "function" && b !== null)
@@ -7797,10 +7800,10 @@ function __esDecorate(ctor, descriptorIn, decorators, contextIn, initializers, e
       if (_ = accept(result.set))
         descriptor.set = _;
       if (_ = accept(result.init))
-        initializers.push(_);
+        initializers.unshift(_);
     } else if (_ = accept(result)) {
       if (kind === "field")
-        initializers.push(_);
+        initializers.unshift(_);
       else
         descriptor[key] = _;
     }
@@ -8111,9 +8114,56 @@ function __classPrivateFieldIn(state, receiver) {
     throw new TypeError("Cannot use 'in' operator on non-object");
   return typeof state === "function" ? receiver === state : state.has(receiver);
 }
-var extendStatics, __assign, __createBinding, __setModuleDefault;
+function __addDisposableResource(env, value, async) {
+  if (value !== null && value !== void 0) {
+    if (typeof value !== "object")
+      throw new TypeError("Object expected.");
+    var dispose;
+    if (async) {
+      if (!Symbol.asyncDispose)
+        throw new TypeError("Symbol.asyncDispose is not defined.");
+      dispose = value[Symbol.asyncDispose];
+    }
+    if (dispose === void 0) {
+      if (!Symbol.dispose)
+        throw new TypeError("Symbol.dispose is not defined.");
+      dispose = value[Symbol.dispose];
+    }
+    if (typeof dispose !== "function")
+      throw new TypeError("Object not disposable.");
+    env.stack.push({ value, dispose, async });
+  } else if (async) {
+    env.stack.push({ async: true });
+  }
+  return value;
+}
+function __disposeResources(env) {
+  function fail(e) {
+    env.error = env.hasError ? new _SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
+    env.hasError = true;
+  }
+  function next() {
+    while (env.stack.length) {
+      var rec = env.stack.pop();
+      try {
+        var result = rec.dispose && rec.dispose.call(rec.value);
+        if (rec.async)
+          return Promise.resolve(result).then(next, function(e) {
+            fail(e);
+            return next();
+          });
+      } catch (e) {
+        fail(e);
+      }
+    }
+    if (env.hasError)
+      throw env.error;
+  }
+  return next();
+}
+var extendStatics, __assign, __createBinding, __setModuleDefault, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
-  "node_modules/tslib/tslib.es6.js"() {
+  "node_modules/tslib/tslib.es6.mjs"() {
     extendStatics = function(d, b) {
       extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
         d2.__proto__ = b2;
@@ -8155,6 +8205,39 @@ var init_tslib_es6 = __esm({
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
+    };
+    _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
+      var e = new Error(message);
+      return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+    };
+    tslib_es6_default = {
+      __extends,
+      __assign,
+      __rest,
+      __decorate,
+      __param,
+      __metadata,
+      __awaiter,
+      __generator,
+      __createBinding,
+      __exportStar,
+      __values,
+      __read,
+      __spread,
+      __spreadArrays,
+      __spreadArray,
+      __await,
+      __asyncGenerator,
+      __asyncDelegator,
+      __asyncValues,
+      __makeTemplateObject,
+      __importStar,
+      __importDefault,
+      __classPrivateFieldGet,
+      __classPrivateFieldSet,
+      __classPrivateFieldIn,
+      __addDisposableResource,
+      __disposeResources
     };
   }
 });
@@ -9641,6 +9724,22 @@ var require_fieldMeta = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/agile/models/fields.js
+var require_fields = __commonJS({
+  "node_modules/jira.js/out/agile/models/fields.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/models/fixVersion.js
+var require_fixVersion = __commonJS({
+  "node_modules/jira.js/out/agile/models/fixVersion.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/agile/models/getAllBoards.js
 var require_getAllBoards = __commonJS({
   "node_modules/jira.js/out/agile/models/getAllBoards.js"(exports) {
@@ -9817,6 +9916,14 @@ var require_issueTransition = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/agile/models/issueType.js
+var require_issueType = __commonJS({
+  "node_modules/jira.js/out/agile/models/issueType.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/agile/models/jsonType.js
 var require_jsonType = __commonJS({
   "node_modules/jira.js/out/agile/models/jsonType.js"(exports) {
@@ -9865,6 +9972,14 @@ var require_moveIssuesToBoard = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/agile/models/operations.js
+var require_operations = __commonJS({
+  "node_modules/jira.js/out/agile/models/operations.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/agile/models/opsbar.js
 var require_opsbar = __commonJS({
   "node_modules/jira.js/out/agile/models/opsbar.js"(exports) {
@@ -9908,6 +10023,22 @@ var require_pageQuickFilter = __commonJS({
 // node_modules/jira.js/out/agile/models/partialSuccess.js
 var require_partialSuccess = __commonJS({
   "node_modules/jira.js/out/agile/models/partialSuccess.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/models/progress.js
+var require_progress = __commonJS({
+  "node_modules/jira.js/out/agile/models/progress.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/models/project.js
+var require_project2 = __commonJS({
+  "node_modules/jira.js/out/agile/models/project.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -9991,7 +10122,7 @@ var require_sprint2 = __commonJS({
         State2["Active"] = "active";
         State2["Closed"] = "closed";
       })(State = Sprint2.State || (Sprint2.State = {}));
-    })(Sprint = exports.Sprint || (exports.Sprint = {}));
+    })(Sprint || (exports.Sprint = Sprint = {}));
   }
 });
 
@@ -10006,6 +10137,22 @@ var require_sprintCreate = __commonJS({
 // node_modules/jira.js/out/agile/models/sprintSwap.js
 var require_sprintSwap = __commonJS({
   "node_modules/jira.js/out/agile/models/sprintSwap.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/models/status.js
+var require_status = __commonJS({
+  "node_modules/jira.js/out/agile/models/status.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/agile/models/statusCategory.js
+var require_statusCategory = __commonJS({
+  "node_modules/jira.js/out/agile/models/statusCategory.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -10091,17 +10238,17 @@ var require_toggleFeatures = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/agile/models/userAvatarUrls.js
-var require_userAvatarUrls = __commonJS({
-  "node_modules/jira.js/out/agile/models/userAvatarUrls.js"(exports) {
+// node_modules/jira.js/out/agile/models/user.js
+var require_user = __commonJS({
+  "node_modules/jira.js/out/agile/models/user.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
 });
 
-// node_modules/jira.js/out/agile/models/userJson.js
-var require_userJson = __commonJS({
-  "node_modules/jira.js/out/agile/models/userJson.js"(exports) {
+// node_modules/jira.js/out/agile/models/userAvatarUrls.js
+var require_userAvatarUrls = __commonJS({
+  "node_modules/jira.js/out/agile/models/userAvatarUrls.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -10160,6 +10307,8 @@ var require_models = __commonJS({
     tslib_1.__exportStar(require_featureToggleRequest(), exports);
     tslib_1.__exportStar(require_fieldEdit(), exports);
     tslib_1.__exportStar(require_fieldMeta(), exports);
+    tslib_1.__exportStar(require_fields(), exports);
+    tslib_1.__exportStar(require_fixVersion(), exports);
     tslib_1.__exportStar(require_getAllBoards(), exports);
     tslib_1.__exportStar(require_getAllQuickFilters(), exports);
     tslib_1.__exportStar(require_getBoard(), exports);
@@ -10182,18 +10331,22 @@ var require_models = __commonJS({
     tslib_1.__exportStar(require_issueAssignRequest(), exports);
     tslib_1.__exportStar(require_issueRankRequest(), exports);
     tslib_1.__exportStar(require_issueTransition(), exports);
+    tslib_1.__exportStar(require_issueType(), exports);
     tslib_1.__exportStar(require_jsonType(), exports);
     tslib_1.__exportStar(require_linkedSecurityWorkspaceIds(), exports);
     tslib_1.__exportStar(require_linkedWorkspace(), exports);
     tslib_1.__exportStar(require_linkGroup(), exports);
     tslib_1.__exportStar(require_location(), exports);
     tslib_1.__exportStar(require_moveIssuesToBoard(), exports);
+    tslib_1.__exportStar(require_operations(), exports);
     tslib_1.__exportStar(require_opsbar(), exports);
     tslib_1.__exportStar(require_page(), exports);
     tslib_1.__exportStar(require_pageBoard(), exports);
     tslib_1.__exportStar(require_pageBoardFilter(), exports);
     tslib_1.__exportStar(require_pageQuickFilter(), exports);
     tslib_1.__exportStar(require_partialSuccess(), exports);
+    tslib_1.__exportStar(require_progress(), exports);
+    tslib_1.__exportStar(require_project2(), exports);
     tslib_1.__exportStar(require_projects(), exports);
     tslib_1.__exportStar(require_quickFilter(), exports);
     tslib_1.__exportStar(require_rankingConfig(), exports);
@@ -10205,6 +10358,8 @@ var require_models = __commonJS({
     tslib_1.__exportStar(require_sprint2(), exports);
     tslib_1.__exportStar(require_sprintCreate(), exports);
     tslib_1.__exportStar(require_sprintSwap(), exports);
+    tslib_1.__exportStar(require_status(), exports);
+    tslib_1.__exportStar(require_statusCategory(), exports);
     tslib_1.__exportStar(require_statusCategoryJson(), exports);
     tslib_1.__exportStar(require_statusJson(), exports);
     tslib_1.__exportStar(require_storeDevelopmentInformation(), exports);
@@ -10215,8 +10370,8 @@ var require_models = __commonJS({
     tslib_1.__exportStar(require_submittedVulnerabilitiesResult(), exports);
     tslib_1.__exportStar(require_subquery(), exports);
     tslib_1.__exportStar(require_toggleFeatures(), exports);
+    tslib_1.__exportStar(require_user(), exports);
     tslib_1.__exportStar(require_userAvatarUrls(), exports);
-    tslib_1.__exportStar(require_userJson(), exports);
     tslib_1.__exportStar(require_version(), exports);
     tslib_1.__exportStar(require_vulnerability(), exports);
   }
@@ -11033,7 +11188,7 @@ var require_base64Encoder = __commonJS({
         }
         return output;
       };
-    })(Base64Encoder = exports.Base64Encoder || (exports.Base64Encoder = {}));
+    })(Base64Encoder || (exports.Base64Encoder = Base64Encoder = {}));
   }
 });
 
@@ -18170,7 +18325,7 @@ var require_authenticationService = __commonJS({
         });
       }
       AuthenticationService2.getAuthenticationToken = getAuthenticationToken;
-    })(AuthenticationService = exports.AuthenticationService || (exports.AuthenticationService = {}));
+    })(AuthenticationService || (exports.AuthenticationService = AuthenticationService = {}));
   }
 });
 
@@ -18181,1663 +18336,6 @@ var require_authenticationService2 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_authenticationService(), exports);
-  }
-});
-
-// node_modules/axios/lib/helpers/bind.js
-var require_bind = __commonJS({
-  "node_modules/axios/lib/helpers/bind.js"(exports, module2) {
-    "use strict";
-    module2.exports = function bind3(fn, thisArg) {
-      return function wrap() {
-        var args = new Array(arguments.length);
-        for (var i = 0; i < args.length; i++) {
-          args[i] = arguments[i];
-        }
-        return fn.apply(thisArg, args);
-      };
-    };
-  }
-});
-
-// node_modules/axios/lib/utils.js
-var require_utils6 = __commonJS({
-  "node_modules/axios/lib/utils.js"(exports, module2) {
-    "use strict";
-    var bind3 = require_bind();
-    var toString2 = Object.prototype.toString;
-    var kindOf = function(cache) {
-      return function(thing) {
-        var str = toString2.call(thing);
-        return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
-      };
-    }(/* @__PURE__ */ Object.create(null));
-    function kindOfTest(type3) {
-      type3 = type3.toLowerCase();
-      return function isKindOf(thing) {
-        return kindOf(thing) === type3;
-      };
-    }
-    function isArray(val) {
-      return Array.isArray(val);
-    }
-    function isUndefined(val) {
-      return typeof val === "undefined";
-    }
-    function isBuffer(val) {
-      return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor) && typeof val.constructor.isBuffer === "function" && val.constructor.isBuffer(val);
-    }
-    var isArrayBuffer = kindOfTest("ArrayBuffer");
-    function isArrayBufferView(val) {
-      var result;
-      if (typeof ArrayBuffer !== "undefined" && ArrayBuffer.isView) {
-        result = ArrayBuffer.isView(val);
-      } else {
-        result = val && val.buffer && isArrayBuffer(val.buffer);
-      }
-      return result;
-    }
-    function isString(val) {
-      return typeof val === "string";
-    }
-    function isNumber(val) {
-      return typeof val === "number";
-    }
-    function isObject(val) {
-      return val !== null && typeof val === "object";
-    }
-    function isPlainObject(val) {
-      if (kindOf(val) !== "object") {
-        return false;
-      }
-      var prototype = Object.getPrototypeOf(val);
-      return prototype === null || prototype === Object.prototype;
-    }
-    var isDate = kindOfTest("Date");
-    var isFile = kindOfTest("File");
-    var isBlob = kindOfTest("Blob");
-    var isFileList = kindOfTest("FileList");
-    function isFunction(val) {
-      return toString2.call(val) === "[object Function]";
-    }
-    function isStream(val) {
-      return isObject(val) && isFunction(val.pipe);
-    }
-    function isFormData(thing) {
-      var pattern = "[object FormData]";
-      return thing && (typeof FormData === "function" && thing instanceof FormData || toString2.call(thing) === pattern || isFunction(thing.toString) && thing.toString() === pattern);
-    }
-    var isURLSearchParams = kindOfTest("URLSearchParams");
-    function trim(str) {
-      return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, "");
-    }
-    function isStandardBrowserEnv() {
-      if (typeof navigator !== "undefined" && (navigator.product === "ReactNative" || navigator.product === "NativeScript" || navigator.product === "NS")) {
-        return false;
-      }
-      return typeof window !== "undefined" && typeof document !== "undefined";
-    }
-    function forEach(obj, fn) {
-      if (obj === null || typeof obj === "undefined") {
-        return;
-      }
-      if (typeof obj !== "object") {
-        obj = [obj];
-      }
-      if (isArray(obj)) {
-        for (var i = 0, l = obj.length; i < l; i++) {
-          fn.call(null, obj[i], i, obj);
-        }
-      } else {
-        for (var key in obj) {
-          if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            fn.call(null, obj[key], key, obj);
-          }
-        }
-      }
-    }
-    function merge() {
-      var result = {};
-      function assignValue(val, key) {
-        if (isPlainObject(result[key]) && isPlainObject(val)) {
-          result[key] = merge(result[key], val);
-        } else if (isPlainObject(val)) {
-          result[key] = merge({}, val);
-        } else if (isArray(val)) {
-          result[key] = val.slice();
-        } else {
-          result[key] = val;
-        }
-      }
-      for (var i = 0, l = arguments.length; i < l; i++) {
-        forEach(arguments[i], assignValue);
-      }
-      return result;
-    }
-    function extend(a, b, thisArg) {
-      forEach(b, function assignValue(val, key) {
-        if (thisArg && typeof val === "function") {
-          a[key] = bind3(val, thisArg);
-        } else {
-          a[key] = val;
-        }
-      });
-      return a;
-    }
-    function stripBOM(content) {
-      if (content.charCodeAt(0) === 65279) {
-        content = content.slice(1);
-      }
-      return content;
-    }
-    function inherits(constructor, superConstructor, props, descriptors) {
-      constructor.prototype = Object.create(superConstructor.prototype, descriptors);
-      constructor.prototype.constructor = constructor;
-      props && Object.assign(constructor.prototype, props);
-    }
-    function toFlatObject(sourceObj, destObj, filter2) {
-      var props;
-      var i;
-      var prop;
-      var merged = {};
-      destObj = destObj || {};
-      do {
-        props = Object.getOwnPropertyNames(sourceObj);
-        i = props.length;
-        while (i-- > 0) {
-          prop = props[i];
-          if (!merged[prop]) {
-            destObj[prop] = sourceObj[prop];
-            merged[prop] = true;
-          }
-        }
-        sourceObj = Object.getPrototypeOf(sourceObj);
-      } while (sourceObj && (!filter2 || filter2(sourceObj, destObj)) && sourceObj !== Object.prototype);
-      return destObj;
-    }
-    function endsWith(str, searchString, position) {
-      str = String(str);
-      if (position === void 0 || position > str.length) {
-        position = str.length;
-      }
-      position -= searchString.length;
-      var lastIndex = str.indexOf(searchString, position);
-      return lastIndex !== -1 && lastIndex === position;
-    }
-    function toArray(thing) {
-      if (!thing)
-        return null;
-      var i = thing.length;
-      if (isUndefined(i))
-        return null;
-      var arr = new Array(i);
-      while (i-- > 0) {
-        arr[i] = thing[i];
-      }
-      return arr;
-    }
-    var isTypedArray = function(TypedArray) {
-      return function(thing) {
-        return TypedArray && thing instanceof TypedArray;
-      };
-    }(typeof Uint8Array !== "undefined" && Object.getPrototypeOf(Uint8Array));
-    module2.exports = {
-      isArray,
-      isArrayBuffer,
-      isBuffer,
-      isFormData,
-      isArrayBufferView,
-      isString,
-      isNumber,
-      isObject,
-      isPlainObject,
-      isUndefined,
-      isDate,
-      isFile,
-      isBlob,
-      isFunction,
-      isStream,
-      isURLSearchParams,
-      isStandardBrowserEnv,
-      forEach,
-      merge,
-      extend,
-      trim,
-      stripBOM,
-      inherits,
-      toFlatObject,
-      kindOf,
-      kindOfTest,
-      endsWith,
-      toArray,
-      isTypedArray,
-      isFileList
-    };
-  }
-});
-
-// node_modules/axios/lib/helpers/buildURL.js
-var require_buildURL = __commonJS({
-  "node_modules/axios/lib/helpers/buildURL.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    function encode(val) {
-      return encodeURIComponent(val).replace(/%3A/gi, ":").replace(/%24/g, "$").replace(/%2C/gi, ",").replace(/%20/g, "+").replace(/%5B/gi, "[").replace(/%5D/gi, "]");
-    }
-    module2.exports = function buildURL(url, params, paramsSerializer) {
-      if (!params) {
-        return url;
-      }
-      var serializedParams;
-      if (paramsSerializer) {
-        serializedParams = paramsSerializer(params);
-      } else if (utils.isURLSearchParams(params)) {
-        serializedParams = params.toString();
-      } else {
-        var parts = [];
-        utils.forEach(params, function serialize(val, key) {
-          if (val === null || typeof val === "undefined") {
-            return;
-          }
-          if (utils.isArray(val)) {
-            key = key + "[]";
-          } else {
-            val = [val];
-          }
-          utils.forEach(val, function parseValue(v) {
-            if (utils.isDate(v)) {
-              v = v.toISOString();
-            } else if (utils.isObject(v)) {
-              v = JSON.stringify(v);
-            }
-            parts.push(encode(key) + "=" + encode(v));
-          });
-        });
-        serializedParams = parts.join("&");
-      }
-      if (serializedParams) {
-        var hashmarkIndex = url.indexOf("#");
-        if (hashmarkIndex !== -1) {
-          url = url.slice(0, hashmarkIndex);
-        }
-        url += (url.indexOf("?") === -1 ? "?" : "&") + serializedParams;
-      }
-      return url;
-    };
-  }
-});
-
-// node_modules/axios/lib/core/InterceptorManager.js
-var require_InterceptorManager = __commonJS({
-  "node_modules/axios/lib/core/InterceptorManager.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    function InterceptorManager() {
-      this.handlers = [];
-    }
-    InterceptorManager.prototype.use = function use(fulfilled, rejected, options) {
-      this.handlers.push({
-        fulfilled,
-        rejected,
-        synchronous: options ? options.synchronous : false,
-        runWhen: options ? options.runWhen : null
-      });
-      return this.handlers.length - 1;
-    };
-    InterceptorManager.prototype.eject = function eject(id) {
-      if (this.handlers[id]) {
-        this.handlers[id] = null;
-      }
-    };
-    InterceptorManager.prototype.forEach = function forEach(fn) {
-      utils.forEach(this.handlers, function forEachHandler(h) {
-        if (h !== null) {
-          fn(h);
-        }
-      });
-    };
-    module2.exports = InterceptorManager;
-  }
-});
-
-// node_modules/axios/lib/helpers/normalizeHeaderName.js
-var require_normalizeHeaderName = __commonJS({
-  "node_modules/axios/lib/helpers/normalizeHeaderName.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    module2.exports = function normalizeHeaderName(headers, normalizedName) {
-      utils.forEach(headers, function processHeader(value, name) {
-        if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
-          headers[normalizedName] = value;
-          delete headers[name];
-        }
-      });
-    };
-  }
-});
-
-// node_modules/axios/lib/core/AxiosError.js
-var require_AxiosError = __commonJS({
-  "node_modules/axios/lib/core/AxiosError.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    function AxiosError(message, code, config, request, response) {
-      Error.call(this);
-      this.message = message;
-      this.name = "AxiosError";
-      code && (this.code = code);
-      config && (this.config = config);
-      request && (this.request = request);
-      response && (this.response = response);
-    }
-    utils.inherits(AxiosError, Error, {
-      toJSON: function toJSON() {
-        return {
-          // Standard
-          message: this.message,
-          name: this.name,
-          // Microsoft
-          description: this.description,
-          number: this.number,
-          // Mozilla
-          fileName: this.fileName,
-          lineNumber: this.lineNumber,
-          columnNumber: this.columnNumber,
-          stack: this.stack,
-          // Axios
-          config: this.config,
-          code: this.code,
-          status: this.response && this.response.status ? this.response.status : null
-        };
-      }
-    });
-    var prototype = AxiosError.prototype;
-    var descriptors = {};
-    [
-      "ERR_BAD_OPTION_VALUE",
-      "ERR_BAD_OPTION",
-      "ECONNABORTED",
-      "ETIMEDOUT",
-      "ERR_NETWORK",
-      "ERR_FR_TOO_MANY_REDIRECTS",
-      "ERR_DEPRECATED",
-      "ERR_BAD_RESPONSE",
-      "ERR_BAD_REQUEST",
-      "ERR_CANCELED"
-      // eslint-disable-next-line func-names
-    ].forEach(function(code) {
-      descriptors[code] = { value: code };
-    });
-    Object.defineProperties(AxiosError, descriptors);
-    Object.defineProperty(prototype, "isAxiosError", { value: true });
-    AxiosError.from = function(error, code, config, request, response, customProps) {
-      var axiosError = Object.create(prototype);
-      utils.toFlatObject(error, axiosError, function filter2(obj) {
-        return obj !== Error.prototype;
-      });
-      AxiosError.call(axiosError, error.message, code, config, request, response);
-      axiosError.name = error.name;
-      customProps && Object.assign(axiosError, customProps);
-      return axiosError;
-    };
-    module2.exports = AxiosError;
-  }
-});
-
-// node_modules/axios/lib/defaults/transitional.js
-var require_transitional = __commonJS({
-  "node_modules/axios/lib/defaults/transitional.js"(exports, module2) {
-    "use strict";
-    module2.exports = {
-      silentJSONParsing: true,
-      forcedJSONParsing: true,
-      clarifyTimeoutError: false
-    };
-  }
-});
-
-// node_modules/axios/lib/helpers/toFormData.js
-var require_toFormData = __commonJS({
-  "node_modules/axios/lib/helpers/toFormData.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    function toFormData(obj, formData) {
-      formData = formData || new FormData();
-      var stack = [];
-      function convertValue(value) {
-        if (value === null)
-          return "";
-        if (utils.isDate(value)) {
-          return value.toISOString();
-        }
-        if (utils.isArrayBuffer(value) || utils.isTypedArray(value)) {
-          return typeof Blob === "function" ? new Blob([value]) : Buffer.from(value);
-        }
-        return value;
-      }
-      function build(data, parentKey) {
-        if (utils.isPlainObject(data) || utils.isArray(data)) {
-          if (stack.indexOf(data) !== -1) {
-            throw Error("Circular reference detected in " + parentKey);
-          }
-          stack.push(data);
-          utils.forEach(data, function each(value, key) {
-            if (utils.isUndefined(value))
-              return;
-            var fullKey = parentKey ? parentKey + "." + key : key;
-            var arr;
-            if (value && !parentKey && typeof value === "object") {
-              if (utils.endsWith(key, "{}")) {
-                value = JSON.stringify(value);
-              } else if (utils.endsWith(key, "[]") && (arr = utils.toArray(value))) {
-                arr.forEach(function(el) {
-                  !utils.isUndefined(el) && formData.append(fullKey, convertValue(el));
-                });
-                return;
-              }
-            }
-            build(value, fullKey);
-          });
-          stack.pop();
-        } else {
-          formData.append(parentKey, convertValue(data));
-        }
-      }
-      build(obj);
-      return formData;
-    }
-    module2.exports = toFormData;
-  }
-});
-
-// node_modules/axios/lib/core/settle.js
-var require_settle = __commonJS({
-  "node_modules/axios/lib/core/settle.js"(exports, module2) {
-    "use strict";
-    var AxiosError = require_AxiosError();
-    module2.exports = function settle(resolve, reject, response) {
-      var validateStatus = response.config.validateStatus;
-      if (!response.status || !validateStatus || validateStatus(response.status)) {
-        resolve(response);
-      } else {
-        reject(new AxiosError(
-          "Request failed with status code " + response.status,
-          [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
-          response.config,
-          response.request,
-          response
-        ));
-      }
-    };
-  }
-});
-
-// node_modules/axios/lib/helpers/cookies.js
-var require_cookies = __commonJS({
-  "node_modules/axios/lib/helpers/cookies.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    module2.exports = utils.isStandardBrowserEnv() ? (
-      // Standard browser envs support document.cookie
-      function standardBrowserEnv() {
-        return {
-          write: function write(name, value, expires, path, domain, secure) {
-            var cookie = [];
-            cookie.push(name + "=" + encodeURIComponent(value));
-            if (utils.isNumber(expires)) {
-              cookie.push("expires=" + new Date(expires).toGMTString());
-            }
-            if (utils.isString(path)) {
-              cookie.push("path=" + path);
-            }
-            if (utils.isString(domain)) {
-              cookie.push("domain=" + domain);
-            }
-            if (secure === true) {
-              cookie.push("secure");
-            }
-            document.cookie = cookie.join("; ");
-          },
-          read: function read(name) {
-            var match = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
-            return match ? decodeURIComponent(match[3]) : null;
-          },
-          remove: function remove(name) {
-            this.write(name, "", Date.now() - 864e5);
-          }
-        };
-      }()
-    ) : (
-      // Non standard browser env (web workers, react-native) lack needed support.
-      function nonStandardBrowserEnv() {
-        return {
-          write: function write() {
-          },
-          read: function read() {
-            return null;
-          },
-          remove: function remove() {
-          }
-        };
-      }()
-    );
-  }
-});
-
-// node_modules/axios/lib/helpers/isAbsoluteURL.js
-var require_isAbsoluteURL = __commonJS({
-  "node_modules/axios/lib/helpers/isAbsoluteURL.js"(exports, module2) {
-    "use strict";
-    module2.exports = function isAbsoluteURL(url) {
-      return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
-    };
-  }
-});
-
-// node_modules/axios/lib/helpers/combineURLs.js
-var require_combineURLs = __commonJS({
-  "node_modules/axios/lib/helpers/combineURLs.js"(exports, module2) {
-    "use strict";
-    module2.exports = function combineURLs(baseURL, relativeURL) {
-      return relativeURL ? baseURL.replace(/\/+$/, "") + "/" + relativeURL.replace(/^\/+/, "") : baseURL;
-    };
-  }
-});
-
-// node_modules/axios/lib/core/buildFullPath.js
-var require_buildFullPath = __commonJS({
-  "node_modules/axios/lib/core/buildFullPath.js"(exports, module2) {
-    "use strict";
-    var isAbsoluteURL = require_isAbsoluteURL();
-    var combineURLs = require_combineURLs();
-    module2.exports = function buildFullPath(baseURL, requestedURL) {
-      if (baseURL && !isAbsoluteURL(requestedURL)) {
-        return combineURLs(baseURL, requestedURL);
-      }
-      return requestedURL;
-    };
-  }
-});
-
-// node_modules/axios/lib/helpers/parseHeaders.js
-var require_parseHeaders = __commonJS({
-  "node_modules/axios/lib/helpers/parseHeaders.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    var ignoreDuplicateOf = [
-      "age",
-      "authorization",
-      "content-length",
-      "content-type",
-      "etag",
-      "expires",
-      "from",
-      "host",
-      "if-modified-since",
-      "if-unmodified-since",
-      "last-modified",
-      "location",
-      "max-forwards",
-      "proxy-authorization",
-      "referer",
-      "retry-after",
-      "user-agent"
-    ];
-    module2.exports = function parseHeaders(headers) {
-      var parsed = {};
-      var key;
-      var val;
-      var i;
-      if (!headers) {
-        return parsed;
-      }
-      utils.forEach(headers.split("\n"), function parser(line) {
-        i = line.indexOf(":");
-        key = utils.trim(line.substr(0, i)).toLowerCase();
-        val = utils.trim(line.substr(i + 1));
-        if (key) {
-          if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
-            return;
-          }
-          if (key === "set-cookie") {
-            parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
-          } else {
-            parsed[key] = parsed[key] ? parsed[key] + ", " + val : val;
-          }
-        }
-      });
-      return parsed;
-    };
-  }
-});
-
-// node_modules/axios/lib/helpers/isURLSameOrigin.js
-var require_isURLSameOrigin = __commonJS({
-  "node_modules/axios/lib/helpers/isURLSameOrigin.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    module2.exports = utils.isStandardBrowserEnv() ? (
-      // Standard browser envs have full support of the APIs needed to test
-      // whether the request URL is of the same origin as current location.
-      function standardBrowserEnv() {
-        var msie = /(msie|trident)/i.test(navigator.userAgent);
-        var urlParsingNode = document.createElement("a");
-        var originURL;
-        function resolveURL(url) {
-          var href = url;
-          if (msie) {
-            urlParsingNode.setAttribute("href", href);
-            href = urlParsingNode.href;
-          }
-          urlParsingNode.setAttribute("href", href);
-          return {
-            href: urlParsingNode.href,
-            protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, "") : "",
-            host: urlParsingNode.host,
-            search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, "") : "",
-            hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, "") : "",
-            hostname: urlParsingNode.hostname,
-            port: urlParsingNode.port,
-            pathname: urlParsingNode.pathname.charAt(0) === "/" ? urlParsingNode.pathname : "/" + urlParsingNode.pathname
-          };
-        }
-        originURL = resolveURL(window.location.href);
-        return function isURLSameOrigin(requestURL) {
-          var parsed = utils.isString(requestURL) ? resolveURL(requestURL) : requestURL;
-          return parsed.protocol === originURL.protocol && parsed.host === originURL.host;
-        };
-      }()
-    ) : (
-      // Non standard browser envs (web workers, react-native) lack needed support.
-      function nonStandardBrowserEnv() {
-        return function isURLSameOrigin() {
-          return true;
-        };
-      }()
-    );
-  }
-});
-
-// node_modules/axios/lib/cancel/CanceledError.js
-var require_CanceledError = __commonJS({
-  "node_modules/axios/lib/cancel/CanceledError.js"(exports, module2) {
-    "use strict";
-    var AxiosError = require_AxiosError();
-    var utils = require_utils6();
-    function CanceledError(message) {
-      AxiosError.call(this, message == null ? "canceled" : message, AxiosError.ERR_CANCELED);
-      this.name = "CanceledError";
-    }
-    utils.inherits(CanceledError, AxiosError, {
-      __CANCEL__: true
-    });
-    module2.exports = CanceledError;
-  }
-});
-
-// node_modules/axios/lib/helpers/parseProtocol.js
-var require_parseProtocol = __commonJS({
-  "node_modules/axios/lib/helpers/parseProtocol.js"(exports, module2) {
-    "use strict";
-    module2.exports = function parseProtocol(url) {
-      var match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
-      return match && match[1] || "";
-    };
-  }
-});
-
-// node_modules/axios/lib/adapters/xhr.js
-var require_xhr = __commonJS({
-  "node_modules/axios/lib/adapters/xhr.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    var settle = require_settle();
-    var cookies = require_cookies();
-    var buildURL = require_buildURL();
-    var buildFullPath = require_buildFullPath();
-    var parseHeaders = require_parseHeaders();
-    var isURLSameOrigin = require_isURLSameOrigin();
-    var transitionalDefaults = require_transitional();
-    var AxiosError = require_AxiosError();
-    var CanceledError = require_CanceledError();
-    var parseProtocol = require_parseProtocol();
-    module2.exports = function xhrAdapter(config) {
-      return new Promise(function dispatchXhrRequest(resolve, reject) {
-        var requestData = config.data;
-        var requestHeaders = config.headers;
-        var responseType = config.responseType;
-        var onCanceled;
-        function done() {
-          if (config.cancelToken) {
-            config.cancelToken.unsubscribe(onCanceled);
-          }
-          if (config.signal) {
-            config.signal.removeEventListener("abort", onCanceled);
-          }
-        }
-        if (utils.isFormData(requestData) && utils.isStandardBrowserEnv()) {
-          delete requestHeaders["Content-Type"];
-        }
-        var request = new XMLHttpRequest();
-        if (config.auth) {
-          var username = config.auth.username || "";
-          var password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : "";
-          requestHeaders.Authorization = "Basic " + btoa(username + ":" + password);
-        }
-        var fullPath = buildFullPath(config.baseURL, config.url);
-        request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
-        request.timeout = config.timeout;
-        function onloadend() {
-          if (!request) {
-            return;
-          }
-          var responseHeaders = "getAllResponseHeaders" in request ? parseHeaders(request.getAllResponseHeaders()) : null;
-          var responseData = !responseType || responseType === "text" || responseType === "json" ? request.responseText : request.response;
-          var response = {
-            data: responseData,
-            status: request.status,
-            statusText: request.statusText,
-            headers: responseHeaders,
-            config,
-            request
-          };
-          settle(function _resolve(value) {
-            resolve(value);
-            done();
-          }, function _reject(err) {
-            reject(err);
-            done();
-          }, response);
-          request = null;
-        }
-        if ("onloadend" in request) {
-          request.onloadend = onloadend;
-        } else {
-          request.onreadystatechange = function handleLoad() {
-            if (!request || request.readyState !== 4) {
-              return;
-            }
-            if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf("file:") === 0)) {
-              return;
-            }
-            setTimeout(onloadend);
-          };
-        }
-        request.onabort = function handleAbort() {
-          if (!request) {
-            return;
-          }
-          reject(new AxiosError("Request aborted", AxiosError.ECONNABORTED, config, request));
-          request = null;
-        };
-        request.onerror = function handleError() {
-          reject(new AxiosError("Network Error", AxiosError.ERR_NETWORK, config, request, request));
-          request = null;
-        };
-        request.ontimeout = function handleTimeout() {
-          var timeoutErrorMessage = config.timeout ? "timeout of " + config.timeout + "ms exceeded" : "timeout exceeded";
-          var transitional = config.transitional || transitionalDefaults;
-          if (config.timeoutErrorMessage) {
-            timeoutErrorMessage = config.timeoutErrorMessage;
-          }
-          reject(new AxiosError(
-            timeoutErrorMessage,
-            transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
-            config,
-            request
-          ));
-          request = null;
-        };
-        if (utils.isStandardBrowserEnv()) {
-          var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ? cookies.read(config.xsrfCookieName) : void 0;
-          if (xsrfValue) {
-            requestHeaders[config.xsrfHeaderName] = xsrfValue;
-          }
-        }
-        if ("setRequestHeader" in request) {
-          utils.forEach(requestHeaders, function setRequestHeader(val, key) {
-            if (typeof requestData === "undefined" && key.toLowerCase() === "content-type") {
-              delete requestHeaders[key];
-            } else {
-              request.setRequestHeader(key, val);
-            }
-          });
-        }
-        if (!utils.isUndefined(config.withCredentials)) {
-          request.withCredentials = !!config.withCredentials;
-        }
-        if (responseType && responseType !== "json") {
-          request.responseType = config.responseType;
-        }
-        if (typeof config.onDownloadProgress === "function") {
-          request.addEventListener("progress", config.onDownloadProgress);
-        }
-        if (typeof config.onUploadProgress === "function" && request.upload) {
-          request.upload.addEventListener("progress", config.onUploadProgress);
-        }
-        if (config.cancelToken || config.signal) {
-          onCanceled = function(cancel) {
-            if (!request) {
-              return;
-            }
-            reject(!cancel || cancel && cancel.type ? new CanceledError() : cancel);
-            request.abort();
-            request = null;
-          };
-          config.cancelToken && config.cancelToken.subscribe(onCanceled);
-          if (config.signal) {
-            config.signal.aborted ? onCanceled() : config.signal.addEventListener("abort", onCanceled);
-          }
-        }
-        if (!requestData) {
-          requestData = null;
-        }
-        var protocol = parseProtocol(fullPath);
-        if (protocol && ["http", "https", "file"].indexOf(protocol) === -1) {
-          reject(new AxiosError("Unsupported protocol " + protocol + ":", AxiosError.ERR_BAD_REQUEST, config));
-          return;
-        }
-        request.send(requestData);
-      });
-    };
-  }
-});
-
-// node_modules/follow-redirects/debug.js
-var require_debug = __commonJS({
-  "node_modules/follow-redirects/debug.js"(exports, module2) {
-    var debug;
-    module2.exports = function() {
-      if (!debug) {
-        try {
-          debug = require("debug")("follow-redirects");
-        } catch (error) {
-        }
-        if (typeof debug !== "function") {
-          debug = function() {
-          };
-        }
-      }
-      debug.apply(null, arguments);
-    };
-  }
-});
-
-// node_modules/follow-redirects/index.js
-var require_follow_redirects = __commonJS({
-  "node_modules/follow-redirects/index.js"(exports, module2) {
-    var url = require("url");
-    var URL3 = url.URL;
-    var http = require("http");
-    var https = require("https");
-    var Writable = require("stream").Writable;
-    var assert = require("assert");
-    var debug = require_debug();
-    var events = ["abort", "aborted", "connect", "error", "socket", "timeout"];
-    var eventHandlers = /* @__PURE__ */ Object.create(null);
-    events.forEach(function(event) {
-      eventHandlers[event] = function(arg1, arg2, arg3) {
-        this._redirectable.emit(event, arg1, arg2, arg3);
-      };
-    });
-    var RedirectionError = createErrorType(
-      "ERR_FR_REDIRECTION_FAILURE",
-      "Redirected request failed"
-    );
-    var TooManyRedirectsError = createErrorType(
-      "ERR_FR_TOO_MANY_REDIRECTS",
-      "Maximum number of redirects exceeded"
-    );
-    var MaxBodyLengthExceededError = createErrorType(
-      "ERR_FR_MAX_BODY_LENGTH_EXCEEDED",
-      "Request body larger than maxBodyLength limit"
-    );
-    var WriteAfterEndError = createErrorType(
-      "ERR_STREAM_WRITE_AFTER_END",
-      "write after end"
-    );
-    function RedirectableRequest(options, responseCallback) {
-      Writable.call(this);
-      this._sanitizeOptions(options);
-      this._options = options;
-      this._ended = false;
-      this._ending = false;
-      this._redirectCount = 0;
-      this._redirects = [];
-      this._requestBodyLength = 0;
-      this._requestBodyBuffers = [];
-      if (responseCallback) {
-        this.on("response", responseCallback);
-      }
-      var self2 = this;
-      this._onNativeResponse = function(response) {
-        self2._processResponse(response);
-      };
-      this._performRequest();
-    }
-    RedirectableRequest.prototype = Object.create(Writable.prototype);
-    RedirectableRequest.prototype.abort = function() {
-      abortRequest(this._currentRequest);
-      this.emit("abort");
-    };
-    RedirectableRequest.prototype.write = function(data, encoding, callback) {
-      if (this._ending) {
-        throw new WriteAfterEndError();
-      }
-      if (!(typeof data === "string" || typeof data === "object" && "length" in data)) {
-        throw new TypeError("data should be a string, Buffer or Uint8Array");
-      }
-      if (typeof encoding === "function") {
-        callback = encoding;
-        encoding = null;
-      }
-      if (data.length === 0) {
-        if (callback) {
-          callback();
-        }
-        return;
-      }
-      if (this._requestBodyLength + data.length <= this._options.maxBodyLength) {
-        this._requestBodyLength += data.length;
-        this._requestBodyBuffers.push({ data, encoding });
-        this._currentRequest.write(data, encoding, callback);
-      } else {
-        this.emit("error", new MaxBodyLengthExceededError());
-        this.abort();
-      }
-    };
-    RedirectableRequest.prototype.end = function(data, encoding, callback) {
-      if (typeof data === "function") {
-        callback = data;
-        data = encoding = null;
-      } else if (typeof encoding === "function") {
-        callback = encoding;
-        encoding = null;
-      }
-      if (!data) {
-        this._ended = this._ending = true;
-        this._currentRequest.end(null, null, callback);
-      } else {
-        var self2 = this;
-        var currentRequest = this._currentRequest;
-        this.write(data, encoding, function() {
-          self2._ended = true;
-          currentRequest.end(null, null, callback);
-        });
-        this._ending = true;
-      }
-    };
-    RedirectableRequest.prototype.setHeader = function(name, value) {
-      this._options.headers[name] = value;
-      this._currentRequest.setHeader(name, value);
-    };
-    RedirectableRequest.prototype.removeHeader = function(name) {
-      delete this._options.headers[name];
-      this._currentRequest.removeHeader(name);
-    };
-    RedirectableRequest.prototype.setTimeout = function(msecs, callback) {
-      var self2 = this;
-      function destroyOnTimeout(socket) {
-        socket.setTimeout(msecs);
-        socket.removeListener("timeout", socket.destroy);
-        socket.addListener("timeout", socket.destroy);
-      }
-      function startTimer(socket) {
-        if (self2._timeout) {
-          clearTimeout(self2._timeout);
-        }
-        self2._timeout = setTimeout(function() {
-          self2.emit("timeout");
-          clearTimer();
-        }, msecs);
-        destroyOnTimeout(socket);
-      }
-      function clearTimer() {
-        if (self2._timeout) {
-          clearTimeout(self2._timeout);
-          self2._timeout = null;
-        }
-        self2.removeListener("abort", clearTimer);
-        self2.removeListener("error", clearTimer);
-        self2.removeListener("response", clearTimer);
-        if (callback) {
-          self2.removeListener("timeout", callback);
-        }
-        if (!self2.socket) {
-          self2._currentRequest.removeListener("socket", startTimer);
-        }
-      }
-      if (callback) {
-        this.on("timeout", callback);
-      }
-      if (this.socket) {
-        startTimer(this.socket);
-      } else {
-        this._currentRequest.once("socket", startTimer);
-      }
-      this.on("socket", destroyOnTimeout);
-      this.on("abort", clearTimer);
-      this.on("error", clearTimer);
-      this.on("response", clearTimer);
-      return this;
-    };
-    [
-      "flushHeaders",
-      "getHeader",
-      "setNoDelay",
-      "setSocketKeepAlive"
-    ].forEach(function(method) {
-      RedirectableRequest.prototype[method] = function(a, b) {
-        return this._currentRequest[method](a, b);
-      };
-    });
-    ["aborted", "connection", "socket"].forEach(function(property) {
-      Object.defineProperty(RedirectableRequest.prototype, property, {
-        get: function() {
-          return this._currentRequest[property];
-        }
-      });
-    });
-    RedirectableRequest.prototype._sanitizeOptions = function(options) {
-      if (!options.headers) {
-        options.headers = {};
-      }
-      if (options.host) {
-        if (!options.hostname) {
-          options.hostname = options.host;
-        }
-        delete options.host;
-      }
-      if (!options.pathname && options.path) {
-        var searchPos = options.path.indexOf("?");
-        if (searchPos < 0) {
-          options.pathname = options.path;
-        } else {
-          options.pathname = options.path.substring(0, searchPos);
-          options.search = options.path.substring(searchPos);
-        }
-      }
-    };
-    RedirectableRequest.prototype._performRequest = function() {
-      var protocol = this._options.protocol;
-      var nativeProtocol = this._options.nativeProtocols[protocol];
-      if (!nativeProtocol) {
-        this.emit("error", new TypeError("Unsupported protocol " + protocol));
-        return;
-      }
-      if (this._options.agents) {
-        var scheme = protocol.slice(0, -1);
-        this._options.agent = this._options.agents[scheme];
-      }
-      var request = this._currentRequest = nativeProtocol.request(this._options, this._onNativeResponse);
-      request._redirectable = this;
-      for (var event of events) {
-        request.on(event, eventHandlers[event]);
-      }
-      this._currentUrl = /^\//.test(this._options.path) ? url.format(this._options) : (
-        // When making a request to a proxy, […]
-        // a client MUST send the target URI in absolute-form […].
-        this._currentUrl = this._options.path
-      );
-      if (this._isRedirect) {
-        var i = 0;
-        var self2 = this;
-        var buffers = this._requestBodyBuffers;
-        (function writeNext(error) {
-          if (request === self2._currentRequest) {
-            if (error) {
-              self2.emit("error", error);
-            } else if (i < buffers.length) {
-              var buffer = buffers[i++];
-              if (!request.finished) {
-                request.write(buffer.data, buffer.encoding, writeNext);
-              }
-            } else if (self2._ended) {
-              request.end();
-            }
-          }
-        })();
-      }
-    };
-    RedirectableRequest.prototype._processResponse = function(response) {
-      var statusCode = response.statusCode;
-      if (this._options.trackRedirects) {
-        this._redirects.push({
-          url: this._currentUrl,
-          headers: response.headers,
-          statusCode
-        });
-      }
-      var location = response.headers.location;
-      if (!location || this._options.followRedirects === false || statusCode < 300 || statusCode >= 400) {
-        response.responseUrl = this._currentUrl;
-        response.redirects = this._redirects;
-        this.emit("response", response);
-        this._requestBodyBuffers = [];
-        return;
-      }
-      abortRequest(this._currentRequest);
-      response.destroy();
-      if (++this._redirectCount > this._options.maxRedirects) {
-        this.emit("error", new TooManyRedirectsError());
-        return;
-      }
-      var requestHeaders;
-      var beforeRedirect = this._options.beforeRedirect;
-      if (beforeRedirect) {
-        requestHeaders = Object.assign({
-          // The Host header was set by nativeProtocol.request
-          Host: response.req.getHeader("host")
-        }, this._options.headers);
-      }
-      var method = this._options.method;
-      if ((statusCode === 301 || statusCode === 302) && this._options.method === "POST" || // RFC7231§6.4.4: The 303 (See Other) status code indicates that
-      // the server is redirecting the user agent to a different resource […]
-      // A user agent can perform a retrieval request targeting that URI
-      // (a GET or HEAD request if using HTTP) […]
-      statusCode === 303 && !/^(?:GET|HEAD)$/.test(this._options.method)) {
-        this._options.method = "GET";
-        this._requestBodyBuffers = [];
-        removeMatchingHeaders(/^content-/i, this._options.headers);
-      }
-      var currentHostHeader = removeMatchingHeaders(/^host$/i, this._options.headers);
-      var currentUrlParts = url.parse(this._currentUrl);
-      var currentHost = currentHostHeader || currentUrlParts.host;
-      var currentUrl = /^\w+:/.test(location) ? this._currentUrl : url.format(Object.assign(currentUrlParts, { host: currentHost }));
-      var redirectUrl;
-      try {
-        redirectUrl = url.resolve(currentUrl, location);
-      } catch (cause) {
-        this.emit("error", new RedirectionError(cause));
-        return;
-      }
-      debug("redirecting to", redirectUrl);
-      this._isRedirect = true;
-      var redirectUrlParts = url.parse(redirectUrl);
-      Object.assign(this._options, redirectUrlParts);
-      if (redirectUrlParts.protocol !== currentUrlParts.protocol && redirectUrlParts.protocol !== "https:" || redirectUrlParts.host !== currentHost && !isSubdomain(redirectUrlParts.host, currentHost)) {
-        removeMatchingHeaders(/^(?:authorization|cookie)$/i, this._options.headers);
-      }
-      if (typeof beforeRedirect === "function") {
-        var responseDetails = {
-          headers: response.headers,
-          statusCode
-        };
-        var requestDetails = {
-          url: currentUrl,
-          method,
-          headers: requestHeaders
-        };
-        try {
-          beforeRedirect(this._options, responseDetails, requestDetails);
-        } catch (err) {
-          this.emit("error", err);
-          return;
-        }
-        this._sanitizeOptions(this._options);
-      }
-      try {
-        this._performRequest();
-      } catch (cause) {
-        this.emit("error", new RedirectionError(cause));
-      }
-    };
-    function wrap(protocols) {
-      var exports2 = {
-        maxRedirects: 21,
-        maxBodyLength: 10 * 1024 * 1024
-      };
-      var nativeProtocols = {};
-      Object.keys(protocols).forEach(function(scheme) {
-        var protocol = scheme + ":";
-        var nativeProtocol = nativeProtocols[protocol] = protocols[scheme];
-        var wrappedProtocol = exports2[scheme] = Object.create(nativeProtocol);
-        function request(input, options, callback) {
-          if (typeof input === "string") {
-            var urlStr = input;
-            try {
-              input = urlToOptions(new URL3(urlStr));
-            } catch (err) {
-              input = url.parse(urlStr);
-            }
-          } else if (URL3 && input instanceof URL3) {
-            input = urlToOptions(input);
-          } else {
-            callback = options;
-            options = input;
-            input = { protocol };
-          }
-          if (typeof options === "function") {
-            callback = options;
-            options = null;
-          }
-          options = Object.assign({
-            maxRedirects: exports2.maxRedirects,
-            maxBodyLength: exports2.maxBodyLength
-          }, input, options);
-          options.nativeProtocols = nativeProtocols;
-          assert.equal(options.protocol, protocol, "protocol mismatch");
-          debug("options", options);
-          return new RedirectableRequest(options, callback);
-        }
-        function get(input, options, callback) {
-          var wrappedRequest = wrappedProtocol.request(input, options, callback);
-          wrappedRequest.end();
-          return wrappedRequest;
-        }
-        Object.defineProperties(wrappedProtocol, {
-          request: { value: request, configurable: true, enumerable: true, writable: true },
-          get: { value: get, configurable: true, enumerable: true, writable: true }
-        });
-      });
-      return exports2;
-    }
-    function noop() {
-    }
-    function urlToOptions(urlObject) {
-      var options = {
-        protocol: urlObject.protocol,
-        hostname: urlObject.hostname.startsWith("[") ? (
-          /* istanbul ignore next */
-          urlObject.hostname.slice(1, -1)
-        ) : urlObject.hostname,
-        hash: urlObject.hash,
-        search: urlObject.search,
-        pathname: urlObject.pathname,
-        path: urlObject.pathname + urlObject.search,
-        href: urlObject.href
-      };
-      if (urlObject.port !== "") {
-        options.port = Number(urlObject.port);
-      }
-      return options;
-    }
-    function removeMatchingHeaders(regex, headers) {
-      var lastValue;
-      for (var header in headers) {
-        if (regex.test(header)) {
-          lastValue = headers[header];
-          delete headers[header];
-        }
-      }
-      return lastValue === null || typeof lastValue === "undefined" ? void 0 : String(lastValue).trim();
-    }
-    function createErrorType(code, defaultMessage) {
-      function CustomError(cause) {
-        Error.captureStackTrace(this, this.constructor);
-        if (!cause) {
-          this.message = defaultMessage;
-        } else {
-          this.message = defaultMessage + ": " + cause.message;
-          this.cause = cause;
-        }
-      }
-      CustomError.prototype = new Error();
-      CustomError.prototype.constructor = CustomError;
-      CustomError.prototype.name = "Error [" + code + "]";
-      CustomError.prototype.code = code;
-      return CustomError;
-    }
-    function abortRequest(request) {
-      for (var event of events) {
-        request.removeListener(event, eventHandlers[event]);
-      }
-      request.on("error", noop);
-      request.abort();
-    }
-    function isSubdomain(subdomain, domain) {
-      const dot = subdomain.length - domain.length - 1;
-      return dot > 0 && subdomain[dot] === "." && subdomain.endsWith(domain);
-    }
-    module2.exports = wrap({ http, https });
-    module2.exports.wrap = wrap;
-  }
-});
-
-// node_modules/axios/lib/env/data.js
-var require_data = __commonJS({
-  "node_modules/axios/lib/env/data.js"(exports, module2) {
-    module2.exports = {
-      "version": "0.27.2"
-    };
-  }
-});
-
-// node_modules/axios/lib/adapters/http.js
-var require_http = __commonJS({
-  "node_modules/axios/lib/adapters/http.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    var settle = require_settle();
-    var buildFullPath = require_buildFullPath();
-    var buildURL = require_buildURL();
-    var http = require("http");
-    var https = require("https");
-    var httpFollow = require_follow_redirects().http;
-    var httpsFollow = require_follow_redirects().https;
-    var url = require("url");
-    var zlib = require("zlib");
-    var VERSION = require_data().version;
-    var transitionalDefaults = require_transitional();
-    var AxiosError = require_AxiosError();
-    var CanceledError = require_CanceledError();
-    var isHttps = /https:?/;
-    var supportedProtocols = ["http:", "https:", "file:"];
-    function setProxy(options, proxy, location) {
-      options.hostname = proxy.host;
-      options.host = proxy.host;
-      options.port = proxy.port;
-      options.path = location;
-      if (proxy.auth) {
-        var base64 = Buffer.from(proxy.auth.username + ":" + proxy.auth.password, "utf8").toString("base64");
-        options.headers["Proxy-Authorization"] = "Basic " + base64;
-      }
-      options.beforeRedirect = function beforeRedirect(redirection) {
-        redirection.headers.host = redirection.host;
-        setProxy(redirection, proxy, redirection.href);
-      };
-    }
-    module2.exports = function httpAdapter(config) {
-      return new Promise(function dispatchHttpRequest(resolvePromise, rejectPromise) {
-        var onCanceled;
-        function done() {
-          if (config.cancelToken) {
-            config.cancelToken.unsubscribe(onCanceled);
-          }
-          if (config.signal) {
-            config.signal.removeEventListener("abort", onCanceled);
-          }
-        }
-        var resolve = function resolve2(value) {
-          done();
-          resolvePromise(value);
-        };
-        var rejected = false;
-        var reject = function reject2(value) {
-          done();
-          rejected = true;
-          rejectPromise(value);
-        };
-        var data = config.data;
-        var headers = config.headers;
-        var headerNames = {};
-        Object.keys(headers).forEach(function storeLowerName(name) {
-          headerNames[name.toLowerCase()] = name;
-        });
-        if ("user-agent" in headerNames) {
-          if (!headers[headerNames["user-agent"]]) {
-            delete headers[headerNames["user-agent"]];
-          }
-        } else {
-          headers["User-Agent"] = "axios/" + VERSION;
-        }
-        if (utils.isFormData(data) && utils.isFunction(data.getHeaders)) {
-          Object.assign(headers, data.getHeaders());
-        } else if (data && !utils.isStream(data)) {
-          if (Buffer.isBuffer(data)) {
-          } else if (utils.isArrayBuffer(data)) {
-            data = Buffer.from(new Uint8Array(data));
-          } else if (utils.isString(data)) {
-            data = Buffer.from(data, "utf-8");
-          } else {
-            return reject(new AxiosError(
-              "Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream",
-              AxiosError.ERR_BAD_REQUEST,
-              config
-            ));
-          }
-          if (config.maxBodyLength > -1 && data.length > config.maxBodyLength) {
-            return reject(new AxiosError(
-              "Request body larger than maxBodyLength limit",
-              AxiosError.ERR_BAD_REQUEST,
-              config
-            ));
-          }
-          if (!headerNames["content-length"]) {
-            headers["Content-Length"] = data.length;
-          }
-        }
-        var auth = void 0;
-        if (config.auth) {
-          var username = config.auth.username || "";
-          var password = config.auth.password || "";
-          auth = username + ":" + password;
-        }
-        var fullPath = buildFullPath(config.baseURL, config.url);
-        var parsed = url.parse(fullPath);
-        var protocol = parsed.protocol || supportedProtocols[0];
-        if (supportedProtocols.indexOf(protocol) === -1) {
-          return reject(new AxiosError(
-            "Unsupported protocol " + protocol,
-            AxiosError.ERR_BAD_REQUEST,
-            config
-          ));
-        }
-        if (!auth && parsed.auth) {
-          var urlAuth = parsed.auth.split(":");
-          var urlUsername = urlAuth[0] || "";
-          var urlPassword = urlAuth[1] || "";
-          auth = urlUsername + ":" + urlPassword;
-        }
-        if (auth && headerNames.authorization) {
-          delete headers[headerNames.authorization];
-        }
-        var isHttpsRequest = isHttps.test(protocol);
-        var agent = isHttpsRequest ? config.httpsAgent : config.httpAgent;
-        try {
-          buildURL(parsed.path, config.params, config.paramsSerializer).replace(/^\?/, "");
-        } catch (err) {
-          var customErr = new Error(err.message);
-          customErr.config = config;
-          customErr.url = config.url;
-          customErr.exists = true;
-          reject(customErr);
-        }
-        var options = {
-          path: buildURL(parsed.path, config.params, config.paramsSerializer).replace(/^\?/, ""),
-          method: config.method.toUpperCase(),
-          headers,
-          agent,
-          agents: { http: config.httpAgent, https: config.httpsAgent },
-          auth
-        };
-        if (config.socketPath) {
-          options.socketPath = config.socketPath;
-        } else {
-          options.hostname = parsed.hostname;
-          options.port = parsed.port;
-        }
-        var proxy = config.proxy;
-        if (!proxy && proxy !== false) {
-          var proxyEnv = protocol.slice(0, -1) + "_proxy";
-          var proxyUrl = process.env[proxyEnv] || process.env[proxyEnv.toUpperCase()];
-          if (proxyUrl) {
-            var parsedProxyUrl = url.parse(proxyUrl);
-            var noProxyEnv = process.env.no_proxy || process.env.NO_PROXY;
-            var shouldProxy = true;
-            if (noProxyEnv) {
-              var noProxy = noProxyEnv.split(",").map(function trim(s) {
-                return s.trim();
-              });
-              shouldProxy = !noProxy.some(function proxyMatch(proxyElement) {
-                if (!proxyElement) {
-                  return false;
-                }
-                if (proxyElement === "*") {
-                  return true;
-                }
-                if (proxyElement[0] === "." && parsed.hostname.substr(parsed.hostname.length - proxyElement.length) === proxyElement) {
-                  return true;
-                }
-                return parsed.hostname === proxyElement;
-              });
-            }
-            if (shouldProxy) {
-              proxy = {
-                host: parsedProxyUrl.hostname,
-                port: parsedProxyUrl.port,
-                protocol: parsedProxyUrl.protocol
-              };
-              if (parsedProxyUrl.auth) {
-                var proxyUrlAuth = parsedProxyUrl.auth.split(":");
-                proxy.auth = {
-                  username: proxyUrlAuth[0],
-                  password: proxyUrlAuth[1]
-                };
-              }
-            }
-          }
-        }
-        if (proxy) {
-          options.headers.host = parsed.hostname + (parsed.port ? ":" + parsed.port : "");
-          setProxy(options, proxy, protocol + "//" + parsed.hostname + (parsed.port ? ":" + parsed.port : "") + options.path);
-        }
-        var transport;
-        var isHttpsProxy = isHttpsRequest && (proxy ? isHttps.test(proxy.protocol) : true);
-        if (config.transport) {
-          transport = config.transport;
-        } else if (config.maxRedirects === 0) {
-          transport = isHttpsProxy ? https : http;
-        } else {
-          if (config.maxRedirects) {
-            options.maxRedirects = config.maxRedirects;
-          }
-          if (config.beforeRedirect) {
-            options.beforeRedirect = config.beforeRedirect;
-          }
-          transport = isHttpsProxy ? httpsFollow : httpFollow;
-        }
-        if (config.maxBodyLength > -1) {
-          options.maxBodyLength = config.maxBodyLength;
-        }
-        if (config.insecureHTTPParser) {
-          options.insecureHTTPParser = config.insecureHTTPParser;
-        }
-        var req = transport.request(options, function handleResponse(res) {
-          if (req.aborted)
-            return;
-          var stream = res;
-          var lastRequest = res.req || req;
-          if (res.statusCode !== 204 && lastRequest.method !== "HEAD" && config.decompress !== false) {
-            switch (res.headers["content-encoding"]) {
-              case "gzip":
-              case "compress":
-              case "deflate":
-                stream = stream.pipe(zlib.createUnzip());
-                delete res.headers["content-encoding"];
-                break;
-            }
-          }
-          var response = {
-            status: res.statusCode,
-            statusText: res.statusMessage,
-            headers: res.headers,
-            config,
-            request: lastRequest
-          };
-          if (config.responseType === "stream") {
-            response.data = stream;
-            settle(resolve, reject, response);
-          } else {
-            var responseBuffer = [];
-            var totalResponseBytes = 0;
-            stream.on("data", function handleStreamData(chunk) {
-              responseBuffer.push(chunk);
-              totalResponseBytes += chunk.length;
-              if (config.maxContentLength > -1 && totalResponseBytes > config.maxContentLength) {
-                rejected = true;
-                stream.destroy();
-                reject(new AxiosError(
-                  "maxContentLength size of " + config.maxContentLength + " exceeded",
-                  AxiosError.ERR_BAD_RESPONSE,
-                  config,
-                  lastRequest
-                ));
-              }
-            });
-            stream.on("aborted", function handlerStreamAborted() {
-              if (rejected) {
-                return;
-              }
-              stream.destroy();
-              reject(new AxiosError(
-                "maxContentLength size of " + config.maxContentLength + " exceeded",
-                AxiosError.ERR_BAD_RESPONSE,
-                config,
-                lastRequest
-              ));
-            });
-            stream.on("error", function handleStreamError(err) {
-              if (req.aborted)
-                return;
-              reject(AxiosError.from(err, null, config, lastRequest));
-            });
-            stream.on("end", function handleStreamEnd() {
-              try {
-                var responseData = responseBuffer.length === 1 ? responseBuffer[0] : Buffer.concat(responseBuffer);
-                if (config.responseType !== "arraybuffer") {
-                  responseData = responseData.toString(config.responseEncoding);
-                  if (!config.responseEncoding || config.responseEncoding === "utf8") {
-                    responseData = utils.stripBOM(responseData);
-                  }
-                }
-                response.data = responseData;
-              } catch (err) {
-                reject(AxiosError.from(err, null, config, response.request, response));
-              }
-              settle(resolve, reject, response);
-            });
-          }
-        });
-        req.on("error", function handleRequestError(err) {
-          reject(AxiosError.from(err, null, config, req));
-        });
-        req.on("socket", function handleRequestSocket(socket) {
-          socket.setKeepAlive(true, 1e3 * 60);
-        });
-        if (config.timeout) {
-          var timeout = parseInt(config.timeout, 10);
-          if (isNaN(timeout)) {
-            reject(new AxiosError(
-              "error trying to parse `config.timeout` to int",
-              AxiosError.ERR_BAD_OPTION_VALUE,
-              config,
-              req
-            ));
-            return;
-          }
-          req.setTimeout(timeout, function handleRequestTimeout() {
-            req.abort();
-            var transitional = config.transitional || transitionalDefaults;
-            reject(new AxiosError(
-              "timeout of " + timeout + "ms exceeded",
-              transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
-              config,
-              req
-            ));
-          });
-        }
-        if (config.cancelToken || config.signal) {
-          onCanceled = function(cancel) {
-            if (req.aborted)
-              return;
-            req.abort();
-            reject(!cancel || cancel && cancel.type ? new CanceledError() : cancel);
-          };
-          config.cancelToken && config.cancelToken.subscribe(onCanceled);
-          if (config.signal) {
-            config.signal.aborted ? onCanceled() : config.signal.addEventListener("abort", onCanceled);
-          }
-        }
-        if (utils.isStream(data)) {
-          data.on("error", function handleStreamError(err) {
-            reject(AxiosError.from(err, config, null, req));
-          }).pipe(req);
-        } else {
-          req.end(data);
-        }
-      });
-    };
   }
 });
 
@@ -29262,39 +27760,1307 @@ var require_form_data = __commonJS({
   }
 });
 
-// node_modules/axios/lib/defaults/env/FormData.js
-var require_FormData = __commonJS({
-  "node_modules/axios/lib/defaults/env/FormData.js"(exports, module2) {
-    module2.exports = require_form_data();
+// node_modules/proxy-from-env/index.js
+var require_proxy_from_env = __commonJS({
+  "node_modules/proxy-from-env/index.js"(exports) {
+    "use strict";
+    var parseUrl = require("url").parse;
+    var DEFAULT_PORTS = {
+      ftp: 21,
+      gopher: 70,
+      http: 80,
+      https: 443,
+      ws: 80,
+      wss: 443
+    };
+    var stringEndsWith = String.prototype.endsWith || function(s) {
+      return s.length <= this.length && this.indexOf(s, this.length - s.length) !== -1;
+    };
+    function getProxyForUrl(url) {
+      var parsedUrl = typeof url === "string" ? parseUrl(url) : url || {};
+      var proto = parsedUrl.protocol;
+      var hostname = parsedUrl.host;
+      var port = parsedUrl.port;
+      if (typeof hostname !== "string" || !hostname || typeof proto !== "string") {
+        return "";
+      }
+      proto = proto.split(":", 1)[0];
+      hostname = hostname.replace(/:\d*$/, "");
+      port = parseInt(port) || DEFAULT_PORTS[proto] || 0;
+      if (!shouldProxy(hostname, port)) {
+        return "";
+      }
+      var proxy = getEnv("npm_config_" + proto + "_proxy") || getEnv(proto + "_proxy") || getEnv("npm_config_proxy") || getEnv("all_proxy");
+      if (proxy && proxy.indexOf("://") === -1) {
+        proxy = proto + "://" + proxy;
+      }
+      return proxy;
+    }
+    function shouldProxy(hostname, port) {
+      var NO_PROXY = (getEnv("npm_config_no_proxy") || getEnv("no_proxy")).toLowerCase();
+      if (!NO_PROXY) {
+        return true;
+      }
+      if (NO_PROXY === "*") {
+        return false;
+      }
+      return NO_PROXY.split(/[,\s]/).every(function(proxy) {
+        if (!proxy) {
+          return true;
+        }
+        var parsedProxy = proxy.match(/^(.+):(\d+)$/);
+        var parsedProxyHostname = parsedProxy ? parsedProxy[1] : proxy;
+        var parsedProxyPort = parsedProxy ? parseInt(parsedProxy[2]) : 0;
+        if (parsedProxyPort && parsedProxyPort !== port) {
+          return true;
+        }
+        if (!/^[.*]/.test(parsedProxyHostname)) {
+          return hostname !== parsedProxyHostname;
+        }
+        if (parsedProxyHostname.charAt(0) === "*") {
+          parsedProxyHostname = parsedProxyHostname.slice(1);
+        }
+        return !stringEndsWith.call(hostname, parsedProxyHostname);
+      });
+    }
+    function getEnv(key) {
+      return process.env[key.toLowerCase()] || process.env[key.toUpperCase()] || "";
+    }
+    exports.getProxyForUrl = getProxyForUrl;
   }
 });
 
-// node_modules/axios/lib/defaults/index.js
-var require_defaults = __commonJS({
-  "node_modules/axios/lib/defaults/index.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    var normalizeHeaderName = require_normalizeHeaderName();
-    var AxiosError = require_AxiosError();
-    var transitionalDefaults = require_transitional();
-    var toFormData = require_toFormData();
-    var DEFAULT_CONTENT_TYPE = {
-      "Content-Type": "application/x-www-form-urlencoded"
+// node_modules/follow-redirects/debug.js
+var require_debug = __commonJS({
+  "node_modules/follow-redirects/debug.js"(exports, module2) {
+    var debug;
+    module2.exports = function() {
+      if (!debug) {
+        try {
+          debug = require("debug")("follow-redirects");
+        } catch (error) {
+        }
+        if (typeof debug !== "function") {
+          debug = function() {
+          };
+        }
+      }
+      debug.apply(null, arguments);
     };
-    function setContentTypeIfUnset(headers, value) {
-      if (!utils.isUndefined(headers) && utils.isUndefined(headers["Content-Type"])) {
-        headers["Content-Type"] = value;
+  }
+});
+
+// node_modules/follow-redirects/index.js
+var require_follow_redirects = __commonJS({
+  "node_modules/follow-redirects/index.js"(exports, module2) {
+    var url = require("url");
+    var URL3 = url.URL;
+    var http = require("http");
+    var https = require("https");
+    var Writable = require("stream").Writable;
+    var assert = require("assert");
+    var debug = require_debug();
+    var events = ["abort", "aborted", "connect", "error", "socket", "timeout"];
+    var eventHandlers = /* @__PURE__ */ Object.create(null);
+    events.forEach(function(event) {
+      eventHandlers[event] = function(arg1, arg2, arg3) {
+        this._redirectable.emit(event, arg1, arg2, arg3);
+      };
+    });
+    var InvalidUrlError = createErrorType(
+      "ERR_INVALID_URL",
+      "Invalid URL",
+      TypeError
+    );
+    var RedirectionError = createErrorType(
+      "ERR_FR_REDIRECTION_FAILURE",
+      "Redirected request failed"
+    );
+    var TooManyRedirectsError = createErrorType(
+      "ERR_FR_TOO_MANY_REDIRECTS",
+      "Maximum number of redirects exceeded"
+    );
+    var MaxBodyLengthExceededError = createErrorType(
+      "ERR_FR_MAX_BODY_LENGTH_EXCEEDED",
+      "Request body larger than maxBodyLength limit"
+    );
+    var WriteAfterEndError = createErrorType(
+      "ERR_STREAM_WRITE_AFTER_END",
+      "write after end"
+    );
+    function RedirectableRequest(options, responseCallback) {
+      Writable.call(this);
+      this._sanitizeOptions(options);
+      this._options = options;
+      this._ended = false;
+      this._ending = false;
+      this._redirectCount = 0;
+      this._redirects = [];
+      this._requestBodyLength = 0;
+      this._requestBodyBuffers = [];
+      if (responseCallback) {
+        this.on("response", responseCallback);
+      }
+      var self2 = this;
+      this._onNativeResponse = function(response) {
+        self2._processResponse(response);
+      };
+      this._performRequest();
+    }
+    RedirectableRequest.prototype = Object.create(Writable.prototype);
+    RedirectableRequest.prototype.abort = function() {
+      abortRequest(this._currentRequest);
+      this.emit("abort");
+    };
+    RedirectableRequest.prototype.write = function(data, encoding, callback) {
+      if (this._ending) {
+        throw new WriteAfterEndError();
+      }
+      if (!isString(data) && !isBuffer(data)) {
+        throw new TypeError("data should be a string, Buffer or Uint8Array");
+      }
+      if (isFunction(encoding)) {
+        callback = encoding;
+        encoding = null;
+      }
+      if (data.length === 0) {
+        if (callback) {
+          callback();
+        }
+        return;
+      }
+      if (this._requestBodyLength + data.length <= this._options.maxBodyLength) {
+        this._requestBodyLength += data.length;
+        this._requestBodyBuffers.push({ data, encoding });
+        this._currentRequest.write(data, encoding, callback);
+      } else {
+        this.emit("error", new MaxBodyLengthExceededError());
+        this.abort();
+      }
+    };
+    RedirectableRequest.prototype.end = function(data, encoding, callback) {
+      if (isFunction(data)) {
+        callback = data;
+        data = encoding = null;
+      } else if (isFunction(encoding)) {
+        callback = encoding;
+        encoding = null;
+      }
+      if (!data) {
+        this._ended = this._ending = true;
+        this._currentRequest.end(null, null, callback);
+      } else {
+        var self2 = this;
+        var currentRequest = this._currentRequest;
+        this.write(data, encoding, function() {
+          self2._ended = true;
+          currentRequest.end(null, null, callback);
+        });
+        this._ending = true;
+      }
+    };
+    RedirectableRequest.prototype.setHeader = function(name, value) {
+      this._options.headers[name] = value;
+      this._currentRequest.setHeader(name, value);
+    };
+    RedirectableRequest.prototype.removeHeader = function(name) {
+      delete this._options.headers[name];
+      this._currentRequest.removeHeader(name);
+    };
+    RedirectableRequest.prototype.setTimeout = function(msecs, callback) {
+      var self2 = this;
+      function destroyOnTimeout(socket) {
+        socket.setTimeout(msecs);
+        socket.removeListener("timeout", socket.destroy);
+        socket.addListener("timeout", socket.destroy);
+      }
+      function startTimer(socket) {
+        if (self2._timeout) {
+          clearTimeout(self2._timeout);
+        }
+        self2._timeout = setTimeout(function() {
+          self2.emit("timeout");
+          clearTimer();
+        }, msecs);
+        destroyOnTimeout(socket);
+      }
+      function clearTimer() {
+        if (self2._timeout) {
+          clearTimeout(self2._timeout);
+          self2._timeout = null;
+        }
+        self2.removeListener("abort", clearTimer);
+        self2.removeListener("error", clearTimer);
+        self2.removeListener("response", clearTimer);
+        if (callback) {
+          self2.removeListener("timeout", callback);
+        }
+        if (!self2.socket) {
+          self2._currentRequest.removeListener("socket", startTimer);
+        }
+      }
+      if (callback) {
+        this.on("timeout", callback);
+      }
+      if (this.socket) {
+        startTimer(this.socket);
+      } else {
+        this._currentRequest.once("socket", startTimer);
+      }
+      this.on("socket", destroyOnTimeout);
+      this.on("abort", clearTimer);
+      this.on("error", clearTimer);
+      this.on("response", clearTimer);
+      return this;
+    };
+    [
+      "flushHeaders",
+      "getHeader",
+      "setNoDelay",
+      "setSocketKeepAlive"
+    ].forEach(function(method) {
+      RedirectableRequest.prototype[method] = function(a, b) {
+        return this._currentRequest[method](a, b);
+      };
+    });
+    ["aborted", "connection", "socket"].forEach(function(property) {
+      Object.defineProperty(RedirectableRequest.prototype, property, {
+        get: function() {
+          return this._currentRequest[property];
+        }
+      });
+    });
+    RedirectableRequest.prototype._sanitizeOptions = function(options) {
+      if (!options.headers) {
+        options.headers = {};
+      }
+      if (options.host) {
+        if (!options.hostname) {
+          options.hostname = options.host;
+        }
+        delete options.host;
+      }
+      if (!options.pathname && options.path) {
+        var searchPos = options.path.indexOf("?");
+        if (searchPos < 0) {
+          options.pathname = options.path;
+        } else {
+          options.pathname = options.path.substring(0, searchPos);
+          options.search = options.path.substring(searchPos);
+        }
+      }
+    };
+    RedirectableRequest.prototype._performRequest = function() {
+      var protocol = this._options.protocol;
+      var nativeProtocol = this._options.nativeProtocols[protocol];
+      if (!nativeProtocol) {
+        this.emit("error", new TypeError("Unsupported protocol " + protocol));
+        return;
+      }
+      if (this._options.agents) {
+        var scheme = protocol.slice(0, -1);
+        this._options.agent = this._options.agents[scheme];
+      }
+      var request = this._currentRequest = nativeProtocol.request(this._options, this._onNativeResponse);
+      request._redirectable = this;
+      for (var event of events) {
+        request.on(event, eventHandlers[event]);
+      }
+      this._currentUrl = /^\//.test(this._options.path) ? url.format(this._options) : (
+        // When making a request to a proxy, […]
+        // a client MUST send the target URI in absolute-form […].
+        this._options.path
+      );
+      if (this._isRedirect) {
+        var i = 0;
+        var self2 = this;
+        var buffers = this._requestBodyBuffers;
+        (function writeNext(error) {
+          if (request === self2._currentRequest) {
+            if (error) {
+              self2.emit("error", error);
+            } else if (i < buffers.length) {
+              var buffer = buffers[i++];
+              if (!request.finished) {
+                request.write(buffer.data, buffer.encoding, writeNext);
+              }
+            } else if (self2._ended) {
+              request.end();
+            }
+          }
+        })();
+      }
+    };
+    RedirectableRequest.prototype._processResponse = function(response) {
+      var statusCode = response.statusCode;
+      if (this._options.trackRedirects) {
+        this._redirects.push({
+          url: this._currentUrl,
+          headers: response.headers,
+          statusCode
+        });
+      }
+      var location = response.headers.location;
+      if (!location || this._options.followRedirects === false || statusCode < 300 || statusCode >= 400) {
+        response.responseUrl = this._currentUrl;
+        response.redirects = this._redirects;
+        this.emit("response", response);
+        this._requestBodyBuffers = [];
+        return;
+      }
+      abortRequest(this._currentRequest);
+      response.destroy();
+      if (++this._redirectCount > this._options.maxRedirects) {
+        this.emit("error", new TooManyRedirectsError());
+        return;
+      }
+      var requestHeaders;
+      var beforeRedirect = this._options.beforeRedirect;
+      if (beforeRedirect) {
+        requestHeaders = Object.assign({
+          // The Host header was set by nativeProtocol.request
+          Host: response.req.getHeader("host")
+        }, this._options.headers);
+      }
+      var method = this._options.method;
+      if ((statusCode === 301 || statusCode === 302) && this._options.method === "POST" || // RFC7231§6.4.4: The 303 (See Other) status code indicates that
+      // the server is redirecting the user agent to a different resource […]
+      // A user agent can perform a retrieval request targeting that URI
+      // (a GET or HEAD request if using HTTP) […]
+      statusCode === 303 && !/^(?:GET|HEAD)$/.test(this._options.method)) {
+        this._options.method = "GET";
+        this._requestBodyBuffers = [];
+        removeMatchingHeaders(/^content-/i, this._options.headers);
+      }
+      var currentHostHeader = removeMatchingHeaders(/^host$/i, this._options.headers);
+      var currentUrlParts = url.parse(this._currentUrl);
+      var currentHost = currentHostHeader || currentUrlParts.host;
+      var currentUrl = /^\w+:/.test(location) ? this._currentUrl : url.format(Object.assign(currentUrlParts, { host: currentHost }));
+      var redirectUrl;
+      try {
+        redirectUrl = url.resolve(currentUrl, location);
+      } catch (cause) {
+        this.emit("error", new RedirectionError({ cause }));
+        return;
+      }
+      debug("redirecting to", redirectUrl);
+      this._isRedirect = true;
+      var redirectUrlParts = url.parse(redirectUrl);
+      Object.assign(this._options, redirectUrlParts);
+      if (redirectUrlParts.protocol !== currentUrlParts.protocol && redirectUrlParts.protocol !== "https:" || redirectUrlParts.host !== currentHost && !isSubdomain(redirectUrlParts.host, currentHost)) {
+        removeMatchingHeaders(/^(?:authorization|cookie)$/i, this._options.headers);
+      }
+      if (isFunction(beforeRedirect)) {
+        var responseDetails = {
+          headers: response.headers,
+          statusCode
+        };
+        var requestDetails = {
+          url: currentUrl,
+          method,
+          headers: requestHeaders
+        };
+        try {
+          beforeRedirect(this._options, responseDetails, requestDetails);
+        } catch (err) {
+          this.emit("error", err);
+          return;
+        }
+        this._sanitizeOptions(this._options);
+      }
+      try {
+        this._performRequest();
+      } catch (cause) {
+        this.emit("error", new RedirectionError({ cause }));
+      }
+    };
+    function wrap(protocols) {
+      var exports2 = {
+        maxRedirects: 21,
+        maxBodyLength: 10 * 1024 * 1024
+      };
+      var nativeProtocols = {};
+      Object.keys(protocols).forEach(function(scheme) {
+        var protocol = scheme + ":";
+        var nativeProtocol = nativeProtocols[protocol] = protocols[scheme];
+        var wrappedProtocol = exports2[scheme] = Object.create(nativeProtocol);
+        function request(input, options, callback) {
+          if (isString(input)) {
+            var parsed;
+            try {
+              parsed = urlToOptions(new URL3(input));
+            } catch (err) {
+              parsed = url.parse(input);
+            }
+            if (!isString(parsed.protocol)) {
+              throw new InvalidUrlError({ input });
+            }
+            input = parsed;
+          } else if (URL3 && input instanceof URL3) {
+            input = urlToOptions(input);
+          } else {
+            callback = options;
+            options = input;
+            input = { protocol };
+          }
+          if (isFunction(options)) {
+            callback = options;
+            options = null;
+          }
+          options = Object.assign({
+            maxRedirects: exports2.maxRedirects,
+            maxBodyLength: exports2.maxBodyLength
+          }, input, options);
+          options.nativeProtocols = nativeProtocols;
+          if (!isString(options.host) && !isString(options.hostname)) {
+            options.hostname = "::1";
+          }
+          assert.equal(options.protocol, protocol, "protocol mismatch");
+          debug("options", options);
+          return new RedirectableRequest(options, callback);
+        }
+        function get(input, options, callback) {
+          var wrappedRequest = wrappedProtocol.request(input, options, callback);
+          wrappedRequest.end();
+          return wrappedRequest;
+        }
+        Object.defineProperties(wrappedProtocol, {
+          request: { value: request, configurable: true, enumerable: true, writable: true },
+          get: { value: get, configurable: true, enumerable: true, writable: true }
+        });
+      });
+      return exports2;
+    }
+    function noop() {
+    }
+    function urlToOptions(urlObject) {
+      var options = {
+        protocol: urlObject.protocol,
+        hostname: urlObject.hostname.startsWith("[") ? (
+          /* istanbul ignore next */
+          urlObject.hostname.slice(1, -1)
+        ) : urlObject.hostname,
+        hash: urlObject.hash,
+        search: urlObject.search,
+        pathname: urlObject.pathname,
+        path: urlObject.pathname + urlObject.search,
+        href: urlObject.href
+      };
+      if (urlObject.port !== "") {
+        options.port = Number(urlObject.port);
+      }
+      return options;
+    }
+    function removeMatchingHeaders(regex, headers) {
+      var lastValue;
+      for (var header in headers) {
+        if (regex.test(header)) {
+          lastValue = headers[header];
+          delete headers[header];
+        }
+      }
+      return lastValue === null || typeof lastValue === "undefined" ? void 0 : String(lastValue).trim();
+    }
+    function createErrorType(code, message, baseClass) {
+      function CustomError(properties) {
+        Error.captureStackTrace(this, this.constructor);
+        Object.assign(this, properties || {});
+        this.code = code;
+        this.message = this.cause ? message + ": " + this.cause.message : message;
+      }
+      CustomError.prototype = new (baseClass || Error)();
+      CustomError.prototype.constructor = CustomError;
+      CustomError.prototype.name = "Error [" + code + "]";
+      return CustomError;
+    }
+    function abortRequest(request) {
+      for (var event of events) {
+        request.removeListener(event, eventHandlers[event]);
+      }
+      request.on("error", noop);
+      request.abort();
+    }
+    function isSubdomain(subdomain, domain) {
+      assert(isString(subdomain) && isString(domain));
+      var dot = subdomain.length - domain.length - 1;
+      return dot > 0 && subdomain[dot] === "." && subdomain.endsWith(domain);
+    }
+    function isString(value) {
+      return typeof value === "string" || value instanceof String;
+    }
+    function isFunction(value) {
+      return typeof value === "function";
+    }
+    function isBuffer(value) {
+      return typeof value === "object" && "length" in value;
+    }
+    module2.exports = wrap({ http, https });
+    module2.exports.wrap = wrap;
+  }
+});
+
+// node_modules/axios/dist/node/axios.cjs
+var require_axios = __commonJS({
+  "node_modules/axios/dist/node/axios.cjs"(exports, module2) {
+    "use strict";
+    var FormData$1 = require_form_data();
+    var url = require("url");
+    var proxyFromEnv = require_proxy_from_env();
+    var http = require("http");
+    var https = require("https");
+    var util = require("util");
+    var followRedirects = require_follow_redirects();
+    var zlib = require("zlib");
+    var stream = require("stream");
+    var EventEmitter = require("events");
+    function _interopDefaultLegacy(e) {
+      return e && typeof e === "object" && "default" in e ? e : { "default": e };
+    }
+    var FormData__default = /* @__PURE__ */ _interopDefaultLegacy(FormData$1);
+    var url__default = /* @__PURE__ */ _interopDefaultLegacy(url);
+    var http__default = /* @__PURE__ */ _interopDefaultLegacy(http);
+    var https__default = /* @__PURE__ */ _interopDefaultLegacy(https);
+    var util__default = /* @__PURE__ */ _interopDefaultLegacy(util);
+    var followRedirects__default = /* @__PURE__ */ _interopDefaultLegacy(followRedirects);
+    var zlib__default = /* @__PURE__ */ _interopDefaultLegacy(zlib);
+    var stream__default = /* @__PURE__ */ _interopDefaultLegacy(stream);
+    var EventEmitter__default = /* @__PURE__ */ _interopDefaultLegacy(EventEmitter);
+    function bind3(fn, thisArg) {
+      return function wrap() {
+        return fn.apply(thisArg, arguments);
+      };
+    }
+    var { toString: toString2 } = Object.prototype;
+    var { getPrototypeOf } = Object;
+    var kindOf = ((cache) => (thing) => {
+      const str = toString2.call(thing);
+      return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
+    })(/* @__PURE__ */ Object.create(null));
+    var kindOfTest = (type3) => {
+      type3 = type3.toLowerCase();
+      return (thing) => kindOf(thing) === type3;
+    };
+    var typeOfTest = (type3) => (thing) => typeof thing === type3;
+    var { isArray } = Array;
+    var isUndefined = typeOfTest("undefined");
+    function isBuffer(val) {
+      return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor) && isFunction(val.constructor.isBuffer) && val.constructor.isBuffer(val);
+    }
+    var isArrayBuffer = kindOfTest("ArrayBuffer");
+    function isArrayBufferView(val) {
+      let result;
+      if (typeof ArrayBuffer !== "undefined" && ArrayBuffer.isView) {
+        result = ArrayBuffer.isView(val);
+      } else {
+        result = val && val.buffer && isArrayBuffer(val.buffer);
+      }
+      return result;
+    }
+    var isString = typeOfTest("string");
+    var isFunction = typeOfTest("function");
+    var isNumber = typeOfTest("number");
+    var isObject = (thing) => thing !== null && typeof thing === "object";
+    var isBoolean = (thing) => thing === true || thing === false;
+    var isPlainObject = (val) => {
+      if (kindOf(val) !== "object") {
+        return false;
+      }
+      const prototype2 = getPrototypeOf(val);
+      return (prototype2 === null || prototype2 === Object.prototype || Object.getPrototypeOf(prototype2) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
+    };
+    var isDate = kindOfTest("Date");
+    var isFile = kindOfTest("File");
+    var isBlob = kindOfTest("Blob");
+    var isFileList = kindOfTest("FileList");
+    var isStream = (val) => isObject(val) && isFunction(val.pipe);
+    var isFormData = (thing) => {
+      let kind;
+      return thing && (typeof FormData === "function" && thing instanceof FormData || isFunction(thing.append) && ((kind = kindOf(thing)) === "formdata" || // detect form-data instance
+      kind === "object" && isFunction(thing.toString) && thing.toString() === "[object FormData]"));
+    };
+    var isURLSearchParams = kindOfTest("URLSearchParams");
+    var trim = (str) => str.trim ? str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
+    function forEach(obj, fn, { allOwnKeys = false } = {}) {
+      if (obj === null || typeof obj === "undefined") {
+        return;
+      }
+      let i;
+      let l;
+      if (typeof obj !== "object") {
+        obj = [obj];
+      }
+      if (isArray(obj)) {
+        for (i = 0, l = obj.length; i < l; i++) {
+          fn.call(null, obj[i], i, obj);
+        }
+      } else {
+        const keys4 = allOwnKeys ? Object.getOwnPropertyNames(obj) : Object.keys(obj);
+        const len = keys4.length;
+        let key;
+        for (i = 0; i < len; i++) {
+          key = keys4[i];
+          fn.call(null, obj[key], key, obj);
+        }
       }
     }
-    function getDefaultAdapter() {
-      var adapter;
-      if (typeof XMLHttpRequest !== "undefined") {
-        adapter = require_xhr();
-      } else if (typeof process !== "undefined" && Object.prototype.toString.call(process) === "[object process]") {
-        adapter = require_http();
+    function findKey(obj, key) {
+      key = key.toLowerCase();
+      const keys4 = Object.keys(obj);
+      let i = keys4.length;
+      let _key;
+      while (i-- > 0) {
+        _key = keys4[i];
+        if (key === _key.toLowerCase()) {
+          return _key;
+        }
       }
-      return adapter;
+      return null;
     }
+    var _global = (() => {
+      if (typeof globalThis !== "undefined")
+        return globalThis;
+      return typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : global;
+    })();
+    var isContextDefined = (context2) => !isUndefined(context2) && context2 !== _global;
+    function merge() {
+      const { caseless } = isContextDefined(this) && this || {};
+      const result = {};
+      const assignValue = (val, key) => {
+        const targetKey = caseless && findKey(result, key) || key;
+        if (isPlainObject(result[targetKey]) && isPlainObject(val)) {
+          result[targetKey] = merge(result[targetKey], val);
+        } else if (isPlainObject(val)) {
+          result[targetKey] = merge({}, val);
+        } else if (isArray(val)) {
+          result[targetKey] = val.slice();
+        } else {
+          result[targetKey] = val;
+        }
+      };
+      for (let i = 0, l = arguments.length; i < l; i++) {
+        arguments[i] && forEach(arguments[i], assignValue);
+      }
+      return result;
+    }
+    var extend = (a, b, thisArg, { allOwnKeys } = {}) => {
+      forEach(b, (val, key) => {
+        if (thisArg && isFunction(val)) {
+          a[key] = bind3(val, thisArg);
+        } else {
+          a[key] = val;
+        }
+      }, { allOwnKeys });
+      return a;
+    };
+    var stripBOM = (content) => {
+      if (content.charCodeAt(0) === 65279) {
+        content = content.slice(1);
+      }
+      return content;
+    };
+    var inherits = (constructor, superConstructor, props, descriptors2) => {
+      constructor.prototype = Object.create(superConstructor.prototype, descriptors2);
+      constructor.prototype.constructor = constructor;
+      Object.defineProperty(constructor, "super", {
+        value: superConstructor.prototype
+      });
+      props && Object.assign(constructor.prototype, props);
+    };
+    var toFlatObject = (sourceObj, destObj, filter2, propFilter) => {
+      let props;
+      let i;
+      let prop;
+      const merged = {};
+      destObj = destObj || {};
+      if (sourceObj == null)
+        return destObj;
+      do {
+        props = Object.getOwnPropertyNames(sourceObj);
+        i = props.length;
+        while (i-- > 0) {
+          prop = props[i];
+          if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
+            destObj[prop] = sourceObj[prop];
+            merged[prop] = true;
+          }
+        }
+        sourceObj = filter2 !== false && getPrototypeOf(sourceObj);
+      } while (sourceObj && (!filter2 || filter2(sourceObj, destObj)) && sourceObj !== Object.prototype);
+      return destObj;
+    };
+    var endsWith = (str, searchString, position) => {
+      str = String(str);
+      if (position === void 0 || position > str.length) {
+        position = str.length;
+      }
+      position -= searchString.length;
+      const lastIndex = str.indexOf(searchString, position);
+      return lastIndex !== -1 && lastIndex === position;
+    };
+    var toArray = (thing) => {
+      if (!thing)
+        return null;
+      if (isArray(thing))
+        return thing;
+      let i = thing.length;
+      if (!isNumber(i))
+        return null;
+      const arr = new Array(i);
+      while (i-- > 0) {
+        arr[i] = thing[i];
+      }
+      return arr;
+    };
+    var isTypedArray = ((TypedArray) => {
+      return (thing) => {
+        return TypedArray && thing instanceof TypedArray;
+      };
+    })(typeof Uint8Array !== "undefined" && getPrototypeOf(Uint8Array));
+    var forEachEntry = (obj, fn) => {
+      const generator = obj && obj[Symbol.iterator];
+      const iterator = generator.call(obj);
+      let result;
+      while ((result = iterator.next()) && !result.done) {
+        const pair = result.value;
+        fn.call(obj, pair[0], pair[1]);
+      }
+    };
+    var matchAll = (regExp, str) => {
+      let matches;
+      const arr = [];
+      while ((matches = regExp.exec(str)) !== null) {
+        arr.push(matches);
+      }
+      return arr;
+    };
+    var isHTMLForm = kindOfTest("HTMLFormElement");
+    var toCamelCase = (str) => {
+      return str.toLowerCase().replace(
+        /[-_\s]([a-z\d])(\w*)/g,
+        function replacer(m, p1, p2) {
+          return p1.toUpperCase() + p2;
+        }
+      );
+    };
+    var hasOwnProperty = (({ hasOwnProperty: hasOwnProperty2 }) => (obj, prop) => hasOwnProperty2.call(obj, prop))(Object.prototype);
+    var isRegExp = kindOfTest("RegExp");
+    var reduceDescriptors = (obj, reducer) => {
+      const descriptors2 = Object.getOwnPropertyDescriptors(obj);
+      const reducedDescriptors = {};
+      forEach(descriptors2, (descriptor, name) => {
+        if (reducer(descriptor, name, obj) !== false) {
+          reducedDescriptors[name] = descriptor;
+        }
+      });
+      Object.defineProperties(obj, reducedDescriptors);
+    };
+    var freezeMethods = (obj) => {
+      reduceDescriptors(obj, (descriptor, name) => {
+        if (isFunction(obj) && ["arguments", "caller", "callee"].indexOf(name) !== -1) {
+          return false;
+        }
+        const value = obj[name];
+        if (!isFunction(value))
+          return;
+        descriptor.enumerable = false;
+        if ("writable" in descriptor) {
+          descriptor.writable = false;
+          return;
+        }
+        if (!descriptor.set) {
+          descriptor.set = () => {
+            throw Error("Can not rewrite read-only method '" + name + "'");
+          };
+        }
+      });
+    };
+    var toObjectSet = (arrayOrString, delimiter) => {
+      const obj = {};
+      const define2 = (arr) => {
+        arr.forEach((value) => {
+          obj[value] = true;
+        });
+      };
+      isArray(arrayOrString) ? define2(arrayOrString) : define2(String(arrayOrString).split(delimiter));
+      return obj;
+    };
+    var noop = () => {
+    };
+    var toFiniteNumber = (value, defaultValue) => {
+      value = +value;
+      return Number.isFinite(value) ? value : defaultValue;
+    };
+    var ALPHA = "abcdefghijklmnopqrstuvwxyz";
+    var DIGIT = "0123456789";
+    var ALPHABET = {
+      DIGIT,
+      ALPHA,
+      ALPHA_DIGIT: ALPHA + ALPHA.toUpperCase() + DIGIT
+    };
+    var generateString = (size = 16, alphabet = ALPHABET.ALPHA_DIGIT) => {
+      let str = "";
+      const { length } = alphabet;
+      while (size--) {
+        str += alphabet[Math.random() * length | 0];
+      }
+      return str;
+    };
+    function isSpecCompliantForm(thing) {
+      return !!(thing && isFunction(thing.append) && thing[Symbol.toStringTag] === "FormData" && thing[Symbol.iterator]);
+    }
+    var toJSONObject = (obj) => {
+      const stack = new Array(10);
+      const visit = (source, i) => {
+        if (isObject(source)) {
+          if (stack.indexOf(source) >= 0) {
+            return;
+          }
+          if (!("toJSON" in source)) {
+            stack[i] = source;
+            const target = isArray(source) ? [] : {};
+            forEach(source, (value, key) => {
+              const reducedValue = visit(value, i + 1);
+              !isUndefined(reducedValue) && (target[key] = reducedValue);
+            });
+            stack[i] = void 0;
+            return target;
+          }
+        }
+        return source;
+      };
+      return visit(obj, 0);
+    };
+    var isAsyncFn = kindOfTest("AsyncFunction");
+    var isThenable = (thing) => thing && (isObject(thing) || isFunction(thing)) && isFunction(thing.then) && isFunction(thing.catch);
+    var utils = {
+      isArray,
+      isArrayBuffer,
+      isBuffer,
+      isFormData,
+      isArrayBufferView,
+      isString,
+      isNumber,
+      isBoolean,
+      isObject,
+      isPlainObject,
+      isUndefined,
+      isDate,
+      isFile,
+      isBlob,
+      isRegExp,
+      isFunction,
+      isStream,
+      isURLSearchParams,
+      isTypedArray,
+      isFileList,
+      forEach,
+      merge,
+      extend,
+      trim,
+      stripBOM,
+      inherits,
+      toFlatObject,
+      kindOf,
+      kindOfTest,
+      endsWith,
+      toArray,
+      forEachEntry,
+      matchAll,
+      isHTMLForm,
+      hasOwnProperty,
+      hasOwnProp: hasOwnProperty,
+      // an alias to avoid ESLint no-prototype-builtins detection
+      reduceDescriptors,
+      freezeMethods,
+      toObjectSet,
+      toCamelCase,
+      noop,
+      toFiniteNumber,
+      findKey,
+      global: _global,
+      isContextDefined,
+      ALPHABET,
+      generateString,
+      isSpecCompliantForm,
+      toJSONObject,
+      isAsyncFn,
+      isThenable
+    };
+    function AxiosError(message, code, config, request, response) {
+      Error.call(this);
+      if (Error.captureStackTrace) {
+        Error.captureStackTrace(this, this.constructor);
+      } else {
+        this.stack = new Error().stack;
+      }
+      this.message = message;
+      this.name = "AxiosError";
+      code && (this.code = code);
+      config && (this.config = config);
+      request && (this.request = request);
+      response && (this.response = response);
+    }
+    utils.inherits(AxiosError, Error, {
+      toJSON: function toJSON() {
+        return {
+          // Standard
+          message: this.message,
+          name: this.name,
+          // Microsoft
+          description: this.description,
+          number: this.number,
+          // Mozilla
+          fileName: this.fileName,
+          lineNumber: this.lineNumber,
+          columnNumber: this.columnNumber,
+          stack: this.stack,
+          // Axios
+          config: utils.toJSONObject(this.config),
+          code: this.code,
+          status: this.response && this.response.status ? this.response.status : null
+        };
+      }
+    });
+    var prototype$1 = AxiosError.prototype;
+    var descriptors = {};
+    [
+      "ERR_BAD_OPTION_VALUE",
+      "ERR_BAD_OPTION",
+      "ECONNABORTED",
+      "ETIMEDOUT",
+      "ERR_NETWORK",
+      "ERR_FR_TOO_MANY_REDIRECTS",
+      "ERR_DEPRECATED",
+      "ERR_BAD_RESPONSE",
+      "ERR_BAD_REQUEST",
+      "ERR_CANCELED",
+      "ERR_NOT_SUPPORT",
+      "ERR_INVALID_URL"
+      // eslint-disable-next-line func-names
+    ].forEach((code) => {
+      descriptors[code] = { value: code };
+    });
+    Object.defineProperties(AxiosError, descriptors);
+    Object.defineProperty(prototype$1, "isAxiosError", { value: true });
+    AxiosError.from = (error, code, config, request, response, customProps) => {
+      const axiosError = Object.create(prototype$1);
+      utils.toFlatObject(error, axiosError, function filter2(obj) {
+        return obj !== Error.prototype;
+      }, (prop) => {
+        return prop !== "isAxiosError";
+      });
+      AxiosError.call(axiosError, error.message, code, config, request, response);
+      axiosError.cause = error;
+      axiosError.name = error.name;
+      customProps && Object.assign(axiosError, customProps);
+      return axiosError;
+    };
+    function isVisitable(thing) {
+      return utils.isPlainObject(thing) || utils.isArray(thing);
+    }
+    function removeBrackets(key) {
+      return utils.endsWith(key, "[]") ? key.slice(0, -2) : key;
+    }
+    function renderKey(path, key, dots) {
+      if (!path)
+        return key;
+      return path.concat(key).map(function each(token, i) {
+        token = removeBrackets(token);
+        return !dots && i ? "[" + token + "]" : token;
+      }).join(dots ? "." : "");
+    }
+    function isFlatArray(arr) {
+      return utils.isArray(arr) && !arr.some(isVisitable);
+    }
+    var predicates = utils.toFlatObject(utils, {}, null, function filter2(prop) {
+      return /^is[A-Z]/.test(prop);
+    });
+    function toFormData(obj, formData, options) {
+      if (!utils.isObject(obj)) {
+        throw new TypeError("target must be an object");
+      }
+      formData = formData || new (FormData__default["default"] || FormData)();
+      options = utils.toFlatObject(options, {
+        metaTokens: true,
+        dots: false,
+        indexes: false
+      }, false, function defined(option, source) {
+        return !utils.isUndefined(source[option]);
+      });
+      const metaTokens = options.metaTokens;
+      const visitor = options.visitor || defaultVisitor;
+      const dots = options.dots;
+      const indexes = options.indexes;
+      const _Blob = options.Blob || typeof Blob !== "undefined" && Blob;
+      const useBlob = _Blob && utils.isSpecCompliantForm(formData);
+      if (!utils.isFunction(visitor)) {
+        throw new TypeError("visitor must be a function");
+      }
+      function convertValue(value) {
+        if (value === null)
+          return "";
+        if (utils.isDate(value)) {
+          return value.toISOString();
+        }
+        if (!useBlob && utils.isBlob(value)) {
+          throw new AxiosError("Blob is not supported. Use a Buffer instead.");
+        }
+        if (utils.isArrayBuffer(value) || utils.isTypedArray(value)) {
+          return useBlob && typeof Blob === "function" ? new Blob([value]) : Buffer.from(value);
+        }
+        return value;
+      }
+      function defaultVisitor(value, key, path) {
+        let arr = value;
+        if (value && !path && typeof value === "object") {
+          if (utils.endsWith(key, "{}")) {
+            key = metaTokens ? key : key.slice(0, -2);
+            value = JSON.stringify(value);
+          } else if (utils.isArray(value) && isFlatArray(value) || (utils.isFileList(value) || utils.endsWith(key, "[]")) && (arr = utils.toArray(value))) {
+            key = removeBrackets(key);
+            arr.forEach(function each(el, index) {
+              !(utils.isUndefined(el) || el === null) && formData.append(
+                // eslint-disable-next-line no-nested-ternary
+                indexes === true ? renderKey([key], index, dots) : indexes === null ? key : key + "[]",
+                convertValue(el)
+              );
+            });
+            return false;
+          }
+        }
+        if (isVisitable(value)) {
+          return true;
+        }
+        formData.append(renderKey(path, key, dots), convertValue(value));
+        return false;
+      }
+      const stack = [];
+      const exposedHelpers = Object.assign(predicates, {
+        defaultVisitor,
+        convertValue,
+        isVisitable
+      });
+      function build(value, path) {
+        if (utils.isUndefined(value))
+          return;
+        if (stack.indexOf(value) !== -1) {
+          throw Error("Circular reference detected in " + path.join("."));
+        }
+        stack.push(value);
+        utils.forEach(value, function each(el, key) {
+          const result = !(utils.isUndefined(el) || el === null) && visitor.call(
+            formData,
+            el,
+            utils.isString(key) ? key.trim() : key,
+            path,
+            exposedHelpers
+          );
+          if (result === true) {
+            build(el, path ? path.concat(key) : [key]);
+          }
+        });
+        stack.pop();
+      }
+      if (!utils.isObject(obj)) {
+        throw new TypeError("data must be an object");
+      }
+      build(obj);
+      return formData;
+    }
+    function encode$1(str) {
+      const charMap = {
+        "!": "%21",
+        "'": "%27",
+        "(": "%28",
+        ")": "%29",
+        "~": "%7E",
+        "%20": "+",
+        "%00": "\0"
+      };
+      return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer(match) {
+        return charMap[match];
+      });
+    }
+    function AxiosURLSearchParams(params, options) {
+      this._pairs = [];
+      params && toFormData(params, this, options);
+    }
+    var prototype = AxiosURLSearchParams.prototype;
+    prototype.append = function append(name, value) {
+      this._pairs.push([name, value]);
+    };
+    prototype.toString = function toString3(encoder) {
+      const _encode = encoder ? function(value) {
+        return encoder.call(this, value, encode$1);
+      } : encode$1;
+      return this._pairs.map(function each(pair) {
+        return _encode(pair[0]) + "=" + _encode(pair[1]);
+      }, "").join("&");
+    };
+    function encode(val) {
+      return encodeURIComponent(val).replace(/%3A/gi, ":").replace(/%24/g, "$").replace(/%2C/gi, ",").replace(/%20/g, "+").replace(/%5B/gi, "[").replace(/%5D/gi, "]");
+    }
+    function buildURL(url2, params, options) {
+      if (!params) {
+        return url2;
+      }
+      const _encode = options && options.encode || encode;
+      const serializeFn = options && options.serialize;
+      let serializedParams;
+      if (serializeFn) {
+        serializedParams = serializeFn(params, options);
+      } else {
+        serializedParams = utils.isURLSearchParams(params) ? params.toString() : new AxiosURLSearchParams(params, options).toString(_encode);
+      }
+      if (serializedParams) {
+        const hashmarkIndex = url2.indexOf("#");
+        if (hashmarkIndex !== -1) {
+          url2 = url2.slice(0, hashmarkIndex);
+        }
+        url2 += (url2.indexOf("?") === -1 ? "?" : "&") + serializedParams;
+      }
+      return url2;
+    }
+    var InterceptorManager = class {
+      constructor() {
+        this.handlers = [];
+      }
+      /**
+       * Add a new interceptor to the stack
+       *
+       * @param {Function} fulfilled The function to handle `then` for a `Promise`
+       * @param {Function} rejected The function to handle `reject` for a `Promise`
+       *
+       * @return {Number} An ID used to remove interceptor later
+       */
+      use(fulfilled, rejected, options) {
+        this.handlers.push({
+          fulfilled,
+          rejected,
+          synchronous: options ? options.synchronous : false,
+          runWhen: options ? options.runWhen : null
+        });
+        return this.handlers.length - 1;
+      }
+      /**
+       * Remove an interceptor from the stack
+       *
+       * @param {Number} id The ID that was returned by `use`
+       *
+       * @returns {Boolean} `true` if the interceptor was removed, `false` otherwise
+       */
+      eject(id) {
+        if (this.handlers[id]) {
+          this.handlers[id] = null;
+        }
+      }
+      /**
+       * Clear all interceptors from the stack
+       *
+       * @returns {void}
+       */
+      clear() {
+        if (this.handlers) {
+          this.handlers = [];
+        }
+      }
+      /**
+       * Iterate over all the registered interceptors
+       *
+       * This method is particularly useful for skipping over any
+       * interceptors that may have become `null` calling `eject`.
+       *
+       * @param {Function} fn The function to call for each interceptor
+       *
+       * @returns {void}
+       */
+      forEach(fn) {
+        utils.forEach(this.handlers, function forEachHandler(h) {
+          if (h !== null) {
+            fn(h);
+          }
+        });
+      }
+    };
+    var InterceptorManager$1 = InterceptorManager;
+    var transitionalDefaults = {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false
+    };
+    var URLSearchParams = url__default["default"].URLSearchParams;
+    var platform = {
+      isNode: true,
+      classes: {
+        URLSearchParams,
+        FormData: FormData__default["default"],
+        Blob: typeof Blob !== "undefined" && Blob || null
+      },
+      protocols: ["http", "https", "file", "data"]
+    };
+    function toURLEncodedForm(data, options) {
+      return toFormData(data, new platform.classes.URLSearchParams(), Object.assign({
+        visitor: function(value, key, path, helpers) {
+          if (utils.isBuffer(value)) {
+            this.append(key, value.toString("base64"));
+            return false;
+          }
+          return helpers.defaultVisitor.apply(this, arguments);
+        }
+      }, options));
+    }
+    function parsePropPath(name) {
+      return utils.matchAll(/\w+|\[(\w*)]/g, name).map((match) => {
+        return match[0] === "[]" ? "" : match[1] || match[0];
+      });
+    }
+    function arrayToObject(arr) {
+      const obj = {};
+      const keys4 = Object.keys(arr);
+      let i;
+      const len = keys4.length;
+      let key;
+      for (i = 0; i < len; i++) {
+        key = keys4[i];
+        obj[key] = arr[key];
+      }
+      return obj;
+    }
+    function formDataToJSON(formData) {
+      function buildPath(path, value, target, index) {
+        let name = path[index++];
+        const isNumericKey = Number.isFinite(+name);
+        const isLast = index >= path.length;
+        name = !name && utils.isArray(target) ? target.length : name;
+        if (isLast) {
+          if (utils.hasOwnProp(target, name)) {
+            target[name] = [target[name], value];
+          } else {
+            target[name] = value;
+          }
+          return !isNumericKey;
+        }
+        if (!target[name] || !utils.isObject(target[name])) {
+          target[name] = [];
+        }
+        const result = buildPath(path, value, target[name], index);
+        if (result && utils.isArray(target[name])) {
+          target[name] = arrayToObject(target[name]);
+        }
+        return !isNumericKey;
+      }
+      if (utils.isFormData(formData) && utils.isFunction(formData.entries)) {
+        const obj = {};
+        utils.forEachEntry(formData, (name, value) => {
+          buildPath(parsePropPath(name), value, obj, 0);
+        });
+        return obj;
+      }
+      return null;
+    }
+    var DEFAULT_CONTENT_TYPE = {
+      "Content-Type": void 0
+    };
     function stringifySafely(rawValue, parser, encoder) {
       if (utils.isString(rawValue)) {
         try {
@@ -29310,38 +29076,58 @@ var require_defaults = __commonJS({
     }
     var defaults = {
       transitional: transitionalDefaults,
-      adapter: getDefaultAdapter(),
+      adapter: ["xhr", "http"],
       transformRequest: [function transformRequest(data, headers) {
-        normalizeHeaderName(headers, "Accept");
-        normalizeHeaderName(headers, "Content-Type");
-        if (utils.isFormData(data) || utils.isArrayBuffer(data) || utils.isBuffer(data) || utils.isStream(data) || utils.isFile(data) || utils.isBlob(data)) {
+        const contentType = headers.getContentType() || "";
+        const hasJSONContentType = contentType.indexOf("application/json") > -1;
+        const isObjectPayload = utils.isObject(data);
+        if (isObjectPayload && utils.isHTMLForm(data)) {
+          data = new FormData(data);
+        }
+        const isFormData2 = utils.isFormData(data);
+        if (isFormData2) {
+          if (!hasJSONContentType) {
+            return data;
+          }
+          return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
+        }
+        if (utils.isArrayBuffer(data) || utils.isBuffer(data) || utils.isStream(data) || utils.isFile(data) || utils.isBlob(data)) {
           return data;
         }
         if (utils.isArrayBufferView(data)) {
           return data.buffer;
         }
         if (utils.isURLSearchParams(data)) {
-          setContentTypeIfUnset(headers, "application/x-www-form-urlencoded;charset=utf-8");
+          headers.setContentType("application/x-www-form-urlencoded;charset=utf-8", false);
           return data.toString();
         }
-        var isObjectPayload = utils.isObject(data);
-        var contentType = headers && headers["Content-Type"];
-        var isFileList;
-        if ((isFileList = utils.isFileList(data)) || isObjectPayload && contentType === "multipart/form-data") {
-          var _FormData = this.env && this.env.FormData;
-          return toFormData(isFileList ? { "files[]": data } : data, _FormData && new _FormData());
-        } else if (isObjectPayload || contentType === "application/json") {
-          setContentTypeIfUnset(headers, "application/json");
+        let isFileList2;
+        if (isObjectPayload) {
+          if (contentType.indexOf("application/x-www-form-urlencoded") > -1) {
+            return toURLEncodedForm(data, this.formSerializer).toString();
+          }
+          if ((isFileList2 = utils.isFileList(data)) || contentType.indexOf("multipart/form-data") > -1) {
+            const _FormData = this.env && this.env.FormData;
+            return toFormData(
+              isFileList2 ? { "files[]": data } : data,
+              _FormData && new _FormData(),
+              this.formSerializer
+            );
+          }
+        }
+        if (isObjectPayload || hasJSONContentType) {
+          headers.setContentType("application/json", false);
           return stringifySafely(data);
         }
         return data;
       }],
       transformResponse: [function transformResponse(data) {
-        var transitional = this.transitional || defaults.transitional;
-        var silentJSONParsing = transitional && transitional.silentJSONParsing;
-        var forcedJSONParsing = transitional && transitional.forcedJSONParsing;
-        var strictJSONParsing = !silentJSONParsing && this.responseType === "json";
-        if (strictJSONParsing || forcedJSONParsing && utils.isString(data) && data.length) {
+        const transitional = this.transitional || defaults.transitional;
+        const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+        const JSONRequested = this.responseType === "json";
+        if (data && utils.isString(data) && (forcedJSONParsing && !this.responseType || JSONRequested)) {
+          const silentJSONParsing = transitional && transitional.silentJSONParsing;
+          const strictJSONParsing = !silentJSONParsing && JSONRequested;
           try {
             return JSON.parse(data);
           } catch (e) {
@@ -29365,7 +29151,8 @@ var require_defaults = __commonJS({
       maxContentLength: -1,
       maxBodyLength: -1,
       env: {
-        FormData: require_FormData()
+        FormData: platform.classes.FormData,
+        Blob: platform.classes.Blob
       },
       validateStatus: function validateStatus(status) {
         return status >= 200 && status < 300;
@@ -29382,82 +29169,1465 @@ var require_defaults = __commonJS({
     utils.forEach(["post", "put", "patch"], function forEachMethodWithData(method) {
       defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
     });
-    module2.exports = defaults;
-  }
-});
-
-// node_modules/axios/lib/core/transformData.js
-var require_transformData = __commonJS({
-  "node_modules/axios/lib/core/transformData.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    var defaults = require_defaults();
-    module2.exports = function transformData(data, headers, fns) {
-      var context2 = this || defaults;
-      utils.forEach(fns, function transform(fn) {
-        data = fn.call(context2, data, headers);
+    var defaults$1 = defaults;
+    var ignoreDuplicateOf = utils.toObjectSet([
+      "age",
+      "authorization",
+      "content-length",
+      "content-type",
+      "etag",
+      "expires",
+      "from",
+      "host",
+      "if-modified-since",
+      "if-unmodified-since",
+      "last-modified",
+      "location",
+      "max-forwards",
+      "proxy-authorization",
+      "referer",
+      "retry-after",
+      "user-agent"
+    ]);
+    var parseHeaders = (rawHeaders) => {
+      const parsed = {};
+      let key;
+      let val;
+      let i;
+      rawHeaders && rawHeaders.split("\n").forEach(function parser(line) {
+        i = line.indexOf(":");
+        key = line.substring(0, i).trim().toLowerCase();
+        val = line.substring(i + 1).trim();
+        if (!key || parsed[key] && ignoreDuplicateOf[key]) {
+          return;
+        }
+        if (key === "set-cookie") {
+          if (parsed[key]) {
+            parsed[key].push(val);
+          } else {
+            parsed[key] = [val];
+          }
+        } else {
+          parsed[key] = parsed[key] ? parsed[key] + ", " + val : val;
+        }
       });
+      return parsed;
+    };
+    var $internals = Symbol("internals");
+    function normalizeHeader(header) {
+      return header && String(header).trim().toLowerCase();
+    }
+    function normalizeValue(value) {
+      if (value === false || value == null) {
+        return value;
+      }
+      return utils.isArray(value) ? value.map(normalizeValue) : String(value);
+    }
+    function parseTokens(str) {
+      const tokens = /* @__PURE__ */ Object.create(null);
+      const tokensRE = /([^\s,;=]+)\s*(?:=\s*([^,;]+))?/g;
+      let match;
+      while (match = tokensRE.exec(str)) {
+        tokens[match[1]] = match[2];
+      }
+      return tokens;
+    }
+    var isValidHeaderName = (str) => /^[-_a-zA-Z0-9^`|~,!#$%&'*+.]+$/.test(str.trim());
+    function matchHeaderValue(context2, value, header, filter2, isHeaderNameFilter) {
+      if (utils.isFunction(filter2)) {
+        return filter2.call(this, value, header);
+      }
+      if (isHeaderNameFilter) {
+        value = header;
+      }
+      if (!utils.isString(value))
+        return;
+      if (utils.isString(filter2)) {
+        return value.indexOf(filter2) !== -1;
+      }
+      if (utils.isRegExp(filter2)) {
+        return filter2.test(value);
+      }
+    }
+    function formatHeader(header) {
+      return header.trim().toLowerCase().replace(/([a-z\d])(\w*)/g, (w, char, str) => {
+        return char.toUpperCase() + str;
+      });
+    }
+    function buildAccessors(obj, header) {
+      const accessorName = utils.toCamelCase(" " + header);
+      ["get", "set", "has"].forEach((methodName) => {
+        Object.defineProperty(obj, methodName + accessorName, {
+          value: function(arg1, arg2, arg3) {
+            return this[methodName].call(this, header, arg1, arg2, arg3);
+          },
+          configurable: true
+        });
+      });
+    }
+    var AxiosHeaders = class {
+      constructor(headers) {
+        headers && this.set(headers);
+      }
+      set(header, valueOrRewrite, rewrite) {
+        const self2 = this;
+        function setHeader(_value, _header, _rewrite) {
+          const lHeader = normalizeHeader(_header);
+          if (!lHeader) {
+            throw new Error("header name must be a non-empty string");
+          }
+          const key = utils.findKey(self2, lHeader);
+          if (!key || self2[key] === void 0 || _rewrite === true || _rewrite === void 0 && self2[key] !== false) {
+            self2[key || _header] = normalizeValue(_value);
+          }
+        }
+        const setHeaders = (headers, _rewrite) => utils.forEach(headers, (_value, _header) => setHeader(_value, _header, _rewrite));
+        if (utils.isPlainObject(header) || header instanceof this.constructor) {
+          setHeaders(header, valueOrRewrite);
+        } else if (utils.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
+          setHeaders(parseHeaders(header), valueOrRewrite);
+        } else {
+          header != null && setHeader(valueOrRewrite, header, rewrite);
+        }
+        return this;
+      }
+      get(header, parser) {
+        header = normalizeHeader(header);
+        if (header) {
+          const key = utils.findKey(this, header);
+          if (key) {
+            const value = this[key];
+            if (!parser) {
+              return value;
+            }
+            if (parser === true) {
+              return parseTokens(value);
+            }
+            if (utils.isFunction(parser)) {
+              return parser.call(this, value, key);
+            }
+            if (utils.isRegExp(parser)) {
+              return parser.exec(value);
+            }
+            throw new TypeError("parser must be boolean|regexp|function");
+          }
+        }
+      }
+      has(header, matcher) {
+        header = normalizeHeader(header);
+        if (header) {
+          const key = utils.findKey(this, header);
+          return !!(key && this[key] !== void 0 && (!matcher || matchHeaderValue(this, this[key], key, matcher)));
+        }
+        return false;
+      }
+      delete(header, matcher) {
+        const self2 = this;
+        let deleted = false;
+        function deleteHeader(_header) {
+          _header = normalizeHeader(_header);
+          if (_header) {
+            const key = utils.findKey(self2, _header);
+            if (key && (!matcher || matchHeaderValue(self2, self2[key], key, matcher))) {
+              delete self2[key];
+              deleted = true;
+            }
+          }
+        }
+        if (utils.isArray(header)) {
+          header.forEach(deleteHeader);
+        } else {
+          deleteHeader(header);
+        }
+        return deleted;
+      }
+      clear(matcher) {
+        const keys4 = Object.keys(this);
+        let i = keys4.length;
+        let deleted = false;
+        while (i--) {
+          const key = keys4[i];
+          if (!matcher || matchHeaderValue(this, this[key], key, matcher, true)) {
+            delete this[key];
+            deleted = true;
+          }
+        }
+        return deleted;
+      }
+      normalize(format) {
+        const self2 = this;
+        const headers = {};
+        utils.forEach(this, (value, header) => {
+          const key = utils.findKey(headers, header);
+          if (key) {
+            self2[key] = normalizeValue(value);
+            delete self2[header];
+            return;
+          }
+          const normalized = format ? formatHeader(header) : String(header).trim();
+          if (normalized !== header) {
+            delete self2[header];
+          }
+          self2[normalized] = normalizeValue(value);
+          headers[normalized] = true;
+        });
+        return this;
+      }
+      concat(...targets) {
+        return this.constructor.concat(this, ...targets);
+      }
+      toJSON(asStrings) {
+        const obj = /* @__PURE__ */ Object.create(null);
+        utils.forEach(this, (value, header) => {
+          value != null && value !== false && (obj[header] = asStrings && utils.isArray(value) ? value.join(", ") : value);
+        });
+        return obj;
+      }
+      [Symbol.iterator]() {
+        return Object.entries(this.toJSON())[Symbol.iterator]();
+      }
+      toString() {
+        return Object.entries(this.toJSON()).map(([header, value]) => header + ": " + value).join("\n");
+      }
+      get [Symbol.toStringTag]() {
+        return "AxiosHeaders";
+      }
+      static from(thing) {
+        return thing instanceof this ? thing : new this(thing);
+      }
+      static concat(first, ...targets) {
+        const computed = new this(first);
+        targets.forEach((target) => computed.set(target));
+        return computed;
+      }
+      static accessor(header) {
+        const internals = this[$internals] = this[$internals] = {
+          accessors: {}
+        };
+        const accessors = internals.accessors;
+        const prototype2 = this.prototype;
+        function defineAccessor(_header) {
+          const lHeader = normalizeHeader(_header);
+          if (!accessors[lHeader]) {
+            buildAccessors(prototype2, _header);
+            accessors[lHeader] = true;
+          }
+        }
+        utils.isArray(header) ? header.forEach(defineAccessor) : defineAccessor(header);
+        return this;
+      }
+    };
+    AxiosHeaders.accessor(["Content-Type", "Content-Length", "Accept", "Accept-Encoding", "User-Agent", "Authorization"]);
+    utils.freezeMethods(AxiosHeaders.prototype);
+    utils.freezeMethods(AxiosHeaders);
+    var AxiosHeaders$1 = AxiosHeaders;
+    function transformData(fns, response) {
+      const config = this || defaults$1;
+      const context2 = response || config;
+      const headers = AxiosHeaders$1.from(context2.headers);
+      let data = context2.data;
+      utils.forEach(fns, function transform(fn) {
+        data = fn.call(config, data, headers.normalize(), response ? response.status : void 0);
+      });
+      headers.normalize();
       return data;
-    };
-  }
-});
-
-// node_modules/axios/lib/cancel/isCancel.js
-var require_isCancel = __commonJS({
-  "node_modules/axios/lib/cancel/isCancel.js"(exports, module2) {
-    "use strict";
-    module2.exports = function isCancel(value) {
+    }
+    function isCancel(value) {
       return !!(value && value.__CANCEL__);
+    }
+    function CanceledError(message, config, request) {
+      AxiosError.call(this, message == null ? "canceled" : message, AxiosError.ERR_CANCELED, config, request);
+      this.name = "CanceledError";
+    }
+    utils.inherits(CanceledError, AxiosError, {
+      __CANCEL__: true
+    });
+    function settle(resolve, reject, response) {
+      const validateStatus = response.config.validateStatus;
+      if (!response.status || !validateStatus || validateStatus(response.status)) {
+        resolve(response);
+      } else {
+        reject(new AxiosError(
+          "Request failed with status code " + response.status,
+          [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
+          response.config,
+          response.request,
+          response
+        ));
+      }
+    }
+    function isAbsoluteURL(url2) {
+      return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url2);
+    }
+    function combineURLs(baseURL, relativeURL) {
+      return relativeURL ? baseURL.replace(/\/+$/, "") + "/" + relativeURL.replace(/^\/+/, "") : baseURL;
+    }
+    function buildFullPath(baseURL, requestedURL) {
+      if (baseURL && !isAbsoluteURL(requestedURL)) {
+        return combineURLs(baseURL, requestedURL);
+      }
+      return requestedURL;
+    }
+    var VERSION = "1.4.0";
+    function parseProtocol(url2) {
+      const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url2);
+      return match && match[1] || "";
+    }
+    var DATA_URL_PATTERN = /^(?:([^;]+);)?(?:[^;]+;)?(base64|),([\s\S]*)$/;
+    function fromDataURI(uri, asBlob, options) {
+      const _Blob = options && options.Blob || platform.classes.Blob;
+      const protocol = parseProtocol(uri);
+      if (asBlob === void 0 && _Blob) {
+        asBlob = true;
+      }
+      if (protocol === "data") {
+        uri = protocol.length ? uri.slice(protocol.length + 1) : uri;
+        const match = DATA_URL_PATTERN.exec(uri);
+        if (!match) {
+          throw new AxiosError("Invalid URL", AxiosError.ERR_INVALID_URL);
+        }
+        const mime = match[1];
+        const isBase64 = match[2];
+        const body = match[3];
+        const buffer = Buffer.from(decodeURIComponent(body), isBase64 ? "base64" : "utf8");
+        if (asBlob) {
+          if (!_Blob) {
+            throw new AxiosError("Blob is not supported", AxiosError.ERR_NOT_SUPPORT);
+          }
+          return new _Blob([buffer], { type: mime });
+        }
+        return buffer;
+      }
+      throw new AxiosError("Unsupported protocol " + protocol, AxiosError.ERR_NOT_SUPPORT);
+    }
+    function throttle(fn, freq) {
+      let timestamp = 0;
+      const threshold = 1e3 / freq;
+      let timer = null;
+      return function throttled(force, args) {
+        const now = Date.now();
+        if (force || now - timestamp > threshold) {
+          if (timer) {
+            clearTimeout(timer);
+            timer = null;
+          }
+          timestamp = now;
+          return fn.apply(null, args);
+        }
+        if (!timer) {
+          timer = setTimeout(() => {
+            timer = null;
+            timestamp = Date.now();
+            return fn.apply(null, args);
+          }, threshold - (now - timestamp));
+        }
+      };
+    }
+    function speedometer(samplesCount, min) {
+      samplesCount = samplesCount || 10;
+      const bytes = new Array(samplesCount);
+      const timestamps = new Array(samplesCount);
+      let head = 0;
+      let tail2 = 0;
+      let firstSampleTS;
+      min = min !== void 0 ? min : 1e3;
+      return function push(chunkLength) {
+        const now = Date.now();
+        const startedAt = timestamps[tail2];
+        if (!firstSampleTS) {
+          firstSampleTS = now;
+        }
+        bytes[head] = chunkLength;
+        timestamps[head] = now;
+        let i = tail2;
+        let bytesCount = 0;
+        while (i !== head) {
+          bytesCount += bytes[i++];
+          i = i % samplesCount;
+        }
+        head = (head + 1) % samplesCount;
+        if (head === tail2) {
+          tail2 = (tail2 + 1) % samplesCount;
+        }
+        if (now - firstSampleTS < min) {
+          return;
+        }
+        const passed = startedAt && now - startedAt;
+        return passed ? Math.round(bytesCount * 1e3 / passed) : void 0;
+      };
+    }
+    var kInternals = Symbol("internals");
+    var AxiosTransformStream = class extends stream__default["default"].Transform {
+      constructor(options) {
+        options = utils.toFlatObject(options, {
+          maxRate: 0,
+          chunkSize: 64 * 1024,
+          minChunkSize: 100,
+          timeWindow: 500,
+          ticksRate: 2,
+          samplesCount: 15
+        }, null, (prop, source) => {
+          return !utils.isUndefined(source[prop]);
+        });
+        super({
+          readableHighWaterMark: options.chunkSize
+        });
+        const self2 = this;
+        const internals = this[kInternals] = {
+          length: options.length,
+          timeWindow: options.timeWindow,
+          ticksRate: options.ticksRate,
+          chunkSize: options.chunkSize,
+          maxRate: options.maxRate,
+          minChunkSize: options.minChunkSize,
+          bytesSeen: 0,
+          isCaptured: false,
+          notifiedBytesLoaded: 0,
+          ts: Date.now(),
+          bytes: 0,
+          onReadCallback: null
+        };
+        const _speedometer = speedometer(internals.ticksRate * options.samplesCount, internals.timeWindow);
+        this.on("newListener", (event) => {
+          if (event === "progress") {
+            if (!internals.isCaptured) {
+              internals.isCaptured = true;
+            }
+          }
+        });
+        let bytesNotified = 0;
+        internals.updateProgress = throttle(function throttledHandler() {
+          const totalBytes = internals.length;
+          const bytesTransferred = internals.bytesSeen;
+          const progressBytes = bytesTransferred - bytesNotified;
+          if (!progressBytes || self2.destroyed)
+            return;
+          const rate = _speedometer(progressBytes);
+          bytesNotified = bytesTransferred;
+          process.nextTick(() => {
+            self2.emit("progress", {
+              "loaded": bytesTransferred,
+              "total": totalBytes,
+              "progress": totalBytes ? bytesTransferred / totalBytes : void 0,
+              "bytes": progressBytes,
+              "rate": rate ? rate : void 0,
+              "estimated": rate && totalBytes && bytesTransferred <= totalBytes ? (totalBytes - bytesTransferred) / rate : void 0
+            });
+          });
+        }, internals.ticksRate);
+        const onFinish = () => {
+          internals.updateProgress(true);
+        };
+        this.once("end", onFinish);
+        this.once("error", onFinish);
+      }
+      _read(size) {
+        const internals = this[kInternals];
+        if (internals.onReadCallback) {
+          internals.onReadCallback();
+        }
+        return super._read(size);
+      }
+      _transform(chunk, encoding, callback) {
+        const self2 = this;
+        const internals = this[kInternals];
+        const maxRate = internals.maxRate;
+        const readableHighWaterMark = this.readableHighWaterMark;
+        const timeWindow = internals.timeWindow;
+        const divider = 1e3 / timeWindow;
+        const bytesThreshold = maxRate / divider;
+        const minChunkSize = internals.minChunkSize !== false ? Math.max(internals.minChunkSize, bytesThreshold * 0.01) : 0;
+        function pushChunk(_chunk, _callback) {
+          const bytes = Buffer.byteLength(_chunk);
+          internals.bytesSeen += bytes;
+          internals.bytes += bytes;
+          if (internals.isCaptured) {
+            internals.updateProgress();
+          }
+          if (self2.push(_chunk)) {
+            process.nextTick(_callback);
+          } else {
+            internals.onReadCallback = () => {
+              internals.onReadCallback = null;
+              process.nextTick(_callback);
+            };
+          }
+        }
+        const transformChunk = (_chunk, _callback) => {
+          const chunkSize = Buffer.byteLength(_chunk);
+          let chunkRemainder = null;
+          let maxChunkSize = readableHighWaterMark;
+          let bytesLeft;
+          let passed = 0;
+          if (maxRate) {
+            const now = Date.now();
+            if (!internals.ts || (passed = now - internals.ts) >= timeWindow) {
+              internals.ts = now;
+              bytesLeft = bytesThreshold - internals.bytes;
+              internals.bytes = bytesLeft < 0 ? -bytesLeft : 0;
+              passed = 0;
+            }
+            bytesLeft = bytesThreshold - internals.bytes;
+          }
+          if (maxRate) {
+            if (bytesLeft <= 0) {
+              return setTimeout(() => {
+                _callback(null, _chunk);
+              }, timeWindow - passed);
+            }
+            if (bytesLeft < maxChunkSize) {
+              maxChunkSize = bytesLeft;
+            }
+          }
+          if (maxChunkSize && chunkSize > maxChunkSize && chunkSize - maxChunkSize > minChunkSize) {
+            chunkRemainder = _chunk.subarray(maxChunkSize);
+            _chunk = _chunk.subarray(0, maxChunkSize);
+          }
+          pushChunk(_chunk, chunkRemainder ? () => {
+            process.nextTick(_callback, null, chunkRemainder);
+          } : _callback);
+        };
+        transformChunk(chunk, function transformNextChunk(err, _chunk) {
+          if (err) {
+            return callback(err);
+          }
+          if (_chunk) {
+            transformChunk(_chunk, transformNextChunk);
+          } else {
+            callback(null);
+          }
+        });
+      }
+      setLength(length) {
+        this[kInternals].length = +length;
+        return this;
+      }
     };
-  }
-});
-
-// node_modules/axios/lib/core/dispatchRequest.js
-var require_dispatchRequest = __commonJS({
-  "node_modules/axios/lib/core/dispatchRequest.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    var transformData = require_transformData();
-    var isCancel = require_isCancel();
-    var defaults = require_defaults();
-    var CanceledError = require_CanceledError();
+    var AxiosTransformStream$1 = AxiosTransformStream;
+    var { asyncIterator } = Symbol;
+    var readBlob = async function* (blob) {
+      if (blob.stream) {
+        yield* blob.stream();
+      } else if (blob.arrayBuffer) {
+        yield await blob.arrayBuffer();
+      } else if (blob[asyncIterator]) {
+        yield* blob[asyncIterator]();
+      } else {
+        yield blob;
+      }
+    };
+    var readBlob$1 = readBlob;
+    var BOUNDARY_ALPHABET = utils.ALPHABET.ALPHA_DIGIT + "-_";
+    var textEncoder = new util.TextEncoder();
+    var CRLF = "\r\n";
+    var CRLF_BYTES = textEncoder.encode(CRLF);
+    var CRLF_BYTES_COUNT = 2;
+    var FormDataPart = class {
+      constructor(name, value) {
+        const { escapeName } = this.constructor;
+        const isStringValue = utils.isString(value);
+        let headers = `Content-Disposition: form-data; name="${escapeName(name)}"${!isStringValue && value.name ? `; filename="${escapeName(value.name)}"` : ""}${CRLF}`;
+        if (isStringValue) {
+          value = textEncoder.encode(String(value).replace(/\r?\n|\r\n?/g, CRLF));
+        } else {
+          headers += `Content-Type: ${value.type || "application/octet-stream"}${CRLF}`;
+        }
+        this.headers = textEncoder.encode(headers + CRLF);
+        this.contentLength = isStringValue ? value.byteLength : value.size;
+        this.size = this.headers.byteLength + this.contentLength + CRLF_BYTES_COUNT;
+        this.name = name;
+        this.value = value;
+      }
+      async *encode() {
+        yield this.headers;
+        const { value } = this;
+        if (utils.isTypedArray(value)) {
+          yield value;
+        } else {
+          yield* readBlob$1(value);
+        }
+        yield CRLF_BYTES;
+      }
+      static escapeName(name) {
+        return String(name).replace(/[\r\n"]/g, (match) => ({
+          "\r": "%0D",
+          "\n": "%0A",
+          '"': "%22"
+        })[match]);
+      }
+    };
+    var formDataToStream = (form, headersHandler, options) => {
+      const {
+        tag = "form-data-boundary",
+        size = 25,
+        boundary = tag + "-" + utils.generateString(size, BOUNDARY_ALPHABET)
+      } = options || {};
+      if (!utils.isFormData(form)) {
+        throw TypeError("FormData instance required");
+      }
+      if (boundary.length < 1 || boundary.length > 70) {
+        throw Error("boundary must be 10-70 characters long");
+      }
+      const boundaryBytes = textEncoder.encode("--" + boundary + CRLF);
+      const footerBytes = textEncoder.encode("--" + boundary + "--" + CRLF + CRLF);
+      let contentLength = footerBytes.byteLength;
+      const parts = Array.from(form.entries()).map(([name, value]) => {
+        const part = new FormDataPart(name, value);
+        contentLength += part.size;
+        return part;
+      });
+      contentLength += boundaryBytes.byteLength * parts.length;
+      contentLength = utils.toFiniteNumber(contentLength);
+      const computedHeaders = {
+        "Content-Type": `multipart/form-data; boundary=${boundary}`
+      };
+      if (Number.isFinite(contentLength)) {
+        computedHeaders["Content-Length"] = contentLength;
+      }
+      headersHandler && headersHandler(computedHeaders);
+      return stream.Readable.from(async function* () {
+        for (const part of parts) {
+          yield boundaryBytes;
+          yield* part.encode();
+        }
+        yield footerBytes;
+      }());
+    };
+    var formDataToStream$1 = formDataToStream;
+    var ZlibHeaderTransformStream = class extends stream__default["default"].Transform {
+      __transform(chunk, encoding, callback) {
+        this.push(chunk);
+        callback();
+      }
+      _transform(chunk, encoding, callback) {
+        if (chunk.length !== 0) {
+          this._transform = this.__transform;
+          if (chunk[0] !== 120) {
+            const header = Buffer.alloc(2);
+            header[0] = 120;
+            header[1] = 156;
+            this.push(header, encoding);
+          }
+        }
+        this.__transform(chunk, encoding, callback);
+      }
+    };
+    var ZlibHeaderTransformStream$1 = ZlibHeaderTransformStream;
+    var callbackify = (fn, reducer) => {
+      return utils.isAsyncFn(fn) ? function(...args) {
+        const cb = args.pop();
+        fn.apply(this, args).then((value) => {
+          try {
+            reducer ? cb(null, ...reducer(value)) : cb(null, value);
+          } catch (err) {
+            cb(err);
+          }
+        }, cb);
+      } : fn;
+    };
+    var callbackify$1 = callbackify;
+    var zlibOptions = {
+      flush: zlib__default["default"].constants.Z_SYNC_FLUSH,
+      finishFlush: zlib__default["default"].constants.Z_SYNC_FLUSH
+    };
+    var brotliOptions = {
+      flush: zlib__default["default"].constants.BROTLI_OPERATION_FLUSH,
+      finishFlush: zlib__default["default"].constants.BROTLI_OPERATION_FLUSH
+    };
+    var isBrotliSupported = utils.isFunction(zlib__default["default"].createBrotliDecompress);
+    var { http: httpFollow, https: httpsFollow } = followRedirects__default["default"];
+    var isHttps = /https:?/;
+    var supportedProtocols = platform.protocols.map((protocol) => {
+      return protocol + ":";
+    });
+    function dispatchBeforeRedirect(options) {
+      if (options.beforeRedirects.proxy) {
+        options.beforeRedirects.proxy(options);
+      }
+      if (options.beforeRedirects.config) {
+        options.beforeRedirects.config(options);
+      }
+    }
+    function setProxy(options, configProxy, location) {
+      let proxy = configProxy;
+      if (!proxy && proxy !== false) {
+        const proxyUrl = proxyFromEnv.getProxyForUrl(location);
+        if (proxyUrl) {
+          proxy = new URL(proxyUrl);
+        }
+      }
+      if (proxy) {
+        if (proxy.username) {
+          proxy.auth = (proxy.username || "") + ":" + (proxy.password || "");
+        }
+        if (proxy.auth) {
+          if (proxy.auth.username || proxy.auth.password) {
+            proxy.auth = (proxy.auth.username || "") + ":" + (proxy.auth.password || "");
+          }
+          const base64 = Buffer.from(proxy.auth, "utf8").toString("base64");
+          options.headers["Proxy-Authorization"] = "Basic " + base64;
+        }
+        options.headers.host = options.hostname + (options.port ? ":" + options.port : "");
+        const proxyHost = proxy.hostname || proxy.host;
+        options.hostname = proxyHost;
+        options.host = proxyHost;
+        options.port = proxy.port;
+        options.path = location;
+        if (proxy.protocol) {
+          options.protocol = proxy.protocol.includes(":") ? proxy.protocol : `${proxy.protocol}:`;
+        }
+      }
+      options.beforeRedirects.proxy = function beforeRedirect(redirectOptions) {
+        setProxy(redirectOptions, configProxy, redirectOptions.href);
+      };
+    }
+    var isHttpAdapterSupported = typeof process !== "undefined" && utils.kindOf(process) === "process";
+    var wrapAsync = (asyncExecutor) => {
+      return new Promise((resolve, reject) => {
+        let onDone;
+        let isDone;
+        const done = (value, isRejected) => {
+          if (isDone)
+            return;
+          isDone = true;
+          onDone && onDone(value, isRejected);
+        };
+        const _resolve = (value) => {
+          done(value);
+          resolve(value);
+        };
+        const _reject = (reason) => {
+          done(reason, true);
+          reject(reason);
+        };
+        asyncExecutor(_resolve, _reject, (onDoneHandler) => onDone = onDoneHandler).catch(_reject);
+      });
+    };
+    var httpAdapter = isHttpAdapterSupported && function httpAdapter2(config) {
+      return wrapAsync(async function dispatchHttpRequest(resolve, reject, onDone) {
+        let { data, lookup, family } = config;
+        const { responseType, responseEncoding } = config;
+        const method = config.method.toUpperCase();
+        let isDone;
+        let rejected = false;
+        let req;
+        if (lookup && utils.isAsyncFn(lookup)) {
+          lookup = callbackify$1(lookup, (entry) => {
+            if (utils.isString(entry)) {
+              entry = [entry, entry.indexOf(".") < 0 ? 6 : 4];
+            } else if (!utils.isArray(entry)) {
+              throw new TypeError("lookup async function must return an array [ip: string, family: number]]");
+            }
+            return entry;
+          });
+        }
+        const emitter = new EventEmitter__default["default"]();
+        const onFinished = () => {
+          if (config.cancelToken) {
+            config.cancelToken.unsubscribe(abort);
+          }
+          if (config.signal) {
+            config.signal.removeEventListener("abort", abort);
+          }
+          emitter.removeAllListeners();
+        };
+        onDone((value, isRejected) => {
+          isDone = true;
+          if (isRejected) {
+            rejected = true;
+            onFinished();
+          }
+        });
+        function abort(reason) {
+          emitter.emit("abort", !reason || reason.type ? new CanceledError(null, config, req) : reason);
+        }
+        emitter.once("abort", reject);
+        if (config.cancelToken || config.signal) {
+          config.cancelToken && config.cancelToken.subscribe(abort);
+          if (config.signal) {
+            config.signal.aborted ? abort() : config.signal.addEventListener("abort", abort);
+          }
+        }
+        const fullPath = buildFullPath(config.baseURL, config.url);
+        const parsed = new URL(fullPath, "http://localhost");
+        const protocol = parsed.protocol || supportedProtocols[0];
+        if (protocol === "data:") {
+          let convertedData;
+          if (method !== "GET") {
+            return settle(resolve, reject, {
+              status: 405,
+              statusText: "method not allowed",
+              headers: {},
+              config
+            });
+          }
+          try {
+            convertedData = fromDataURI(config.url, responseType === "blob", {
+              Blob: config.env && config.env.Blob
+            });
+          } catch (err) {
+            throw AxiosError.from(err, AxiosError.ERR_BAD_REQUEST, config);
+          }
+          if (responseType === "text") {
+            convertedData = convertedData.toString(responseEncoding);
+            if (!responseEncoding || responseEncoding === "utf8") {
+              convertedData = utils.stripBOM(convertedData);
+            }
+          } else if (responseType === "stream") {
+            convertedData = stream__default["default"].Readable.from(convertedData);
+          }
+          return settle(resolve, reject, {
+            data: convertedData,
+            status: 200,
+            statusText: "OK",
+            headers: new AxiosHeaders$1(),
+            config
+          });
+        }
+        if (supportedProtocols.indexOf(protocol) === -1) {
+          return reject(new AxiosError(
+            "Unsupported protocol " + protocol,
+            AxiosError.ERR_BAD_REQUEST,
+            config
+          ));
+        }
+        const headers = AxiosHeaders$1.from(config.headers).normalize();
+        headers.set("User-Agent", "axios/" + VERSION, false);
+        const onDownloadProgress = config.onDownloadProgress;
+        const onUploadProgress = config.onUploadProgress;
+        const maxRate = config.maxRate;
+        let maxUploadRate = void 0;
+        let maxDownloadRate = void 0;
+        if (utils.isSpecCompliantForm(data)) {
+          const userBoundary = headers.getContentType(/boundary=([-_\w\d]{10,70})/i);
+          data = formDataToStream$1(data, (formHeaders) => {
+            headers.set(formHeaders);
+          }, {
+            tag: `axios-${VERSION}-boundary`,
+            boundary: userBoundary && userBoundary[1] || void 0
+          });
+        } else if (utils.isFormData(data) && utils.isFunction(data.getHeaders)) {
+          headers.set(data.getHeaders());
+          if (!headers.hasContentLength()) {
+            try {
+              const knownLength = await util__default["default"].promisify(data.getLength).call(data);
+              Number.isFinite(knownLength) && knownLength >= 0 && headers.setContentLength(knownLength);
+            } catch (e) {
+            }
+          }
+        } else if (utils.isBlob(data)) {
+          data.size && headers.setContentType(data.type || "application/octet-stream");
+          headers.setContentLength(data.size || 0);
+          data = stream__default["default"].Readable.from(readBlob$1(data));
+        } else if (data && !utils.isStream(data)) {
+          if (Buffer.isBuffer(data))
+            ;
+          else if (utils.isArrayBuffer(data)) {
+            data = Buffer.from(new Uint8Array(data));
+          } else if (utils.isString(data)) {
+            data = Buffer.from(data, "utf-8");
+          } else {
+            return reject(new AxiosError(
+              "Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream",
+              AxiosError.ERR_BAD_REQUEST,
+              config
+            ));
+          }
+          headers.setContentLength(data.length, false);
+          if (config.maxBodyLength > -1 && data.length > config.maxBodyLength) {
+            return reject(new AxiosError(
+              "Request body larger than maxBodyLength limit",
+              AxiosError.ERR_BAD_REQUEST,
+              config
+            ));
+          }
+        }
+        const contentLength = utils.toFiniteNumber(headers.getContentLength());
+        if (utils.isArray(maxRate)) {
+          maxUploadRate = maxRate[0];
+          maxDownloadRate = maxRate[1];
+        } else {
+          maxUploadRate = maxDownloadRate = maxRate;
+        }
+        if (data && (onUploadProgress || maxUploadRate)) {
+          if (!utils.isStream(data)) {
+            data = stream__default["default"].Readable.from(data, { objectMode: false });
+          }
+          data = stream__default["default"].pipeline([data, new AxiosTransformStream$1({
+            length: contentLength,
+            maxRate: utils.toFiniteNumber(maxUploadRate)
+          })], utils.noop);
+          onUploadProgress && data.on("progress", (progress) => {
+            onUploadProgress(Object.assign(progress, {
+              upload: true
+            }));
+          });
+        }
+        let auth = void 0;
+        if (config.auth) {
+          const username = config.auth.username || "";
+          const password = config.auth.password || "";
+          auth = username + ":" + password;
+        }
+        if (!auth && parsed.username) {
+          const urlUsername = parsed.username;
+          const urlPassword = parsed.password;
+          auth = urlUsername + ":" + urlPassword;
+        }
+        auth && headers.delete("authorization");
+        let path;
+        try {
+          path = buildURL(
+            parsed.pathname + parsed.search,
+            config.params,
+            config.paramsSerializer
+          ).replace(/^\?/, "");
+        } catch (err) {
+          const customErr = new Error(err.message);
+          customErr.config = config;
+          customErr.url = config.url;
+          customErr.exists = true;
+          return reject(customErr);
+        }
+        headers.set(
+          "Accept-Encoding",
+          "gzip, compress, deflate" + (isBrotliSupported ? ", br" : ""),
+          false
+        );
+        const options = {
+          path,
+          method,
+          headers: headers.toJSON(),
+          agents: { http: config.httpAgent, https: config.httpsAgent },
+          auth,
+          protocol,
+          family,
+          lookup,
+          beforeRedirect: dispatchBeforeRedirect,
+          beforeRedirects: {}
+        };
+        if (config.socketPath) {
+          options.socketPath = config.socketPath;
+        } else {
+          options.hostname = parsed.hostname;
+          options.port = parsed.port;
+          setProxy(options, config.proxy, protocol + "//" + parsed.hostname + (parsed.port ? ":" + parsed.port : "") + options.path);
+        }
+        let transport;
+        const isHttpsRequest = isHttps.test(options.protocol);
+        options.agent = isHttpsRequest ? config.httpsAgent : config.httpAgent;
+        if (config.transport) {
+          transport = config.transport;
+        } else if (config.maxRedirects === 0) {
+          transport = isHttpsRequest ? https__default["default"] : http__default["default"];
+        } else {
+          if (config.maxRedirects) {
+            options.maxRedirects = config.maxRedirects;
+          }
+          if (config.beforeRedirect) {
+            options.beforeRedirects.config = config.beforeRedirect;
+          }
+          transport = isHttpsRequest ? httpsFollow : httpFollow;
+        }
+        if (config.maxBodyLength > -1) {
+          options.maxBodyLength = config.maxBodyLength;
+        } else {
+          options.maxBodyLength = Infinity;
+        }
+        if (config.insecureHTTPParser) {
+          options.insecureHTTPParser = config.insecureHTTPParser;
+        }
+        req = transport.request(options, function handleResponse(res) {
+          if (req.destroyed)
+            return;
+          const streams = [res];
+          const responseLength = +res.headers["content-length"];
+          if (onDownloadProgress) {
+            const transformStream = new AxiosTransformStream$1({
+              length: utils.toFiniteNumber(responseLength),
+              maxRate: utils.toFiniteNumber(maxDownloadRate)
+            });
+            onDownloadProgress && transformStream.on("progress", (progress) => {
+              onDownloadProgress(Object.assign(progress, {
+                download: true
+              }));
+            });
+            streams.push(transformStream);
+          }
+          let responseStream = res;
+          const lastRequest = res.req || req;
+          if (config.decompress !== false && res.headers["content-encoding"]) {
+            if (method === "HEAD" || res.statusCode === 204) {
+              delete res.headers["content-encoding"];
+            }
+            switch (res.headers["content-encoding"]) {
+              case "gzip":
+              case "x-gzip":
+              case "compress":
+              case "x-compress":
+                streams.push(zlib__default["default"].createUnzip(zlibOptions));
+                delete res.headers["content-encoding"];
+                break;
+              case "deflate":
+                streams.push(new ZlibHeaderTransformStream$1());
+                streams.push(zlib__default["default"].createUnzip(zlibOptions));
+                delete res.headers["content-encoding"];
+                break;
+              case "br":
+                if (isBrotliSupported) {
+                  streams.push(zlib__default["default"].createBrotliDecompress(brotliOptions));
+                  delete res.headers["content-encoding"];
+                }
+            }
+          }
+          responseStream = streams.length > 1 ? stream__default["default"].pipeline(streams, utils.noop) : streams[0];
+          const offListeners = stream__default["default"].finished(responseStream, () => {
+            offListeners();
+            onFinished();
+          });
+          const response = {
+            status: res.statusCode,
+            statusText: res.statusMessage,
+            headers: new AxiosHeaders$1(res.headers),
+            config,
+            request: lastRequest
+          };
+          if (responseType === "stream") {
+            response.data = responseStream;
+            settle(resolve, reject, response);
+          } else {
+            const responseBuffer = [];
+            let totalResponseBytes = 0;
+            responseStream.on("data", function handleStreamData(chunk) {
+              responseBuffer.push(chunk);
+              totalResponseBytes += chunk.length;
+              if (config.maxContentLength > -1 && totalResponseBytes > config.maxContentLength) {
+                rejected = true;
+                responseStream.destroy();
+                reject(new AxiosError(
+                  "maxContentLength size of " + config.maxContentLength + " exceeded",
+                  AxiosError.ERR_BAD_RESPONSE,
+                  config,
+                  lastRequest
+                ));
+              }
+            });
+            responseStream.on("aborted", function handlerStreamAborted() {
+              if (rejected) {
+                return;
+              }
+              const err = new AxiosError(
+                "maxContentLength size of " + config.maxContentLength + " exceeded",
+                AxiosError.ERR_BAD_RESPONSE,
+                config,
+                lastRequest
+              );
+              responseStream.destroy(err);
+              reject(err);
+            });
+            responseStream.on("error", function handleStreamError(err) {
+              if (req.destroyed)
+                return;
+              reject(AxiosError.from(err, null, config, lastRequest));
+            });
+            responseStream.on("end", function handleStreamEnd() {
+              try {
+                let responseData = responseBuffer.length === 1 ? responseBuffer[0] : Buffer.concat(responseBuffer);
+                if (responseType !== "arraybuffer") {
+                  responseData = responseData.toString(responseEncoding);
+                  if (!responseEncoding || responseEncoding === "utf8") {
+                    responseData = utils.stripBOM(responseData);
+                  }
+                }
+                response.data = responseData;
+              } catch (err) {
+                reject(AxiosError.from(err, null, config, response.request, response));
+              }
+              settle(resolve, reject, response);
+            });
+          }
+          emitter.once("abort", (err) => {
+            if (!responseStream.destroyed) {
+              responseStream.emit("error", err);
+              responseStream.destroy();
+            }
+          });
+        });
+        emitter.once("abort", (err) => {
+          reject(err);
+          req.destroy(err);
+        });
+        req.on("error", function handleRequestError(err) {
+          reject(AxiosError.from(err, null, config, req));
+        });
+        req.on("socket", function handleRequestSocket(socket) {
+          socket.setKeepAlive(true, 1e3 * 60);
+        });
+        if (config.timeout) {
+          const timeout = parseInt(config.timeout, 10);
+          if (isNaN(timeout)) {
+            reject(new AxiosError(
+              "error trying to parse `config.timeout` to int",
+              AxiosError.ERR_BAD_OPTION_VALUE,
+              config,
+              req
+            ));
+            return;
+          }
+          req.setTimeout(timeout, function handleRequestTimeout() {
+            if (isDone)
+              return;
+            let timeoutErrorMessage = config.timeout ? "timeout of " + config.timeout + "ms exceeded" : "timeout exceeded";
+            const transitional = config.transitional || transitionalDefaults;
+            if (config.timeoutErrorMessage) {
+              timeoutErrorMessage = config.timeoutErrorMessage;
+            }
+            reject(new AxiosError(
+              timeoutErrorMessage,
+              transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
+              config,
+              req
+            ));
+            abort();
+          });
+        }
+        if (utils.isStream(data)) {
+          let ended = false;
+          let errored = false;
+          data.on("end", () => {
+            ended = true;
+          });
+          data.once("error", (err) => {
+            errored = true;
+            req.destroy(err);
+          });
+          data.on("close", () => {
+            if (!ended && !errored) {
+              abort(new CanceledError("Request stream has been aborted", config, req));
+            }
+          });
+          data.pipe(req);
+        } else {
+          req.end(data);
+        }
+      });
+    };
+    var cookies = platform.isStandardBrowserEnv ? (
+      // Standard browser envs support document.cookie
+      function standardBrowserEnv() {
+        return {
+          write: function write(name, value, expires, path, domain, secure) {
+            const cookie = [];
+            cookie.push(name + "=" + encodeURIComponent(value));
+            if (utils.isNumber(expires)) {
+              cookie.push("expires=" + new Date(expires).toGMTString());
+            }
+            if (utils.isString(path)) {
+              cookie.push("path=" + path);
+            }
+            if (utils.isString(domain)) {
+              cookie.push("domain=" + domain);
+            }
+            if (secure === true) {
+              cookie.push("secure");
+            }
+            document.cookie = cookie.join("; ");
+          },
+          read: function read(name) {
+            const match = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
+            return match ? decodeURIComponent(match[3]) : null;
+          },
+          remove: function remove(name) {
+            this.write(name, "", Date.now() - 864e5);
+          }
+        };
+      }()
+    ) : (
+      // Non standard browser env (web workers, react-native) lack needed support.
+      function nonStandardBrowserEnv() {
+        return {
+          write: function write() {
+          },
+          read: function read() {
+            return null;
+          },
+          remove: function remove() {
+          }
+        };
+      }()
+    );
+    var isURLSameOrigin = platform.isStandardBrowserEnv ? (
+      // Standard browser envs have full support of the APIs needed to test
+      // whether the request URL is of the same origin as current location.
+      function standardBrowserEnv() {
+        const msie = /(msie|trident)/i.test(navigator.userAgent);
+        const urlParsingNode = document.createElement("a");
+        let originURL;
+        function resolveURL(url2) {
+          let href = url2;
+          if (msie) {
+            urlParsingNode.setAttribute("href", href);
+            href = urlParsingNode.href;
+          }
+          urlParsingNode.setAttribute("href", href);
+          return {
+            href: urlParsingNode.href,
+            protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, "") : "",
+            host: urlParsingNode.host,
+            search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, "") : "",
+            hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, "") : "",
+            hostname: urlParsingNode.hostname,
+            port: urlParsingNode.port,
+            pathname: urlParsingNode.pathname.charAt(0) === "/" ? urlParsingNode.pathname : "/" + urlParsingNode.pathname
+          };
+        }
+        originURL = resolveURL(window.location.href);
+        return function isURLSameOrigin2(requestURL) {
+          const parsed = utils.isString(requestURL) ? resolveURL(requestURL) : requestURL;
+          return parsed.protocol === originURL.protocol && parsed.host === originURL.host;
+        };
+      }()
+    ) : (
+      // Non standard browser envs (web workers, react-native) lack needed support.
+      function nonStandardBrowserEnv() {
+        return function isURLSameOrigin2() {
+          return true;
+        };
+      }()
+    );
+    function progressEventReducer(listener, isDownloadStream) {
+      let bytesNotified = 0;
+      const _speedometer = speedometer(50, 250);
+      return (e) => {
+        const loaded = e.loaded;
+        const total = e.lengthComputable ? e.total : void 0;
+        const progressBytes = loaded - bytesNotified;
+        const rate = _speedometer(progressBytes);
+        const inRange = loaded <= total;
+        bytesNotified = loaded;
+        const data = {
+          loaded,
+          total,
+          progress: total ? loaded / total : void 0,
+          bytes: progressBytes,
+          rate: rate ? rate : void 0,
+          estimated: rate && total && inRange ? (total - loaded) / rate : void 0,
+          event: e
+        };
+        data[isDownloadStream ? "download" : "upload"] = true;
+        listener(data);
+      };
+    }
+    var isXHRAdapterSupported = typeof XMLHttpRequest !== "undefined";
+    var xhrAdapter = isXHRAdapterSupported && function(config) {
+      return new Promise(function dispatchXhrRequest(resolve, reject) {
+        let requestData = config.data;
+        const requestHeaders = AxiosHeaders$1.from(config.headers).normalize();
+        const responseType = config.responseType;
+        let onCanceled;
+        function done() {
+          if (config.cancelToken) {
+            config.cancelToken.unsubscribe(onCanceled);
+          }
+          if (config.signal) {
+            config.signal.removeEventListener("abort", onCanceled);
+          }
+        }
+        if (utils.isFormData(requestData)) {
+          if (platform.isStandardBrowserEnv || platform.isStandardBrowserWebWorkerEnv) {
+            requestHeaders.setContentType(false);
+          } else {
+            requestHeaders.setContentType("multipart/form-data;", false);
+          }
+        }
+        let request = new XMLHttpRequest();
+        if (config.auth) {
+          const username = config.auth.username || "";
+          const password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : "";
+          requestHeaders.set("Authorization", "Basic " + btoa(username + ":" + password));
+        }
+        const fullPath = buildFullPath(config.baseURL, config.url);
+        request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
+        request.timeout = config.timeout;
+        function onloadend() {
+          if (!request) {
+            return;
+          }
+          const responseHeaders = AxiosHeaders$1.from(
+            "getAllResponseHeaders" in request && request.getAllResponseHeaders()
+          );
+          const responseData = !responseType || responseType === "text" || responseType === "json" ? request.responseText : request.response;
+          const response = {
+            data: responseData,
+            status: request.status,
+            statusText: request.statusText,
+            headers: responseHeaders,
+            config,
+            request
+          };
+          settle(function _resolve(value) {
+            resolve(value);
+            done();
+          }, function _reject(err) {
+            reject(err);
+            done();
+          }, response);
+          request = null;
+        }
+        if ("onloadend" in request) {
+          request.onloadend = onloadend;
+        } else {
+          request.onreadystatechange = function handleLoad() {
+            if (!request || request.readyState !== 4) {
+              return;
+            }
+            if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf("file:") === 0)) {
+              return;
+            }
+            setTimeout(onloadend);
+          };
+        }
+        request.onabort = function handleAbort() {
+          if (!request) {
+            return;
+          }
+          reject(new AxiosError("Request aborted", AxiosError.ECONNABORTED, config, request));
+          request = null;
+        };
+        request.onerror = function handleError() {
+          reject(new AxiosError("Network Error", AxiosError.ERR_NETWORK, config, request));
+          request = null;
+        };
+        request.ontimeout = function handleTimeout() {
+          let timeoutErrorMessage = config.timeout ? "timeout of " + config.timeout + "ms exceeded" : "timeout exceeded";
+          const transitional = config.transitional || transitionalDefaults;
+          if (config.timeoutErrorMessage) {
+            timeoutErrorMessage = config.timeoutErrorMessage;
+          }
+          reject(new AxiosError(
+            timeoutErrorMessage,
+            transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
+            config,
+            request
+          ));
+          request = null;
+        };
+        if (platform.isStandardBrowserEnv) {
+          const xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName && cookies.read(config.xsrfCookieName);
+          if (xsrfValue) {
+            requestHeaders.set(config.xsrfHeaderName, xsrfValue);
+          }
+        }
+        requestData === void 0 && requestHeaders.setContentType(null);
+        if ("setRequestHeader" in request) {
+          utils.forEach(requestHeaders.toJSON(), function setRequestHeader(val, key) {
+            request.setRequestHeader(key, val);
+          });
+        }
+        if (!utils.isUndefined(config.withCredentials)) {
+          request.withCredentials = !!config.withCredentials;
+        }
+        if (responseType && responseType !== "json") {
+          request.responseType = config.responseType;
+        }
+        if (typeof config.onDownloadProgress === "function") {
+          request.addEventListener("progress", progressEventReducer(config.onDownloadProgress, true));
+        }
+        if (typeof config.onUploadProgress === "function" && request.upload) {
+          request.upload.addEventListener("progress", progressEventReducer(config.onUploadProgress));
+        }
+        if (config.cancelToken || config.signal) {
+          onCanceled = (cancel) => {
+            if (!request) {
+              return;
+            }
+            reject(!cancel || cancel.type ? new CanceledError(null, config, request) : cancel);
+            request.abort();
+            request = null;
+          };
+          config.cancelToken && config.cancelToken.subscribe(onCanceled);
+          if (config.signal) {
+            config.signal.aborted ? onCanceled() : config.signal.addEventListener("abort", onCanceled);
+          }
+        }
+        const protocol = parseProtocol(fullPath);
+        if (protocol && platform.protocols.indexOf(protocol) === -1) {
+          reject(new AxiosError("Unsupported protocol " + protocol + ":", AxiosError.ERR_BAD_REQUEST, config));
+          return;
+        }
+        request.send(requestData || null);
+      });
+    };
+    var knownAdapters = {
+      http: httpAdapter,
+      xhr: xhrAdapter
+    };
+    utils.forEach(knownAdapters, (fn, value) => {
+      if (fn) {
+        try {
+          Object.defineProperty(fn, "name", { value });
+        } catch (e) {
+        }
+        Object.defineProperty(fn, "adapterName", { value });
+      }
+    });
+    var adapters = {
+      getAdapter: (adapters2) => {
+        adapters2 = utils.isArray(adapters2) ? adapters2 : [adapters2];
+        const { length } = adapters2;
+        let nameOrAdapter;
+        let adapter;
+        for (let i = 0; i < length; i++) {
+          nameOrAdapter = adapters2[i];
+          if (adapter = utils.isString(nameOrAdapter) ? knownAdapters[nameOrAdapter.toLowerCase()] : nameOrAdapter) {
+            break;
+          }
+        }
+        if (!adapter) {
+          if (adapter === false) {
+            throw new AxiosError(
+              `Adapter ${nameOrAdapter} is not supported by the environment`,
+              "ERR_NOT_SUPPORT"
+            );
+          }
+          throw new Error(
+            utils.hasOwnProp(knownAdapters, nameOrAdapter) ? `Adapter '${nameOrAdapter}' is not available in the build` : `Unknown adapter '${nameOrAdapter}'`
+          );
+        }
+        if (!utils.isFunction(adapter)) {
+          throw new TypeError("adapter is not a function");
+        }
+        return adapter;
+      },
+      adapters: knownAdapters
+    };
     function throwIfCancellationRequested(config) {
       if (config.cancelToken) {
         config.cancelToken.throwIfRequested();
       }
       if (config.signal && config.signal.aborted) {
-        throw new CanceledError();
+        throw new CanceledError(null, config);
       }
     }
-    module2.exports = function dispatchRequest(config) {
+    function dispatchRequest(config) {
       throwIfCancellationRequested(config);
-      config.headers = config.headers || {};
+      config.headers = AxiosHeaders$1.from(config.headers);
       config.data = transformData.call(
         config,
-        config.data,
-        config.headers,
         config.transformRequest
       );
-      config.headers = utils.merge(
-        config.headers.common || {},
-        config.headers[config.method] || {},
-        config.headers
-      );
-      utils.forEach(
-        ["delete", "get", "head", "post", "put", "patch", "common"],
-        function cleanHeaderConfig(method) {
-          delete config.headers[method];
-        }
-      );
-      var adapter = config.adapter || defaults.adapter;
+      if (["post", "put", "patch"].indexOf(config.method) !== -1) {
+        config.headers.setContentType("application/x-www-form-urlencoded", false);
+      }
+      const adapter = adapters.getAdapter(config.adapter || defaults$1.adapter);
       return adapter(config).then(function onAdapterResolution(response) {
         throwIfCancellationRequested(config);
         response.data = transformData.call(
           config,
-          response.data,
-          response.headers,
-          config.transformResponse
+          config.transformResponse,
+          response
         );
+        response.headers = AxiosHeaders$1.from(response.headers);
         return response;
       }, function onAdapterRejection(reason) {
         if (!isCancel(reason)) {
@@ -29465,29 +30635,22 @@ var require_dispatchRequest = __commonJS({
           if (reason && reason.response) {
             reason.response.data = transformData.call(
               config,
-              reason.response.data,
-              reason.response.headers,
-              config.transformResponse
+              config.transformResponse,
+              reason.response
             );
+            reason.response.headers = AxiosHeaders$1.from(reason.response.headers);
           }
         }
         return Promise.reject(reason);
       });
-    };
-  }
-});
-
-// node_modules/axios/lib/core/mergeConfig.js
-var require_mergeConfig = __commonJS({
-  "node_modules/axios/lib/core/mergeConfig.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    module2.exports = function mergeConfig(config1, config2) {
+    }
+    var headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? thing.toJSON() : thing;
+    function mergeConfig(config1, config2) {
       config2 = config2 || {};
-      var config = {};
-      function getMergedValue(target, source) {
+      const config = {};
+      function getMergedValue(target, source, caseless) {
         if (utils.isPlainObject(target) && utils.isPlainObject(source)) {
-          return utils.merge(target, source);
+          return utils.merge.call({ caseless }, target, source);
         } else if (utils.isPlainObject(source)) {
           return utils.merge({}, source);
         } else if (utils.isArray(source)) {
@@ -29495,90 +30658,82 @@ var require_mergeConfig = __commonJS({
         }
         return source;
       }
-      function mergeDeepProperties(prop) {
-        if (!utils.isUndefined(config2[prop])) {
-          return getMergedValue(config1[prop], config2[prop]);
-        } else if (!utils.isUndefined(config1[prop])) {
-          return getMergedValue(void 0, config1[prop]);
+      function mergeDeepProperties(a, b, caseless) {
+        if (!utils.isUndefined(b)) {
+          return getMergedValue(a, b, caseless);
+        } else if (!utils.isUndefined(a)) {
+          return getMergedValue(void 0, a, caseless);
         }
       }
-      function valueFromConfig2(prop) {
-        if (!utils.isUndefined(config2[prop])) {
-          return getMergedValue(void 0, config2[prop]);
+      function valueFromConfig2(a, b) {
+        if (!utils.isUndefined(b)) {
+          return getMergedValue(void 0, b);
         }
       }
-      function defaultToConfig2(prop) {
-        if (!utils.isUndefined(config2[prop])) {
-          return getMergedValue(void 0, config2[prop]);
-        } else if (!utils.isUndefined(config1[prop])) {
-          return getMergedValue(void 0, config1[prop]);
+      function defaultToConfig2(a, b) {
+        if (!utils.isUndefined(b)) {
+          return getMergedValue(void 0, b);
+        } else if (!utils.isUndefined(a)) {
+          return getMergedValue(void 0, a);
         }
       }
-      function mergeDirectKeys(prop) {
+      function mergeDirectKeys(a, b, prop) {
         if (prop in config2) {
-          return getMergedValue(config1[prop], config2[prop]);
+          return getMergedValue(a, b);
         } else if (prop in config1) {
-          return getMergedValue(void 0, config1[prop]);
+          return getMergedValue(void 0, a);
         }
       }
-      var mergeMap = {
-        "url": valueFromConfig2,
-        "method": valueFromConfig2,
-        "data": valueFromConfig2,
-        "baseURL": defaultToConfig2,
-        "transformRequest": defaultToConfig2,
-        "transformResponse": defaultToConfig2,
-        "paramsSerializer": defaultToConfig2,
-        "timeout": defaultToConfig2,
-        "timeoutMessage": defaultToConfig2,
-        "withCredentials": defaultToConfig2,
-        "adapter": defaultToConfig2,
-        "responseType": defaultToConfig2,
-        "xsrfCookieName": defaultToConfig2,
-        "xsrfHeaderName": defaultToConfig2,
-        "onUploadProgress": defaultToConfig2,
-        "onDownloadProgress": defaultToConfig2,
-        "decompress": defaultToConfig2,
-        "maxContentLength": defaultToConfig2,
-        "maxBodyLength": defaultToConfig2,
-        "beforeRedirect": defaultToConfig2,
-        "transport": defaultToConfig2,
-        "httpAgent": defaultToConfig2,
-        "httpsAgent": defaultToConfig2,
-        "cancelToken": defaultToConfig2,
-        "socketPath": defaultToConfig2,
-        "responseEncoding": defaultToConfig2,
-        "validateStatus": mergeDirectKeys
+      const mergeMap = {
+        url: valueFromConfig2,
+        method: valueFromConfig2,
+        data: valueFromConfig2,
+        baseURL: defaultToConfig2,
+        transformRequest: defaultToConfig2,
+        transformResponse: defaultToConfig2,
+        paramsSerializer: defaultToConfig2,
+        timeout: defaultToConfig2,
+        timeoutMessage: defaultToConfig2,
+        withCredentials: defaultToConfig2,
+        adapter: defaultToConfig2,
+        responseType: defaultToConfig2,
+        xsrfCookieName: defaultToConfig2,
+        xsrfHeaderName: defaultToConfig2,
+        onUploadProgress: defaultToConfig2,
+        onDownloadProgress: defaultToConfig2,
+        decompress: defaultToConfig2,
+        maxContentLength: defaultToConfig2,
+        maxBodyLength: defaultToConfig2,
+        beforeRedirect: defaultToConfig2,
+        transport: defaultToConfig2,
+        httpAgent: defaultToConfig2,
+        httpsAgent: defaultToConfig2,
+        cancelToken: defaultToConfig2,
+        socketPath: defaultToConfig2,
+        responseEncoding: defaultToConfig2,
+        validateStatus: mergeDirectKeys,
+        headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
       };
-      utils.forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop) {
-        var merge = mergeMap[prop] || mergeDeepProperties;
-        var configValue = merge(prop);
-        utils.isUndefined(configValue) && merge !== mergeDirectKeys || (config[prop] = configValue);
+      utils.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop) {
+        const merge2 = mergeMap[prop] || mergeDeepProperties;
+        const configValue = merge2(config1[prop], config2[prop], prop);
+        utils.isUndefined(configValue) && merge2 !== mergeDirectKeys || (config[prop] = configValue);
       });
       return config;
-    };
-  }
-});
-
-// node_modules/axios/lib/helpers/validator.js
-var require_validator = __commonJS({
-  "node_modules/axios/lib/helpers/validator.js"(exports, module2) {
-    "use strict";
-    var VERSION = require_data().version;
-    var AxiosError = require_AxiosError();
-    var validators = {};
-    ["object", "boolean", "number", "function", "string", "symbol"].forEach(function(type3, i) {
-      validators[type3] = function validator(thing) {
+    }
+    var validators$1 = {};
+    ["object", "boolean", "number", "function", "string", "symbol"].forEach((type3, i) => {
+      validators$1[type3] = function validator2(thing) {
         return typeof thing === type3 || "a" + (i < 1 ? "n " : " ") + type3;
       };
     });
     var deprecatedWarnings = {};
-    validators.transitional = function transitional(validator, version2, message) {
+    validators$1.transitional = function transitional(validator2, version2, message) {
       function formatMessage(opt, desc) {
         return "[Axios v" + VERSION + "] Transitional option '" + opt + "'" + desc + (message ? ". " + message : "");
       }
-      return function(value, opt, opts) {
-        if (validator === false) {
+      return (value, opt, opts) => {
+        if (validator2 === false) {
           throw new AxiosError(
             formatMessage(opt, " has been removed" + (version2 ? " in " + version2 : "")),
             AxiosError.ERR_DEPRECATED
@@ -29593,21 +30748,21 @@ var require_validator = __commonJS({
             )
           );
         }
-        return validator ? validator(value, opt, opts) : true;
+        return validator2 ? validator2(value, opt, opts) : true;
       };
     };
     function assertOptions(options, schema, allowUnknown) {
       if (typeof options !== "object") {
         throw new AxiosError("options must be an object", AxiosError.ERR_BAD_OPTION_VALUE);
       }
-      var keys4 = Object.keys(options);
-      var i = keys4.length;
+      const keys4 = Object.keys(options);
+      let i = keys4.length;
       while (i-- > 0) {
-        var opt = keys4[i];
-        var validator = schema[opt];
-        if (validator) {
-          var value = options[opt];
-          var result = value === void 0 || validator(value, opt, options);
+        const opt = keys4[i];
+        const validator2 = schema[opt];
+        if (validator2) {
+          const value = options[opt];
+          const result = value === void 0 || validator2(value, opt, options);
           if (result !== true) {
             throw new AxiosError("option " + opt + " must be " + result, AxiosError.ERR_BAD_OPTION_VALUE);
           }
@@ -29618,123 +30773,144 @@ var require_validator = __commonJS({
         }
       }
     }
-    module2.exports = {
+    var validator = {
       assertOptions,
-      validators
+      validators: validators$1
     };
-  }
-});
-
-// node_modules/axios/lib/core/Axios.js
-var require_Axios = __commonJS({
-  "node_modules/axios/lib/core/Axios.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    var buildURL = require_buildURL();
-    var InterceptorManager = require_InterceptorManager();
-    var dispatchRequest = require_dispatchRequest();
-    var mergeConfig = require_mergeConfig();
-    var buildFullPath = require_buildFullPath();
-    var validator = require_validator();
     var validators = validator.validators;
-    function Axios(instanceConfig) {
-      this.defaults = instanceConfig;
-      this.interceptors = {
-        request: new InterceptorManager(),
-        response: new InterceptorManager()
-      };
-    }
-    Axios.prototype.request = function request(configOrUrl, config) {
-      if (typeof configOrUrl === "string") {
-        config = config || {};
-        config.url = configOrUrl;
-      } else {
-        config = configOrUrl || {};
+    var Axios = class {
+      constructor(instanceConfig) {
+        this.defaults = instanceConfig;
+        this.interceptors = {
+          request: new InterceptorManager$1(),
+          response: new InterceptorManager$1()
+        };
       }
-      config = mergeConfig(this.defaults, config);
-      if (config.method) {
-        config.method = config.method.toLowerCase();
-      } else if (this.defaults.method) {
-        config.method = this.defaults.method.toLowerCase();
-      } else {
-        config.method = "get";
-      }
-      var transitional = config.transitional;
-      if (transitional !== void 0) {
-        validator.assertOptions(transitional, {
-          silentJSONParsing: validators.transitional(validators.boolean),
-          forcedJSONParsing: validators.transitional(validators.boolean),
-          clarifyTimeoutError: validators.transitional(validators.boolean)
-        }, false);
-      }
-      var requestInterceptorChain = [];
-      var synchronousRequestInterceptors = true;
-      this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
-        if (typeof interceptor.runWhen === "function" && interceptor.runWhen(config) === false) {
-          return;
+      /**
+       * Dispatch a request
+       *
+       * @param {String|Object} configOrUrl The config specific for this request (merged with this.defaults)
+       * @param {?Object} config
+       *
+       * @returns {Promise} The Promise to be fulfilled
+       */
+      request(configOrUrl, config) {
+        if (typeof configOrUrl === "string") {
+          config = config || {};
+          config.url = configOrUrl;
+        } else {
+          config = configOrUrl || {};
         }
-        synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
-        requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
-      });
-      var responseInterceptorChain = [];
-      this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
-        responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
-      });
-      var promise;
-      if (!synchronousRequestInterceptors) {
-        var chain3 = [dispatchRequest, void 0];
-        Array.prototype.unshift.apply(chain3, requestInterceptorChain);
-        chain3 = chain3.concat(responseInterceptorChain);
-        promise = Promise.resolve(config);
-        while (chain3.length) {
-          promise = promise.then(chain3.shift(), chain3.shift());
+        config = mergeConfig(this.defaults, config);
+        const { transitional, paramsSerializer, headers } = config;
+        if (transitional !== void 0) {
+          validator.assertOptions(transitional, {
+            silentJSONParsing: validators.transitional(validators.boolean),
+            forcedJSONParsing: validators.transitional(validators.boolean),
+            clarifyTimeoutError: validators.transitional(validators.boolean)
+          }, false);
+        }
+        if (paramsSerializer != null) {
+          if (utils.isFunction(paramsSerializer)) {
+            config.paramsSerializer = {
+              serialize: paramsSerializer
+            };
+          } else {
+            validator.assertOptions(paramsSerializer, {
+              encode: validators.function,
+              serialize: validators.function
+            }, true);
+          }
+        }
+        config.method = (config.method || this.defaults.method || "get").toLowerCase();
+        let contextHeaders;
+        contextHeaders = headers && utils.merge(
+          headers.common,
+          headers[config.method]
+        );
+        contextHeaders && utils.forEach(
+          ["delete", "get", "head", "post", "put", "patch", "common"],
+          (method) => {
+            delete headers[method];
+          }
+        );
+        config.headers = AxiosHeaders$1.concat(contextHeaders, headers);
+        const requestInterceptorChain = [];
+        let synchronousRequestInterceptors = true;
+        this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+          if (typeof interceptor.runWhen === "function" && interceptor.runWhen(config) === false) {
+            return;
+          }
+          synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
+          requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+        });
+        const responseInterceptorChain = [];
+        this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+          responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+        });
+        let promise;
+        let i = 0;
+        let len;
+        if (!synchronousRequestInterceptors) {
+          const chain3 = [dispatchRequest.bind(this), void 0];
+          chain3.unshift.apply(chain3, requestInterceptorChain);
+          chain3.push.apply(chain3, responseInterceptorChain);
+          len = chain3.length;
+          promise = Promise.resolve(config);
+          while (i < len) {
+            promise = promise.then(chain3[i++], chain3[i++]);
+          }
+          return promise;
+        }
+        len = requestInterceptorChain.length;
+        let newConfig = config;
+        i = 0;
+        while (i < len) {
+          const onFulfilled = requestInterceptorChain[i++];
+          const onRejected = requestInterceptorChain[i++];
+          try {
+            newConfig = onFulfilled(newConfig);
+          } catch (error) {
+            onRejected.call(this, error);
+            break;
+          }
+        }
+        try {
+          promise = dispatchRequest.call(this, newConfig);
+        } catch (error) {
+          return Promise.reject(error);
+        }
+        i = 0;
+        len = responseInterceptorChain.length;
+        while (i < len) {
+          promise = promise.then(responseInterceptorChain[i++], responseInterceptorChain[i++]);
         }
         return promise;
       }
-      var newConfig = config;
-      while (requestInterceptorChain.length) {
-        var onFulfilled = requestInterceptorChain.shift();
-        var onRejected = requestInterceptorChain.shift();
-        try {
-          newConfig = onFulfilled(newConfig);
-        } catch (error) {
-          onRejected(error);
-          break;
-        }
+      getUri(config) {
+        config = mergeConfig(this.defaults, config);
+        const fullPath = buildFullPath(config.baseURL, config.url);
+        return buildURL(fullPath, config.params, config.paramsSerializer);
       }
-      try {
-        promise = dispatchRequest(newConfig);
-      } catch (error) {
-        return Promise.reject(error);
-      }
-      while (responseInterceptorChain.length) {
-        promise = promise.then(responseInterceptorChain.shift(), responseInterceptorChain.shift());
-      }
-      return promise;
-    };
-    Axios.prototype.getUri = function getUri(config) {
-      config = mergeConfig(this.defaults, config);
-      var fullPath = buildFullPath(config.baseURL, config.url);
-      return buildURL(fullPath, config.params, config.paramsSerializer);
     };
     utils.forEach(["delete", "get", "head", "options"], function forEachMethodNoData(method) {
-      Axios.prototype[method] = function(url, config) {
+      Axios.prototype[method] = function(url2, config) {
         return this.request(mergeConfig(config || {}, {
           method,
-          url,
+          url: url2,
           data: (config || {}).data
         }));
       };
     });
     utils.forEach(["post", "put", "patch"], function forEachMethodWithData(method) {
       function generateHTTPMethod(isForm) {
-        return function httpMethod(url, data, config) {
+        return function httpMethod(url2, data, config) {
           return this.request(mergeConfig(config || {}, {
             method,
             headers: isForm ? {
               "Content-Type": "multipart/form-data"
             } : {},
-            url,
+            url: url2,
             data
           }));
         };
@@ -29742,157 +30918,202 @@ var require_Axios = __commonJS({
       Axios.prototype[method] = generateHTTPMethod();
       Axios.prototype[method + "Form"] = generateHTTPMethod(true);
     });
-    module2.exports = Axios;
-  }
-});
-
-// node_modules/axios/lib/cancel/CancelToken.js
-var require_CancelToken = __commonJS({
-  "node_modules/axios/lib/cancel/CancelToken.js"(exports, module2) {
-    "use strict";
-    var CanceledError = require_CanceledError();
-    function CancelToken(executor) {
-      if (typeof executor !== "function") {
-        throw new TypeError("executor must be a function.");
-      }
-      var resolvePromise;
-      this.promise = new Promise(function promiseExecutor(resolve) {
-        resolvePromise = resolve;
-      });
-      var token = this;
-      this.promise.then(function(cancel) {
-        if (!token._listeners)
-          return;
-        var i;
-        var l = token._listeners.length;
-        for (i = 0; i < l; i++) {
-          token._listeners[i](cancel);
+    var Axios$1 = Axios;
+    var CancelToken = class _CancelToken {
+      constructor(executor) {
+        if (typeof executor !== "function") {
+          throw new TypeError("executor must be a function.");
         }
-        token._listeners = null;
-      });
-      this.promise.then = function(onfulfilled) {
-        var _resolve;
-        var promise = new Promise(function(resolve) {
-          token.subscribe(resolve);
-          _resolve = resolve;
-        }).then(onfulfilled);
-        promise.cancel = function reject() {
-          token.unsubscribe(_resolve);
+        let resolvePromise;
+        this.promise = new Promise(function promiseExecutor(resolve) {
+          resolvePromise = resolve;
+        });
+        const token = this;
+        this.promise.then((cancel) => {
+          if (!token._listeners)
+            return;
+          let i = token._listeners.length;
+          while (i-- > 0) {
+            token._listeners[i](cancel);
+          }
+          token._listeners = null;
+        });
+        this.promise.then = (onfulfilled) => {
+          let _resolve;
+          const promise = new Promise((resolve) => {
+            token.subscribe(resolve);
+            _resolve = resolve;
+          }).then(onfulfilled);
+          promise.cancel = function reject() {
+            token.unsubscribe(_resolve);
+          };
+          return promise;
         };
-        return promise;
-      };
-      executor(function cancel(message) {
-        if (token.reason) {
+        executor(function cancel(message, config, request) {
+          if (token.reason) {
+            return;
+          }
+          token.reason = new CanceledError(message, config, request);
+          resolvePromise(token.reason);
+        });
+      }
+      /**
+       * Throws a `CanceledError` if cancellation has been requested.
+       */
+      throwIfRequested() {
+        if (this.reason) {
+          throw this.reason;
+        }
+      }
+      /**
+       * Subscribe to the cancel signal
+       */
+      subscribe(listener) {
+        if (this.reason) {
+          listener(this.reason);
           return;
         }
-        token.reason = new CanceledError(message);
-        resolvePromise(token.reason);
-      });
-    }
-    CancelToken.prototype.throwIfRequested = function throwIfRequested() {
-      if (this.reason) {
-        throw this.reason;
+        if (this._listeners) {
+          this._listeners.push(listener);
+        } else {
+          this._listeners = [listener];
+        }
+      }
+      /**
+       * Unsubscribe from the cancel signal
+       */
+      unsubscribe(listener) {
+        if (!this._listeners) {
+          return;
+        }
+        const index = this._listeners.indexOf(listener);
+        if (index !== -1) {
+          this._listeners.splice(index, 1);
+        }
+      }
+      /**
+       * Returns an object that contains a new `CancelToken` and a function that, when called,
+       * cancels the `CancelToken`.
+       */
+      static source() {
+        let cancel;
+        const token = new _CancelToken(function executor(c) {
+          cancel = c;
+        });
+        return {
+          token,
+          cancel
+        };
       }
     };
-    CancelToken.prototype.subscribe = function subscribe(listener) {
-      if (this.reason) {
-        listener(this.reason);
-        return;
-      }
-      if (this._listeners) {
-        this._listeners.push(listener);
-      } else {
-        this._listeners = [listener];
-      }
-    };
-    CancelToken.prototype.unsubscribe = function unsubscribe(listener) {
-      if (!this._listeners) {
-        return;
-      }
-      var index = this._listeners.indexOf(listener);
-      if (index !== -1) {
-        this._listeners.splice(index, 1);
-      }
-    };
-    CancelToken.source = function source() {
-      var cancel;
-      var token = new CancelToken(function executor(c) {
-        cancel = c;
-      });
-      return {
-        token,
-        cancel
-      };
-    };
-    module2.exports = CancelToken;
-  }
-});
-
-// node_modules/axios/lib/helpers/spread.js
-var require_spread = __commonJS({
-  "node_modules/axios/lib/helpers/spread.js"(exports, module2) {
-    "use strict";
-    module2.exports = function spread(callback) {
+    var CancelToken$1 = CancelToken;
+    function spread(callback) {
       return function wrap(arr) {
         return callback.apply(null, arr);
       };
-    };
-  }
-});
-
-// node_modules/axios/lib/helpers/isAxiosError.js
-var require_isAxiosError = __commonJS({
-  "node_modules/axios/lib/helpers/isAxiosError.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    module2.exports = function isAxiosError(payload) {
+    }
+    function isAxiosError(payload) {
       return utils.isObject(payload) && payload.isAxiosError === true;
+    }
+    var HttpStatusCode = {
+      Continue: 100,
+      SwitchingProtocols: 101,
+      Processing: 102,
+      EarlyHints: 103,
+      Ok: 200,
+      Created: 201,
+      Accepted: 202,
+      NonAuthoritativeInformation: 203,
+      NoContent: 204,
+      ResetContent: 205,
+      PartialContent: 206,
+      MultiStatus: 207,
+      AlreadyReported: 208,
+      ImUsed: 226,
+      MultipleChoices: 300,
+      MovedPermanently: 301,
+      Found: 302,
+      SeeOther: 303,
+      NotModified: 304,
+      UseProxy: 305,
+      Unused: 306,
+      TemporaryRedirect: 307,
+      PermanentRedirect: 308,
+      BadRequest: 400,
+      Unauthorized: 401,
+      PaymentRequired: 402,
+      Forbidden: 403,
+      NotFound: 404,
+      MethodNotAllowed: 405,
+      NotAcceptable: 406,
+      ProxyAuthenticationRequired: 407,
+      RequestTimeout: 408,
+      Conflict: 409,
+      Gone: 410,
+      LengthRequired: 411,
+      PreconditionFailed: 412,
+      PayloadTooLarge: 413,
+      UriTooLong: 414,
+      UnsupportedMediaType: 415,
+      RangeNotSatisfiable: 416,
+      ExpectationFailed: 417,
+      ImATeapot: 418,
+      MisdirectedRequest: 421,
+      UnprocessableEntity: 422,
+      Locked: 423,
+      FailedDependency: 424,
+      TooEarly: 425,
+      UpgradeRequired: 426,
+      PreconditionRequired: 428,
+      TooManyRequests: 429,
+      RequestHeaderFieldsTooLarge: 431,
+      UnavailableForLegalReasons: 451,
+      InternalServerError: 500,
+      NotImplemented: 501,
+      BadGateway: 502,
+      ServiceUnavailable: 503,
+      GatewayTimeout: 504,
+      HttpVersionNotSupported: 505,
+      VariantAlsoNegotiates: 506,
+      InsufficientStorage: 507,
+      LoopDetected: 508,
+      NotExtended: 510,
+      NetworkAuthenticationRequired: 511
     };
-  }
-});
-
-// node_modules/axios/lib/axios.js
-var require_axios = __commonJS({
-  "node_modules/axios/lib/axios.js"(exports, module2) {
-    "use strict";
-    var utils = require_utils6();
-    var bind3 = require_bind();
-    var Axios = require_Axios();
-    var mergeConfig = require_mergeConfig();
-    var defaults = require_defaults();
+    Object.entries(HttpStatusCode).forEach(([key, value]) => {
+      HttpStatusCode[value] = key;
+    });
+    var HttpStatusCode$1 = HttpStatusCode;
     function createInstance(defaultConfig) {
-      var context2 = new Axios(defaultConfig);
-      var instance = bind3(Axios.prototype.request, context2);
-      utils.extend(instance, Axios.prototype, context2);
-      utils.extend(instance, context2);
+      const context2 = new Axios$1(defaultConfig);
+      const instance = bind3(Axios$1.prototype.request, context2);
+      utils.extend(instance, Axios$1.prototype, context2, { allOwnKeys: true });
+      utils.extend(instance, context2, null, { allOwnKeys: true });
       instance.create = function create(instanceConfig) {
         return createInstance(mergeConfig(defaultConfig, instanceConfig));
       };
       return instance;
     }
-    var axios = createInstance(defaults);
-    axios.Axios = Axios;
-    axios.CanceledError = require_CanceledError();
-    axios.CancelToken = require_CancelToken();
-    axios.isCancel = require_isCancel();
-    axios.VERSION = require_data().version;
-    axios.toFormData = require_toFormData();
-    axios.AxiosError = require_AxiosError();
+    var axios = createInstance(defaults$1);
+    axios.Axios = Axios$1;
+    axios.CanceledError = CanceledError;
+    axios.CancelToken = CancelToken$1;
+    axios.isCancel = isCancel;
+    axios.VERSION = VERSION;
+    axios.toFormData = toFormData;
+    axios.AxiosError = AxiosError;
     axios.Cancel = axios.CanceledError;
     axios.all = function all(promises) {
       return Promise.all(promises);
     };
-    axios.spread = require_spread();
-    axios.isAxiosError = require_isAxiosError();
+    axios.spread = spread;
+    axios.isAxiosError = isAxiosError;
+    axios.mergeConfig = mergeConfig;
+    axios.AxiosHeaders = AxiosHeaders$1;
+    axios.formToJSON = (thing) => formDataToJSON(utils.isHTMLForm(thing) ? new FormData(thing) : thing);
+    axios.HttpStatusCode = HttpStatusCode$1;
+    axios.default = axios;
     module2.exports = axios;
-    module2.exports.default = axios;
-  }
-});
-
-// node_modules/axios/index.js
-var require_axios2 = __commonJS({
-  "node_modules/axios/index.js"(exports, module2) {
-    module2.exports = require_axios();
   }
 });
 
@@ -29904,7 +31125,7 @@ var require_baseClient = __commonJS({
     exports.BaseClient = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var authenticationService_1 = require_authenticationService2();
-    var axios_1 = require_axios2();
+    var axios_1 = require_axios();
     var STRICT_GDPR_FLAG = "x-atlassian-force-account-id";
     var ATLASSIAN_TOKEN_CHECK_FLAG = "X-Atlassian-Token";
     var ATLASSIAN_TOKEN_CHECK_NOCHECK_VALUE = "no-check";
@@ -30013,9 +31234,9 @@ var require_announcementBanner = __commonJS({
             url: "/rest/api/2/announcementBanner",
             method: "PUT",
             data: {
-              message: parameters.message,
               isDismissible: parameters.isDismissible,
               isEnabled: parameters.isEnabled,
+              message: parameters.message,
               visibility: parameters.visibility
             }
           };
@@ -30079,8 +31300,8 @@ var require_appMigration = __commonJS({
             url: "/rest/atlassian-connect/1/migration/field",
             method: "PUT",
             headers: {
-              "Atlassian-Transfer-Id": parameters.transferId,
-              "Atlassian-Account-Id": parameters.accountId
+              "Atlassian-Account-Id": parameters.accountId,
+              "Atlassian-Transfer-Id": parameters.transferId
             },
             data: {
               updateValueList: parameters.updateValueList
@@ -30096,9 +31317,9 @@ var require_appMigration = __commonJS({
             url: `/rest/atlassian-connect/1/migration/properties/${parameters.entityType}`,
             method: "PUT",
             headers: {
-              "Content-Type": "application/json",
+              "Atlassian-Account-Id": parameters.accountId,
               "Atlassian-Transfer-Id": parameters.transferId,
-              "Atlassian-Account-Id": parameters.accountId
+              "Content-Type": "application/json"
             },
             data: (_a = parameters.body) !== null && _a !== void 0 ? _a : parameters.entities
           };
@@ -30114,9 +31335,9 @@ var require_appMigration = __commonJS({
               "Atlassian-Transfer-Id": parameters.transferId
             },
             data: {
-              workflowEntityId: parameters.workflowEntityId,
+              expand: parameters.expand,
               ruleIds: parameters.ruleIds,
-              expand: parameters.expand
+              workflowEntityId: parameters.workflowEntityId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -30158,10 +31379,12 @@ var require_appProperties = __commonJS({
         });
       }
       putAddonProperty(parameters, callback) {
+        var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/atlassian-connect/1/addons/${parameters.addonKey}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            data: (_a = parameters.propertyValue) !== null && _a !== void 0 ? _a : parameters.property
           };
           return this.client.sendRequest(config, callback);
         });
@@ -30170,6 +31393,25 @@ var require_appProperties = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/atlassian-connect/1/addons/${parameters.addonKey}/properties/${parameters.propertyKey}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      putAppProperty(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/forge/1/app/properties/${parameters.propertyKey}`,
+            method: "PUT",
+            data: parameters.propertyValue
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteAppProperty(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/forge/1/app/properties/${parameters.propertyKey}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -32803,7 +34045,8 @@ var require_issueProperties = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/2/issue/${parameters.issueIdOrKey}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            data: parameters.propertyValue
           };
           return this.client.sendRequest(config, callback);
         });
@@ -33390,6 +34633,7 @@ var require_issueSecuritySchemes = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IssueSecuritySchemes = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var paramSerializer_1 = require_paramSerializer();
     var IssueSecuritySchemes = class {
       constructor(client) {
         this.client = client;
@@ -33403,12 +34647,181 @@ var require_issueSecuritySchemes = __commonJS({
           return this.client.sendRequest(config, callback);
         });
       }
+      createIssueSecurityScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issuesecurityschemes",
+            method: "POST",
+            data: {
+              description: parameters.description,
+              levels: parameters.levels,
+              name: parameters.name
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getSecurityLevels(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issuesecurityschemes/level",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: (0, paramSerializer_1.paramSerializer)("id", parameters === null || parameters === void 0 ? void 0 : parameters.id),
+              schemeId: (0, paramSerializer_1.paramSerializer)("schemeId", parameters === null || parameters === void 0 ? void 0 : parameters.schemeId),
+              onlyDefault: parameters === null || parameters === void 0 ? void 0 : parameters.onlyDefault
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      setDefaultLevels(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issuesecurityschemes/level/default",
+            method: "PUT",
+            data: {
+              defaultValues: parameters === null || parameters === void 0 ? void 0 : parameters.defaultValues
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getSecurityLevelMembers(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issuesecurityschemes/level/member",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: (0, paramSerializer_1.paramSerializer)("id", parameters === null || parameters === void 0 ? void 0 : parameters.id),
+              schemeId: (0, paramSerializer_1.paramSerializer)("schemeId", parameters === null || parameters === void 0 ? void 0 : parameters.schemeId),
+              levelId: (0, paramSerializer_1.paramSerializer)("levelId", parameters === null || parameters === void 0 ? void 0 : parameters.levelId),
+              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      searchProjectsUsingSecuritySchemes(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issuesecurityschemes/project",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              issueSecuritySchemeId: parameters === null || parameters === void 0 ? void 0 : parameters.issueSecuritySchemeId,
+              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      searchSecuritySchemes(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/issuesecurityschemes/search",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: (0, paramSerializer_1.paramSerializer)("id", parameters === null || parameters === void 0 ? void 0 : parameters.id),
+              projectId: (0, paramSerializer_1.paramSerializer)("projectId", parameters === null || parameters === void 0 ? void 0 : parameters.projectId)
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
       getIssueSecurityScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const id = typeof parameters === "string" ? parameters : parameters.id;
           const config = {
             url: `/rest/api/2/issuesecurityschemes/${id}`,
             method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateIssueSecurityScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issuesecurityschemes/${parameters.id}`,
+            method: "PUT",
+            data: {
+              description: parameters.description,
+              name: parameters.name
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteSecurityScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issuesecurityschemes/${parameters.schemeId}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      addSecurityLevel(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issuesecurityschemes/${parameters.schemeId}/level`,
+            method: "PUT",
+            data: {
+              levels: parameters.levels
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateSecurityLevel(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issuesecurityschemes/${parameters.schemeId}/level/${parameters.levelId}`,
+            method: "PUT",
+            data: {
+              description: parameters.description,
+              name: parameters.name
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      removeLevel(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issuesecurityschemes/${parameters.schemeId}/level/${parameters.levelId}`,
+            method: "DELETE",
+            params: {
+              replaceWith: parameters.replaceWith
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      addSecurityLevelMembers(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issuesecurityschemes/${parameters.schemeId}/level/${parameters.levelId}/member`,
+            method: "PUT",
+            data: {
+              members: parameters.members
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      removeMemberFromSecurityLevel(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/2/issuesecurityschemes/${parameters.schemeId}/level/${parameters.levelId}/member/${parameters.memberId}`,
+            method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
         });
@@ -34444,6 +35857,50 @@ var require_jQL = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/jqlFunctionsApps.js
+var require_jqlFunctionsApps = __commonJS({
+  "node_modules/jira.js/out/version2/jqlFunctionsApps.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.JqlFunctionsApps = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var JqlFunctionsApps = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getPrecomputations(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/jql/function/computation",
+            method: "GET",
+            params: {
+              functionKey: parameters === null || parameters === void 0 ? void 0 : parameters.functionKey,
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy,
+              filter: parameters === null || parameters === void 0 ? void 0 : parameters.filter
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updatePrecomputations(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/2/jql/function/computation",
+            method: "POST",
+            data: {
+              values: parameters === null || parameters === void 0 ? void 0 : parameters.values
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.JqlFunctionsApps = JqlFunctionsApps;
+  }
+});
+
 // node_modules/jira.js/out/version2/labels.js
 var require_labels = __commonJS({
   "node_modules/jira.js/out/version2/labels.js"(exports) {
@@ -34819,12 +36276,12 @@ var require_projectAvatars = __commonJS({
             url: `/rest/api/2/project/${parameters.projectIdOrKey}/avatar`,
             method: "PUT",
             data: {
-              id: parameters.id,
-              owner: parameters.owner,
-              isSystemAvatar: parameters.isSystemAvatar,
-              isSelected: parameters.isSelected,
-              isDeletable: parameters.isDeletable,
               fileName: parameters.fileName,
+              id: parameters.id,
+              isDeletable: parameters.isDeletable,
+              isSelected: parameters.isSelected,
+              isSystemAvatar: parameters.isSystemAvatar,
+              owner: parameters.owner,
               urls: parameters.urls
             }
           };
@@ -35557,24 +37014,24 @@ var require_projects2 = __commonJS({
             url: "/rest/api/2/project",
             method: "POST",
             data: {
-              key: parameters.key,
-              name: parameters.name,
-              description: parameters.description,
-              lead: parameters.lead,
-              leadAccountId: parameters.leadAccountId,
-              url: parameters.url,
               assigneeType: parameters.assigneeType,
               avatarId: parameters.avatarId,
-              issueSecurityScheme: parameters.issueSecurityScheme,
-              permissionScheme: parameters.permissionScheme,
-              notificationScheme: parameters.notificationScheme,
               categoryId: parameters.categoryId,
-              projectTypeKey: parameters.projectTypeKey,
-              projectTemplateKey: parameters.projectTemplateKey,
-              workflowScheme: parameters.workflowScheme,
-              issueTypeScreenScheme: parameters.issueTypeScreenScheme,
+              description: parameters.description,
+              fieldConfigurationScheme: parameters.fieldConfigurationScheme,
+              issueSecurityScheme: parameters.issueSecurityScheme,
               issueTypeScheme: parameters.issueTypeScheme,
-              fieldConfigurationScheme: parameters.fieldConfigurationScheme
+              issueTypeScreenScheme: parameters.issueTypeScreenScheme,
+              key: parameters.key,
+              lead: parameters.lead,
+              leadAccountId: parameters.leadAccountId,
+              name: parameters.name,
+              notificationScheme: parameters.notificationScheme,
+              permissionScheme: parameters.permissionScheme,
+              projectTemplateKey: parameters.projectTemplateKey,
+              projectTypeKey: parameters.projectTypeKey,
+              url: parameters.url,
+              workflowScheme: parameters.workflowScheme
             }
           };
           return this.client.sendRequest(config, callback);
@@ -35640,20 +37097,20 @@ var require_projects2 = __commonJS({
               expand: parameters.expand
             },
             data: {
-              key: parameters.key,
-              name: parameters.name,
-              projectTypeKey: parameters.projectTypeKey,
-              projectTemplateKey: parameters.projectTemplateKey,
-              description: parameters.description,
-              lead: parameters.lead,
-              leadAccountId: parameters.leadAccountId,
-              url: parameters.url,
               assigneeType: parameters.assigneeType,
               avatarId: parameters.avatarId,
+              categoryId: parameters.categoryId,
+              description: parameters.description,
               issueSecurityScheme: parameters.issueSecurityScheme,
-              permissionScheme: parameters.permissionScheme,
+              key: parameters.key,
+              lead: parameters.lead,
+              leadAccountId: parameters.leadAccountId,
+              name: parameters.name,
               notificationScheme: parameters.notificationScheme,
-              categoryId: parameters.categoryId
+              permissionScheme: parameters.permissionScheme,
+              projectTemplateKey: parameters.projectTemplateKey,
+              projectTypeKey: parameters.projectTypeKey,
+              url: parameters.url
             }
           };
           return this.client.sendRequest(config, callback);
@@ -36318,7 +37775,7 @@ var require_serverInfo = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/status.js
-var require_status = __commonJS({
+var require_status2 = __commonJS({
   "node_modules/jira.js/out/version2/status.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -36686,13 +38143,14 @@ var require_users = __commonJS({
             url: "/rest/api/2/user",
             method: "POST",
             data: {
-              self: parameters.self,
+              applicationKeys: parameters.applicationKeys,
+              displayName: parameters.displayName,
+              emailAddress: parameters.emailAddress,
               key: parameters.key,
               name: parameters.name,
               password: parameters.password,
-              emailAddress: parameters.emailAddress,
-              displayName: parameters.displayName,
-              applicationKeys: parameters.applicationKeys
+              products: parameters.products,
+              self: parameters.self
             }
           };
           return this.client.sendRequest(config, callback);
@@ -37841,6 +39299,14 @@ var require_addNotificationsDetails = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/addSecuritySchemeLevelsRequest.js
+var require_addSecuritySchemeLevelsRequest = __commonJS({
+  "node_modules/jira.js/out/version2/models/addSecuritySchemeLevelsRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/announcementBannerConfiguration.js
 var require_announcementBannerConfiguration = __commonJS({
   "node_modules/jira.js/out/version2/models/announcementBannerConfiguration.js"(exports) {
@@ -38345,6 +39811,14 @@ var require_createIssueAdjustmentDetails = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/createIssueSecuritySchemeDetails.js
+var require_createIssueSecuritySchemeDetails = __commonJS({
+  "node_modules/jira.js/out/version2/models/createIssueSecuritySchemeDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/createNotificationSchemeDetails.js
 var require_createNotificationSchemeDetails = __commonJS({
   "node_modules/jira.js/out/version2/models/createNotificationSchemeDetails.js"(exports) {
@@ -38444,6 +39918,14 @@ var require_createWorkflowTransitionRulesDetails = __commonJS({
 // node_modules/jira.js/out/version2/models/createWorkflowTransitionScreenDetails.js
 var require_createWorkflowTransitionScreenDetails = __commonJS({
   "node_modules/jira.js/out/version2/models/createWorkflowTransitionScreenDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/customContextVariable.js
+var require_customContextVariable = __commonJS({
+  "node_modules/jira.js/out/version2/models/customContextVariable.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -38681,6 +40163,14 @@ var require_dashboardUser = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/defaultLevelValue.js
+var require_defaultLevelValue = __commonJS({
+  "node_modules/jira.js/out/version2/models/defaultLevelValue.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/defaultShareScope.js
 var require_defaultShareScope = __commonJS({
   "node_modules/jira.js/out/version2/models/defaultShareScope.js"(exports) {
@@ -38890,7 +40380,7 @@ var require_fieldReferenceData = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/models/fields.js
-var require_fields = __commonJS({
+var require_fields2 = __commonJS({
   "node_modules/jira.js/out/version2/models/fields.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -38954,7 +40444,7 @@ var require_filterSubscriptionsList = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/models/fixVersion.js
-var require_fixVersion = __commonJS({
+var require_fixVersion2 = __commonJS({
   "node_modules/jira.js/out/version2/models/fixVersion.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -39324,6 +40814,14 @@ var require_issuesAndJQLQueries = __commonJS({
 // node_modules/jira.js/out/version2/models/issueSecurityLevelMember.js
 var require_issueSecurityLevelMember = __commonJS({
   "node_modules/jira.js/out/version2/models/issueSecurityLevelMember.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/issueSecuritySchemeToProjectMapping.js
+var require_issueSecuritySchemeToProjectMapping = __commonJS({
+  "node_modules/jira.js/out/version2/models/issueSecuritySchemeToProjectMapping.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -39705,6 +41203,22 @@ var require_jiraStatus = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/jqlFunctionPrecomputation.js
+var require_jqlFunctionPrecomputation = __commonJS({
+  "node_modules/jira.js/out/version2/models/jqlFunctionPrecomputation.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/jqlFunctionPrecomputationUpdate.js
+var require_jqlFunctionPrecomputationUpdate = __commonJS({
+  "node_modules/jira.js/out/version2/models/jqlFunctionPrecomputationUpdate.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/jqlFunctionPrecomputationUpdateRequest.js
 var require_jqlFunctionPrecomputationUpdateRequest = __commonJS({
   "node_modules/jira.js/out/version2/models/jqlFunctionPrecomputationUpdateRequest.js"(exports) {
@@ -40025,6 +41539,14 @@ var require_notificationScheme = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/notificationSchemeAndProjectMapping.js
+var require_notificationSchemeAndProjectMapping = __commonJS({
+  "node_modules/jira.js/out/version2/models/notificationSchemeAndProjectMapping.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/notificationSchemeAndProjectMappingPage.js
 var require_notificationSchemeAndProjectMappingPage = __commonJS({
   "node_modules/jira.js/out/version2/models/notificationSchemeAndProjectMappingPage.js"(exports) {
@@ -40041,9 +41563,33 @@ var require_notificationSchemeEvent = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/notificationSchemeEventDetails.js
+var require_notificationSchemeEventDetails = __commonJS({
+  "node_modules/jira.js/out/version2/models/notificationSchemeEventDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/notificationSchemeEventTypeId.js
+var require_notificationSchemeEventTypeId = __commonJS({
+  "node_modules/jira.js/out/version2/models/notificationSchemeEventTypeId.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/notificationSchemeId.js
 var require_notificationSchemeId = __commonJS({
   "node_modules/jira.js/out/version2/models/notificationSchemeId.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/notificationSchemeNotificationDetails.js
+var require_notificationSchemeNotificationDetails = __commonJS({
+  "node_modules/jira.js/out/version2/models/notificationSchemeNotificationDetails.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -40058,7 +41604,7 @@ var require_operationMessage = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/models/operations.js
-var require_operations = __commonJS({
+var require_operations2 = __commonJS({
   "node_modules/jira.js/out/version2/models/operations.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -40273,6 +41819,14 @@ var require_pageIssueSecurityLevelMember = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/pageIssueSecuritySchemeToProjectMapping.js
+var require_pageIssueSecuritySchemeToProjectMapping = __commonJS({
+  "node_modules/jira.js/out/version2/models/pageIssueSecuritySchemeToProjectMapping.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/pageIssueTypeScheme.js
 var require_pageIssueTypeScheme = __commonJS({
   "node_modules/jira.js/out/version2/models/pageIssueTypeScheme.js"(exports) {
@@ -40436,6 +41990,30 @@ var require_pageScreenScheme = __commonJS({
 // node_modules/jira.js/out/version2/models/pageScreenWithTab.js
 var require_pageScreenWithTab = __commonJS({
   "node_modules/jira.js/out/version2/models/pageScreenWithTab.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/pageSecurityLevel.js
+var require_pageSecurityLevel = __commonJS({
+  "node_modules/jira.js/out/version2/models/pageSecurityLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/pageSecurityLevelMember.js
+var require_pageSecurityLevelMember = __commonJS({
+  "node_modules/jira.js/out/version2/models/pageSecurityLevelMember.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/pageSecuritySchemeWithProjects.js
+var require_pageSecuritySchemeWithProjects = __commonJS({
+  "node_modules/jira.js/out/version2/models/pageSecuritySchemeWithProjects.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -40626,7 +42204,7 @@ var require_priorityId = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/models/project.js
-var require_project2 = __commonJS({
+var require_project3 = __commonJS({
   "node_modules/jira.js/out/version2/models/project.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -41161,9 +42739,49 @@ var require_securityLevel = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/securityLevelMember.js
+var require_securityLevelMember = __commonJS({
+  "node_modules/jira.js/out/version2/models/securityLevelMember.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/securityScheme.js
 var require_securityScheme = __commonJS({
   "node_modules/jira.js/out/version2/models/securityScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/securitySchemeId.js
+var require_securitySchemeId = __commonJS({
+  "node_modules/jira.js/out/version2/models/securitySchemeId.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/securitySchemeLevel.js
+var require_securitySchemeLevel = __commonJS({
+  "node_modules/jira.js/out/version2/models/securitySchemeLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/securitySchemeLevelMember.js
+var require_securitySchemeLevelMember = __commonJS({
+  "node_modules/jira.js/out/version2/models/securitySchemeLevelMember.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/securitySchemeMembersRequest.js
+var require_securitySchemeMembersRequest = __commonJS({
+  "node_modules/jira.js/out/version2/models/securitySchemeMembersRequest.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -41177,9 +42795,25 @@ var require_securitySchemes = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/securitySchemeWithProjects.js
+var require_securitySchemeWithProjects = __commonJS({
+  "node_modules/jira.js/out/version2/models/securitySchemeWithProjects.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/serverInformation.js
 var require_serverInformation = __commonJS({
   "node_modules/jira.js/out/version2/models/serverInformation.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/setDefaultLevelsRequest.js
+var require_setDefaultLevelsRequest = __commonJS({
+  "node_modules/jira.js/out/version2/models/setDefaultLevelsRequest.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -41258,7 +42892,7 @@ var require_simpleListWrapperGroupName = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/models/status.js
-var require_status2 = __commonJS({
+var require_status3 = __commonJS({
   "node_modules/jira.js/out/version2/models/status.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -41266,7 +42900,7 @@ var require_status2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/models/statusCategory.js
-var require_statusCategory = __commonJS({
+var require_statusCategory2 = __commonJS({
   "node_modules/jira.js/out/version2/models/statusCategory.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -41505,6 +43139,22 @@ var require_updateIssueAdjustmentDetails = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/models/updateIssueSecurityLevelDetails.js
+var require_updateIssueSecurityLevelDetails = __commonJS({
+  "node_modules/jira.js/out/version2/models/updateIssueSecurityLevelDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/updateIssueSecuritySchemeRequest.js
+var require_updateIssueSecuritySchemeRequest = __commonJS({
+  "node_modules/jira.js/out/version2/models/updateIssueSecuritySchemeRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/models/updateNotificationSchemeDetails.js
 var require_updateNotificationSchemeDetails = __commonJS({
   "node_modules/jira.js/out/version2/models/updateNotificationSchemeDetails.js"(exports) {
@@ -41578,7 +43228,7 @@ var require_updateUserToGroup = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/models/user.js
-var require_user = __commonJS({
+var require_user2 = __commonJS({
   "node_modules/jira.js/out/version2/models/user.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -41716,6 +43366,14 @@ var require_visibility = __commonJS({
 // node_modules/jira.js/out/version2/models/votes.js
 var require_votes = __commonJS({
   "node_modules/jira.js/out/version2/models/votes.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/models/warningCollection.js
+var require_warningCollection = __commonJS({
+  "node_modules/jira.js/out/version2/models/warningCollection.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -41980,6 +43638,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_addField(), exports);
     tslib_1.__exportStar(require_addGroup(), exports);
     tslib_1.__exportStar(require_addNotificationsDetails(), exports);
+    tslib_1.__exportStar(require_addSecuritySchemeLevelsRequest(), exports);
     tslib_1.__exportStar(require_announcementBannerConfiguration(), exports);
     tslib_1.__exportStar(require_announcementBannerConfigurationUpdate(), exports);
     tslib_1.__exportStar(require_application(), exports);
@@ -42043,6 +43702,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_createdIssue(), exports);
     tslib_1.__exportStar(require_createdIssues(), exports);
     tslib_1.__exportStar(require_createIssueAdjustmentDetails(), exports);
+    tslib_1.__exportStar(require_createIssueSecuritySchemeDetails(), exports);
     tslib_1.__exportStar(require_createNotificationSchemeDetails(), exports);
     tslib_1.__exportStar(require_createPriorityDetails(), exports);
     tslib_1.__exportStar(require_createProjectDetails(), exports);
@@ -42056,6 +43716,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_createWorkflowTransitionRule(), exports);
     tslib_1.__exportStar(require_createWorkflowTransitionRulesDetails(), exports);
     tslib_1.__exportStar(require_createWorkflowTransitionScreenDetails(), exports);
+    tslib_1.__exportStar(require_customContextVariable(), exports);
     tslib_1.__exportStar(require_customFieldConfigurations(), exports);
     tslib_1.__exportStar(require_customFieldContext(), exports);
     tslib_1.__exportStar(require_customFieldContextDefaultValue(), exports);
@@ -42085,6 +43746,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_dashboardGadgetSettings(), exports);
     tslib_1.__exportStar(require_dashboardGadgetUpdateRequest(), exports);
     tslib_1.__exportStar(require_dashboardUser(), exports);
+    tslib_1.__exportStar(require_defaultLevelValue(), exports);
     tslib_1.__exportStar(require_defaultShareScope(), exports);
     tslib_1.__exportStar(require_defaultWorkflow(), exports);
     tslib_1.__exportStar(require_deleteAndReplaceVersion(), exports);
@@ -42111,7 +43773,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_fieldLastUsed(), exports);
     tslib_1.__exportStar(require_fieldMetadata(), exports);
     tslib_1.__exportStar(require_fieldReferenceData(), exports);
-    tslib_1.__exportStar(require_fields(), exports);
+    tslib_1.__exportStar(require_fields2(), exports);
     tslib_1.__exportStar(require_fieldUpdateOperation(), exports);
     tslib_1.__exportStar(require_fieldValueClause(), exports);
     tslib_1.__exportStar(require_fieldWasClause(), exports);
@@ -42119,7 +43781,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_filterDetails(), exports);
     tslib_1.__exportStar(require_filterSubscription(), exports);
     tslib_1.__exportStar(require_filterSubscriptionsList(), exports);
-    tslib_1.__exportStar(require_fixVersion(), exports);
+    tslib_1.__exportStar(require_fixVersion2(), exports);
     tslib_1.__exportStar(require_foundGroup(), exports);
     tslib_1.__exportStar(require_foundGroups(), exports);
     tslib_1.__exportStar(require_foundUsers(), exports);
@@ -42166,6 +43828,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_issuePickerSuggestionsIssueType(), exports);
     tslib_1.__exportStar(require_issuesAndJQLQueries(), exports);
     tslib_1.__exportStar(require_issueSecurityLevelMember(), exports);
+    tslib_1.__exportStar(require_issueSecuritySchemeToProjectMapping(), exports);
     tslib_1.__exportStar(require_issuesJqlMetaData(), exports);
     tslib_1.__exportStar(require_issuesMeta(), exports);
     tslib_1.__exportStar(require_issuesUpdate(), exports);
@@ -42213,6 +43876,8 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_jiraExpressionsComplexityValue(), exports);
     tslib_1.__exportStar(require_jiraExpressionValidationError(), exports);
     tslib_1.__exportStar(require_jiraStatus(), exports);
+    tslib_1.__exportStar(require_jqlFunctionPrecomputation(), exports);
+    tslib_1.__exportStar(require_jqlFunctionPrecomputationUpdate(), exports);
     tslib_1.__exportStar(require_jqlFunctionPrecomputationUpdateRequest(), exports);
     tslib_1.__exportStar(require_jQLPersonalDataMigrationRequest(), exports);
     tslib_1.__exportStar(require_jqlQueriesToParse(), exports);
@@ -42253,11 +43918,15 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_notificationRecipients(), exports);
     tslib_1.__exportStar(require_notificationRecipientsRestrictions(), exports);
     tslib_1.__exportStar(require_notificationScheme(), exports);
+    tslib_1.__exportStar(require_notificationSchemeAndProjectMapping(), exports);
     tslib_1.__exportStar(require_notificationSchemeAndProjectMappingPage(), exports);
     tslib_1.__exportStar(require_notificationSchemeEvent(), exports);
+    tslib_1.__exportStar(require_notificationSchemeEventDetails(), exports);
+    tslib_1.__exportStar(require_notificationSchemeEventTypeId(), exports);
     tslib_1.__exportStar(require_notificationSchemeId(), exports);
+    tslib_1.__exportStar(require_notificationSchemeNotificationDetails(), exports);
     tslib_1.__exportStar(require_operationMessage(), exports);
-    tslib_1.__exportStar(require_operations(), exports);
+    tslib_1.__exportStar(require_operations2(), exports);
     tslib_1.__exportStar(require_orderOfCustomFieldOptions(), exports);
     tslib_1.__exportStar(require_orderOfIssueTypes(), exports);
     tslib_1.__exportStar(require_pageChangelog(), exports);
@@ -42284,6 +43953,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_pageIssueAdjustmentDetails(), exports);
     tslib_1.__exportStar(require_pageIssueFieldOption(), exports);
     tslib_1.__exportStar(require_pageIssueSecurityLevelMember(), exports);
+    tslib_1.__exportStar(require_pageIssueSecuritySchemeToProjectMapping(), exports);
     tslib_1.__exportStar(require_pageIssueTypeScheme(), exports);
     tslib_1.__exportStar(require_pageIssueTypeSchemeMapping(), exports);
     tslib_1.__exportStar(require_pageIssueTypeSchemeProjects(), exports);
@@ -42305,6 +43975,9 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_pageScreen(), exports);
     tslib_1.__exportStar(require_pageScreenScheme(), exports);
     tslib_1.__exportStar(require_pageScreenWithTab(), exports);
+    tslib_1.__exportStar(require_pageSecurityLevel(), exports);
+    tslib_1.__exportStar(require_pageSecurityLevelMember(), exports);
+    tslib_1.__exportStar(require_pageSecuritySchemeWithProjects(), exports);
     tslib_1.__exportStar(require_pageString(), exports);
     tslib_1.__exportStar(require_pageUiModificationDetails(), exports);
     tslib_1.__exportStar(require_pageUser(), exports);
@@ -42328,7 +44001,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_permittedProjects(), exports);
     tslib_1.__exportStar(require_priority(), exports);
     tslib_1.__exportStar(require_priorityId(), exports);
-    tslib_1.__exportStar(require_project2(), exports);
+    tslib_1.__exportStar(require_project3(), exports);
     tslib_1.__exportStar(require_projectAvatars2(), exports);
     tslib_1.__exportStar(require_projectCategory(), exports);
     tslib_1.__exportStar(require_projectComponent(), exports);
@@ -42395,9 +44068,16 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_searchRequest(), exports);
     tslib_1.__exportStar(require_searchResults2(), exports);
     tslib_1.__exportStar(require_securityLevel(), exports);
+    tslib_1.__exportStar(require_securityLevelMember(), exports);
     tslib_1.__exportStar(require_securityScheme(), exports);
+    tslib_1.__exportStar(require_securitySchemeId(), exports);
+    tslib_1.__exportStar(require_securitySchemeLevel(), exports);
+    tslib_1.__exportStar(require_securitySchemeLevelMember(), exports);
+    tslib_1.__exportStar(require_securitySchemeMembersRequest(), exports);
     tslib_1.__exportStar(require_securitySchemes(), exports);
+    tslib_1.__exportStar(require_securitySchemeWithProjects(), exports);
     tslib_1.__exportStar(require_serverInformation(), exports);
+    tslib_1.__exportStar(require_setDefaultLevelsRequest(), exports);
     tslib_1.__exportStar(require_setDefaultPriorityRequest(), exports);
     tslib_1.__exportStar(require_setDefaultResolutionRequest(), exports);
     tslib_1.__exportStar(require_sharePermission(), exports);
@@ -42407,8 +44087,8 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_simpleLink2(), exports);
     tslib_1.__exportStar(require_simpleListWrapperApplicationRole(), exports);
     tslib_1.__exportStar(require_simpleListWrapperGroupName(), exports);
-    tslib_1.__exportStar(require_status2(), exports);
-    tslib_1.__exportStar(require_statusCategory(), exports);
+    tslib_1.__exportStar(require_status3(), exports);
+    tslib_1.__exportStar(require_statusCategory2(), exports);
     tslib_1.__exportStar(require_statusCreate(), exports);
     tslib_1.__exportStar(require_statusCreateRequest(), exports);
     tslib_1.__exportStar(require_statusDetails(), exports);
@@ -42438,6 +44118,8 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_updatedProjectCategory(), exports);
     tslib_1.__exportStar(require_updateFieldConfigurationSchemeDetails(), exports);
     tslib_1.__exportStar(require_updateIssueAdjustmentDetails(), exports);
+    tslib_1.__exportStar(require_updateIssueSecurityLevelDetails(), exports);
+    tslib_1.__exportStar(require_updateIssueSecuritySchemeRequest(), exports);
     tslib_1.__exportStar(require_updateNotificationSchemeDetails(), exports);
     tslib_1.__exportStar(require_updatePriorityDetails(), exports);
     tslib_1.__exportStar(require_updateProjectDetails(), exports);
@@ -42447,7 +44129,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_updateScreenTypes(), exports);
     tslib_1.__exportStar(require_updateUiModificationDetails(), exports);
     tslib_1.__exportStar(require_updateUserToGroup(), exports);
-    tslib_1.__exportStar(require_user(), exports);
+    tslib_1.__exportStar(require_user2(), exports);
     tslib_1.__exportStar(require_userAvatarUrls2(), exports);
     tslib_1.__exportStar(require_userDetails(), exports);
     tslib_1.__exportStar(require_userFilter(), exports);
@@ -42465,6 +44147,7 @@ var require_models2 = __commonJS({
     tslib_1.__exportStar(require_versionUsageInCustomField(), exports);
     tslib_1.__exportStar(require_visibility(), exports);
     tslib_1.__exportStar(require_votes(), exports);
+    tslib_1.__exportStar(require_warningCollection(), exports);
     tslib_1.__exportStar(require_watchers(), exports);
     tslib_1.__exportStar(require_webhook(), exports);
     tslib_1.__exportStar(require_webhookDetails(), exports);
@@ -42582,6 +44265,22 @@ var require_addScreenTab = __commonJS({
 // node_modules/jira.js/out/version2/parameters/addScreenTabField.js
 var require_addScreenTabField = __commonJS({
   "node_modules/jira.js/out/version2/parameters/addScreenTabField.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/addSecurityLevel.js
+var require_addSecurityLevel = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/addSecurityLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/addSecurityLevelMembers.js
+var require_addSecurityLevelMembers = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/addSecurityLevelMembers.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -42915,6 +44614,14 @@ var require_createIssues = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/createIssueSecurityScheme.js
+var require_createIssueSecurityScheme = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/createIssueSecurityScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/createIssueType.js
 var require_createIssueType = __commonJS({
   "node_modules/jira.js/out/version2/parameters/createIssueType.js"(exports) {
@@ -43126,6 +44833,14 @@ var require_deleteAddonProperty = __commonJS({
 // node_modules/jira.js/out/version2/parameters/deleteAndReplaceVersion.js
 var require_deleteAndReplaceVersion2 = __commonJS({
   "node_modules/jira.js/out/version2/parameters/deleteAndReplaceVersion.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/deleteAppProperty.js
+var require_deleteAppProperty = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/deleteAppProperty.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -43470,6 +45185,14 @@ var require_deleteScreenScheme = __commonJS({
 // node_modules/jira.js/out/version2/parameters/deleteScreenTab.js
 var require_deleteScreenTab = __commonJS({
   "node_modules/jira.js/out/version2/parameters/deleteScreenTab.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/deleteSecurityScheme.js
+var require_deleteSecurityScheme = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/deleteSecurityScheme.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -44128,7 +45851,7 @@ var require_getCurrentUser = __commonJS({
         Expand2["Groups"] = "groups";
         Expand2["ApplicationRoles"] = "applicationRoles";
       })(Expand = GetCurrentUser2.Expand || (GetCurrentUser2.Expand = {}));
-    })(GetCurrentUser = exports.GetCurrentUser || (exports.GetCurrentUser = {}));
+    })(GetCurrentUser || (exports.GetCurrentUser = GetCurrentUser = {}));
   }
 });
 
@@ -44338,7 +46061,7 @@ var require_getFiltersPaginated = __commonJS({
         Expand2["Subscriptions"] = "subscriptions";
         Expand2["ViewUrl"] = "viewUrl";
       })(Expand = GetFiltersPaginated2.Expand || (GetFiltersPaginated2.Expand = {}));
-    })(GetFiltersPaginated = exports.GetFiltersPaginated || (exports.GetFiltersPaginated = {}));
+    })(GetFiltersPaginated || (exports.GetFiltersPaginated = GetFiltersPaginated = {}));
   }
 });
 
@@ -44391,7 +46114,7 @@ var require_getIssue2 = __commonJS({
         Expand2["Changelog"] = "changelog";
         Expand2["VersionedRepresentations"] = "versionedRepresentations";
       })(Expand = GetIssue2.Expand || (GetIssue2.Expand = {}));
-    })(GetIssue = exports.GetIssue || (exports.GetIssue = {}));
+    })(GetIssue || (exports.GetIssue = GetIssue = {}));
   }
 });
 
@@ -44862,7 +46585,7 @@ var require_getRecent = __commonJS({
         Expand2["Insight"] = "insight";
         Expand2["All"] = "*";
       })(Expand = GetRecent2.Expand || (GetRecent2.Expand = {}));
-    })(GetRecent = exports.GetRecent || (exports.GetRecent = {}));
+    })(GetRecent || (exports.GetRecent = GetRecent = {}));
   }
 });
 
@@ -44909,6 +46632,22 @@ var require_getScreenSchemes = __commonJS({
 // node_modules/jira.js/out/version2/parameters/getScreensForField.js
 var require_getScreensForField = __commonJS({
   "node_modules/jira.js/out/version2/parameters/getScreensForField.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/getSecurityLevelMembers.js
+var require_getSecurityLevelMembers = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/getSecurityLevelMembers.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/getSecurityLevels.js
+var require_getSecurityLevels = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/getSecurityLevels.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -45015,7 +46754,7 @@ var require_getUser = __commonJS({
         Expand2["Groups"] = "groups";
         Expand2["ApplicationRoles"] = "applicationRoles";
       })(Expand = GetUser2.Expand || (GetUser2.Expand = {}));
-    })(GetUser = exports.GetUser || (exports.GetUser = {}));
+    })(GetUser || (exports.GetUser = GetUser = {}));
   }
 });
 
@@ -45347,6 +47086,14 @@ var require_putAddonProperty = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/putAppProperty.js
+var require_putAppProperty = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/putAppProperty.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/refreshWebhooks.js
 var require_refreshWebhooks = __commonJS({
   "node_modules/jira.js/out/version2/parameters/refreshWebhooks.js"(exports) {
@@ -45427,9 +47174,25 @@ var require_removeIssueTypesFromGlobalFieldConfigurationScheme = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/removeLevel.js
+var require_removeLevel = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/removeLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/removeMappingsFromIssueTypeScreenScheme.js
 var require_removeMappingsFromIssueTypeScreenScheme = __commonJS({
   "node_modules/jira.js/out/version2/parameters/removeMappingsFromIssueTypeScreenScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/removeMemberFromSecurityLevel.js
+var require_removeMemberFromSecurityLevel = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/removeMemberFromSecurityLevel.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -45619,9 +47382,25 @@ var require_searchProjects = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/searchProjectsUsingSecuritySchemes.js
+var require_searchProjectsUsingSecuritySchemes = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/searchProjectsUsingSecuritySchemes.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/searchResolutions.js
 var require_searchResolutions = __commonJS({
   "node_modules/jira.js/out/version2/parameters/searchResolutions.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/searchSecuritySchemes.js
+var require_searchSecuritySchemes = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/searchSecuritySchemes.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -45678,6 +47457,14 @@ var require_setCommentProperty = __commonJS({
 // node_modules/jira.js/out/version2/parameters/setDashboardItemProperty.js
 var require_setDashboardItemProperty = __commonJS({
   "node_modules/jira.js/out/version2/parameters/setDashboardItemProperty.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version2/parameters/setDefaultLevels.js
+var require_setDefaultLevels = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/setDefaultLevels.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -46027,6 +47814,14 @@ var require_updateIssueLinkType = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/updateIssueSecurityScheme.js
+var require_updateIssueSecurityScheme = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/updateIssueSecurityScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/updateIssueType.js
 var require_updateIssueType = __commonJS({
   "node_modules/jira.js/out/version2/parameters/updateIssueType.js"(exports) {
@@ -46163,6 +47958,14 @@ var require_updateScreenScheme = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version2/parameters/updateSecurityLevel.js
+var require_updateSecurityLevel = __commonJS({
+  "node_modules/jira.js/out/version2/parameters/updateSecurityLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version2/parameters/updateStatuses.js
 var require_updateStatuses = __commonJS({
   "node_modules/jira.js/out/version2/parameters/updateStatuses.js"(exports) {
@@ -46268,6 +48071,8 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_addProjectRoleActorsToRole(), exports);
     tslib_1.__exportStar(require_addScreenTab(), exports);
     tslib_1.__exportStar(require_addScreenTabField(), exports);
+    tslib_1.__exportStar(require_addSecurityLevel(), exports);
+    tslib_1.__exportStar(require_addSecurityLevelMembers(), exports);
     tslib_1.__exportStar(require_addSharePermission(), exports);
     tslib_1.__exportStar(require_addUserToGroup(), exports);
     tslib_1.__exportStar(require_addVote(), exports);
@@ -46309,6 +48114,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_createIssueFieldOption(), exports);
     tslib_1.__exportStar(require_createIssueLinkType(), exports);
     tslib_1.__exportStar(require_createIssues(), exports);
+    tslib_1.__exportStar(require_createIssueSecurityScheme(), exports);
     tslib_1.__exportStar(require_createIssueType(), exports);
     tslib_1.__exportStar(require_createIssueTypeAvatar(), exports);
     tslib_1.__exportStar(require_createIssueTypeScheme(), exports);
@@ -46336,6 +48142,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_deleteActor(), exports);
     tslib_1.__exportStar(require_deleteAddonProperty(), exports);
     tslib_1.__exportStar(require_deleteAndReplaceVersion2(), exports);
+    tslib_1.__exportStar(require_deleteAppProperty(), exports);
     tslib_1.__exportStar(require_deleteAvatar(), exports);
     tslib_1.__exportStar(require_deleteComment(), exports);
     tslib_1.__exportStar(require_deleteCommentProperty(), exports);
@@ -46379,6 +48186,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_deleteScreen(), exports);
     tslib_1.__exportStar(require_deleteScreenScheme(), exports);
     tslib_1.__exportStar(require_deleteScreenTab(), exports);
+    tslib_1.__exportStar(require_deleteSecurityScheme(), exports);
     tslib_1.__exportStar(require_deleteSharePermission(), exports);
     tslib_1.__exportStar(require_deleteStatusesById(), exports);
     tslib_1.__exportStar(require_deleteUiModification(), exports);
@@ -46552,6 +48360,8 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_getScreens(), exports);
     tslib_1.__exportStar(require_getScreenSchemes(), exports);
     tslib_1.__exportStar(require_getScreensForField(), exports);
+    tslib_1.__exportStar(require_getSecurityLevelMembers(), exports);
+    tslib_1.__exportStar(require_getSecurityLevels(), exports);
     tslib_1.__exportStar(require_getSecurityLevelsForProject(), exports);
     tslib_1.__exportStar(require_getSelectableIssueFieldOptions(), exports);
     tslib_1.__exportStar(require_getSharePermission(), exports);
@@ -46606,6 +48416,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_partialUpdateProjectRole(), exports);
     tslib_1.__exportStar(require_publishDraftWorkflowScheme2(), exports);
     tslib_1.__exportStar(require_putAddonProperty(), exports);
+    tslib_1.__exportStar(require_putAppProperty(), exports);
     tslib_1.__exportStar(require_refreshWebhooks(), exports);
     tslib_1.__exportStar(require_registerDynamicWebhooks(), exports);
     tslib_1.__exportStar(require_registerModules(), exports);
@@ -46616,7 +48427,9 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_removeIssueTypeFromIssueTypeScheme(), exports);
     tslib_1.__exportStar(require_removeIssueTypesFromContext(), exports);
     tslib_1.__exportStar(require_removeIssueTypesFromGlobalFieldConfigurationScheme(), exports);
+    tslib_1.__exportStar(require_removeLevel(), exports);
     tslib_1.__exportStar(require_removeMappingsFromIssueTypeScreenScheme(), exports);
+    tslib_1.__exportStar(require_removeMemberFromSecurityLevel(), exports);
     tslib_1.__exportStar(require_removeModules(), exports);
     tslib_1.__exportStar(require_removeNotificationFromNotificationScheme(), exports);
     tslib_1.__exportStar(require_removePreference(), exports);
@@ -46640,7 +48453,9 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_searchForIssuesUsingJqlPost(), exports);
     tslib_1.__exportStar(require_searchPriorities(), exports);
     tslib_1.__exportStar(require_searchProjects(), exports);
+    tslib_1.__exportStar(require_searchProjectsUsingSecuritySchemes(), exports);
     tslib_1.__exportStar(require_searchResolutions(), exports);
+    tslib_1.__exportStar(require_searchSecuritySchemes(), exports);
     tslib_1.__exportStar(require_selectTimeTrackingImplementation(), exports);
     tslib_1.__exportStar(require_setActors(), exports);
     tslib_1.__exportStar(require_setApplicationProperty(), exports);
@@ -46648,6 +48463,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_setColumns(), exports);
     tslib_1.__exportStar(require_setCommentProperty(), exports);
     tslib_1.__exportStar(require_setDashboardItemProperty(), exports);
+    tslib_1.__exportStar(require_setDefaultLevels(), exports);
     tslib_1.__exportStar(require_setDefaultPriority(), exports);
     tslib_1.__exportStar(require_setDefaultResolution(), exports);
     tslib_1.__exportStar(require_setDefaultShareScope(), exports);
@@ -46692,6 +48508,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_updateIssueFieldOption(), exports);
     tslib_1.__exportStar(require_updateIssueFields(), exports);
     tslib_1.__exportStar(require_updateIssueLinkType(), exports);
+    tslib_1.__exportStar(require_updateIssueSecurityScheme(), exports);
     tslib_1.__exportStar(require_updateIssueType(), exports);
     tslib_1.__exportStar(require_updateIssueTypeScheme(), exports);
     tslib_1.__exportStar(require_updateIssueTypeScreenScheme(), exports);
@@ -46709,6 +48526,7 @@ var require_parameters2 = __commonJS({
     tslib_1.__exportStar(require_updateResolution(), exports);
     tslib_1.__exportStar(require_updateScreen(), exports);
     tslib_1.__exportStar(require_updateScreenScheme(), exports);
+    tslib_1.__exportStar(require_updateSecurityLevel(), exports);
     tslib_1.__exportStar(require_updateStatuses(), exports);
     tslib_1.__exportStar(require_updateUiModification(), exports);
     tslib_1.__exportStar(require_updateVersion(), exports);
@@ -46781,6 +48599,7 @@ var require_version2Client = __commonJS({
         this.jiraExpressions = new __1.JiraExpressions(this);
         this.jiraSettings = new __1.JiraSettings(this);
         this.jql = new __1.JQL(this);
+        this.jqlFunctionsApps = new __1.JqlFunctionsApps(this);
         this.labels = new __1.Labels(this);
         this.licenseMetrics = new __1.LicenseMetrics(this);
         this.myself = new __1.Myself(this);
@@ -46890,6 +48709,7 @@ var require_version22 = __commonJS({
     tslib_1.__exportStar(require_jiraExpressions(), exports);
     tslib_1.__exportStar(require_jiraSettings(), exports);
     tslib_1.__exportStar(require_jQL(), exports);
+    tslib_1.__exportStar(require_jqlFunctionsApps(), exports);
     tslib_1.__exportStar(require_labels(), exports);
     tslib_1.__exportStar(require_licenseMetrics(), exports);
     tslib_1.__exportStar(require_myself(), exports);
@@ -46913,7 +48733,7 @@ var require_version22 = __commonJS({
     tslib_1.__exportStar(require_screenTabFields(), exports);
     tslib_1.__exportStar(require_screenTabs(), exports);
     tslib_1.__exportStar(require_serverInfo(), exports);
-    tslib_1.__exportStar(require_status(), exports);
+    tslib_1.__exportStar(require_status2(), exports);
     tslib_1.__exportStar(require_tasks(), exports);
     tslib_1.__exportStar(require_timeTracking(), exports);
     tslib_1.__exportStar(require_uIModificationsApps(), exports);
@@ -46961,9 +48781,9 @@ var require_announcementBanner2 = __commonJS({
             url: "/rest/api/3/announcementBanner",
             method: "PUT",
             data: {
-              message: parameters === null || parameters === void 0 ? void 0 : parameters.message,
               isDismissible: parameters === null || parameters === void 0 ? void 0 : parameters.isDismissible,
               isEnabled: parameters === null || parameters === void 0 ? void 0 : parameters.isEnabled,
+              message: parameters === null || parameters === void 0 ? void 0 : parameters.message,
               visibility: parameters === null || parameters === void 0 ? void 0 : parameters.visibility
             }
           };
@@ -47027,8 +48847,8 @@ var require_appMigration2 = __commonJS({
             url: "/rest/atlassian-connect/1/migration/field",
             method: "PUT",
             headers: {
-              "Atlassian-Transfer-Id": parameters.transferId,
-              "Atlassian-Account-Id": parameters.accountId
+              "Atlassian-Account-Id": parameters.accountId,
+              "Atlassian-Transfer-Id": parameters.transferId
             },
             data: {
               updateValueList: parameters.updateValueList
@@ -47044,9 +48864,9 @@ var require_appMigration2 = __commonJS({
             url: `/rest/atlassian-connect/1/migration/properties/${parameters.entityType}`,
             method: "PUT",
             headers: {
-              "Content-Type": "application/json",
+              "Atlassian-Account-Id": parameters.accountId,
               "Atlassian-Transfer-Id": parameters.transferId,
-              "Atlassian-Account-Id": parameters.accountId
+              "Content-Type": "application/json"
             },
             data: (_a = parameters.body) !== null && _a !== void 0 ? _a : parameters.entities
           };
@@ -47062,9 +48882,9 @@ var require_appMigration2 = __commonJS({
               "Atlassian-Transfer-Id": parameters.transferId
             },
             data: {
-              workflowEntityId: parameters.workflowEntityId,
+              expand: parameters.expand,
               ruleIds: parameters.ruleIds,
-              expand: parameters.expand
+              workflowEntityId: parameters.workflowEntityId
             }
           };
           return this.client.sendRequest(config, callback);
@@ -47106,10 +48926,12 @@ var require_appProperties2 = __commonJS({
         });
       }
       putAddonProperty(parameters, callback) {
+        var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/atlassian-connect/1/addons/${parameters.addonKey}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            data: (_a = parameters.propertyValue) !== null && _a !== void 0 ? _a : parameters.property
           };
           return this.client.sendRequest(config, callback);
         });
@@ -47118,6 +48940,25 @@ var require_appProperties2 = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/atlassian-connect/1/addons/${parameters.addonKey}/properties/${parameters.propertyKey}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      putAppProperty(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/forge/1/app/properties/${parameters.propertyKey}`,
+            method: "PUT",
+            data: parameters.propertyValue
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteAppProperty(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/forge/1/app/properties/${parameters.propertyKey}`,
             method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
@@ -48309,6 +50150,16 @@ var require_issueComments2 = __commonJS({
       }
       addComment(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const body = typeof parameters.body === "string" ? {
+            type: "doc",
+            version: 1,
+            content: [
+              {
+                type: "paragraph",
+                content: [{ type: "text", text: parameters.body }]
+              }
+            ]
+          } : parameters.body;
           const config = {
             url: `/rest/api/3/issue/${parameters.issueIdOrKey}/comment`,
             method: "POST",
@@ -48319,7 +50170,7 @@ var require_issueComments2 = __commonJS({
               self: parameters.self,
               id: parameters.id,
               author: parameters.author,
-              body: parameters.body,
+              body,
               renderedBody: parameters.renderedBody,
               updateAuthor: parameters.updateAuthor,
               created: parameters.created,
@@ -49726,7 +51577,8 @@ var require_issueProperties2 = __commonJS({
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/3/issue/${parameters.issueIdOrKey}/properties/${parameters.propertyKey}`,
-            method: "PUT"
+            method: "PUT",
+            data: parameters.propertyValue
           };
           return this.client.sendRequest(config, callback);
         });
@@ -50371,11 +52223,180 @@ var require_issueSecuritySchemes2 = __commonJS({
           return this.client.sendRequest(config, callback);
         });
       }
+      createIssueSecurityScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/issuesecurityschemes",
+            method: "POST",
+            data: {
+              description: parameters === null || parameters === void 0 ? void 0 : parameters.description,
+              levels: parameters === null || parameters === void 0 ? void 0 : parameters.levels,
+              name: parameters === null || parameters === void 0 ? void 0 : parameters.name
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getSecurityLevels(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/issuesecurityschemes/level",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
+              schemeId: parameters === null || parameters === void 0 ? void 0 : parameters.schemeId,
+              onlyDefault: parameters === null || parameters === void 0 ? void 0 : parameters.onlyDefault
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      setDefaultLevels(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/issuesecurityschemes/level/default",
+            method: "PUT",
+            data: {
+              defaultValues: parameters === null || parameters === void 0 ? void 0 : parameters.defaultValues
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      getSecurityLevelMembers(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/issuesecurityschemes/level/member",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
+              schemeId: parameters === null || parameters === void 0 ? void 0 : parameters.schemeId,
+              levelId: parameters === null || parameters === void 0 ? void 0 : parameters.levelId,
+              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      searchProjectsUsingSecuritySchemes(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/issuesecurityschemes/project",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              issueSecuritySchemeId: parameters === null || parameters === void 0 ? void 0 : parameters.issueSecuritySchemeId,
+              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      searchSecuritySchemes(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/issuesecurityschemes/search",
+            method: "GET",
+            params: {
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
+              projectId: parameters === null || parameters === void 0 ? void 0 : parameters.projectId
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
       getIssueSecurityScheme(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
           const config = {
             url: `/rest/api/3/issuesecurityschemes/${parameters.id}`,
             method: "GET"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateIssueSecurityScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/issuesecurityschemes/${parameters.id}`,
+            method: "PUT",
+            data: {
+              description: parameters.description,
+              name: parameters.name
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      deleteSecurityScheme(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/issuesecurityschemes/${parameters.schemeId}`,
+            method: "DELETE"
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      addSecurityLevel(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/issuesecurityschemes/${parameters.schemeId}/level`,
+            method: "PUT",
+            data: {
+              levels: parameters.levels
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updateSecurityLevel(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/issuesecurityschemes/${parameters.schemeId}/level/${parameters.levelId}`,
+            method: "PUT",
+            data: {
+              description: parameters.description,
+              name: parameters.name
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      removeLevel(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/issuesecurityschemes/${parameters.schemeId}/level/${parameters.levelId}`,
+            method: "DELETE",
+            params: {
+              replaceWith: parameters.replaceWith
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      addSecurityLevelMembers(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/issuesecurityschemes/${parameters.schemeId}/level/${parameters.levelId}/member`,
+            method: "PUT",
+            data: {
+              members: parameters.members
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      removeMemberFromSecurityLevel(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: `/rest/api/3/issuesecurityschemes/${parameters.schemeId}/level/${parameters.levelId}/member/${parameters.memberId}`,
+            method: "DELETE"
           };
           return this.client.sendRequest(config, callback);
         });
@@ -51438,6 +53459,50 @@ var require_jQL2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/jqlFunctionsApps.js
+var require_jqlFunctionsApps2 = __commonJS({
+  "node_modules/jira.js/out/version3/jqlFunctionsApps.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.JqlFunctionsApps = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var JqlFunctionsApps = class {
+      constructor(client) {
+        this.client = client;
+      }
+      getPrecomputations(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/jql/function/computation",
+            method: "GET",
+            params: {
+              functionKey: parameters === null || parameters === void 0 ? void 0 : parameters.functionKey,
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy,
+              filter: parameters === null || parameters === void 0 ? void 0 : parameters.filter
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+      updatePrecomputations(parameters, callback) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          const config = {
+            url: "/rest/api/3/jql/function/computation",
+            method: "POST",
+            data: {
+              values: parameters === null || parameters === void 0 ? void 0 : parameters.values
+            }
+          };
+          return this.client.sendRequest(config, callback);
+        });
+      }
+    };
+    exports.JqlFunctionsApps = JqlFunctionsApps;
+  }
+});
+
 // node_modules/jira.js/out/version3/labels.js
 var require_labels2 = __commonJS({
   "node_modules/jira.js/out/version3/labels.js"(exports) {
@@ -51808,12 +53873,12 @@ var require_projectAvatars3 = __commonJS({
             url: `/rest/api/3/project/${parameters.projectIdOrKey}/avatar`,
             method: "PUT",
             data: {
-              id: parameters.id,
-              owner: parameters.owner,
-              isSystemAvatar: parameters.isSystemAvatar,
-              isSelected: parameters.isSelected,
-              isDeletable: parameters.isDeletable,
               fileName: parameters.fileName,
+              id: parameters.id,
+              isDeletable: parameters.isDeletable,
+              isSelected: parameters.isSelected,
+              isSystemAvatar: parameters.isSystemAvatar,
+              owner: parameters.owner,
               urls: parameters.urls
             }
           };
@@ -52526,8 +54591,8 @@ var require_projects3 = __commonJS({
             method: "GET",
             params: {
               expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
-              recent: parameters === null || parameters === void 0 ? void 0 : parameters.recent,
-              properties: parameters === null || parameters === void 0 ? void 0 : parameters.properties
+              properties: parameters === null || parameters === void 0 ? void 0 : parameters.properties,
+              recent: parameters === null || parameters === void 0 ? void 0 : parameters.recent
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52539,24 +54604,24 @@ var require_projects3 = __commonJS({
             url: "/rest/api/3/project",
             method: "POST",
             data: {
-              key: parameters.key,
-              name: parameters.name,
-              description: parameters.description,
-              lead: parameters.lead,
-              leadAccountId: parameters.leadAccountId,
-              url: parameters.url,
               assigneeType: parameters.assigneeType,
               avatarId: parameters.avatarId,
-              issueSecurityScheme: parameters.issueSecurityScheme,
-              permissionScheme: parameters.permissionScheme,
-              notificationScheme: parameters.notificationScheme,
               categoryId: parameters.categoryId,
-              projectTypeKey: parameters.projectTypeKey,
-              projectTemplateKey: parameters.projectTemplateKey,
-              workflowScheme: parameters.workflowScheme,
-              issueTypeScreenScheme: parameters.issueTypeScreenScheme,
+              description: parameters.description,
+              fieldConfigurationScheme: parameters.fieldConfigurationScheme,
+              issueSecurityScheme: parameters.issueSecurityScheme,
               issueTypeScheme: parameters.issueTypeScheme,
-              fieldConfigurationScheme: parameters.fieldConfigurationScheme
+              issueTypeScreenScheme: parameters.issueTypeScreenScheme,
+              key: parameters.key,
+              lead: parameters.lead,
+              leadAccountId: parameters.leadAccountId,
+              name: parameters.name,
+              notificationScheme: parameters.notificationScheme,
+              permissionScheme: parameters.permissionScheme,
+              projectTemplateKey: parameters.projectTemplateKey,
+              projectTypeKey: parameters.projectTypeKey,
+              url: parameters.url,
+              workflowScheme: parameters.workflowScheme
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52581,19 +54646,19 @@ var require_projects3 = __commonJS({
             url: "/rest/api/3/project/search",
             method: "GET",
             params: {
-              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
-              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
-              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy,
+              action: parameters === null || parameters === void 0 ? void 0 : parameters.action,
+              categoryId: parameters === null || parameters === void 0 ? void 0 : parameters.categoryId,
+              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
               id: parameters === null || parameters === void 0 ? void 0 : parameters.id,
               keys: parameters === null || parameters === void 0 ? void 0 : parameters.keys,
-              query: parameters === null || parameters === void 0 ? void 0 : parameters.query,
-              typeKey: parameters === null || parameters === void 0 ? void 0 : parameters.typeKey,
-              categoryId: parameters === null || parameters === void 0 ? void 0 : parameters.categoryId,
-              action: parameters === null || parameters === void 0 ? void 0 : parameters.action,
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
-              status: parameters === null || parameters === void 0 ? void 0 : parameters.status,
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              orderBy: parameters === null || parameters === void 0 ? void 0 : parameters.orderBy,
               properties: parameters === null || parameters === void 0 ? void 0 : parameters.properties,
-              propertyQuery: parameters === null || parameters === void 0 ? void 0 : parameters.propertyQuery
+              propertyQuery: parameters === null || parameters === void 0 ? void 0 : parameters.propertyQuery,
+              query: parameters === null || parameters === void 0 ? void 0 : parameters.query,
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
+              status: parameters === null || parameters === void 0 ? void 0 : parameters.status,
+              typeKey: parameters === null || parameters === void 0 ? void 0 : parameters.typeKey
             }
           };
           return this.client.sendRequest(config, callback);
@@ -52622,20 +54687,20 @@ var require_projects3 = __commonJS({
               expand: parameters.expand
             },
             data: {
-              key: parameters.key,
-              name: parameters.name,
-              projectTypeKey: parameters.projectTypeKey,
-              projectTemplateKey: parameters.projectTemplateKey,
-              description: parameters.description,
-              lead: parameters.lead,
-              leadAccountId: parameters.leadAccountId,
-              url: parameters.url,
               assigneeType: parameters.assigneeType,
               avatarId: parameters.avatarId,
+              categoryId: parameters.categoryId,
+              description: parameters.description,
               issueSecurityScheme: parameters.issueSecurityScheme,
-              permissionScheme: parameters.permissionScheme,
+              key: parameters.key,
+              lead: parameters.lead,
+              leadAccountId: parameters.leadAccountId,
+              name: parameters.name,
               notificationScheme: parameters.notificationScheme,
-              categoryId: parameters.categoryId
+              permissionScheme: parameters.permissionScheme,
+              projectTemplateKey: parameters.projectTemplateKey,
+              projectTypeKey: parameters.projectTypeKey,
+              url: parameters.url
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53300,7 +55365,7 @@ var require_serverInfo2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/status.js
-var require_status3 = __commonJS({
+var require_status4 = __commonJS({
   "node_modules/jira.js/out/version3/status.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -53654,9 +55719,9 @@ var require_users2 = __commonJS({
             method: "GET",
             params: {
               accountId: parameters === null || parameters === void 0 ? void 0 : parameters.accountId,
-              username: parameters === null || parameters === void 0 ? void 0 : parameters.username,
+              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand,
               key: parameters === null || parameters === void 0 ? void 0 : parameters.key,
-              expand: parameters === null || parameters === void 0 ? void 0 : parameters.expand
+              username: parameters === null || parameters === void 0 ? void 0 : parameters.username
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53668,13 +55733,13 @@ var require_users2 = __commonJS({
             url: "/rest/api/3/user",
             method: "POST",
             data: {
-              self: parameters.self,
+              applicationKeys: parameters.applicationKeys,
+              displayName: parameters.displayName,
+              emailAddress: parameters.emailAddress,
               key: parameters.key,
               name: parameters.name,
               password: parameters.password,
-              emailAddress: parameters.emailAddress,
-              displayName: parameters.displayName,
-              applicationKeys: parameters.applicationKeys
+              self: parameters.self
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53687,8 +55752,8 @@ var require_users2 = __commonJS({
             method: "DELETE",
             params: {
               accountId: parameters.accountId,
-              username: parameters.username,
-              key: parameters.key
+              key: parameters.key,
+              username: parameters.username
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53700,11 +55765,11 @@ var require_users2 = __commonJS({
             url: "/rest/api/3/user/bulk",
             method: "GET",
             params: {
-              startAt: parameters.startAt,
-              maxResults: parameters.maxResults,
-              username: parameters.username,
+              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId),
               key: parameters.key,
-              accountId: (0, paramSerializer_1.paramSerializer)("accountId", parameters.accountId)
+              maxResults: parameters.maxResults,
+              startAt: parameters.startAt,
+              username: parameters.username
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53716,10 +55781,10 @@ var require_users2 = __commonJS({
             url: "/rest/api/3/user/bulk/migration",
             method: "GET",
             params: {
-              startAt: parameters.startAt,
+              key: (0, paramSerializer_1.paramSerializer)("key", parameters.key),
               maxResults: parameters.maxResults,
-              username: (0, paramSerializer_1.paramSerializer)("username", parameters.username),
-              key: (0, paramSerializer_1.paramSerializer)("key", parameters.key)
+              startAt: parameters.startAt,
+              username: (0, paramSerializer_1.paramSerializer)("username", parameters.username)
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53797,8 +55862,8 @@ var require_users2 = __commonJS({
             method: "GET",
             params: {
               accountId: parameters.accountId,
-              username: parameters.username,
-              key: parameters.key
+              key: parameters.key,
+              username: parameters.username
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53810,8 +55875,8 @@ var require_users2 = __commonJS({
             url: "/rest/api/3/users",
             method: "GET",
             params: {
-              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
-              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt
             }
           };
           return this.client.sendRequest(config, callback);
@@ -53823,8 +55888,8 @@ var require_users2 = __commonJS({
             url: "/rest/api/3/users/search",
             method: "GET",
             params: {
-              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt,
-              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults
+              maxResults: parameters === null || parameters === void 0 ? void 0 : parameters.maxResults,
+              startAt: parameters === null || parameters === void 0 ? void 0 : parameters.startAt
             }
           };
           return this.client.sendRequest(config, callback);
@@ -54841,6 +56906,7 @@ var require_version3Client = __commonJS({
         this.jiraExpressions = new __1.JiraExpressions(this);
         this.jiraSettings = new __1.JiraSettings(this);
         this.jql = new __1.JQL(this);
+        this.jqlFunctionsApps = new __1.JqlFunctionsApps(this);
         this.labels = new __1.Labels(this);
         this.licenseMetrics = new __1.LicenseMetrics(this);
         this.myself = new __1.Myself(this);
@@ -54928,6 +56994,22 @@ var require_addGroup2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/addNotificationsDetails.js
+var require_addNotificationsDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/addNotificationsDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/addSecuritySchemeLevelsRequest.js
+var require_addSecuritySchemeLevelsRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/addSecuritySchemeLevelsRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/announcementBannerConfiguration.js
 var require_announcementBannerConfiguration2 = __commonJS({
   "node_modules/jira.js/out/version3/models/announcementBannerConfiguration.js"(exports) {
@@ -55000,89 +57082,9 @@ var require_attachmentArchive2 = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version3/models/containerForProjectFeatures.js
-var require_containerForProjectFeatures2 = __commonJS({
-  "node_modules/jira.js/out/version3/models/containerForProjectFeatures.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/models/projectComponent.js
-var require_projectComponent2 = __commonJS({
-  "node_modules/jira.js/out/version3/models/projectComponent.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/models/licenseMetric.js
-var require_licenseMetric2 = __commonJS({
-  "node_modules/jira.js/out/version3/models/licenseMetric.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationUpdateRequest.js
-var require_jqlFunctionPrecomputationUpdateRequest2 = __commonJS({
-  "node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationUpdateRequest.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationPage.js
-var require_jqlFunctionPrecomputationPage = __commonJS({
-  "node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationPage.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
 // node_modules/jira.js/out/version3/models/attachmentArchiveEntry.js
 var require_attachmentArchiveEntry2 = __commonJS({
   "node_modules/jira.js/out/version3/models/attachmentArchiveEntry.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/models/notificationSchemeId.js
-var require_notificationSchemeId2 = __commonJS({
-  "node_modules/jira.js/out/version3/models/notificationSchemeId.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/models/createNotificationSchemeDetails.js
-var require_createNotificationSchemeDetails2 = __commonJS({
-  "node_modules/jira.js/out/version3/models/createNotificationSchemeDetails.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/models/notificationSchemeAndProjectMappingPage.js
-var require_notificationSchemeAndProjectMappingPage2 = __commonJS({
-  "node_modules/jira.js/out/version3/models/notificationSchemeAndProjectMappingPage.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/models/updateNotificationSchemeDetails.js
-var require_updateNotificationSchemeDetails2 = __commonJS({
-  "node_modules/jira.js/out/version3/models/updateNotificationSchemeDetails.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/models/addNotificationsDetails.js
-var require_addNotificationsDetails2 = __commonJS({
-  "node_modules/jira.js/out/version3/models/addNotificationsDetails.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -55416,6 +57418,14 @@ var require_connectWorkflowTransitionRule2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/containerForProjectFeatures.js
+var require_containerForProjectFeatures2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/containerForProjectFeatures.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/containerForRegisteredWebhooks.js
 var require_containerForRegisteredWebhooks2 = __commonJS({
   "node_modules/jira.js/out/version3/models/containerForRegisteredWebhooks.js"(exports) {
@@ -55507,6 +57517,22 @@ var require_createdIssues2 = __commonJS({
 // node_modules/jira.js/out/version3/models/createIssueAdjustmentDetails.js
 var require_createIssueAdjustmentDetails2 = __commonJS({
   "node_modules/jira.js/out/version3/models/createIssueAdjustmentDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/createIssueSecuritySchemeDetails.js
+var require_createIssueSecuritySchemeDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/createIssueSecuritySchemeDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/createNotificationSchemeDetails.js
+var require_createNotificationSchemeDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/createNotificationSchemeDetails.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -55609,7 +57635,7 @@ var require_createWorkflowTransitionScreenDetails2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/models/customContextVariable.js
-var require_customContextVariable = __commonJS({
+var require_customContextVariable2 = __commonJS({
   "node_modules/jira.js/out/version3/models/customContextVariable.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -55848,6 +57874,14 @@ var require_dashboardUser2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/defaultLevelValue.js
+var require_defaultLevelValue2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/defaultLevelValue.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/defaultShareScope.js
 var require_defaultShareScope2 = __commonJS({
   "node_modules/jira.js/out/version3/models/defaultShareScope.js"(exports) {
@@ -56065,7 +58099,7 @@ var require_fieldReferenceData2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/models/fields.js
-var require_fields2 = __commonJS({
+var require_fields3 = __commonJS({
   "node_modules/jira.js/out/version3/models/fields.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -56129,7 +58163,7 @@ var require_filterSubscriptionsList2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/models/fixVersion.js
-var require_fixVersion2 = __commonJS({
+var require_fixVersion3 = __commonJS({
   "node_modules/jira.js/out/version3/models/fixVersion.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -56499,6 +58533,14 @@ var require_issuesAndJQLQueries2 = __commonJS({
 // node_modules/jira.js/out/version3/models/issueSecurityLevelMember.js
 var require_issueSecurityLevelMember2 = __commonJS({
   "node_modules/jira.js/out/version3/models/issueSecurityLevelMember.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/issueSecuritySchemeToProjectMapping.js
+var require_issueSecuritySchemeToProjectMapping2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/issueSecuritySchemeToProjectMapping.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -56880,6 +58922,38 @@ var require_jiraStatus2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/jqlFunctionPrecomputation.js
+var require_jqlFunctionPrecomputation2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/jqlFunctionPrecomputation.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationPage.js
+var require_jqlFunctionPrecomputationPage = __commonJS({
+  "node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationPage.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationUpdate.js
+var require_jqlFunctionPrecomputationUpdate2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationUpdate.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationUpdateRequest.js
+var require_jqlFunctionPrecomputationUpdateRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/jqlFunctionPrecomputationUpdateRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/jQLPersonalDataMigrationRequest.js
 var require_jQLPersonalDataMigrationRequest2 = __commonJS({
   "node_modules/jira.js/out/version3/models/jQLPersonalDataMigrationRequest.js"(exports) {
@@ -57040,6 +59114,14 @@ var require_licensedApplication2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/licenseMetric.js
+var require_licenseMetric2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/licenseMetric.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/linkedIssue.js
 var require_linkedIssue2 = __commonJS({
   "node_modules/jira.js/out/version3/models/linkedIssue.js"(exports) {
@@ -57192,9 +59274,57 @@ var require_notificationScheme2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/notificationSchemeAndProjectMapping.js
+var require_notificationSchemeAndProjectMapping2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/notificationSchemeAndProjectMapping.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/notificationSchemeAndProjectMappingPage.js
+var require_notificationSchemeAndProjectMappingPage2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/notificationSchemeAndProjectMappingPage.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/notificationSchemeEvent.js
 var require_notificationSchemeEvent2 = __commonJS({
   "node_modules/jira.js/out/version3/models/notificationSchemeEvent.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/notificationSchemeEventDetails.js
+var require_notificationSchemeEventDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/notificationSchemeEventDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/notificationSchemeEventTypeId.js
+var require_notificationSchemeEventTypeId2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/notificationSchemeEventTypeId.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/notificationSchemeId.js
+var require_notificationSchemeId2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/notificationSchemeId.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/notificationSchemeNotificationDetails.js
+var require_notificationSchemeNotificationDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/notificationSchemeNotificationDetails.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -57209,7 +59339,7 @@ var require_operationMessage2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/models/operations.js
-var require_operations2 = __commonJS({
+var require_operations3 = __commonJS({
   "node_modules/jira.js/out/version3/models/operations.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -57432,6 +59562,14 @@ var require_pageIssueSecurityLevelMember2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/pageIssueSecuritySchemeToProjectMapping.js
+var require_pageIssueSecuritySchemeToProjectMapping2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/pageIssueSecuritySchemeToProjectMapping.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/pageIssueTypeScheme.js
 var require_pageIssueTypeScheme2 = __commonJS({
   "node_modules/jira.js/out/version3/models/pageIssueTypeScheme.js"(exports) {
@@ -57483,6 +59621,14 @@ var require_pageIssueTypeScreenSchemesProjects2 = __commonJS({
 // node_modules/jira.js/out/version3/models/pageIssueTypeToContextMapping.js
 var require_pageIssueTypeToContextMapping2 = __commonJS({
   "node_modules/jira.js/out/version3/models/pageIssueTypeToContextMapping.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/pageJqlFunctionPrecomputation.js
+var require_pageJqlFunctionPrecomputation2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/pageJqlFunctionPrecomputation.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -57587,6 +59733,30 @@ var require_pageScreenScheme2 = __commonJS({
 // node_modules/jira.js/out/version3/models/pageScreenWithTab.js
 var require_pageScreenWithTab2 = __commonJS({
   "node_modules/jira.js/out/version3/models/pageScreenWithTab.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/pageSecurityLevel.js
+var require_pageSecurityLevel2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/pageSecurityLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/pageSecurityLevelMember.js
+var require_pageSecurityLevelMember2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/pageSecurityLevelMember.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/pageSecuritySchemeWithProjects.js
+var require_pageSecuritySchemeWithProjects2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/pageSecuritySchemeWithProjects.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -57777,7 +59947,7 @@ var require_priorityId2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/models/project.js
-var require_project3 = __commonJS({
+var require_project4 = __commonJS({
   "node_modules/jira.js/out/version3/models/project.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -57792,7 +59962,7 @@ var require_project3 = __commonJS({
         Expand2["ProjectKeys"] = "projectKeys";
         Expand2["IssueTypeHierarchy"] = "issueTypeHierarchy";
       })(Expand = Project2.Expand || (Project2.Expand = {}));
-    })(Project = exports.Project || (exports.Project = {}));
+    })(Project || (exports.Project = Project = {}));
   }
 });
 
@@ -57807,6 +59977,14 @@ var require_projectAvatars4 = __commonJS({
 // node_modules/jira.js/out/version3/models/projectCategory.js
 var require_projectCategory2 = __commonJS({
   "node_modules/jira.js/out/version3/models/projectCategory.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/projectComponent.js
+var require_projectComponent2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/projectComponent.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -58348,9 +60526,49 @@ var require_securityLevel2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/securityLevelMember.js
+var require_securityLevelMember2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/securityLevelMember.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/securityScheme.js
 var require_securityScheme2 = __commonJS({
   "node_modules/jira.js/out/version3/models/securityScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/securitySchemeId.js
+var require_securitySchemeId2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/securitySchemeId.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/securitySchemeLevel.js
+var require_securitySchemeLevel2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/securitySchemeLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/securitySchemeLevelMember.js
+var require_securitySchemeLevelMember2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/securitySchemeLevelMember.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/securitySchemeMembersRequest.js
+var require_securitySchemeMembersRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/securitySchemeMembersRequest.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -58364,9 +60582,25 @@ var require_securitySchemes2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/securitySchemeWithProjects.js
+var require_securitySchemeWithProjects2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/securitySchemeWithProjects.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/serverInformation.js
 var require_serverInformation2 = __commonJS({
   "node_modules/jira.js/out/version3/models/serverInformation.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/setDefaultLevelsRequest.js
+var require_setDefaultLevelsRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/setDefaultLevelsRequest.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -58445,7 +60679,7 @@ var require_simpleListWrapperGroupName2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/models/status.js
-var require_status4 = __commonJS({
+var require_status5 = __commonJS({
   "node_modules/jira.js/out/version3/models/status.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -58453,7 +60687,7 @@ var require_status4 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/models/statusCategory.js
-var require_statusCategory2 = __commonJS({
+var require_statusCategory3 = __commonJS({
   "node_modules/jira.js/out/version3/models/statusCategory.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -58676,6 +60910,30 @@ var require_updateIssueAdjustmentDetails2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/models/updateIssueSecurityLevelDetails.js
+var require_updateIssueSecurityLevelDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/updateIssueSecurityLevelDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/updateIssueSecuritySchemeRequest.js
+var require_updateIssueSecuritySchemeRequest2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/updateIssueSecuritySchemeRequest.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/models/updateNotificationSchemeDetails.js
+var require_updateNotificationSchemeDetails2 = __commonJS({
+  "node_modules/jira.js/out/version3/models/updateNotificationSchemeDetails.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/models/updatePriorityDetails.js
 var require_updatePriorityDetails2 = __commonJS({
   "node_modules/jira.js/out/version3/models/updatePriorityDetails.js"(exports) {
@@ -58741,7 +60999,7 @@ var require_updateUserToGroup2 = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/models/user.js
-var require_user2 = __commonJS({
+var require_user3 = __commonJS({
   "node_modules/jira.js/out/version3/models/user.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -59142,6 +61400,8 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_actorsMap2(), exports);
     tslib_1.__exportStar(require_addField2(), exports);
     tslib_1.__exportStar(require_addGroup2(), exports);
+    tslib_1.__exportStar(require_addNotificationsDetails2(), exports);
+    tslib_1.__exportStar(require_addSecuritySchemeLevelsRequest2(), exports);
     tslib_1.__exportStar(require_announcementBannerConfiguration2(), exports);
     tslib_1.__exportStar(require_announcementBannerConfigurationUpdate2(), exports);
     tslib_1.__exportStar(require_application2(), exports);
@@ -59151,17 +61411,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_associateFieldConfigurationsWithIssueTypesRequest2(), exports);
     tslib_1.__exportStar(require_attachment2(), exports);
     tslib_1.__exportStar(require_attachmentArchive2(), exports);
-    tslib_1.__exportStar(require_containerForProjectFeatures2(), exports);
-    tslib_1.__exportStar(require_projectComponent2(), exports);
-    tslib_1.__exportStar(require_licenseMetric2(), exports);
-    tslib_1.__exportStar(require_jqlFunctionPrecomputationUpdateRequest2(), exports);
-    tslib_1.__exportStar(require_jqlFunctionPrecomputationPage(), exports);
     tslib_1.__exportStar(require_attachmentArchiveEntry2(), exports);
-    tslib_1.__exportStar(require_notificationSchemeId2(), exports);
-    tslib_1.__exportStar(require_createNotificationSchemeDetails2(), exports);
-    tslib_1.__exportStar(require_notificationSchemeAndProjectMappingPage2(), exports);
-    tslib_1.__exportStar(require_updateNotificationSchemeDetails2(), exports);
-    tslib_1.__exportStar(require_addNotificationsDetails2(), exports);
     tslib_1.__exportStar(require_attachmentArchiveImpl2(), exports);
     tslib_1.__exportStar(require_attachmentArchiveItemReadable2(), exports);
     tslib_1.__exportStar(require_attachmentArchiveMetadataReadable2(), exports);
@@ -59203,6 +61453,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_connectModule2(), exports);
     tslib_1.__exportStar(require_connectModules2(), exports);
     tslib_1.__exportStar(require_connectWorkflowTransitionRule2(), exports);
+    tslib_1.__exportStar(require_containerForProjectFeatures2(), exports);
     tslib_1.__exportStar(require_containerForRegisteredWebhooks2(), exports);
     tslib_1.__exportStar(require_containerForWebhookIDs2(), exports);
     tslib_1.__exportStar(require_containerOfWorkflowSchemeAssociations2(), exports);
@@ -59215,6 +61466,8 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_createdIssue2(), exports);
     tslib_1.__exportStar(require_createdIssues2(), exports);
     tslib_1.__exportStar(require_createIssueAdjustmentDetails2(), exports);
+    tslib_1.__exportStar(require_createIssueSecuritySchemeDetails2(), exports);
+    tslib_1.__exportStar(require_createNotificationSchemeDetails2(), exports);
     tslib_1.__exportStar(require_createPriorityDetails2(), exports);
     tslib_1.__exportStar(require_createProjectDetails2(), exports);
     tslib_1.__exportStar(require_createResolutionDetails2(), exports);
@@ -59227,7 +61480,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_createWorkflowTransitionRule2(), exports);
     tslib_1.__exportStar(require_createWorkflowTransitionRulesDetails2(), exports);
     tslib_1.__exportStar(require_createWorkflowTransitionScreenDetails2(), exports);
-    tslib_1.__exportStar(require_customContextVariable(), exports);
+    tslib_1.__exportStar(require_customContextVariable2(), exports);
     tslib_1.__exportStar(require_customFieldConfigurations2(), exports);
     tslib_1.__exportStar(require_customFieldContext2(), exports);
     tslib_1.__exportStar(require_customFieldContextDefaultValue2(), exports);
@@ -59257,6 +61510,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_dashboardGadgetSettings2(), exports);
     tslib_1.__exportStar(require_dashboardGadgetUpdateRequest2(), exports);
     tslib_1.__exportStar(require_dashboardUser2(), exports);
+    tslib_1.__exportStar(require_defaultLevelValue2(), exports);
     tslib_1.__exportStar(require_defaultShareScope2(), exports);
     tslib_1.__exportStar(require_defaultWorkflow2(), exports);
     tslib_1.__exportStar(require_deleteAndReplaceVersion3(), exports);
@@ -59284,7 +61538,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_fieldLastUsed2(), exports);
     tslib_1.__exportStar(require_fieldMetadata2(), exports);
     tslib_1.__exportStar(require_fieldReferenceData2(), exports);
-    tslib_1.__exportStar(require_fields2(), exports);
+    tslib_1.__exportStar(require_fields3(), exports);
     tslib_1.__exportStar(require_fieldUpdateOperation2(), exports);
     tslib_1.__exportStar(require_fieldValueClause2(), exports);
     tslib_1.__exportStar(require_fieldWasClause2(), exports);
@@ -59292,7 +61546,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_filterDetails2(), exports);
     tslib_1.__exportStar(require_filterSubscription2(), exports);
     tslib_1.__exportStar(require_filterSubscriptionsList2(), exports);
-    tslib_1.__exportStar(require_fixVersion2(), exports);
+    tslib_1.__exportStar(require_fixVersion3(), exports);
     tslib_1.__exportStar(require_foundGroup2(), exports);
     tslib_1.__exportStar(require_foundGroups2(), exports);
     tslib_1.__exportStar(require_foundUsers2(), exports);
@@ -59340,6 +61594,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_issuePickerSuggestionsIssueType2(), exports);
     tslib_1.__exportStar(require_issuesAndJQLQueries2(), exports);
     tslib_1.__exportStar(require_issueSecurityLevelMember2(), exports);
+    tslib_1.__exportStar(require_issueSecuritySchemeToProjectMapping2(), exports);
     tslib_1.__exportStar(require_issuesJqlMetaData2(), exports);
     tslib_1.__exportStar(require_issuesMeta2(), exports);
     tslib_1.__exportStar(require_issuesUpdate2(), exports);
@@ -59387,6 +61642,10 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_jiraExpressionsComplexityValue2(), exports);
     tslib_1.__exportStar(require_jiraExpressionValidationError2(), exports);
     tslib_1.__exportStar(require_jiraStatus2(), exports);
+    tslib_1.__exportStar(require_jqlFunctionPrecomputation2(), exports);
+    tslib_1.__exportStar(require_jqlFunctionPrecomputationPage(), exports);
+    tslib_1.__exportStar(require_jqlFunctionPrecomputationUpdate2(), exports);
+    tslib_1.__exportStar(require_jqlFunctionPrecomputationUpdateRequest2(), exports);
     tslib_1.__exportStar(require_jQLPersonalDataMigrationRequest2(), exports);
     tslib_1.__exportStar(require_jqlQueriesToParse2(), exports);
     tslib_1.__exportStar(require_jqlQueriesToSanitize2(), exports);
@@ -59407,6 +61666,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_keywordOperand2(), exports);
     tslib_1.__exportStar(require_license2(), exports);
     tslib_1.__exportStar(require_licensedApplication2(), exports);
+    tslib_1.__exportStar(require_licenseMetric2(), exports);
     tslib_1.__exportStar(require_linkedIssue2(), exports);
     tslib_1.__exportStar(require_linkGroup3(), exports);
     tslib_1.__exportStar(require_linkIssueRequestJson2(), exports);
@@ -59426,9 +61686,15 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_notificationRecipients2(), exports);
     tslib_1.__exportStar(require_notificationRecipientsRestrictions2(), exports);
     tslib_1.__exportStar(require_notificationScheme2(), exports);
+    tslib_1.__exportStar(require_notificationSchemeAndProjectMapping2(), exports);
+    tslib_1.__exportStar(require_notificationSchemeAndProjectMappingPage2(), exports);
     tslib_1.__exportStar(require_notificationSchemeEvent2(), exports);
+    tslib_1.__exportStar(require_notificationSchemeEventDetails2(), exports);
+    tslib_1.__exportStar(require_notificationSchemeEventTypeId2(), exports);
+    tslib_1.__exportStar(require_notificationSchemeId2(), exports);
+    tslib_1.__exportStar(require_notificationSchemeNotificationDetails2(), exports);
     tslib_1.__exportStar(require_operationMessage2(), exports);
-    tslib_1.__exportStar(require_operations2(), exports);
+    tslib_1.__exportStar(require_operations3(), exports);
     tslib_1.__exportStar(require_orderOfCustomFieldOptions2(), exports);
     tslib_1.__exportStar(require_orderOfIssueTypes2(), exports);
     tslib_1.__exportStar(require_pageBeanFieldConfigurationDetails(), exports);
@@ -59456,6 +61722,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_pageIssueAdjustmentDetails2(), exports);
     tslib_1.__exportStar(require_pageIssueFieldOption2(), exports);
     tslib_1.__exportStar(require_pageIssueSecurityLevelMember2(), exports);
+    tslib_1.__exportStar(require_pageIssueSecuritySchemeToProjectMapping2(), exports);
     tslib_1.__exportStar(require_pageIssueTypeScheme2(), exports);
     tslib_1.__exportStar(require_pageIssueTypeSchemeMapping2(), exports);
     tslib_1.__exportStar(require_pageIssueTypeSchemeProjects2(), exports);
@@ -59463,6 +61730,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_pageIssueTypeScreenSchemeItem2(), exports);
     tslib_1.__exportStar(require_pageIssueTypeScreenSchemesProjects2(), exports);
     tslib_1.__exportStar(require_pageIssueTypeToContextMapping2(), exports);
+    tslib_1.__exportStar(require_pageJqlFunctionPrecomputation2(), exports);
     tslib_1.__exportStar(require_pageNotificationScheme2(), exports);
     tslib_1.__exportStar(require_pageOfChangelogs2(), exports);
     tslib_1.__exportStar(require_pageOfComments2(), exports);
@@ -59476,6 +61744,9 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_pageScreen2(), exports);
     tslib_1.__exportStar(require_pageScreenScheme2(), exports);
     tslib_1.__exportStar(require_pageScreenWithTab2(), exports);
+    tslib_1.__exportStar(require_pageSecurityLevel2(), exports);
+    tslib_1.__exportStar(require_pageSecurityLevelMember2(), exports);
+    tslib_1.__exportStar(require_pageSecuritySchemeWithProjects2(), exports);
     tslib_1.__exportStar(require_pageString2(), exports);
     tslib_1.__exportStar(require_pageUiModificationDetails2(), exports);
     tslib_1.__exportStar(require_pageUser2(), exports);
@@ -59499,9 +61770,10 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_permittedProjects2(), exports);
     tslib_1.__exportStar(require_priority2(), exports);
     tslib_1.__exportStar(require_priorityId2(), exports);
-    tslib_1.__exportStar(require_project3(), exports);
+    tslib_1.__exportStar(require_project4(), exports);
     tslib_1.__exportStar(require_projectAvatars4(), exports);
     tslib_1.__exportStar(require_projectCategory2(), exports);
+    tslib_1.__exportStar(require_projectComponent2(), exports);
     tslib_1.__exportStar(require_projectDetails2(), exports);
     tslib_1.__exportStar(require_projectEmailAddress2(), exports);
     tslib_1.__exportStar(require_projectFeature2(), exports);
@@ -59569,9 +61841,16 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_searchRequest2(), exports);
     tslib_1.__exportStar(require_searchResults3(), exports);
     tslib_1.__exportStar(require_securityLevel2(), exports);
+    tslib_1.__exportStar(require_securityLevelMember2(), exports);
     tslib_1.__exportStar(require_securityScheme2(), exports);
+    tslib_1.__exportStar(require_securitySchemeId2(), exports);
+    tslib_1.__exportStar(require_securitySchemeLevel2(), exports);
+    tslib_1.__exportStar(require_securitySchemeLevelMember2(), exports);
+    tslib_1.__exportStar(require_securitySchemeMembersRequest2(), exports);
     tslib_1.__exportStar(require_securitySchemes2(), exports);
+    tslib_1.__exportStar(require_securitySchemeWithProjects2(), exports);
     tslib_1.__exportStar(require_serverInformation2(), exports);
+    tslib_1.__exportStar(require_setDefaultLevelsRequest2(), exports);
     tslib_1.__exportStar(require_setDefaultPriorityRequest2(), exports);
     tslib_1.__exportStar(require_setDefaultResolutionRequest2(), exports);
     tslib_1.__exportStar(require_sharePermission2(), exports);
@@ -59581,8 +61860,8 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_simpleLink3(), exports);
     tslib_1.__exportStar(require_simpleListWrapperApplicationRole2(), exports);
     tslib_1.__exportStar(require_simpleListWrapperGroupName2(), exports);
-    tslib_1.__exportStar(require_status4(), exports);
-    tslib_1.__exportStar(require_statusCategory2(), exports);
+    tslib_1.__exportStar(require_status5(), exports);
+    tslib_1.__exportStar(require_statusCategory3(), exports);
     tslib_1.__exportStar(require_statusCreate2(), exports);
     tslib_1.__exportStar(require_statusCreateRequest2(), exports);
     tslib_1.__exportStar(require_statusDetails2(), exports);
@@ -59610,6 +61889,9 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_updatedProjectCategory2(), exports);
     tslib_1.__exportStar(require_updateFieldConfigurationSchemeDetails2(), exports);
     tslib_1.__exportStar(require_updateIssueAdjustmentDetails2(), exports);
+    tslib_1.__exportStar(require_updateIssueSecurityLevelDetails2(), exports);
+    tslib_1.__exportStar(require_updateIssueSecuritySchemeRequest2(), exports);
+    tslib_1.__exportStar(require_updateNotificationSchemeDetails2(), exports);
     tslib_1.__exportStar(require_updatePriorityDetails2(), exports);
     tslib_1.__exportStar(require_updateProjectDetails2(), exports);
     tslib_1.__exportStar(require_updateResolutionDetails2(), exports);
@@ -59618,7 +61900,7 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_updateScreenTypes2(), exports);
     tslib_1.__exportStar(require_updateUiModificationDetails2(), exports);
     tslib_1.__exportStar(require_updateUserToGroup2(), exports);
-    tslib_1.__exportStar(require_user2(), exports);
+    tslib_1.__exportStar(require_user3(), exports);
     tslib_1.__exportStar(require_userAvatarUrls3(), exports);
     tslib_1.__exportStar(require_userDetails2(), exports);
     tslib_1.__exportStar(require_userKey2(), exports);
@@ -59726,6 +62008,14 @@ var require_addIssueTypesToIssueTypeScheme2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/addNotifications.js
+var require_addNotifications2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/addNotifications.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/addProjectRoleActorsToRole.js
 var require_addProjectRoleActorsToRole2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/addProjectRoleActorsToRole.js"(exports) {
@@ -59745,6 +62035,22 @@ var require_addScreenTab2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/addScreenTabField.js
 var require_addScreenTabField2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/addScreenTabField.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/addSecurityLevel.js
+var require_addSecurityLevel2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/addSecurityLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/addSecurityLevelMembers.js
+var require_addSecurityLevelMembers2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/addSecurityLevelMembers.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -59790,73 +62096,9 @@ var require_addWorklog2 = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/version3/parameters/updatePrecomputations.js
-var require_updatePrecomputations2 = __commonJS({
-  "node_modules/jira.js/out/version3/parameters/updatePrecomputations.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/parameters/getPrecomputations.js
-var require_getPrecomputations2 = __commonJS({
-  "node_modules/jira.js/out/version3/parameters/getPrecomputations.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/parameters/createNotificationScheme.js
-var require_createNotificationScheme2 = __commonJS({
-  "node_modules/jira.js/out/version3/parameters/createNotificationScheme.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/parameters/getNotificationSchemeToProjectMappings.js
-var require_getNotificationSchemeToProjectMappings2 = __commonJS({
-  "node_modules/jira.js/out/version3/parameters/getNotificationSchemeToProjectMappings.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/parameters/updateNotificationScheme.js
-var require_updateNotificationScheme2 = __commonJS({
-  "node_modules/jira.js/out/version3/parameters/updateNotificationScheme.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/parameters/addNotifications.js
-var require_addNotifications2 = __commonJS({
-  "node_modules/jira.js/out/version3/parameters/addNotifications.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
 // node_modules/jira.js/out/version3/parameters/analyseExpression.js
 var require_analyseExpression2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/analyseExpression.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/parameters/deleteNotificationScheme.js
-var require_deleteNotificationScheme2 = __commonJS({
-  "node_modules/jira.js/out/version3/parameters/deleteNotificationScheme.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// node_modules/jira.js/out/version3/parameters/removeNotificationFromNotificationScheme.js
-var require_removeNotificationFromNotificationScheme2 = __commonJS({
-  "node_modules/jira.js/out/version3/parameters/removeNotificationFromNotificationScheme.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -60142,6 +62384,14 @@ var require_createIssues2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/createIssueSecurityScheme.js
+var require_createIssueSecurityScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/createIssueSecurityScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/createIssueType.js
 var require_createIssueType2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/createIssueType.js"(exports) {
@@ -60169,6 +62419,14 @@ var require_createIssueTypeScheme2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/createIssueTypeScreenScheme.js
 var require_createIssueTypeScreenScheme2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/createIssueTypeScreenScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/createNotificationScheme.js
+var require_createNotificationScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/createNotificationScheme.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -60345,6 +62603,14 @@ var require_deleteAddonProperty2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/deleteAndReplaceVersion.js
 var require_deleteAndReplaceVersion4 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/deleteAndReplaceVersion.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/deleteAppProperty.js
+var require_deleteAppProperty2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/deleteAppProperty.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -60566,6 +62832,14 @@ var require_deleteIssueTypeScreenScheme2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/deleteNotificationScheme.js
+var require_deleteNotificationScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/deleteNotificationScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/deletePermissionScheme.js
 var require_deletePermissionScheme2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/deletePermissionScheme.js"(exports) {
@@ -60681,6 +62955,14 @@ var require_deleteScreenScheme2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/deleteScreenTab.js
 var require_deleteScreenTab2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/deleteScreenTab.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/deleteSecurityScheme.js
+var require_deleteSecurityScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/deleteSecurityScheme.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -61339,7 +63621,7 @@ var require_getCurrentUser2 = __commonJS({
         Expand2["Groups"] = "groups";
         Expand2["ApplicationRoles"] = "applicationRoles";
       })(Expand = GetCurrentUser2.Expand || (GetCurrentUser2.Expand = {}));
-    })(GetCurrentUser = exports.GetCurrentUser || (exports.GetCurrentUser = {}));
+    })(GetCurrentUser || (exports.GetCurrentUser = GetCurrentUser = {}));
   }
 });
 
@@ -61585,7 +63867,7 @@ var require_getIssue3 = __commonJS({
         Expand2["Changelog"] = "changelog";
         Expand2["VersionedRepresentations"] = "versionedRepresentations";
       })(Expand = GetIssue2.Expand || (GetIssue2.Expand = {}));
-    })(GetIssue = exports.GetIssue || (exports.GetIssue = {}));
+    })(GetIssue || (exports.GetIssue = GetIssue = {}));
   }
 });
 
@@ -61813,6 +64095,14 @@ var require_getNotificationSchemes2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/getNotificationSchemeToProjectMappings.js
+var require_getNotificationSchemeToProjectMappings2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/getNotificationSchemeToProjectMappings.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/getOptionsForContext.js
 var require_getOptionsForContext2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/getOptionsForContext.js"(exports) {
@@ -61856,6 +64146,14 @@ var require_getPermissionSchemeGrants2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/getPermittedProjects.js
 var require_getPermittedProjects2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/getPermittedProjects.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/getPrecomputations.js
+var require_getPrecomputations2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/getPrecomputations.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -62040,7 +64338,7 @@ var require_getRecent2 = __commonJS({
         Expand2["Insight"] = "insight";
         Expand2["All"] = "*";
       })(Expand = GetRecent2.Expand || (GetRecent2.Expand = {}));
-    })(GetRecent = exports.GetRecent || (exports.GetRecent = {}));
+    })(GetRecent || (exports.GetRecent = GetRecent = {}));
   }
 });
 
@@ -62087,6 +64385,22 @@ var require_getScreenSchemes2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/getScreensForField.js
 var require_getScreensForField2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/getScreensForField.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/getSecurityLevelMembers.js
+var require_getSecurityLevelMembers2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/getSecurityLevelMembers.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/getSecurityLevels.js
+var require_getSecurityLevels2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/getSecurityLevels.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -62193,7 +64507,7 @@ var require_getUser2 = __commonJS({
         Expand2["Groups"] = "groups";
         Expand2["ApplicationRoles"] = "applicationRoles";
       })(Expand = GetUser2.Expand || (GetUser2.Expand = {}));
-    })(GetUser = exports.GetUser || (exports.GetUser = {}));
+    })(GetUser || (exports.GetUser = GetUser = {}));
   }
 });
 
@@ -62525,6 +64839,14 @@ var require_putAddonProperty2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/putAppProperty.js
+var require_putAppProperty2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/putAppProperty.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/refreshWebhooks.js
 var require_refreshWebhooks2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/refreshWebhooks.js"(exports) {
@@ -62605,6 +64927,14 @@ var require_removeIssueTypesFromGlobalFieldConfigurationScheme2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/removeLevel.js
+var require_removeLevel2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/removeLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/removeMappingsFromIssueTypeScreenScheme.js
 var require_removeMappingsFromIssueTypeScreenScheme2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/removeMappingsFromIssueTypeScreenScheme.js"(exports) {
@@ -62613,9 +64943,25 @@ var require_removeMappingsFromIssueTypeScreenScheme2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/removeMemberFromSecurityLevel.js
+var require_removeMemberFromSecurityLevel2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/removeMemberFromSecurityLevel.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/removeModules.js
 var require_removeModules2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/removeModules.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/removeNotificationFromNotificationScheme.js
+var require_removeNotificationFromNotificationScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/removeNotificationFromNotificationScheme.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -62789,9 +65135,25 @@ var require_searchProjects2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/searchProjectsUsingSecuritySchemes.js
+var require_searchProjectsUsingSecuritySchemes2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/searchProjectsUsingSecuritySchemes.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/searchResolutions.js
 var require_searchResolutions2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/searchResolutions.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/searchSecuritySchemes.js
+var require_searchSecuritySchemes2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/searchSecuritySchemes.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -62848,6 +65210,14 @@ var require_setCommentProperty2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/setDashboardItemProperty.js
 var require_setDashboardItemProperty2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/setDashboardItemProperty.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/setDefaultLevels.js
+var require_setDefaultLevels2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/setDefaultLevels.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -63197,6 +65567,14 @@ var require_updateIssueLinkType2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/updateIssueSecurityScheme.js
+var require_updateIssueSecurityScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/updateIssueSecurityScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/updateIssueType.js
 var require_updateIssueType2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/updateIssueType.js"(exports) {
@@ -63229,9 +65607,25 @@ var require_updateMultipleCustomFieldValues2 = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/version3/parameters/updateNotificationScheme.js
+var require_updateNotificationScheme2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/updateNotificationScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // node_modules/jira.js/out/version3/parameters/updatePermissionScheme.js
 var require_updatePermissionScheme2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/updatePermissionScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/updatePrecomputations.js
+var require_updatePrecomputations2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/updatePrecomputations.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -63312,6 +65706,14 @@ var require_updateScreen2 = __commonJS({
 // node_modules/jira.js/out/version3/parameters/updateScreenScheme.js
 var require_updateScreenScheme2 = __commonJS({
   "node_modules/jira.js/out/version3/parameters/updateScreenScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/jira.js/out/version3/parameters/updateSecurityLevel.js
+var require_updateSecurityLevel2 = __commonJS({
+  "node_modules/jira.js/out/version3/parameters/updateSecurityLevel.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
@@ -63418,23 +65820,18 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_addGadget2(), exports);
     tslib_1.__exportStar(require_addIssueTypesToContext2(), exports);
     tslib_1.__exportStar(require_addIssueTypesToIssueTypeScheme2(), exports);
+    tslib_1.__exportStar(require_addNotifications2(), exports);
     tslib_1.__exportStar(require_addProjectRoleActorsToRole2(), exports);
     tslib_1.__exportStar(require_addScreenTab2(), exports);
     tslib_1.__exportStar(require_addScreenTabField2(), exports);
+    tslib_1.__exportStar(require_addSecurityLevel2(), exports);
+    tslib_1.__exportStar(require_addSecurityLevelMembers2(), exports);
     tslib_1.__exportStar(require_addSharePermission2(), exports);
     tslib_1.__exportStar(require_addUserToGroup2(), exports);
     tslib_1.__exportStar(require_addVote2(), exports);
     tslib_1.__exportStar(require_addWatcher2(), exports);
     tslib_1.__exportStar(require_addWorklog2(), exports);
-    tslib_1.__exportStar(require_updatePrecomputations2(), exports);
-    tslib_1.__exportStar(require_getPrecomputations2(), exports);
-    tslib_1.__exportStar(require_createNotificationScheme2(), exports);
-    tslib_1.__exportStar(require_getNotificationSchemeToProjectMappings2(), exports);
-    tslib_1.__exportStar(require_updateNotificationScheme2(), exports);
-    tslib_1.__exportStar(require_addNotifications2(), exports);
     tslib_1.__exportStar(require_analyseExpression2(), exports);
-    tslib_1.__exportStar(require_deleteNotificationScheme2(), exports);
-    tslib_1.__exportStar(require_removeNotificationFromNotificationScheme2(), exports);
     tslib_1.__exportStar(require_appendMappingsForIssueTypeScreenScheme2(), exports);
     tslib_1.__exportStar(require_archiveProject2(), exports);
     tslib_1.__exportStar(require_assignFieldConfigurationSchemeToProject2(), exports);
@@ -63473,10 +65870,12 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_createIssueFieldOption2(), exports);
     tslib_1.__exportStar(require_createIssueLinkType2(), exports);
     tslib_1.__exportStar(require_createIssues2(), exports);
+    tslib_1.__exportStar(require_createIssueSecurityScheme2(), exports);
     tslib_1.__exportStar(require_createIssueType2(), exports);
     tslib_1.__exportStar(require_createIssueTypeAvatar2(), exports);
     tslib_1.__exportStar(require_createIssueTypeScheme2(), exports);
     tslib_1.__exportStar(require_createIssueTypeScreenScheme2(), exports);
+    tslib_1.__exportStar(require_createNotificationScheme2(), exports);
     tslib_1.__exportStar(require_createOrUpdateRemoteIssueLink2(), exports);
     tslib_1.__exportStar(require_createPermissionGrant2(), exports);
     tslib_1.__exportStar(require_createPermissionScheme2(), exports);
@@ -63499,6 +65898,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_deleteActor2(), exports);
     tslib_1.__exportStar(require_deleteAddonProperty2(), exports);
     tslib_1.__exportStar(require_deleteAndReplaceVersion4(), exports);
+    tslib_1.__exportStar(require_deleteAppProperty2(), exports);
     tslib_1.__exportStar(require_deleteAvatar2(), exports);
     tslib_1.__exportStar(require_deleteComment2(), exports);
     tslib_1.__exportStar(require_deleteCommentProperty2(), exports);
@@ -63527,6 +65927,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_deleteIssueTypeProperty2(), exports);
     tslib_1.__exportStar(require_deleteIssueTypeScheme2(), exports);
     tslib_1.__exportStar(require_deleteIssueTypeScreenScheme2(), exports);
+    tslib_1.__exportStar(require_deleteNotificationScheme2(), exports);
     tslib_1.__exportStar(require_deletePermissionScheme2(), exports);
     tslib_1.__exportStar(require_deletePermissionSchemeEntity2(), exports);
     tslib_1.__exportStar(require_deletePriority2(), exports);
@@ -63542,6 +65943,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_deleteScreen2(), exports);
     tslib_1.__exportStar(require_deleteScreenScheme2(), exports);
     tslib_1.__exportStar(require_deleteScreenTab2(), exports);
+    tslib_1.__exportStar(require_deleteSecurityScheme2(), exports);
     tslib_1.__exportStar(require_deleteSharePermission2(), exports);
     tslib_1.__exportStar(require_deleteStatusesById2(), exports);
     tslib_1.__exportStar(require_deleteUiModification2(), exports);
@@ -63681,12 +66083,14 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_getNotificationScheme2(), exports);
     tslib_1.__exportStar(require_getNotificationSchemeForProject2(), exports);
     tslib_1.__exportStar(require_getNotificationSchemes2(), exports);
+    tslib_1.__exportStar(require_getNotificationSchemeToProjectMappings2(), exports);
     tslib_1.__exportStar(require_getOptionsForContext2(), exports);
     tslib_1.__exportStar(require_getOptionsForField2(), exports);
     tslib_1.__exportStar(require_getPermissionScheme2(), exports);
     tslib_1.__exportStar(require_getPermissionSchemeGrant2(), exports);
     tslib_1.__exportStar(require_getPermissionSchemeGrants2(), exports);
     tslib_1.__exportStar(require_getPermittedProjects2(), exports);
+    tslib_1.__exportStar(require_getPrecomputations2(), exports);
     tslib_1.__exportStar(require_getPreference2(), exports);
     tslib_1.__exportStar(require_getPriority2(), exports);
     tslib_1.__exportStar(require_getProject2(), exports);
@@ -63714,6 +66118,8 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_getScreens2(), exports);
     tslib_1.__exportStar(require_getScreenSchemes2(), exports);
     tslib_1.__exportStar(require_getScreensForField2(), exports);
+    tslib_1.__exportStar(require_getSecurityLevelMembers2(), exports);
+    tslib_1.__exportStar(require_getSecurityLevels2(), exports);
     tslib_1.__exportStar(require_getSecurityLevelsForProject2(), exports);
     tslib_1.__exportStar(require_getSelectableIssueFieldOptions2(), exports);
     tslib_1.__exportStar(require_getSharePermission2(), exports);
@@ -63767,6 +66173,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_partialUpdateProjectRole2(), exports);
     tslib_1.__exportStar(require_publishDraftWorkflowScheme4(), exports);
     tslib_1.__exportStar(require_putAddonProperty2(), exports);
+    tslib_1.__exportStar(require_putAppProperty2(), exports);
     tslib_1.__exportStar(require_refreshWebhooks2(), exports);
     tslib_1.__exportStar(require_registerDynamicWebhooks2(), exports);
     tslib_1.__exportStar(require_registerModules2(), exports);
@@ -63778,8 +66185,11 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_removeIssueTypesFromContext2(), exports);
     tslib_1.__exportStar(require_removeIssueTypesFromGlobalFieldConfigurationScheme2(), exports);
     tslib_1.__exportStar(require_removeIssueTypesFromGlobalFieldConfigurationScheme2(), exports);
+    tslib_1.__exportStar(require_removeLevel2(), exports);
     tslib_1.__exportStar(require_removeMappingsFromIssueTypeScreenScheme2(), exports);
+    tslib_1.__exportStar(require_removeMemberFromSecurityLevel2(), exports);
     tslib_1.__exportStar(require_removeModules2(), exports);
+    tslib_1.__exportStar(require_removeNotificationFromNotificationScheme2(), exports);
     tslib_1.__exportStar(require_removePreference2(), exports);
     tslib_1.__exportStar(require_removeProjectCategory2(), exports);
     tslib_1.__exportStar(require_removeScreenTabField2(), exports);
@@ -63801,7 +66211,9 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_searchForIssuesUsingJqlPost2(), exports);
     tslib_1.__exportStar(require_searchPriorities2(), exports);
     tslib_1.__exportStar(require_searchProjects2(), exports);
+    tslib_1.__exportStar(require_searchProjectsUsingSecuritySchemes2(), exports);
     tslib_1.__exportStar(require_searchResolutions2(), exports);
+    tslib_1.__exportStar(require_searchSecuritySchemes2(), exports);
     tslib_1.__exportStar(require_selectTimeTrackingImplementation2(), exports);
     tslib_1.__exportStar(require_setActors2(), exports);
     tslib_1.__exportStar(require_setApplicationProperty2(), exports);
@@ -63809,6 +66221,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_setColumns2(), exports);
     tslib_1.__exportStar(require_setCommentProperty2(), exports);
     tslib_1.__exportStar(require_setDashboardItemProperty2(), exports);
+    tslib_1.__exportStar(require_setDefaultLevels2(), exports);
     tslib_1.__exportStar(require_setDefaultPriority2(), exports);
     tslib_1.__exportStar(require_setDefaultResolution2(), exports);
     tslib_1.__exportStar(require_setDefaultShareScope2(), exports);
@@ -63855,11 +66268,14 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_updateIssueFieldOption2(), exports);
     tslib_1.__exportStar(require_updateIssueFields2(), exports);
     tslib_1.__exportStar(require_updateIssueLinkType2(), exports);
+    tslib_1.__exportStar(require_updateIssueSecurityScheme2(), exports);
     tslib_1.__exportStar(require_updateIssueType2(), exports);
     tslib_1.__exportStar(require_updateIssueTypeScheme2(), exports);
     tslib_1.__exportStar(require_updateIssueTypeScreenScheme2(), exports);
     tslib_1.__exportStar(require_updateMultipleCustomFieldValues2(), exports);
+    tslib_1.__exportStar(require_updateNotificationScheme2(), exports);
     tslib_1.__exportStar(require_updatePermissionScheme2(), exports);
+    tslib_1.__exportStar(require_updatePrecomputations2(), exports);
     tslib_1.__exportStar(require_updatePriority2(), exports);
     tslib_1.__exportStar(require_updateProject2(), exports);
     tslib_1.__exportStar(require_updateProjectAvatar2(), exports);
@@ -63870,6 +66286,7 @@ var require_parameters3 = __commonJS({
     tslib_1.__exportStar(require_updateResolution2(), exports);
     tslib_1.__exportStar(require_updateScreen2(), exports);
     tslib_1.__exportStar(require_updateScreenScheme2(), exports);
+    tslib_1.__exportStar(require_updateSecurityLevel2(), exports);
     tslib_1.__exportStar(require_updateStatuses2(), exports);
     tslib_1.__exportStar(require_updateUiModification2(), exports);
     tslib_1.__exportStar(require_updateVersion2(), exports);
@@ -63938,6 +66355,7 @@ var require_version32 = __commonJS({
     tslib_1.__exportStar(require_jiraExpressions2(), exports);
     tslib_1.__exportStar(require_jiraSettings2(), exports);
     tslib_1.__exportStar(require_jQL2(), exports);
+    tslib_1.__exportStar(require_jqlFunctionsApps2(), exports);
     tslib_1.__exportStar(require_labels2(), exports);
     tslib_1.__exportStar(require_licenseMetrics2(), exports);
     tslib_1.__exportStar(require_myself2(), exports);
@@ -63961,7 +66379,7 @@ var require_version32 = __commonJS({
     tslib_1.__exportStar(require_screenTabFields2(), exports);
     tslib_1.__exportStar(require_screenTabs2(), exports);
     tslib_1.__exportStar(require_serverInfo2(), exports);
-    tslib_1.__exportStar(require_status3(), exports);
+    tslib_1.__exportStar(require_status4(), exports);
     tslib_1.__exportStar(require_tasks2(), exports);
     tslib_1.__exportStar(require_timeTracking2(), exports);
     tslib_1.__exportStar(require_uIModificationsApps2(), exports);
@@ -65333,7 +67751,7 @@ var require_linkGroup4 = __commonJS({
 });
 
 // node_modules/jira.js/out/serviceDesk/models/operations.js
-var require_operations3 = __commonJS({
+var require_operations4 = __commonJS({
   "node_modules/jira.js/out/serviceDesk/models/operations.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -65693,7 +68111,7 @@ var require_source = __commonJS({
 });
 
 // node_modules/jira.js/out/serviceDesk/models/statusCategory.js
-var require_statusCategory3 = __commonJS({
+var require_statusCategory4 = __commonJS({
   "node_modules/jira.js/out/serviceDesk/models/statusCategory.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -65709,7 +68127,7 @@ var require_statusDetails3 = __commonJS({
 });
 
 // node_modules/jira.js/out/serviceDesk/models/user.js
-var require_user3 = __commonJS({
+var require_user4 = __commonJS({
   "node_modules/jira.js/out/serviceDesk/models/user.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -65792,7 +68210,7 @@ var require_models4 = __commonJS({
     tslib_1.__exportStar(require_linkableCustomerRequestLink(), exports);
     tslib_1.__exportStar(require_linkableUserLink(), exports);
     tslib_1.__exportStar(require_linkGroup4(), exports);
-    tslib_1.__exportStar(require_operations3(), exports);
+    tslib_1.__exportStar(require_operations4(), exports);
     tslib_1.__exportStar(require_organization2(), exports);
     tslib_1.__exportStar(require_organizationCreate(), exports);
     tslib_1.__exportStar(require_organizationServiceDeskUpdate(), exports);
@@ -65837,9 +68255,9 @@ var require_models4 = __commonJS({
     tslib_1.__exportStar(require_slaInformationOngoingCycle(), exports);
     tslib_1.__exportStar(require_softwareInfo(), exports);
     tslib_1.__exportStar(require_source(), exports);
-    tslib_1.__exportStar(require_statusCategory3(), exports);
+    tslib_1.__exportStar(require_statusCategory4(), exports);
     tslib_1.__exportStar(require_statusDetails3(), exports);
-    tslib_1.__exportStar(require_user3(), exports);
+    tslib_1.__exportStar(require_user4(), exports);
     tslib_1.__exportStar(require_userDetails3(), exports);
     tslib_1.__exportStar(require_userLink(), exports);
     tslib_1.__exportStar(require_usersOrganizationUpdate(), exports);
@@ -66633,7 +69051,7 @@ var require_createClient = __commonJS({
       ClientType2["Version2"] = "version2";
       ClientType2["Version3"] = "version3";
       ClientType2["ServiceDesk"] = "serviceDesk";
-    })(ClientType = exports.ClientType || (exports.ClientType = {}));
+    })(ClientType || (exports.ClientType = ClientType = {}));
     function createClient(clientType, config) {
       switch (clientType) {
         case ClientType.Agile:
@@ -67568,7 +69986,7 @@ var require_toolrunner = __commonJS({
       return args;
     }
     exports.argStringToArray = argStringToArray;
-    var ExecState = class extends events.EventEmitter {
+    var ExecState = class _ExecState extends events.EventEmitter {
       constructor(options, toolPath) {
         super();
         this.processClosed = false;
@@ -67595,7 +70013,7 @@ var require_toolrunner = __commonJS({
         if (this.processClosed) {
           this._setResult();
         } else if (this.processExited) {
-          this.timeout = timers_1.setTimeout(ExecState.HandleTimeout, this.delay, this);
+          this.timeout = timers_1.setTimeout(_ExecState.HandleTimeout, this.delay, this);
         }
       }
       _debug(message) {

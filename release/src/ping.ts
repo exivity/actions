@@ -9,7 +9,7 @@ export async function ping() {
 
   if (isDryRun()) {
     info(
-      `Would have dispatched workflow ${prepareWorkflowId} of exivity/${repo}#main`
+      `Would have dispatched workflow ${prepareWorkflowId} of exivity/${repo}#main`,
     )
     return
   }

@@ -10,7 +10,7 @@ type DiffableConfigKeys =
 type DiffableConfig = NonNullable<Config[DiffableConfigKeys]>
 
 export abstract class Diffable<
-  T extends DiffableConfigKeys
+  T extends DiffableConfigKeys,
 > extends GitHubSettingsPlugin<T> {
   async sync() {
     if (this.config) {
@@ -20,7 +20,7 @@ export abstract class Diffable<
         const existing = (existingRecords as any[]).find(
           (record: DiffableConfig[number]) => {
             return this.comparator(record, attrs)
-          }
+          },
         )
 
         if (!existing) {
@@ -32,7 +32,7 @@ export abstract class Diffable<
       ;(existingRecords as any[]).forEach((x: DiffableConfig[number]) => {
         if (
           !(this.config as any[]).find((y: DiffableConfig[number]) =>
-            this.comparator(x, y)
+            this.comparator(x, y),
           )
         ) {
           changes.push(this.remove(x))
@@ -49,17 +49,17 @@ export abstract class Diffable<
 
   abstract comparator(
     existing: DiffableConfig[number],
-    attrs: DiffableConfig[number]
+    attrs: DiffableConfig[number],
   ): boolean
 
   abstract changed(
     existing: DiffableConfig[number],
-    attrs: DiffableConfig[number]
+    attrs: DiffableConfig[number],
   ): boolean
 
   abstract update(
     existing: DiffableConfig[number],
-    attrs: DiffableConfig[number]
+    attrs: DiffableConfig[number],
   ): Promise<OctokitResponse>
 
   abstract add(attrs: DiffableConfig[number]): Promise<OctokitResponse>

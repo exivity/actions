@@ -23,7 +23,7 @@ export async function getIssuesFromIssueFile() {
       return content.split('\n')
     } catch (err) {
       throw new Error(
-        `Couldn\'t read releaseJiraKeys.md: ${JSON.stringify(err)}`
+        `Couldn\'t read releaseJiraKeys.md: ${JSON.stringify(err)}`,
       )
     }
   }
