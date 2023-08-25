@@ -12,11 +12,15 @@ To be determined based on your project setup.
 
 To incorporate this action in your workflows, use the following step:
 
-\```yaml
+```yaml
 
-- name: Trigger External Workflows uses: exivity/trigger-workflow@main with:
-  gh-token: ${{ secrets.GH_TOKEN }} repo: 'target-repo-name' workflow:
-  'desired-workflow-file.yml' # e.g. 'build.yml' \```
+- name: Trigger External Workflows
+  uses: exivity/trigger-workflow@main
+    with:
+      gh-token: ${{ secrets.GH_TOKEN }}
+      repo: 'target-repo-name'
+      workflow: 'desired-workflow-file.yml' # e.g. 'build.yml'
+```
 
 ### Inputs
 
