@@ -1,4 +1,4 @@
-name: 'trigger-workflows'
+name: 'trigger-workflow'
 description: 'Trigger workflows in other repositories'
 inputs:
   gh-token:

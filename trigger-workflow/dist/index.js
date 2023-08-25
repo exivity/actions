@@ -70163,7 +70163,7 @@ var require_exec = __commonJS({
   }
 });
 
-// trigger-workflows/src/index.ts
+// trigger-workflow/src/index.ts
 var import_core5 = __toESM(require_core());
 
 // lib/github.ts
@@ -70218,7 +70218,7 @@ var getOctoKitClient = () => {
   return (0, import_github.getOctokit)(getToken());
 };
 
-// trigger-workflows/src/index.ts
+// trigger-workflow/src/index.ts
 async function run() {
   try {
     const repo = (0, import_core5.getInput)("repo");
