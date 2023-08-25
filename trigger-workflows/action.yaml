@@ -13,5 +13,5 @@ inputs:
     required: false
     default: 'build.yml'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'index.js'
