@@ -322,10 +322,10 @@
   resolved "https://registry.yarnpkg.com/@types/js-yaml/-/js-yaml-4.0.6.tgz#4b3afd5158b8749095b1f096967b6d0f838d862f"
   integrity sha512-ACTuifTSIIbyksx2HTon3aFtCKWcID7/h3XEmRpDYdMCXxPbl+m9GteOJeaAkiAta/NJaSFuA7ahZ0NkwajDSw==
 
-"@types/mime@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@types/mime/-/mime-3.0.1.tgz#5f8f2bca0a5863cb69bc0b0acd88c96cb1d4ae10"
-  integrity sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==
+"@types/mime@3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/mime/-/mime-3.0.2.tgz#c1ae807f13d308ee7511a5b81c74f327028e66e8"
+  integrity sha512-Wj+fqpTLtTbG7c0tH47dkahefpLKEbB+xAZuLq7b4/IDHPl/n6VoXcyUQ2bypFlbSwvCr0y+bD4euTTqTJsPxQ==
 
 "@types/minimatch@5.1.2", "@types/minimatch@^5.1.2":
   version "5.1.2"
