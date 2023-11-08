@@ -60,7 +60,7 @@
     "@types/adm-zip": "0.5.4",
     "@types/glob": "8.1.0",
     "@types/js-yaml": "4.0.9",
-    "@types/mime": "3.0.3",
+    "@types/mime": "3.0.4",
     "@types/minimatch": "5.1.2",
     "@types/ramda": "0.29.8",
     "@types/node": "20.8.10",
