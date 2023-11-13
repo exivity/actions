@@ -470,7 +470,7 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-axios@^1.5.1:
+axios@^1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.1.tgz#76550d644bf0a2d469a01f9244db6753208397d7"
   integrity sha512-vfBmhDpKafglh0EldBEbVuoe7DyAavGSLWhuSm5ZSEKQnHhBf0xAAwybbNH1IkrJNGnS/VG4I5yxig1pCEXE4g==
@@ -953,12 +953,12 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-jira.js@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-3.0.0.tgz#c5a6a570201832e30b3fddba2c1e3ecf9d6fb3d9"
-  integrity sha512-7Tn76xsjbIfQwZ8GHePGG6SknwrQ1wBUr06cYhwyQUTB4PKM+cHJY2Kwa5GLA+4I0a7ILREICiuV7hMFUzIwkA==
+jira.js@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-3.0.1.tgz#ef0a586f65cd06e3a2ba82567dc387772b409bc1"
+  integrity sha512-pmOOT5EzGBay0w6NEQ42elK5zqaTBD7WJY0ImDJUf/YG/4T94lOZDRd0mLHy0lcromG9EeelQnR7JUKK3EiZpQ==
   dependencies:
-    axios "^1.5.1"
+    axios "^1.6.1"
     form-data "^4.0.0"
     tslib "^2.6.2"
 
