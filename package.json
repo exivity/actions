@@ -48,7 +48,7 @@
     "glob-promise": "6.0.5",
     "jira.js": "3.0.1",
     "js-yaml": "4.1.0",
-    "mime": "3.0.0",
+    "mime": "4.0.0",
     "minimatch": "8.0.3",
     "ramda": "0.29.1",
     "rcedit": "4.0.1",
