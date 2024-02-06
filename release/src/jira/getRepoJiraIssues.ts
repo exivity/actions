@@ -119,12 +119,11 @@ export const getRepoJiraIssues = async (repo: string) => {
   }
 }
 
-export type JiraIssue = ReturnType<typeof getRepoJiraIssues> extends Promise<
-  infer I
->
-  ? I extends { issues: infer Prop }
-    ? Prop extends (infer T)[]
-      ? T
+export type JiraIssue =
+  ReturnType<typeof getRepoJiraIssues> extends Promise<infer I>
+    ? I extends { issues: infer Prop }
+      ? Prop extends (infer T)[]
+        ? T
+        : never
       : never
     : never
-  : never

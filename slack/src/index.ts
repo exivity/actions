@@ -99,10 +99,10 @@ user attributes "name", "display_name", "real_name" or "email".`,
     status === 'success'
       ? '✅ *Build successful*\n\n'
       : status === 'failure'
-      ? '🚨 *Build failed*\n\n'
-      : status === 'cancelled'
-      ? '🚫 *Build cancelled*\n\n'
-      : ''
+        ? '🚨 *Build failed*\n\n'
+        : status === 'cancelled'
+          ? '🚫 *Build cancelled*\n\n'
+          : ''
   const prBlock = pr
     ? [
         {

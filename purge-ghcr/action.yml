@@ -7,13 +7,14 @@ inputs:
   name:
     description: The package name
     required: false
-  component:
-    description: The package name (deprecated)
+  purge-untagged:
+    description: Also purge untagged packages
     required: false
+    default: 'false'
   gh-token:
     description: The GitHub token with appropriate scope
     required: false
     default: ${{ github.token }}
 runs:
-  using: node16
+  using: node20
   main: dist/index.js
