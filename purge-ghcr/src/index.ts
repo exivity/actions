@@ -1,4 +1,4 @@
-import { info, setFailed } from '@actions/core'
+import { getBooleanInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { table } from '../../lib/core'
 import {
@@ -16,6 +16,7 @@ async function run() {
   const org = getOwnerInput('org')
   const name = getRepoInput('name')
   const ghToken = getToken()
+  const purgeUntagged = getBooleanInput('purge-untagged')
 
   const eventName = getEventName(['delete', 'workflow_dispatch'])
   const eventData = getEventData<typeof eventName>()
@@ -62,6 +63,17 @@ async function run() {
           '","',
         )}" matches and will be deleted`,
       )
+      await octokit.rest.packages.deletePackageVersionForOrg({
+        org,
+        package_type: 'container',
+        package_name: name,
+        package_version_id: version.id,
+      })
+    } else if (
+      purgeUntagged &&
+      version.metadata?.container?.tags?.length === 0
+    ) {
+      info(`🗑️ Package version ${version.id} is untagged and will be deleted`)
       await octokit.rest.packages.deletePackageVersionForOrg({
         org,
         package_type: 'container',

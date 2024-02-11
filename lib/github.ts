@@ -13,8 +13,8 @@ export type EventName = WebhookEventName | 'schedule'
 export type EventData<T extends EventName> = T extends WebhookEventName
   ? EventPayloadMap[T]
   : T extends 'schedule'
-  ? ScheduleEvent
-  : never
+    ? ScheduleEvent
+    : never
 
 type Options = {
   octokit: ReturnType<typeof getOctokit>

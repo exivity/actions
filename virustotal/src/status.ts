@@ -87,8 +87,8 @@ export async function writeStatus(
       result.status === 'pending'
         ? 'pending'
         : result.flagged === 0
-        ? 'success'
-        : 'failure',
+          ? 'success'
+          : 'failure',
     context: `virustotal (${result.filename})`,
     description:
       result.status === 'completed'

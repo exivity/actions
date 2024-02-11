@@ -30,8 +30,8 @@ export function getIssueType(issue: Version2Models.Issue): string {
   return issue.fields.issuetype.name === JiraIssueType.Feature
     ? 'feat'
     : issue.fields.issuetype.name === JiraIssueType.Bug
-    ? 'fix'
-    : 'chore'
+      ? 'fix'
+      : 'chore'
 }
 
 function isRegExpMatchArray(args: any): args is RegExpMatchArray {

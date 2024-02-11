@@ -21,8 +21,8 @@ export function inferVersionFromJiraIssues(from: string, issues: JiraIssue[]) {
   )
     ? 'major'
     : containsFeature(issues)
-    ? 'minor'
-    : 'patch'
+      ? 'minor'
+      : 'patch'
 
   const upcomingVersion = semver.inc(from, upcomingVersionIncrement)
 
