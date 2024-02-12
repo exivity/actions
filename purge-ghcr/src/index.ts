@@ -60,7 +60,7 @@ async function run() {
       info(
         `🗑️ Package version ${version.id} tagged with "${imageTag}" matches and will be deleted`,
       )
-      await octokit.rest.packages.deletePackageVersionForOrg({
+      octokit.rest.packages.deletePackageVersionForOrg({
         org,
         package_type: 'container',
         package_name: name,
