@@ -26221,7 +26221,7 @@ async function run() {
       (0, import_core3.info)(
         `\u{1F5D1}\uFE0F Package version ${version2.id} tagged with "${imageTag}" matches and will be deleted`
       );
-      await octokit.rest.packages.deletePackageVersionForOrg({
+      octokit.rest.packages.deletePackageVersionForOrg({
         org,
         package_type: "container",
         package_name: name,
