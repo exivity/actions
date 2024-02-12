@@ -26210,11 +26210,11 @@ async function run() {
   );
   (0, import_core3.info)(`Got ${versions.length} package versions, matching with tags...`);
   for (const version2 of versions) {
-    const tagOverlap = (_d = (_c = (_b = version2.metadata) == null ? void 0 : _b.container) == null ? void 0 : _c.tags) == null ? void 0 : _d.includes(tag2);
-    const tag2 = (_g = (_f = (_e = version2.metadata) == null ? void 0 : _e.container) == null ? void 0 : _f.tags) == null ? void 0 : _g.join('","');
-    if (tagOverlap || isEmpty_default(tag2)) {
+    const tagOverlap = (_d = (_c = (_b = version2.metadata) == null ? void 0 : _b.container) == null ? void 0 : _c.tags) == null ? void 0 : _d.includes(tag);
+    const imageTag = (_g = (_f = (_e = version2.metadata) == null ? void 0 : _e.container) == null ? void 0 : _f.tags) == null ? void 0 : _g.join('","');
+    if (tagOverlap || isEmpty_default(imageTag)) {
       (0, import_core3.info)(
-        `\u{1F5D1}\uFE0F Package version ${version2.id} tagged with "${tag2}" matches and will be deleted`
+        `\u{1F5D1}\uFE0F Package version ${version2.id} tagged with "${imageTag}" matches and will be deleted`
       );
       await octokit.rest.packages.deletePackageVersionForOrg({
         org,
@@ -26224,7 +26224,7 @@ async function run() {
       });
     } else {
       (0, import_core3.info)(
-        `\u2139\uFE0F Package version ${version2.id} tagged with "${tag2}" doesn't match any of the tags to delete`
+        `\u2139\uFE0F Package version ${version2.id} tagged with "${imageTag}" doesn't match any of the tags to delete`
       );
     }
   }

@@ -54,11 +54,11 @@ async function run() {
   // Look for versions with matching tags
   for (const version of versions) {
     const tagOverlap = version.metadata?.container?.tags?.includes(tag)
-    const tag = version.metadata?.container?.tags?.join('","')
+    const imageTag = version.metadata?.container?.tags?.join('","')
 
-    if (tagOverlap || isEmpty(tag)) {
+    if (tagOverlap || isEmpty(imageTag)) {
       info(
-        `🗑️ Package version ${version.id} tagged with "${tag}" matches and will be deleted`,
+        `🗑️ Package version ${version.id} tagged with "${imageTag}" matches and will be deleted`,
       )
       await octokit.rest.packages.deletePackageVersionForOrg({
         org,
@@ -68,7 +68,7 @@ async function run() {
       })
     } else {
       info(
-        `ℹ️ Package version ${version.id} tagged with "${tag}" doesn't match any of the tags to delete`,
+        `ℹ️ Package version ${version.id} tagged with "${imageTag}" doesn't match any of the tags to delete`,
       )
     }
   }
