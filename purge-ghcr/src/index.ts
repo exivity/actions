@@ -12,6 +12,8 @@ import {
 } from '../../lib/github'
 import { branchToTag, validTag } from '../../lib/image'
 
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
+
 async function run() {
   // Inputs
   const org = getOwnerInput('org')
@@ -51,6 +53,11 @@ async function run() {
 
   info(`Got ${versions.length} package versions, matching with tags...`)
 
+  const rateLimitPerMinute = 80
+  const delayBetweenRequests = 60000 / rateLimitPerMinute
+  let requestCount = 0
+  const startTime = Date.now()
+
   // Look for versions with matching tags
   for (const version of versions) {
     const tagOverlap = version.metadata?.container?.tags?.includes(tag)
@@ -60,12 +67,23 @@ async function run() {
       info(
         `🗑️ Package version ${version.id} tagged with "${imageTag}" matches and will be deleted`,
       )
-      octokit.rest.packages.deletePackageVersionForOrg({
+
+      // Throttle requests to not exceed rate limit
+      await octokit.rest.packages.deletePackageVersionForOrg({
         org,
         package_type: 'container',
         package_name: name,
         package_version_id: version.id,
       })
+
+      requestCount++
+      if (requestCount % rateLimitPerMinute === 0) {
+        const elapsedTime = Date.now() - startTime
+        const timeToWait = Math.max(60000 - elapsedTime, 0) // Ensure at least 1 minute has passed
+        await delay(timeToWait) // Wait for the remainder of the minute
+      } else {
+        await delay(delayBetweenRequests)
+      }
     } else {
       info(
         `ℹ️ Package version ${version.id} tagged with "${imageTag}" doesn't match any of the tags to delete`,

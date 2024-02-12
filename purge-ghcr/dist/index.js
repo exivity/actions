@@ -1552,9 +1552,9 @@ var require_timers = __commonJS({
       }
     }
     var Timeout = class {
-      constructor(callback, delay, opaque) {
+      constructor(callback, delay2, opaque) {
         this.callback = callback;
-        this.delay = delay;
+        this.delay = delay2;
         this.opaque = opaque;
         this.state = -2;
         this.refresh();
@@ -1573,8 +1573,8 @@ var require_timers = __commonJS({
       }
     };
     module2.exports = {
-      setTimeout(callback, delay, opaque) {
-        return delay < 1e3 ? setTimeout(callback, delay, opaque) : new Timeout(callback, delay, opaque);
+      setTimeout(callback, delay2, opaque) {
+        return delay2 < 1e3 ? setTimeout(callback, delay2, opaque) : new Timeout(callback, delay2, opaque);
       },
       clearTimeout(timeout) {
         if (timeout instanceof Timeout) {
@@ -9960,7 +9960,7 @@ var require_mock_utils = __commonJS({
       if (mockDispatch2.data.callback) {
         mockDispatch2.data = { ...mockDispatch2.data, ...mockDispatch2.data.callback(opts) };
       }
-      const { data: { statusCode, data, headers, trailers, error }, delay, persist } = mockDispatch2;
+      const { data: { statusCode, data, headers, trailers, error }, delay: delay2, persist } = mockDispatch2;
       const { timesInvoked, times } = mockDispatch2;
       mockDispatch2.consumed = !persist && timesInvoked >= times;
       mockDispatch2.pending = timesInvoked < times;
@@ -9969,10 +9969,10 @@ var require_mock_utils = __commonJS({
         handler.onError(error);
         return true;
       }
-      if (typeof delay === "number" && delay > 0) {
+      if (typeof delay2 === "number" && delay2 > 0) {
         setTimeout(() => {
           handleReply(this[kDispatches]);
-        }, delay);
+        }, delay2);
       } else {
         handleReply(this[kDispatches]);
       }
@@ -26181,6 +26181,7 @@ function branchToTag(ref = getRef()) {
 }
 
 // purge-ghcr/src/index.ts
+var delay = (ms) => new Promise((res) => setTimeout(res, ms));
 async function run() {
   var _a, _b, _c, _d, _e, _f, _g;
   const org = getOwnerInput("org");
@@ -26209,6 +26210,10 @@ async function run() {
     }
   );
   (0, import_core3.info)(`Got ${versions.length} package versions, matching with tags...`);
+  const rateLimitPerMinute = 80;
+  const delayBetweenRequests = 6e4 / rateLimitPerMinute;
+  let requestCount = 0;
+  const startTime = Date.now();
   for (const version2 of versions) {
     const tagOverlap = (_d = (_c = (_b = version2.metadata) == null ? void 0 : _b.container) == null ? void 0 : _c.tags) == null ? void 0 : _d.includes(tag);
     const imageTag = (_g = (_f = (_e = version2.metadata) == null ? void 0 : _e.container) == null ? void 0 : _f.tags) == null ? void 0 : _g.join('","');
@@ -26216,12 +26221,20 @@ async function run() {
       (0, import_core3.info)(
         `\u{1F5D1}\uFE0F Package version ${version2.id} tagged with "${imageTag}" matches and will be deleted`
       );
-      octokit.rest.packages.deletePackageVersionForOrg({
+      await octokit.rest.packages.deletePackageVersionForOrg({
         org,
         package_type: "container",
         package_name: name,
         package_version_id: version2.id
       });
+      requestCount++;
+      if (requestCount % rateLimitPerMinute === 0) {
+        const elapsedTime = Date.now() - startTime;
+        const timeToWait = Math.max(6e4 - elapsedTime, 0);
+        await delay(timeToWait);
+      } else {
+        await delay(delayBetweenRequests);
+      }
     } else {
       (0, import_core3.info)(
         `\u2139\uFE0F Package version ${version2.id} tagged with "${imageTag}" doesn't match any of the tags to delete`
