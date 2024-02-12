@@ -6,15 +6,25 @@
     "dockerfile": "Dockerfile",
     // Update 'VARIANT' to pick a Node version: 12, 14, 16
     "args": {
-      "VARIANT": "16-bullseye"
+      "VARIANT": "20-bullseye"
     }
   },
 
   // Set *default* container specific settings.json values on container create.
-  "settings": {},
 
-  // Add the IDs of extensions you want installed when the container is created.
-  "extensions": ["esbenp.prettier-vscode"],
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": [
+        "github.vscode-github-actions",
+        "github.copilot",
+        "github.copilot-chat",
+        "eamodio.gitlens",
+        "unifiedjs.vscode-mdx",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],

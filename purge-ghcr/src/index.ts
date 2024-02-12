@@ -1,5 +1,6 @@
 import { info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
+import { isEmpty } from 'ramda'
 import { table } from '../../lib/core'
 import {
   getEventData,
@@ -44,7 +45,7 @@ async function run() {
       org,
       package_type: 'container',
       package_name: name,
-      per_page: 100,
+      per_page: 1000,
     },
   )
 
@@ -53,14 +54,11 @@ async function run() {
   // Look for versions with matching tags
   for (const version of versions) {
     const tagOverlap = version.metadata?.container?.tags?.includes(tag)
+    const tag = version.metadata?.container?.tags?.join('","')
 
-    if (tagOverlap) {
+    if (tagOverlap || isEmpty(tag)) {
       info(
-        `🗑️ Package version ${
-          version.id
-        } tagged with "${version.metadata?.container?.tags?.join(
-          '","',
-        )}" matches and will be deleted`,
+        `🗑️ Package version ${version.id} tagged with "${tag}" matches and will be deleted`,
       )
       await octokit.rest.packages.deletePackageVersionForOrg({
         org,
@@ -70,11 +68,7 @@ async function run() {
       })
     } else {
       info(
-        `ℹ️ Package version ${
-          version.id
-        } tagged with "${version.metadata?.container?.tags?.join(
-          '","',
-        )}" doesn't match any of the tags to delete`,
+        `ℹ️ Package version ${version.id} tagged with "${tag}" doesn't match any of the tags to delete`,
       )
     }
   }
