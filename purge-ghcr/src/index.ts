@@ -53,6 +53,7 @@ async function run() {
 
   info(`Got ${versions.length} package versions, matching with tags...`)
 
+  // Respecting github secondary rate limits
   const rateLimitPerMinute = 80
   const delayBetweenRequests = 60000 / rateLimitPerMinute
   let requestCount = 0
