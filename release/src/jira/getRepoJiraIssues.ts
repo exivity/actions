@@ -84,36 +84,38 @@ export const getRepoJiraIssues = async (repo: string) => {
         const { breaking = false } = parseCommitMessage(commit.commit.message)
 
         return Promise.all(
-          jiraKeys.map((key) =>
-            jiraClient.issues.getIssue({ issueIdOrKey: key }),
-          ),
-        ).then((tickets) =>
-          tickets.flatMap((issue) => {
-            const issueType = getIssueType(issue)
+          jiraKeys.map(async (key) => {
+            try {
+              const issue = await jiraClient.issues.getIssue({
+                issueIdOrKey: key,
+              })
+              const issueType = getIssueType(issue)
 
-            if (!issue || none(equals(issueType), ['feat', 'fix'])) return []
+              if (!issue || none(equals(issueType), ['feat', 'fix'])) return []
 
-            const epic = getEpic(issue)
+              const epic = getEpic(issue)
 
-            return {
-              title: getReleaseNotesTitle(issue),
-              description: getReleaseNotesDescription(issue),
-              type: issueType,
-              breaking,
-              noReleaseNotesNeeded: noReleaseNotesNeeded(issue),
-              commit: `[exivity/${repo}@${commit.sha.substring(0, 7)}](${
-                commit.html_url
-              })`,
-              issue: `[${issue.key}](https://exivity.atlassian.net/browse/${issue.key})`,
-              pullRequest: `[exivity/${repo}#${associatedPullRequest?.number}](${associatedPullRequest?.url})`,
-              milestone: epic
-                ? `[${getEpic(
-                    issue,
-                  )}](https://exivity.atlassian.net/browse/${getEpic(issue)})`
-                : 'No milestone',
+              return [
+                {
+                  title: getReleaseNotesTitle(issue),
+                  description: getReleaseNotesDescription(issue),
+                  type: issueType,
+                  breaking,
+                  noReleaseNotesNeeded: noReleaseNotesNeeded(issue),
+                  commit: `[exivity/${repo}@${commit.sha.substring(0, 7)}](${commit.html_url})`,
+                  issue: `[${issue.key}](https://exivity.atlassian.net/browse/${issue.key})`,
+                  pullRequest: `[exivity/${repo}#${associatedPullRequest?.number}](${associatedPullRequest?.url})`,
+                  milestone: epic
+                    ? `[${getEpic(issue)}](https://exivity.atlassian.net/browse/${getEpic(issue)})`
+                    : 'No milestone',
+                },
+              ]
+            } catch (error) {
+              debug(() => `Issue fetch failed for ${key}`)
+              return []
             }
           }),
-        )
+        ).then((tickets) => tickets.flatMap(identity))
       }),
     ).then(chain(identity)),
   }
