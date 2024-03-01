@@ -427,7 +427,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/glob@8.1.0", "@types/glob@^8.0.0":
+"@types/glob@8.1.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-8.1.0.tgz#b63e70155391b0584dce44e7ea25190bbc38f2fc"
   integrity sha512-IO+MJPVhoqz+28h1qLAcBEH2+xHMK6MTyHJc7MTnnYb6wsoLR29POVGJ7LycmVXIqyy/4/2ShP5sUwTXuOwb/w==
@@ -574,7 +574,6 @@ chalk@^2.4.1:
 
 "checkout@https://github.com/actions/checkout#v4.1.1":
   version "4.1.0"
-  uid b4ffde65f46336ab88eb53be808477a3936bae11
   resolved "https://github.com/actions/checkout#b4ffde65f46336ab88eb53be808477a3936bae11"
   dependencies:
     "@actions/core" "^1.10.0"
@@ -836,13 +835,6 @@ get-symbol-description@^1.0.0:
   dependencies:
     call-bind "^1.0.2"
     get-intrinsic "^1.1.1"
-
-glob-promise@6.0.5:
-  version "6.0.5"
-  resolved "https://registry.yarnpkg.com/glob-promise/-/glob-promise-6.0.5.tgz#3d56331b324fd7d097b43ba9e9959e9c7e200e2c"
-  integrity sha512-uUzvxo60yo/vMLXZHCNAlfdM5U5A07jCnUO8xTK44Z0Vc58poGDXhDx8ju1DmPdprOORh+4Lpog64hl+AJ5piA==
-  dependencies:
-    "@types/glob" "^8.0.0"
 
 glob@10.3.10:
   version "10.3.10"

@@ -1,6 +1,6 @@
 import { debug, getInput, info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import glob from 'glob-promise'
+import { glob } from 'glob'
 import { getRef, getToken, isReleaseBranch } from '../../lib/github'
 import {
   CommitStatus,

@@ -1,5 +1,5 @@
-import { debug, getInput, info, setFailed } from '@actions/core'
-import glob from 'glob-promise'
+import { debug, getInput, setFailed } from '@actions/core'
+import { glob } from 'glob'
 import rcedit from 'rcedit'
 import { getRepository, getSha } from '../../lib/github'
 

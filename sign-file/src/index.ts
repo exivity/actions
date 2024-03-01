@@ -1,7 +1,7 @@
 import { debug, getInput, setFailed } from '@actions/core'
 import { getExecOutput } from '@actions/exec'
 import { promises as fs } from 'fs'
-import glob from 'glob-promise'
+import { glob } from 'glob'
 import { platform, tmpdir } from 'os'
 import { join, resolve } from 'path'
 
