@@ -82,7 +82,6 @@ async function run() {
   }
 
   // Obtain absolute paths
-  info(`glob: ${glob}`)
   const absPaths = await glob(path, { absolute: true })
   debug(`Absolute path to file(s): "${absPaths.join(', ')}"`)
 

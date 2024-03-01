@@ -30550,7 +30550,6 @@ async function run() {
   if (requestedExecutionLevel && !executionLevels.includes(requestedExecutionLevel)) {
     throw new Error("Invalid value for requested-execution-level");
   }
-  (0, import_core2.info)(`glob: ${import_glob_promise.default}`);
   const absPaths = await (0, import_glob_promise.default)(path, { absolute: true });
   (0, import_core2.debug)(`Absolute path to file(s): "${absPaths.join(", ")}"`);
   for (const absPath of absPaths) {
