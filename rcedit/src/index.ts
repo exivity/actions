@@ -1,4 +1,4 @@
-import { debug, getInput, setFailed } from '@actions/core'
+import { debug, getInput, info, setFailed } from '@actions/core'
 import glob from 'glob-promise'
 import rcedit from 'rcedit'
 import { getRepository, getSha } from '../../lib/github'
@@ -82,6 +82,7 @@ async function run() {
   }
 
   // Obtain absolute paths
+  info(`glob: ${glob}`)
   const absPaths = await glob(path, { absolute: true })
   debug(`Absolute path to file(s): "${absPaths.join(', ')}"`)
 
