@@ -29,6 +29,7 @@ import {
   getEpic,
   getIssueType,
 } from './utils'
+import { info } from '@actions/core'
 
 export const getFirstLine = pipe(split('\n'), pathOr('', [0]))
 export const removeFirstLine = pipe(split('\n'), tail, join('\n'))
@@ -111,7 +112,7 @@ export const getRepoJiraIssues = async (repo: string) => {
                 },
               ]
             } catch (error) {
-              debug(() => `Issue fetch failed for ${key}`)
+              info(`Issue fetch failed for ${key}`)
               return []
             }
           }),

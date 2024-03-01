@@ -17208,12 +17208,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info14 = this._prepareRequest(verb, parsedUrl, headers);
+          let info15 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info14, data);
+            response = yield this.requestRaw(info15, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -17223,7 +17223,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info14, data);
+                return authenticationHandler.handleAuthentication(this, info15, data);
               } else {
                 return response;
               }
@@ -17246,8 +17246,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info14 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info14, data);
+              info15 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info15, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -17276,7 +17276,7 @@ var require_lib = __commonJS({
        * @param info
        * @param data
        */
-      requestRaw(info14, data) {
+      requestRaw(info15, data) {
         return __awaiter2(this, void 0, void 0, function* () {
           return new Promise((resolve, reject3) => {
             function callbackForResult(err, res) {
@@ -17288,7 +17288,7 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info14, data, callbackForResult);
+            this.requestRawWithCallback(info15, data, callbackForResult);
           });
         });
       }
@@ -17298,12 +17298,12 @@ var require_lib = __commonJS({
        * @param data
        * @param onResult
        */
-      requestRawWithCallback(info14, data, onResult) {
+      requestRawWithCallback(info15, data, onResult) {
         if (typeof data === "string") {
-          if (!info14.options.headers) {
-            info14.options.headers = {};
+          if (!info15.options.headers) {
+            info15.options.headers = {};
           }
-          info14.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info15.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -17312,7 +17312,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info14.httpModule.request(info14.options, (msg) => {
+        const req = info15.httpModule.request(info15.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -17324,7 +17324,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info14.options.path}`));
+          handleResult(new Error(`Request timeout: ${info15.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -17360,27 +17360,27 @@ var require_lib = __commonJS({
         return this._getProxyAgentDispatcher(parsedUrl, proxyUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info14 = {};
-        info14.parsedUrl = requestUrl;
-        const usingSsl = info14.parsedUrl.protocol === "https:";
-        info14.httpModule = usingSsl ? https : http;
+        const info15 = {};
+        info15.parsedUrl = requestUrl;
+        const usingSsl = info15.parsedUrl.protocol === "https:";
+        info15.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info14.options = {};
-        info14.options.host = info14.parsedUrl.hostname;
-        info14.options.port = info14.parsedUrl.port ? parseInt(info14.parsedUrl.port) : defaultPort;
-        info14.options.path = (info14.parsedUrl.pathname || "") + (info14.parsedUrl.search || "");
-        info14.options.method = method;
-        info14.options.headers = this._mergeHeaders(headers);
+        info15.options = {};
+        info15.options.host = info15.parsedUrl.hostname;
+        info15.options.port = info15.parsedUrl.port ? parseInt(info15.parsedUrl.port) : defaultPort;
+        info15.options.path = (info15.parsedUrl.pathname || "") + (info15.parsedUrl.search || "");
+        info15.options.method = method;
+        info15.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info14.options.headers["user-agent"] = this.userAgent;
+          info15.options.headers["user-agent"] = this.userAgent;
         }
-        info14.options.agent = this._getAgent(info14.parsedUrl);
+        info15.options.agent = this._getAgent(info15.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info14.options);
+            handler.prepareRequest(info15.options);
           }
         }
-        return info14;
+        return info15;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -18244,10 +18244,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports2.notice = notice;
-    function info14(message) {
+    function info15(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports2.info = info14;
+    exports2.info = info15;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -79015,7 +79015,7 @@ var require_semver2 = __commonJS({
 });
 
 // release/src/index.ts
-var import_core12 = __toESM(require_core());
+var import_core13 = __toESM(require_core());
 
 // release/src/common/utils.ts
 var import_console2 = require("console");
@@ -80829,6 +80829,7 @@ var getMissingReleaseNotes = pipe(
 );
 
 // release/src/jira/getRepoJiraIssues.ts
+var import_core8 = __toESM(require_core());
 var getFirstLine = pipe(split_default("\n"), pathOr_default("", [0]));
 var removeFirstLine = pipe(split_default("\n"), tail_default, join_default("\n"));
 var getRepoJiraIssues = async (repo) => {
@@ -80893,7 +80894,7 @@ var getRepoJiraIssues = async (repo) => {
                 }
               ];
             } catch (error) {
-              debug(() => `Issue fetch failed for ${key}`);
+              (0, import_core8.info)(`Issue fetch failed for ${key}`);
               return [];
             }
           })
@@ -80904,7 +80905,7 @@ var getRepoJiraIssues = async (repo) => {
 };
 
 // release/src/common/gitActions.ts
-var import_core8 = __toESM(require_core());
+var import_core9 = __toESM(require_core());
 var import_console4 = require("console");
 
 // release/src/common/formatPrChangelog.ts
@@ -80994,7 +80995,7 @@ async function tagRepositories(lockfile) {
           sha
         });
       } catch (e) {
-        (0, import_core8.warning)(`Could not create lightweight tag on ${repository}: ${e}`);
+        (0, import_core9.warning)(`Could not create lightweight tag on ${repository}: ${e}`);
       }
     }
   }
@@ -81011,7 +81012,7 @@ async function tagAllRepositories() {
       await gitPushTags();
       (0, import_console4.info)(`Pushed tag ${lockfile.version} to ${repository.fqn}`);
     } catch (e) {
-      (0, import_core8.warning)(`Could not push tag to ${repository.fqn}: ${e}`);
+      (0, import_core9.warning)(`Could not push tag to ${repository.fqn}: ${e}`);
     }
   }
   await tagRepositories(lockfile);
@@ -81077,7 +81078,7 @@ async function updatePr(title, issues) {
 }
 
 // release/src/common/inferVersionFromJiraIssues.ts
-var import_core9 = __toESM(require_core());
+var import_core10 = __toESM(require_core());
 var import_semver2 = __toESM(require_semver2());
 var containsFeature = (issues) => issues.some((issue) => issue.type === "feat");
 var containsBreakingChange = (issues) => issues.some((issue) => issue.breaking);
@@ -81096,7 +81097,7 @@ function inferVersionFromJiraIssues(from, issues) {
       `Could not calculate new version (incrementing ${from} to ${upcomingVersionIncrement})`
     );
   }
-  (0, import_core9.info)(
+  (0, import_core10.info)(
     `Version increment (${description[upcomingVersionIncrement]}): ${from} -> v${upcomingVersion}`
   );
   return `v${upcomingVersion}`;
@@ -81104,7 +81105,7 @@ function inferVersionFromJiraIssues(from, issues) {
 
 // release/src/common/writeChangelog.ts
 var import_promises2 = require("fs/promises");
-var import_core10 = __toESM(require_core());
+var import_core11 = __toESM(require_core());
 
 // release/src/common/formatChangelog.ts
 function formatPublicChangelog(version2, issues) {
@@ -81151,7 +81152,7 @@ async function writeChangelog(upcomingVersion, issues) {
   const publicChangelogContents = formatPublicChangelog(upcomingVersion, issues);
   debug(`Changelog updates: ${publicChangelogContents}`);
   if (isDryRun()) {
-    (0, import_core10.info)(`Dry run, not writing changelog`);
+    (0, import_core11.info)(`Dry run, not writing changelog`);
   } else {
     await (0, import_promises2.writeFile)(
       changelogPath,
@@ -81164,7 +81165,7 @@ ${publicChangelogContents}
 `
       )
     );
-    (0, import_core10.info)(`Written changelog to: ${changelogPath}`);
+    (0, import_core11.info)(`Written changelog to: ${changelogPath}`);
   }
 }
 
@@ -81257,7 +81258,7 @@ async function release() {
 }
 
 // release/src/jira/jiraActions.ts
-var import_core11 = __toESM(require_core());
+var import_core12 = __toESM(require_core());
 var import_console8 = require("console");
 var transitionIds = {
   "NoActionNeeded->New": "201",
@@ -81376,7 +81377,7 @@ async function updateIssueFixVersion(jiraIssueIds) {
     }).then(() => {
       (0, import_console8.info)(`Set fix version of ${issueIdOrKey} to ${version2.name}`);
     }).catch((err) => {
-      (0, import_core11.warning)(
+      (0, import_core12.warning)(
         `failed to set fixVersion for issue ${issueIdOrKey} to ${version2.name}: ${JSON.stringify(err)}`
       );
     });
@@ -81406,13 +81407,13 @@ var runModes = {
   ["update-jira-issues"]: updateJiraIssues
 };
 async function run() {
-  const mode = (0, import_core12.getInput)("mode");
+  const mode = (0, import_core13.getInput)("mode");
   if (!runModes[mode])
     throw new Error(`Unknown mode "${mode}"`);
   logAvailableRequests();
   return runModes[mode]();
 }
-run().catch(import_core12.setFailed);
+run().catch(import_core13.setFailed);
 /*! Bundled license information:
 
 undici/lib/fetch/body.js:
