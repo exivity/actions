@@ -297,10 +297,10 @@
   resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-19.0.0.tgz#0101bf62ab14c1946149a0f8385440963e1253c4"
   integrity sha512-PclQ6JGMTE9iUStpzMkwLCISFn/wDeRjkZFIKALpvJQNBGwDoYYi2fFvuHwssoQ1rXI5mfh6jgTgWuddeUzfWw==
 
-"@octokit/openapi-webhooks-types@6.0.2":
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/@octokit/openapi-webhooks-types/-/openapi-webhooks-types-6.0.2.tgz#fb0978162dfc66fafc8ac2f6132d2551feef5e89"
-  integrity sha512-34ykOEAEEtIdB0GLokPER1ZaRZm6UQrmZ3Dglc7+JOFAhSfx00rcNYPzo3GZSiexCdxZ1f6HkWur7yGGYl8NXg==
+"@octokit/openapi-webhooks-types@6.1.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-webhooks-types/-/openapi-webhooks-types-6.1.0.tgz#f238d76a71ec9003439aecdb738943826935d339"
+  integrity sha512-IKjzXeDd+IogpwMmTi2A9Iuzx93dQWg6Unoz+uHARC7Hv0ixEXWfrUB7bmENhqwcIPBhfCTmSJ34xOMcgjbs5g==
 
 "@octokit/plugin-paginate-rest@^2.17.0":
   version "2.21.2"
@@ -405,12 +405,12 @@
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-methods/-/webhooks-methods-5.0.0.tgz#04115f44127967ca2e522bd67191c2436883a59d"
   integrity sha512-bMypz/oiU4DqaujqZH7IOwMyrHfr2MBZbXqrttyR/kawne7t8CIv1k+xALazo6VCuE7DJZbgBG1RFdk5OH8lnw==
 
-"@octokit/webhooks@13.0.2":
-  version "13.0.2"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.0.2.tgz#3f468d02d7f8e8b63dc5767999cae23e4f095ea3"
-  integrity sha512-UDKHAKrqrdlFclrNO5hbx/yYMGi+V6zsVicggtQRAuHBkaF54RjgvgTCeCGWQErBwCmHqmC5mMp3BtZ45VzzTw==
+"@octokit/webhooks@13.1.0":
+  version "13.1.0"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.1.0.tgz#5157969f77d0d675fb40c3a60249c7c12458dd46"
+  integrity sha512-llwszRY8nImC00YYU9m182CE3slNBWyVJy8LkSoonuQxXapOZizj44ScaA3VzZt5nrMKBj8ntCi20gv4ZcZ6Og==
   dependencies:
-    "@octokit/openapi-webhooks-types" "6.0.2"
+    "@octokit/openapi-webhooks-types" "6.1.0"
     "@octokit/request-error" "^6.0.1"
     "@octokit/webhooks-methods" "^5.0.0"
     aggregate-error "^5.0.0"
@@ -457,12 +457,12 @@
   dependencies:
     undici-types "~5.26.4"
 
-"@types/ramda@0.29.10":
-  version "0.29.10"
-  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.29.10.tgz#2584b268f9e0dd71ed4e5432b095186eb24a1f8f"
-  integrity sha512-0BzWVKtSEtignlk+XBuK88Il5wzQwbRVfEkzE8iKm02NYHMGQ/9ffB05M+zXhTCqo50DOIAT9pNSJsjFMMG4rQ==
+"@types/ramda@0.29.11":
+  version "0.29.11"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.29.11.tgz#86d4ff34320862535fbcef54c9f33d14bdb12951"
+  integrity sha512-jm1+PmNOpE7aPS+mMcuB4a72VkCXUJqPSaQRu2YqR8MbsFfaowYXgKxc7bluYdDpRHNXT5Z+xu+Lgr3/ml6wSA==
   dependencies:
-    types-ramda "^0.29.7"
+    types-ramda "^0.29.9"
 
 "@types/semver@7.5.8":
   version "7.5.8"
@@ -521,12 +521,12 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-axios@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.3.tgz#7f50f23b3aa246eff43c54834272346c396613f4"
-  integrity sha512-fWyNdeawGam70jXSVlKl+SUNVcL6j6W79CuSIPfi6HnDUmSCH6gyUys/HrqHeA/wU0Az41rRgean494d0Jb+ww==
+axios@^1.6.7:
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.7.tgz#7b48c2e27c96f9c68a2f8f31e2ab19f59b06b0a7"
+  integrity sha512-/hDJGff6/c7u0hDkvkGxR/oy6CbCs8ziCsC7SqmhjfozqiJGc8Z11wrv9z9lYfY4K8l+H9TpjcMDX0xOZmx+RA==
   dependencies:
-    follow-redirects "^1.15.0"
+    follow-redirects "^1.15.4"
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
@@ -777,10 +777,10 @@ escape-string-regexp@^1.0.5:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==
 
-follow-redirects@^1.15.0:
-  version "1.15.4"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.4.tgz#cdc7d308bf6493126b17ea2191ea0ccf3e535adf"
-  integrity sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==
+follow-redirects@^1.15.4:
+  version "1.15.5"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.5.tgz#54d4d6d062c0fa7d9d17feb008461550e3ba8020"
+  integrity sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==
 
 foreground-child@^3.1.0:
   version "3.1.1"
@@ -1035,12 +1035,12 @@ jackspeak@^2.3.5:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
-jira.js@3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-3.0.2.tgz#9aeb91026388606d78e9a9de069518348f11c3f4"
-  integrity sha512-yysfjFYIFPE/hp8pJ/u3q6OBX/KYm4nMsmQym7JSO2pIJ4bIbdDLuz1DDGcHqi1DflfOSBKYc2BlJXTl5IZUEA==
+jira.js@3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-3.0.4.tgz#5ba9f79296f79d15c7841a5f228171121b0cfdf6"
+  integrity sha512-+2S3JRn52K3k98ZhxR0dRC8SUfW+H0XiNNFLsrlr1HvtsnkmrNxXcvb6kNZfeSJveit3D5vX4RqaMhAaOrrKig==
   dependencies:
-    axios "^1.6.3"
+    axios "^1.6.7"
     form-data "^4.0.0"
     tslib "^2.6.2"
 
@@ -1471,10 +1471,10 @@ tunnel@0.0.6, tunnel@^0.0.6:
   resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.6.tgz#72f1314b34a5b192db012324df2cc587ca47f92c"
   integrity sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==
 
-types-ramda@^0.29.7:
-  version "0.29.7"
-  resolved "https://registry.yarnpkg.com/types-ramda/-/types-ramda-0.29.7.tgz#dbd0dfc3c032502da2824b6f060f9b68bddffddc"
-  integrity sha512-8KBxZGJwUF3MpRkkJauSpvfHXk8Ssq15QXGuCBTDGeKd9PfheokkC3wAKRV3djej9O31Qa5M7Owsg8hF0GjtAw==
+types-ramda@^0.29.9:
+  version "0.29.9"
+  resolved "https://registry.yarnpkg.com/types-ramda/-/types-ramda-0.29.9.tgz#b1995d99421a3519cab9e800c6db3c0921816a8e"
+  integrity sha512-B+VbLtW68J4ncG/rccKaYDhlirKlVH/Izh2JZUfaPJv+3Tl2jbbgYsB1pvole1vXKSgaPlAe/wgEdOnMdAu52A==
   dependencies:
     ts-toolbelt "^9.6.0"
 
