@@ -5,5 +5,5 @@ inputs:
     description: GitHub token with write access to the repository
     required: true
 runs:
-  using: node16
+  using: node20
   main: dist/index.js

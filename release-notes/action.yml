@@ -12,5 +12,5 @@ inputs:
     description: The Jira token (required in prepare and release mode)
     required: false
 runs:
-  using: node16
+  using: node20
   main: dist/index.js

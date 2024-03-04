@@ -20,5 +20,5 @@ inputs:
     description: A GitHub PAT with write access to the target repo
     required: true
 runs:
-  using: node16
+  using: node20
   main: dist/index.js
