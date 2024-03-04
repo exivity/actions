@@ -59,14 +59,19 @@ async function run() {
   let requestCount = 0
   const startTime = Date.now()
 
+  if (tag === 'main') {
+    info('🚫 Skipping deletion of the "main" tag')
+    return
+  }
+
   // Look for versions with matching tags
   for (const version of versions) {
-    const tagOverlap = version.metadata?.container?.tags?.includes(tag)
-    const imageTag = version.metadata?.container?.tags?.join('","')
+    const imageTags = version.metadata?.container?.tags || []
+    const tagOverlap = imageTags.includes(tag)
 
-    if (tagOverlap || isEmpty(imageTag)) {
+    if (tagOverlap || isEmpty(imageTags)) {
       info(
-        `🗑️ Package version ${version.id} tagged with "${imageTag}" matches and will be deleted`,
+        `🗑️ Package version ${version.id} tagged with "${imageTags.join('","')}" matches and will be deleted`,
       )
 
       octokit.rest.packages.deletePackageVersionForOrg({
@@ -86,7 +91,7 @@ async function run() {
       }
     } else {
       info(
-        `ℹ️ Package version ${version.id} tagged with "${imageTag}" doesn't match any of the tags to delete`,
+        `ℹ️ Package version ${version.id} tagged with "${imageTags.join('","')}" doesn't match any of the tags to delete`,
       )
     }
   }

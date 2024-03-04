@@ -26702,7 +26702,7 @@ function branchToTag(ref = getRef()) {
 // purge-ghcr/src/index.ts
 var delay = (ms) => new Promise((res) => setTimeout(res, ms));
 async function run() {
-  var _a, _b, _c, _d, _e, _f, _g;
+  var _a, _b, _c;
   const org = getOwnerInput("org");
   const name = getRepoInput("name");
   const ghToken = getToken();
@@ -26733,12 +26733,16 @@ async function run() {
   const delayBetweenRequests = 6e4 / rateLimitPerMinute;
   let requestCount = 0;
   const startTime = Date.now();
+  if (tag === "main") {
+    (0, import_core3.info)('\u{1F6AB} Skipping deletion of the "main" tag');
+    return;
+  }
   for (const version2 of versions) {
-    const tagOverlap = (_d = (_c = (_b = version2.metadata) == null ? void 0 : _b.container) == null ? void 0 : _c.tags) == null ? void 0 : _d.includes(tag);
-    const imageTag = (_g = (_f = (_e = version2.metadata) == null ? void 0 : _e.container) == null ? void 0 : _f.tags) == null ? void 0 : _g.join('","');
-    if (tagOverlap || isEmpty_default(imageTag)) {
+    const imageTags = ((_c = (_b = version2.metadata) == null ? void 0 : _b.container) == null ? void 0 : _c.tags) || [];
+    const tagOverlap = imageTags.includes(tag);
+    if (tagOverlap || isEmpty_default(imageTags)) {
       (0, import_core3.info)(
-        `\u{1F5D1}\uFE0F Package version ${version2.id} tagged with "${imageTag}" matches and will be deleted`
+        `\u{1F5D1}\uFE0F Package version ${version2.id} tagged with "${imageTags.join('","')}" matches and will be deleted`
       );
       octokit.rest.packages.deletePackageVersionForOrg({
         org,
@@ -26756,7 +26760,7 @@ async function run() {
       }
     } else {
       (0, import_core3.info)(
-        `\u2139\uFE0F Package version ${version2.id} tagged with "${imageTag}" doesn't match any of the tags to delete`
+        `\u2139\uFE0F Package version ${version2.id} tagged with "${imageTags.join('","')}" doesn't match any of the tags to delete`
       );
     }
   }
