@@ -572,7 +572,7 @@ var require_proxy = __commonJS({
       if (proxyVar) {
         try {
           return new URL(proxyVar);
-        } catch (_a2) {
+        } catch (_a) {
           if (!proxyVar.startsWith("http://") && !proxyVar.startsWith("https://"))
             return new URL(`http://${proxyVar}`);
         }
@@ -2988,10 +2988,9 @@ var require_main = __commonJS({
     }
     inherits(Busboy, WritableStream);
     Busboy.prototype.emit = function(ev) {
-      var _a2;
       if (ev === "finish") {
         if (!this._done) {
-          (_a2 = this._parser) == null ? void 0 : _a2.end();
+          this._parser?.end();
           return;
         } else if (this._finished) {
           return;
@@ -3198,7 +3197,7 @@ var require_constants = __commonJS({
       }
       channel.port1.unref();
       channel.port2.unref();
-      channel.port1.postMessage(value, options == null ? void 0 : options.transfer);
+      channel.port1.postMessage(value, options?.transfer);
       return receiveMessageOnPort(channel.port2).message;
     };
     module2.exports = {
@@ -3309,8 +3308,7 @@ var require_util2 = __commonJS({
       return "allowed";
     }
     function isErrorLike(object) {
-      var _a2, _b;
-      return object instanceof Error || (((_a2 = object == null ? void 0 : object.constructor) == null ? void 0 : _a2.name) === "Error" || ((_b = object == null ? void 0 : object.constructor) == null ? void 0 : _b.name) === "DOMException");
+      return object instanceof Error || (object?.constructor?.name === "Error" || object?.constructor?.name === "DOMException");
     }
     function isValidReasonPhrase(statusText) {
       for (let i = 0; i < statusText.length; ++i) {
@@ -3872,10 +3870,10 @@ var require_webidl = __commonJS({
       });
     };
     webidl.brandCheck = function(V, I, opts = void 0) {
-      if ((opts == null ? void 0 : opts.strict) !== false && !(V instanceof I)) {
+      if (opts?.strict !== false && !(V instanceof I)) {
         throw new TypeError("Illegal invocation");
       } else {
-        return (V == null ? void 0 : V[Symbol.toStringTag]) === I.prototype[Symbol.toStringTag];
+        return V?.[Symbol.toStringTag] === I.prototype[Symbol.toStringTag];
       }
     };
     webidl.argumentLengthCheck = function({ length }, min, ctx) {
@@ -3980,14 +3978,13 @@ var require_webidl = __commonJS({
     };
     webidl.sequenceConverter = function(converter) {
       return (V) => {
-        var _a2;
         if (webidl.util.Type(V) !== "Object") {
           throw webidl.errors.exception({
             header: "Sequence",
             message: `Value of type ${webidl.util.Type(V)} is not an Object.`
           });
         }
-        const method = (_a2 = V == null ? void 0 : V[Symbol.iterator]) == null ? void 0 : _a2.call(V);
+        const method = V?.[Symbol.iterator]?.();
         const seq = [];
         if (method === void 0 || typeof method.next !== "function") {
           throw webidl.errors.exception({
@@ -4026,7 +4023,7 @@ var require_webidl = __commonJS({
         const keys = Reflect.ownKeys(O);
         for (const key of keys) {
           const desc = Reflect.getOwnPropertyDescriptor(O, key);
-          if (desc == null ? void 0 : desc.enumerable) {
+          if (desc?.enumerable) {
             const typedKey = keyConverter(key);
             const typedValue = valueConverter(O[key]);
             result[typedKey] = typedValue;
@@ -11868,7 +11865,7 @@ var require_response = __commonJS({
       if (V instanceof ReadableStream) {
         return webidl.converters.ReadableStream(V);
       }
-      if (V == null ? void 0 : V[Symbol.asyncIterator]) {
+      if (V?.[Symbol.asyncIterator]) {
         return V;
       }
       return webidl.converters.XMLHttpRequestBodyInit(V);
@@ -11941,7 +11938,6 @@ var require_request2 = __commonJS({
     var Request = class _Request {
       // https://fetch.spec.whatwg.org/#dom-request
       constructor(input, init = {}) {
-        var _a2, _b;
         if (input === kConstruct) {
           return;
         }
@@ -11952,8 +11948,7 @@ var require_request2 = __commonJS({
           settingsObject: {
             baseUrl: getGlobalOrigin(),
             get origin() {
-              var _a3;
-              return (_a3 = this.baseUrl) == null ? void 0 : _a3.origin;
+              return this.baseUrl?.origin;
             },
             policyContainer: makePolicyContainer()
           }
@@ -11983,7 +11978,7 @@ var require_request2 = __commonJS({
         }
         const origin = this[kRealm].settingsObject.origin;
         let window = "client";
-        if (((_b = (_a2 = request.window) == null ? void 0 : _a2.constructor) == null ? void 0 : _b.name) === "EnvironmentSettingsObject" && sameOrigin(request.window, origin)) {
+        if (request.window?.constructor?.name === "EnvironmentSettingsObject" && sameOrigin(request.window, origin)) {
           window = request.window;
         }
         if (init.window != null) {
@@ -12342,9 +12337,8 @@ var require_request2 = __commonJS({
       }
       // Returns a clone of request.
       clone() {
-        var _a2;
         webidl.brandCheck(this, _Request);
-        if (this.bodyUsed || ((_a2 = this.body) == null ? void 0 : _a2.locked)) {
+        if (this.bodyUsed || this.body?.locked) {
           throw new TypeError("unusable");
         }
         const clonedRequest = cloneRequest(this[kState]);
@@ -12619,17 +12613,15 @@ var require_fetch = __commonJS({
         this.setMaxListeners(21);
       }
       terminate(reason) {
-        var _a2;
         if (this.state !== "ongoing") {
           return;
         }
         this.state = "terminated";
-        (_a2 = this.connection) == null ? void 0 : _a2.destroy(reason);
+        this.connection?.destroy(reason);
         this.emit("terminated", reason);
       }
       // https://fetch.spec.whatwg.org/#fetch-controller-abort
       abort(error) {
-        var _a2;
         if (this.state !== "ongoing") {
           return;
         }
@@ -12638,12 +12630,11 @@ var require_fetch = __commonJS({
           error = new DOMException2("The operation was aborted.", "AbortError");
         }
         this.serializedAbortReason = error;
-        (_a2 = this.connection) == null ? void 0 : _a2.destroy(error);
+        this.connection?.destroy(error);
         this.emit("terminated", error);
       }
     };
     function fetch(input, init = {}) {
-      var _a2;
       webidl.argumentLengthCheck(arguments, 1, { header: "globalThis.fetch" });
       const p = createDeferredPromise();
       let requestObject;
@@ -12659,7 +12650,7 @@ var require_fetch = __commonJS({
         return p.promise;
       }
       const globalObject = request.client.globalObject;
-      if (((_a2 = globalObject == null ? void 0 : globalObject.constructor) == null ? void 0 : _a2.name) === "ServiceWorkerGlobalScope") {
+      if (globalObject?.constructor?.name === "ServiceWorkerGlobalScope") {
         request.serviceWorkers = "none";
       }
       let responseObject = null;
@@ -12708,11 +12699,10 @@ var require_fetch = __commonJS({
       return p.promise;
     }
     function finalizeAndReportTiming(response, initiatorType = "other") {
-      var _a2;
       if (response.type === "error" && response.aborted) {
         return;
       }
-      if (!((_a2 = response.urlList) == null ? void 0 : _a2.length)) {
+      if (!response.urlList?.length) {
         return;
       }
       const originalURL = response.urlList[0];
@@ -12746,12 +12736,11 @@ var require_fetch = __commonJS({
       }
     }
     function abortFetch(p, request, responseObject, error) {
-      var _a2, _b;
       if (!error) {
         error = new DOMException2("The operation was aborted.", "AbortError");
       }
       p.reject(error);
-      if (request.body != null && isReadable2((_a2 = request.body) == null ? void 0 : _a2.stream)) {
+      if (request.body != null && isReadable2(request.body?.stream)) {
         request.body.stream.cancel(error).catch((err) => {
           if (err.code === "ERR_INVALID_STATE") {
             return;
@@ -12763,7 +12752,7 @@ var require_fetch = __commonJS({
         return;
       }
       const response = responseObject[kState];
-      if (response.body != null && isReadable2((_b = response.body) == null ? void 0 : _b.stream)) {
+      if (response.body != null && isReadable2(response.body?.stream)) {
         response.body.stream.cancel(error).catch((err) => {
           if (err.code === "ERR_INVALID_STATE") {
             return;
@@ -12783,7 +12772,6 @@ var require_fetch = __commonJS({
       dispatcher
       // undici
     }) {
-      var _a2, _b, _c, _d;
       let taskDestination = null;
       let crossOriginIsolatedCapability = false;
       if (request.client != null) {
@@ -12808,10 +12796,10 @@ var require_fetch = __commonJS({
       };
       assert(!request.body || request.body.stream);
       if (request.window === "client") {
-        request.window = ((_c = (_b = (_a2 = request.client) == null ? void 0 : _a2.globalObject) == null ? void 0 : _b.constructor) == null ? void 0 : _c.name) === "Window" ? request.client : "no-window";
+        request.window = request.client?.globalObject?.constructor?.name === "Window" ? request.client : "no-window";
       }
       if (request.origin === "client") {
-        request.origin = (_d = request.client) == null ? void 0 : _d.origin;
+        request.origin = request.client?.origin;
       }
       if (request.policyContainer === "client") {
         if (request.client != null) {
@@ -13282,10 +13270,9 @@ var require_fetch = __commonJS({
         abort: null,
         destroyed: false,
         destroy(err) {
-          var _a2;
           if (!this.destroyed) {
             this.destroyed = true;
-            (_a2 = this.abort) == null ? void 0 : _a2.call(this, err ?? new DOMException2("The operation was aborted.", "AbortError"));
+            this.abort?.(err ?? new DOMException2("The operation was aborted.", "AbortError"));
           }
         }
       };
@@ -13305,12 +13292,11 @@ var require_fetch = __commonJS({
         queueMicrotask(() => fetchParams.processRequestEndOfBody());
       } else if (request.body != null) {
         const processBodyChunk = async function* (bytes) {
-          var _a2;
           if (isCancelled(fetchParams)) {
             return;
           }
           yield bytes;
-          (_a2 = fetchParams.processRequestBodyChunkLength) == null ? void 0 : _a2.call(fetchParams, bytes.byteLength);
+          fetchParams.processRequestBodyChunkLength?.(bytes.byteLength);
         };
         const processEndOfBody = () => {
           if (isCancelled(fetchParams)) {
@@ -13410,7 +13396,7 @@ var require_fetch = __commonJS({
             finalizeResponse(fetchParams, response);
             return;
           }
-          timingInfo.decodedBodySize += (bytes == null ? void 0 : bytes.byteLength) ?? 0;
+          timingInfo.decodedBodySize += bytes?.byteLength ?? 0;
           if (isFailure) {
             fetchParams.controller.terminate(bytes);
             return;
@@ -13548,11 +13534,10 @@ var require_fetch = __commonJS({
               this.body.push(null);
             },
             onError(error) {
-              var _a2;
               if (this.abort) {
                 fetchParams.controller.off("terminated", this.abort);
               }
-              (_a2 = this.body) == null ? void 0 : _a2.destroy(error);
+              this.body?.destroy(error);
               fetchParams.controller.terminate(error);
               reject(error);
             },
@@ -14484,7 +14469,6 @@ var require_cache = __commonJS({
         return p[0];
       }
       async matchAll(request = void 0, options = {}) {
-        var _a2;
         webidl.brandCheck(this, _Cache);
         if (request !== void 0)
           request = webidl.converters.RequestInfo(request);
@@ -14513,7 +14497,7 @@ var require_cache = __commonJS({
         }
         const responseList = [];
         for (const response of responses) {
-          const responseObject = new Response(((_a2 = response.body) == null ? void 0 : _a2.source) ?? null);
+          const responseObject = new Response(response.body?.source ?? null);
           const body = responseObject[kState].body;
           responseObject[kState] = response;
           responseObject[kState].body = body;
@@ -14741,7 +14725,7 @@ var require_cache = __commonJS({
         }
         queueMicrotask(() => {
           if (errorData === null) {
-            cacheJobPromise.resolve(!!(requestResponses == null ? void 0 : requestResponses.length));
+            cacheJobPromise.resolve(!!requestResponses?.length);
           } else {
             cacheJobPromise.reject(errorData);
           }
@@ -14907,14 +14891,14 @@ var require_cache = __commonJS({
       #requestMatchesCachedItem(requestQuery, request, response = null, options) {
         const queryURL = new URL(requestQuery.url);
         const cachedURL = new URL(request.url);
-        if (options == null ? void 0 : options.ignoreSearch) {
+        if (options?.ignoreSearch) {
           cachedURL.search = "";
           queryURL.search = "";
         }
         if (!urlEquals(queryURL, cachedURL, true)) {
           return false;
         }
-        if (response == null || (options == null ? void 0 : options.ignoreVary) || !response.headersList.contains("vary")) {
+        if (response == null || options?.ignoreVary || !response.headersList.contains("vary")) {
           return true;
         }
         const fieldValues = getFieldValues(response.headersList.get("vary"));
@@ -15897,7 +15881,7 @@ var require_util7 = __commonJS({
     function failWebsocketConnection(ws, reason) {
       const { [kController]: controller, [kResponse]: response } = ws;
       controller.abort();
-      if ((response == null ? void 0 : response.socket) && !response.socket.destroyed) {
+      if (response?.socket && !response.socket.destroyed) {
         response.socket.destroy();
       }
       if (reason) {
@@ -15975,7 +15959,6 @@ var require_connection = __commonJS({
         useParallelQueue: true,
         dispatcher: options.dispatcher ?? getGlobalDispatcher(),
         processResponse(response) {
-          var _a2, _b;
           if (response.type === "error" || response.status !== 101) {
             failWebsocketConnection(ws, "Received network error or non-101 status code.");
             return;
@@ -15984,11 +15967,11 @@ var require_connection = __commonJS({
             failWebsocketConnection(ws, "Server did not respond with sent protocols.");
             return;
           }
-          if (((_a2 = response.headersList.get("Upgrade")) == null ? void 0 : _a2.toLowerCase()) !== "websocket") {
+          if (response.headersList.get("Upgrade")?.toLowerCase() !== "websocket") {
             failWebsocketConnection(ws, 'Server did not set Upgrade header to "websocket".');
             return;
           }
-          if (((_b = response.headersList.get("Connection")) == null ? void 0 : _b.toLowerCase()) !== "upgrade") {
+          if (response.headersList.get("Connection")?.toLowerCase() !== "upgrade") {
             failWebsocketConnection(ws, 'Server did not set Connection header to "upgrade".');
             return;
           }
@@ -16087,8 +16070,7 @@ var require_frame = __commonJS({
         this.maskKey = crypto4.randomBytes(4);
       }
       createFrame(opcode) {
-        var _a2;
-        const bodyLength = ((_a2 = this.frameData) == null ? void 0 : _a2.byteLength) ?? 0;
+        const bodyLength = this.frameData?.byteLength ?? 0;
         let payloadLength = bodyLength;
         let offset = 6;
         if (bodyLength > maxUnsigned16Bit) {
@@ -17696,7 +17678,7 @@ var require_oidc_utils = __commonJS({
         return runtimeUrl;
       }
       static getCall(id_token_url) {
-        var _a2;
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
           const httpclient = _OidcClient.createHttpClient();
           const res = yield httpclient.getJson(id_token_url).catch((error) => {
@@ -17706,7 +17688,7 @@ var require_oidc_utils = __commonJS({
  
         Error Message: ${error.message}`);
           });
-          const id_token = (_a2 = res.result) === null || _a2 === void 0 ? void 0 : _a2.value;
+          const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
           if (!id_token) {
             throw new Error("Response json body do not have ID Token field");
           }
@@ -17794,7 +17776,7 @@ var require_summary = __commonJS({
           }
           try {
             yield access(pathFromEnv, fs_1.constants.R_OK | fs_1.constants.W_OK);
-          } catch (_a2) {
+          } catch (_a) {
             throw new Error(`Unable to access summary file: '${pathFromEnv}'. Check if the file has correct read/write permissions.`);
           }
           this._filePath = pathFromEnv;
@@ -18321,7 +18303,7 @@ var require_context = __commonJS({
        * Hydrate the context from the environment
        */
       constructor() {
-        var _a2, _b, _c;
+        var _a, _b, _c;
         this.payload = {};
         if (process.env.GITHUB_EVENT_PATH) {
           if ((0, fs_1.existsSync)(process.env.GITHUB_EVENT_PATH)) {
@@ -18340,7 +18322,7 @@ var require_context = __commonJS({
         this.job = process.env.GITHUB_JOB;
         this.runNumber = parseInt(process.env.GITHUB_RUN_NUMBER, 10);
         this.runId = parseInt(process.env.GITHUB_RUN_ID, 10);
-        this.apiUrl = (_a2 = process.env.GITHUB_API_URL) !== null && _a2 !== void 0 ? _a2 : `https://api.github.com`;
+        this.apiUrl = (_a = process.env.GITHUB_API_URL) !== null && _a !== void 0 ? _a : `https://api.github.com`;
         this.serverUrl = (_b = process.env.GITHUB_SERVER_URL) !== null && _b !== void 0 ? _b : `https://github.com`;
         this.graphqlUrl = (_c = process.env.GITHUB_GRAPHQL_URL) !== null && _c !== void 0 ? _c : `https://api.github.com/graphql`;
       }
@@ -18723,7 +18705,6 @@ var require_dist_node2 = __commonJS({
       return obj;
     }
     function merge(defaults2, route, options) {
-      var _a2;
       if (typeof route === "string") {
         let [method, url] = route.split(" ");
         options = Object.assign(url ? { method, url } : { url: method }, options);
@@ -18735,7 +18716,7 @@ var require_dist_node2 = __commonJS({
       removeUndefinedProperties(options.headers);
       const mergedOptions = mergeDeep(defaults2 || {}, options);
       if (options.url === "/graphql") {
-        if (defaults2 && ((_a2 = defaults2.mediaType.previews) == null ? void 0 : _a2.length)) {
+        if (defaults2 && defaults2.mediaType.previews?.length) {
           mergedOptions.mediaType.previews = defaults2.mediaType.previews.filter(
             (preview) => !mergedOptions.mediaType.previews.includes(preview)
           ).concat(mergedOptions.mediaType.previews);
@@ -18900,7 +18881,6 @@ var require_dist_node2 = __commonJS({
       );
     }
     function parse2(options) {
-      var _a2;
       let method = options.method.toUpperCase();
       let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
       let headers = Object.assign({}, options.headers);
@@ -18931,7 +18911,7 @@ var require_dist_node2 = __commonJS({
           ).join(",");
         }
         if (url.endsWith("/graphql")) {
-          if ((_a2 = options.mediaType.previews) == null ? void 0 : _a2.length) {
+          if (options.mediaType.previews?.length) {
             const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
             headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
               const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
@@ -19201,9 +19181,9 @@ var require_dist_node5 = __commonJS({
       return response.arrayBuffer();
     }
     function fetchWrapper(requestOptions) {
-      var _a2, _b, _c;
+      var _a, _b, _c;
       const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
-      const parseSuccessResponseBody = ((_a2 = requestOptions.request) == null ? void 0 : _a2.parseSuccessResponseBody) !== false;
+      const parseSuccessResponseBody = ((_a = requestOptions.request) == null ? void 0 : _a.parseSuccessResponseBody) !== false;
       if ((0, import_is_plain_object.isPlainObject)(requestOptions.body) || Array.isArray(requestOptions.body)) {
         requestOptions.body = JSON.stringify(requestOptions.body);
       }
@@ -19432,7 +19412,6 @@ var require_dist_node6 = __commonJS({
       return obj;
     }
     function merge(defaults2, route, options) {
-      var _a2;
       if (typeof route === "string") {
         let [method, url] = route.split(" ");
         options = Object.assign(url ? { method, url } : { url: method }, options);
@@ -19444,7 +19423,7 @@ var require_dist_node6 = __commonJS({
       removeUndefinedProperties(options.headers);
       const mergedOptions = mergeDeep(defaults2 || {}, options);
       if (options.url === "/graphql") {
-        if (defaults2 && ((_a2 = defaults2.mediaType.previews) == null ? void 0 : _a2.length)) {
+        if (defaults2 && defaults2.mediaType.previews?.length) {
           mergedOptions.mediaType.previews = defaults2.mediaType.previews.filter(
             (preview) => !mergedOptions.mediaType.previews.includes(preview)
           ).concat(mergedOptions.mediaType.previews);
@@ -19609,7 +19588,6 @@ var require_dist_node6 = __commonJS({
       );
     }
     function parse2(options) {
-      var _a2;
       let method = options.method.toUpperCase();
       let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
       let headers = Object.assign({}, options.headers);
@@ -19640,7 +19618,7 @@ var require_dist_node6 = __commonJS({
           ).join(",");
         }
         if (url.endsWith("/graphql")) {
-          if ((_a2 = options.mediaType.previews) == null ? void 0 : _a2.length) {
+          if (options.mediaType.previews?.length) {
             const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
             headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
               const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
@@ -19816,9 +19794,9 @@ var require_dist_node8 = __commonJS({
       return response.arrayBuffer();
     }
     function fetchWrapper(requestOptions) {
-      var _a2, _b, _c;
+      var _a, _b, _c;
       const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
-      const parseSuccessResponseBody = ((_a2 = requestOptions.request) == null ? void 0 : _a2.parseSuccessResponseBody) !== false;
+      const parseSuccessResponseBody = ((_a = requestOptions.request) == null ? void 0 : _a.parseSuccessResponseBody) !== false;
       if ((0, import_is_plain_object.isPlainObject)(requestOptions.body) || Array.isArray(requestOptions.body)) {
         requestOptions.body = JSON.stringify(requestOptions.body);
       }
@@ -20215,8 +20193,10 @@ var require_dist_node11 = __commonJS({
     var import_graphql = require_dist_node9();
     var import_auth_token = require_dist_node10();
     var VERSION = "5.0.1";
-    var _a2;
-    var Octokit = (_a2 = class {
+    var Octokit = class {
+      static {
+        this.VERSION = VERSION;
+      }
       static defaults(defaults2) {
         const OctokitWithDefaults = class extends this {
           constructor(...args) {
@@ -20239,6 +20219,9 @@ var require_dist_node11 = __commonJS({
         };
         return OctokitWithDefaults;
       }
+      static {
+        this.plugins = [];
+      }
       /**
        * Attach a plugin (or many) to your Octokit instance.
        *
@@ -20246,12 +20229,14 @@ var require_dist_node11 = __commonJS({
        * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
        */
       static plugin(...newPlugins) {
-        var _a3;
         const currentPlugins = this.plugins;
-        const NewOctokit = (_a3 = class extends this {
-        }, _a3.plugins = currentPlugins.concat(
-          newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
-        ), _a3);
+        const NewOctokit = class extends this {
+          static {
+            this.plugins = currentPlugins.concat(
+              newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
+            );
+          }
+        };
         return NewOctokit;
       }
       constructor(options = {}) {
@@ -20331,7 +20316,7 @@ var require_dist_node11 = __commonJS({
           Object.assign(this, plugin(this, options));
         });
       }
-    }, _a2.VERSION = VERSION, _a2.plugins = [], _a2);
+    };
   }
 });
 
@@ -32785,20 +32770,18 @@ var AST = class _AST {
     }
   }
   toJSON() {
-    var _a2;
     const ret = this.type === null ? this.#parts.slice().map((p) => typeof p === "string" ? p : p.toJSON()) : [this.type, ...this.#parts.map((p) => p.toJSON())];
     if (this.isStart() && !this.type)
       ret.unshift([]);
-    if (this.isEnd() && (this === this.#root || this.#root.#filledNegs && ((_a2 = this.#parent) == null ? void 0 : _a2.type) === "!")) {
+    if (this.isEnd() && (this === this.#root || this.#root.#filledNegs && this.#parent?.type === "!")) {
       ret.push({});
     }
     return ret;
   }
   isStart() {
-    var _a2;
     if (this.#root === this)
       return true;
-    if (!((_a2 = this.#parent) == null ? void 0 : _a2.isStart()))
+    if (!this.#parent?.isStart())
       return false;
     if (this.#parentIndex === 0)
       return true;
@@ -32812,15 +32795,14 @@ var AST = class _AST {
     return true;
   }
   isEnd() {
-    var _a2, _b, _c;
     if (this.#root === this)
       return true;
-    if (((_a2 = this.#parent) == null ? void 0 : _a2.type) === "!")
+    if (this.#parent?.type === "!")
       return true;
-    if (!((_b = this.#parent) == null ? void 0 : _b.isEnd()))
+    if (!this.#parent?.isEnd())
       return false;
     if (!this.type)
-      return (_c = this.#parent) == null ? void 0 : _c.isEnd();
+      return this.#parent?.isEnd();
     const pl = this.#parent ? this.#parent.#parts.length : 0;
     return this.#parentIndex === pl - 1;
   }
@@ -33033,7 +33015,6 @@ var AST = class _AST {
   // is ^(?!\.), we can just prepend (?!\.) to the pattern (either root
   // or start or whatever) and prepend ^ or / at the Regexp construction.
   toRegExpSource(allowDot) {
-    var _a2;
     const dot = allowDot ?? !!this.#options.dot;
     if (this.#root === this)
       this.#fillNegs();
@@ -33063,7 +33044,7 @@ var AST = class _AST {
         }
       }
       let end = "";
-      if (this.isEnd() && this.#root.#filledNegs && ((_a2 = this.#parent) == null ? void 0 : _a2.type) === "!") {
+      if (this.isEnd() && this.#root.#filledNegs && this.#parent?.type === "!") {
         end = "(?:$|\\/)";
       }
       const final2 = start2 + src + end;
@@ -33894,7 +33875,6 @@ var emitWarning = (msg, type, code, fn) => {
 };
 var AC = globalThis.AbortController;
 var AS = globalThis.AbortSignal;
-var _a;
 if (typeof AC === "undefined") {
   AS = class AbortSignal {
     onabort;
@@ -33911,7 +33891,6 @@ if (typeof AC === "undefined") {
     }
     signal = new AS();
     abort(reason) {
-      var _a2, _b;
       if (this.signal.aborted)
         return;
       this.signal.reason = reason;
@@ -33919,10 +33898,10 @@ if (typeof AC === "undefined") {
       for (const fn of this.signal._onabort) {
         fn(reason);
       }
-      (_b = (_a2 = this.signal).onabort) == null ? void 0 : _b.call(_a2, reason);
+      this.signal.onabort?.(reason);
     }
   };
-  let printACPolyfillWarning = ((_a = PROCESS.env) == null ? void 0 : _a.LRU_CACHE_IGNORE_AC_WARNING) !== "1";
+  let printACPolyfillWarning = PROCESS.env?.LRU_CACHE_IGNORE_AC_WARNING !== "1";
   const warnACPolyfill = () => {
     if (!printACPolyfillWarning)
       return;
@@ -34610,7 +34589,6 @@ var LRUCache = class _LRUCache {
    * {@link LRUCache#delete}
    */
   set(k, v, setOptions = {}) {
-    var _a2, _b, _c, _d, _e;
     if (v === void 0) {
       this.delete(k);
       return this;
@@ -34649,18 +34627,18 @@ var LRUCache = class _LRUCache {
           const { __staleWhileFetching: s } = oldVal;
           if (s !== void 0 && !noDisposeOnSet) {
             if (this.#hasDispose) {
-              (_a2 = this.#dispose) == null ? void 0 : _a2.call(this, s, k, "set");
+              this.#dispose?.(s, k, "set");
             }
             if (this.#hasDisposeAfter) {
-              (_b = this.#disposed) == null ? void 0 : _b.push([s, k, "set"]);
+              this.#disposed?.push([s, k, "set"]);
             }
           }
         } else if (!noDisposeOnSet) {
           if (this.#hasDispose) {
-            (_c = this.#dispose) == null ? void 0 : _c.call(this, oldVal, k, "set");
+            this.#dispose?.(oldVal, k, "set");
           }
           if (this.#hasDisposeAfter) {
-            (_d = this.#disposed) == null ? void 0 : _d.push([oldVal, k, "set"]);
+            this.#disposed?.push([oldVal, k, "set"]);
           }
         }
         this.#removeItemSize(index);
@@ -34689,8 +34667,8 @@ var LRUCache = class _LRUCache {
     if (!noDisposeOnSet && this.#hasDisposeAfter && this.#disposed) {
       const dt = this.#disposed;
       let task;
-      while (task = dt == null ? void 0 : dt.shift()) {
-        (_e = this.#disposeAfter) == null ? void 0 : _e.call(this, ...task);
+      while (task = dt?.shift()) {
+        this.#disposeAfter?.(...task);
       }
     }
     return this;
@@ -34700,7 +34678,6 @@ var LRUCache = class _LRUCache {
    * `undefined` if cache is empty.
    */
   pop() {
-    var _a2;
     try {
       while (this.#size) {
         const val = this.#valList[this.#head];
@@ -34717,14 +34694,13 @@ var LRUCache = class _LRUCache {
       if (this.#hasDisposeAfter && this.#disposed) {
         const dt = this.#disposed;
         let task;
-        while (task = dt == null ? void 0 : dt.shift()) {
-          (_a2 = this.#disposeAfter) == null ? void 0 : _a2.call(this, ...task);
+        while (task = dt?.shift()) {
+          this.#disposeAfter?.(...task);
         }
       }
     }
   }
   #evict(free) {
-    var _a2, _b;
     const head = this.#head;
     const k = this.#keyList[head];
     const v = this.#valList[head];
@@ -34732,10 +34708,10 @@ var LRUCache = class _LRUCache {
       v.__abortController.abort(new Error("evicted"));
     } else if (this.#hasDispose || this.#hasDisposeAfter) {
       if (this.#hasDispose) {
-        (_a2 = this.#dispose) == null ? void 0 : _a2.call(this, v, k, "evict");
+        this.#dispose?.(v, k, "evict");
       }
       if (this.#hasDisposeAfter) {
-        (_b = this.#disposed) == null ? void 0 : _b.push([v, k, "evict"]);
+        this.#disposed?.push([v, k, "evict"]);
       }
     }
     this.#removeItemSize(head);
@@ -34811,7 +34787,7 @@ var LRUCache = class _LRUCache {
     }
     const ac = new AC();
     const { signal } = options;
-    signal == null ? void 0 : signal.addEventListener("abort", () => ac.abort(signal.reason), {
+    signal?.addEventListener("abort", () => ac.abort(signal.reason), {
       signal: ac.signal
     });
     const fetchOpts = {
@@ -34882,8 +34858,7 @@ var LRUCache = class _LRUCache {
       }
     };
     const pcall = (res, rej) => {
-      var _a2;
-      const fmp = (_a2 = this.#fetchMethod) == null ? void 0 : _a2.call(this, k, v, fetchOpts);
+      const fmp = this.#fetchMethod?.(k, v, fetchOpts);
       if (fmp && fmp instanceof Promise) {
         fmp.then((v2) => res(v2 === void 0 ? void 0 : v2), rej);
       }
@@ -35072,7 +35047,6 @@ var LRUCache = class _LRUCache {
    * Returns true if the key was deleted, false otherwise.
    */
   delete(k) {
-    var _a2, _b, _c, _d;
     let deleted = false;
     if (this.#size !== 0) {
       const index = this.#keyMap.get(k);
@@ -35087,10 +35061,10 @@ var LRUCache = class _LRUCache {
             v.__abortController.abort(new Error("deleted"));
           } else if (this.#hasDispose || this.#hasDisposeAfter) {
             if (this.#hasDispose) {
-              (_a2 = this.#dispose) == null ? void 0 : _a2.call(this, v, k, "delete");
+              this.#dispose?.(v, k, "delete");
             }
             if (this.#hasDisposeAfter) {
-              (_b = this.#disposed) == null ? void 0 : _b.push([v, k, "delete"]);
+              this.#disposed?.push([v, k, "delete"]);
             }
           }
           this.#keyMap.delete(k);
@@ -35111,11 +35085,11 @@ var LRUCache = class _LRUCache {
         }
       }
     }
-    if (this.#hasDisposeAfter && ((_c = this.#disposed) == null ? void 0 : _c.length)) {
+    if (this.#hasDisposeAfter && this.#disposed?.length) {
       const dt = this.#disposed;
       let task;
-      while (task = dt == null ? void 0 : dt.shift()) {
-        (_d = this.#disposeAfter) == null ? void 0 : _d.call(this, ...task);
+      while (task = dt?.shift()) {
+        this.#disposeAfter?.(...task);
       }
     }
     return deleted;
@@ -35124,7 +35098,6 @@ var LRUCache = class _LRUCache {
    * Clear the cache entirely, throwing away all values.
    */
   clear() {
-    var _a2, _b, _c;
     for (const index of this.#rindexes({ allowStale: true })) {
       const v = this.#valList[index];
       if (this.#isBackgroundFetch(v)) {
@@ -35132,10 +35105,10 @@ var LRUCache = class _LRUCache {
       } else {
         const k = this.#keyList[index];
         if (this.#hasDispose) {
-          (_a2 = this.#dispose) == null ? void 0 : _a2.call(this, v, k, "delete");
+          this.#dispose?.(v, k, "delete");
         }
         if (this.#hasDisposeAfter) {
-          (_b = this.#disposed) == null ? void 0 : _b.push([v, k, "delete"]);
+          this.#disposed?.push([v, k, "delete"]);
         }
       }
     }
@@ -35157,8 +35130,8 @@ var LRUCache = class _LRUCache {
     if (this.#hasDisposeAfter && this.#disposed) {
       const dt = this.#disposed;
       let task;
-      while (task = dt == null ? void 0 : dt.shift()) {
-        (_c = this.#disposeAfter) == null ? void 0 : _c.call(this, ...task);
+      while (task = dt?.shift()) {
+        this.#disposeAfter?.(...task);
       }
     }
   }
@@ -35386,10 +35359,9 @@ var Minipass = class extends import_events.EventEmitter {
   }
   // drop everything and get out of the flow completely
   [ABORT]() {
-    var _a2, _b;
     this[ABORTED] = true;
-    this.emit("abort", (_a2 = this[SIGNAL]) == null ? void 0 : _a2.reason);
-    this.destroy((_b = this[SIGNAL]) == null ? void 0 : _b.reason);
+    this.emit("abort", this[SIGNAL]?.reason);
+    this.destroy(this[SIGNAL]?.reason);
   }
   /**
    * True if the stream has been aborted.
@@ -35404,7 +35376,6 @@ var Minipass = class extends import_events.EventEmitter {
   set aborted(_) {
   }
   write(chunk, encoding, cb) {
-    var _a2;
     if (this[ABORTED])
       return false;
     if (this[EOF])
@@ -35450,7 +35421,7 @@ var Minipass = class extends import_events.EventEmitter {
       return this[FLOWING];
     }
     if (typeof chunk === "string" && // unless it is a string already ready for us to use
-    !(encoding === this[ENCODING] && !((_a2 = this[DECODER]) == null ? void 0 : _a2.lastNeed))) {
+    !(encoding === this[ENCODING] && !this[DECODER]?.lastNeed)) {
       chunk = Buffer.from(chunk, encoding);
     }
     if (Buffer.isBuffer(chunk) && this[ENCODING]) {
@@ -37374,7 +37345,7 @@ var PathScurryBase = class {
       entry = this.cwd;
     }
     const e = await entry.readlink();
-    return withFileTypes ? e : e == null ? void 0 : e.fullpath();
+    return withFileTypes ? e : e?.fullpath();
   }
   readlinkSync(entry = this.cwd, { withFileTypes } = {
     withFileTypes: false
@@ -37386,7 +37357,7 @@ var PathScurryBase = class {
       entry = this.cwd;
     }
     const e = entry.readlinkSync();
-    return withFileTypes ? e : e == null ? void 0 : e.fullpath();
+    return withFileTypes ? e : e?.fullpath();
   }
   async realpath(entry = this.cwd, { withFileTypes } = {
     withFileTypes: false
@@ -37398,7 +37369,7 @@ var PathScurryBase = class {
       entry = this.cwd;
     }
     const e = await entry.realpath();
-    return withFileTypes ? e : e == null ? void 0 : e.fullpath();
+    return withFileTypes ? e : e?.fullpath();
   }
   realpathSync(entry = this.cwd, { withFileTypes } = {
     withFileTypes: false
@@ -37410,7 +37381,7 @@ var PathScurryBase = class {
       entry = this.cwd;
     }
     const e = entry.realpathSync();
-    return withFileTypes ? e : e == null ? void 0 : e.fullpath();
+    return withFileTypes ? e : e?.fullpath();
   }
   async walk(entry = this.cwd, opts = {}) {
     if (typeof entry === "string") {
@@ -37444,7 +37415,7 @@ var PathScurryBase = class {
             results.push(withFileTypes ? e : e.fullpath());
           }
           if (follow && e.isSymbolicLink()) {
-            e.realpath().then((r) => (r == null ? void 0 : r.isUnknown()) ? r.lstat() : r).then((r) => (r == null ? void 0 : r.shouldWalk(dirs, walkFilter)) ? walk(r, next) : next());
+            e.realpath().then((r) => r?.isUnknown() ? r.lstat() : r).then((r) => r?.shouldWalk(dirs, walkFilter) ? walk(r, next) : next());
           } else {
             if (e.shouldWalk(dirs, walkFilter)) {
               walk(e, next);
@@ -37590,7 +37561,7 @@ var PathScurryBase = class {
             const promises = [];
             for (const e of entries) {
               if (e.isSymbolicLink()) {
-                promises.push(e.realpath().then((r) => (r == null ? void 0 : r.isUnknown()) ? r.lstat() : r));
+                promises.push(e.realpath().then((r) => r?.isUnknown() ? r.lstat() : r));
               }
             }
             if (promises.length) {
@@ -38012,8 +37983,7 @@ var HasWalkedCache = class _HasWalkedCache {
     return new _HasWalkedCache(new Map(this.store));
   }
   hasWalked(target, pattern) {
-    var _a2;
-    return (_a2 = this.store.get(target.fullpath())) == null ? void 0 : _a2.has(pattern.globString());
+    return this.store.get(target.fullpath())?.has(pattern.globString());
   }
   storeWalked(target, pattern) {
     const fullpath = target.fullpath();
@@ -38125,8 +38095,8 @@ var Processor = class _Processor {
         if (!t.isSymbolicLink() || this.follow || pattern.checkFollowGlobstar()) {
           this.subwalks.add(t, pattern);
         }
-        const rp = rest == null ? void 0 : rest.pattern();
-        const rrest = rest == null ? void 0 : rest.rest();
+        const rp = rest?.pattern();
+        const rrest = rest?.rest();
         if (!rest || (rp === "" || rp === ".") && !rrest) {
           this.matches.add(t, absolute, rp === "" || rp === ".");
         } else {
@@ -38255,20 +38225,17 @@ var GlobUtil = class {
     }
   }
   #ignored(path2) {
-    var _a2, _b;
-    return this.seen.has(path2) || !!((_b = (_a2 = this.#ignore) == null ? void 0 : _a2.ignored) == null ? void 0 : _b.call(_a2, path2));
+    return this.seen.has(path2) || !!this.#ignore?.ignored?.(path2);
   }
   #childrenIgnored(path2) {
-    var _a2, _b;
-    return !!((_b = (_a2 = this.#ignore) == null ? void 0 : _a2.childrenIgnored) == null ? void 0 : _b.call(_a2, path2));
+    return !!this.#ignore?.childrenIgnored?.(path2);
   }
   // backpressure mechanism
   pause() {
     this.paused = true;
   }
   resume() {
-    var _a2;
-    if ((_a2 = this.signal) == null ? void 0 : _a2.aborted)
+    if (this.signal?.aborted)
       return;
     this.paused = false;
     let fn = void 0;
@@ -38277,8 +38244,7 @@ var GlobUtil = class {
     }
   }
   onResume(fn) {
-    var _a2;
-    if ((_a2 = this.signal) == null ? void 0 : _a2.aborted)
+    if (this.signal?.aborted)
       return;
     if (!this.paused) {
       fn();
@@ -38345,16 +38311,14 @@ var GlobUtil = class {
       this.matchFinish(p, absolute);
   }
   walkCB(target, patterns, cb) {
-    var _a2;
-    if ((_a2 = this.signal) == null ? void 0 : _a2.aborted)
+    if (this.signal?.aborted)
       cb();
     this.walkCB2(target, patterns, new Processor(this.opts), cb);
   }
   walkCB2(target, patterns, processor, cb) {
-    var _a2;
     if (this.#childrenIgnored(target))
       return cb();
-    if ((_a2 = this.signal) == null ? void 0 : _a2.aborted)
+    if (this.signal?.aborted)
       cb();
     if (this.paused) {
       this.onResume(() => this.walkCB2(target, patterns, processor, cb));
@@ -38406,16 +38370,14 @@ var GlobUtil = class {
     next();
   }
   walkCBSync(target, patterns, cb) {
-    var _a2;
-    if ((_a2 = this.signal) == null ? void 0 : _a2.aborted)
+    if (this.signal?.aborted)
       cb();
     this.walkCB2Sync(target, patterns, new Processor(this.opts), cb);
   }
   walkCB2Sync(target, patterns, processor, cb) {
-    var _a2;
     if (this.#childrenIgnored(target))
       return cb();
-    if ((_a2 = this.signal) == null ? void 0 : _a2.aborted)
+    if (this.signal?.aborted)
       cb();
     if (this.paused) {
       this.onResume(() => this.walkCB2Sync(target, patterns, processor, cb));
@@ -38471,16 +38433,14 @@ var GlobWalker = class extends GlobUtil {
     this.matches.add(e);
   }
   async walk() {
-    var _a2;
-    if ((_a2 = this.signal) == null ? void 0 : _a2.aborted)
+    if (this.signal?.aborted)
       throw this.signal.reason;
     if (this.path.isUnknown()) {
       await this.path.lstat();
     }
     await new Promise((res, rej) => {
       this.walkCB(this.path, this.patterns, () => {
-        var _a3;
-        if ((_a3 = this.signal) == null ? void 0 : _a3.aborted) {
+        if (this.signal?.aborted) {
           rej(this.signal.reason);
         } else {
           res(this.matches);
@@ -38490,15 +38450,13 @@ var GlobWalker = class extends GlobUtil {
     return this.matches;
   }
   walkSync() {
-    var _a2;
-    if ((_a2 = this.signal) == null ? void 0 : _a2.aborted)
+    if (this.signal?.aborted)
       throw this.signal.reason;
     if (this.path.isUnknown()) {
       this.path.lstatSync();
     }
     this.walkCBSync(this.path, this.patterns, () => {
-      var _a3;
-      if ((_a3 = this.signal) == null ? void 0 : _a3.aborted)
+      if (this.signal?.aborted)
         throw this.signal.reason;
     });
     return this.matches;
@@ -39490,11 +39448,11 @@ var ZodType = class {
     throw result.error;
   }
   safeParse(data, params) {
-    var _a2;
+    var _a;
     const ctx = {
       common: {
         issues: [],
-        async: (_a2 = params === null || params === void 0 ? void 0 : params.async) !== null && _a2 !== void 0 ? _a2 : false,
+        async: (_a = params === null || params === void 0 ? void 0 : params.async) !== null && _a !== void 0 ? _a : false,
         contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap
       },
       path: (params === null || params === void 0 ? void 0 : params.path) || [],
@@ -39836,7 +39794,7 @@ var ZodString = class _ZodString extends ZodType {
       } else if (check2.kind === "url") {
         try {
           new URL(input.data);
-        } catch (_a2) {
+        } catch (_a) {
           ctx = this._getOrReturnCtx(input, ctx);
           addIssueToContext(ctx, {
             validation: "url",
@@ -39958,7 +39916,7 @@ var ZodString = class _ZodString extends ZodType {
     return this._addCheck({ kind: "ip", ...errorUtil.errToObj(options) });
   }
   datetime(options) {
-    var _a2;
+    var _a;
     if (typeof options === "string") {
       return this._addCheck({
         kind: "datetime",
@@ -39970,7 +39928,7 @@ var ZodString = class _ZodString extends ZodType {
     return this._addCheck({
       kind: "datetime",
       precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-      offset: (_a2 = options === null || options === void 0 ? void 0 : options.offset) !== null && _a2 !== void 0 ? _a2 : false,
+      offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
       ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message)
     });
   }
@@ -40098,11 +40056,11 @@ var ZodString = class _ZodString extends ZodType {
   }
 };
 ZodString.create = (params) => {
-  var _a2;
+  var _a;
   return new ZodString({
     checks: [],
     typeName: ZodFirstPartyTypeKind.ZodString,
-    coerce: (_a2 = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a2 !== void 0 ? _a2 : false,
+    coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
     ...processCreateParams(params)
   });
 };
@@ -40503,11 +40461,11 @@ var ZodBigInt = class _ZodBigInt extends ZodType {
   }
 };
 ZodBigInt.create = (params) => {
-  var _a2;
+  var _a;
   return new ZodBigInt({
     checks: [],
     typeName: ZodFirstPartyTypeKind.ZodBigInt,
-    coerce: (_a2 = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a2 !== void 0 ? _a2 : false,
+    coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
     ...processCreateParams(params)
   });
 };
@@ -41013,8 +40971,8 @@ var ZodObject = class _ZodObject extends ZodType {
       unknownKeys: "strict",
       ...message !== void 0 ? {
         errorMap: (issue, ctx) => {
-          var _a2, _b, _c, _d;
-          const defaultError = (_c = (_b = (_a2 = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a2, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
+          var _a, _b, _c, _d;
+          const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
           if (issue.code === "unrecognized_keys")
             return {
               message: (_d = errorUtil.errToObj(message).message) !== null && _d !== void 0 ? _d : defaultError
@@ -42424,10 +42382,10 @@ ZodReadonly.create = (type, params) => {
 var custom = (check2, params = {}, fatal) => {
   if (check2)
     return ZodAny.create().superRefine((data, ctx) => {
-      var _a2, _b;
+      var _a, _b;
       if (!check2(data)) {
         const p = typeof params === "function" ? params(data) : typeof params === "string" ? { message: params } : params;
-        const _fatal = (_b = (_a2 = p.fatal) !== null && _a2 !== void 0 ? _a2 : fatal) !== null && _b !== void 0 ? _b : true;
+        const _fatal = (_b = (_a = p.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
         const p2 = typeof p === "string" ? { message: p } : p;
         ctx.addIssue({ code: "custom", ...p2, fatal: _fatal });
       }

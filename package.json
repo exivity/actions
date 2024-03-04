@@ -31,7 +31,7 @@
     "build:trigger-workflow": "yarn esbuild:generic trigger-workflow/src/index.ts --outfile=trigger-workflow/dist/index.js",
     "build:sync-defaults": "yarn esbuild:generic sync-defaults/src/index.ts --outfile=sync-defaults/dist/index.js",
     "build:virustotal": "yarn esbuild:generic virustotal/src/index.ts --outfile=virustotal/dist/index.js",
-    "esbuild:generic": "esbuild --bundle --platform=node --target=node16",
+    "esbuild:generic": "esbuild --bundle --platform=node --target=node20",
     "format": "prettier --write .",
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable"
