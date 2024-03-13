@@ -297,10 +297,10 @@
   resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-19.0.0.tgz#0101bf62ab14c1946149a0f8385440963e1253c4"
   integrity sha512-PclQ6JGMTE9iUStpzMkwLCISFn/wDeRjkZFIKALpvJQNBGwDoYYi2fFvuHwssoQ1rXI5mfh6jgTgWuddeUzfWw==
 
-"@octokit/openapi-webhooks-types@6.1.0":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@octokit/openapi-webhooks-types/-/openapi-webhooks-types-6.1.0.tgz#f238d76a71ec9003439aecdb738943826935d339"
-  integrity sha512-IKjzXeDd+IogpwMmTi2A9Iuzx93dQWg6Unoz+uHARC7Hv0ixEXWfrUB7bmENhqwcIPBhfCTmSJ34xOMcgjbs5g==
+"@octokit/openapi-webhooks-types@6.2.0":
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-webhooks-types/-/openapi-webhooks-types-6.2.0.tgz#67af3e205432055ddc70c9de4b5996e2a9e4b28a"
+  integrity sha512-hsjJ08udv1BKkXSq9nyZNnUWoClaPhGVWmP/GieJQ1r8MNc7YdRbw0PzSlAwoY3olk6WsU+VHVvNKuf++P1kQQ==
 
 "@octokit/plugin-paginate-rest@^2.17.0":
   version "2.21.2"
@@ -405,12 +405,12 @@
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-methods/-/webhooks-methods-5.0.0.tgz#04115f44127967ca2e522bd67191c2436883a59d"
   integrity sha512-bMypz/oiU4DqaujqZH7IOwMyrHfr2MBZbXqrttyR/kawne7t8CIv1k+xALazo6VCuE7DJZbgBG1RFdk5OH8lnw==
 
-"@octokit/webhooks@13.1.0":
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.1.0.tgz#5157969f77d0d675fb40c3a60249c7c12458dd46"
-  integrity sha512-llwszRY8nImC00YYU9m182CE3slNBWyVJy8LkSoonuQxXapOZizj44ScaA3VzZt5nrMKBj8ntCi20gv4ZcZ6Og==
+"@octokit/webhooks@13.1.1":
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.1.1.tgz#d28744878667bdf17bb5d1b0ed97f0cc5b7d3db8"
+  integrity sha512-CfM4WaW6JMwG5elZjb85clgCSr/iSv1MBARFA5qHt0Afx+2C4MynMIzgAIbWFDG1diVSBAk1wKJxHjKrwi2ZmQ==
   dependencies:
-    "@octokit/openapi-webhooks-types" "6.1.0"
+    "@octokit/openapi-webhooks-types" "6.2.0"
     "@octokit/request-error" "^6.0.1"
     "@octokit/webhooks-methods" "^5.0.0"
     aggregate-error "^5.0.0"
