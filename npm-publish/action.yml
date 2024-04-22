@@ -1,0 +1,10 @@
+name: 'NPM Publish'
+description: 'Publishes a public package to the npm registry'
+inputs:
+  token:
+    description: Token to publish to registry
+    required: false
+    default: ${{ secrets.NPM_PUBLISH_TOKEN }}
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

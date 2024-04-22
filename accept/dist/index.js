@@ -1141,6 +1141,121 @@ var require_errors = __commonJS({
   }
 });
 
+// node_modules/undici/lib/core/constants.js
+var require_constants = __commonJS({
+  "node_modules/undici/lib/core/constants.js"(exports2, module2) {
+    "use strict";
+    var headerNameLowerCasedRecord = {};
+    var wellknownHeaderNames = [
+      "Accept",
+      "Accept-Encoding",
+      "Accept-Language",
+      "Accept-Ranges",
+      "Access-Control-Allow-Credentials",
+      "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Methods",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Expose-Headers",
+      "Access-Control-Max-Age",
+      "Access-Control-Request-Headers",
+      "Access-Control-Request-Method",
+      "Age",
+      "Allow",
+      "Alt-Svc",
+      "Alt-Used",
+      "Authorization",
+      "Cache-Control",
+      "Clear-Site-Data",
+      "Connection",
+      "Content-Disposition",
+      "Content-Encoding",
+      "Content-Language",
+      "Content-Length",
+      "Content-Location",
+      "Content-Range",
+      "Content-Security-Policy",
+      "Content-Security-Policy-Report-Only",
+      "Content-Type",
+      "Cookie",
+      "Cross-Origin-Embedder-Policy",
+      "Cross-Origin-Opener-Policy",
+      "Cross-Origin-Resource-Policy",
+      "Date",
+      "Device-Memory",
+      "Downlink",
+      "ECT",
+      "ETag",
+      "Expect",
+      "Expect-CT",
+      "Expires",
+      "Forwarded",
+      "From",
+      "Host",
+      "If-Match",
+      "If-Modified-Since",
+      "If-None-Match",
+      "If-Range",
+      "If-Unmodified-Since",
+      "Keep-Alive",
+      "Last-Modified",
+      "Link",
+      "Location",
+      "Max-Forwards",
+      "Origin",
+      "Permissions-Policy",
+      "Pragma",
+      "Proxy-Authenticate",
+      "Proxy-Authorization",
+      "RTT",
+      "Range",
+      "Referer",
+      "Referrer-Policy",
+      "Refresh",
+      "Retry-After",
+      "Sec-WebSocket-Accept",
+      "Sec-WebSocket-Extensions",
+      "Sec-WebSocket-Key",
+      "Sec-WebSocket-Protocol",
+      "Sec-WebSocket-Version",
+      "Server",
+      "Server-Timing",
+      "Service-Worker-Allowed",
+      "Service-Worker-Navigation-Preload",
+      "Set-Cookie",
+      "SourceMap",
+      "Strict-Transport-Security",
+      "Supports-Loading-Mode",
+      "TE",
+      "Timing-Allow-Origin",
+      "Trailer",
+      "Transfer-Encoding",
+      "Upgrade",
+      "Upgrade-Insecure-Requests",
+      "User-Agent",
+      "Vary",
+      "Via",
+      "WWW-Authenticate",
+      "X-Content-Type-Options",
+      "X-DNS-Prefetch-Control",
+      "X-Frame-Options",
+      "X-Permitted-Cross-Domain-Policies",
+      "X-Powered-By",
+      "X-Requested-With",
+      "X-XSS-Protection"
+    ];
+    for (let i = 0; i < wellknownHeaderNames.length; ++i) {
+      const key = wellknownHeaderNames[i];
+      const lowerCasedKey = key.toLowerCase();
+      headerNameLowerCasedRecord[key] = headerNameLowerCasedRecord[lowerCasedKey] = lowerCasedKey;
+    }
+    Object.setPrototypeOf(headerNameLowerCasedRecord, null);
+    module2.exports = {
+      wellknownHeaderNames,
+      headerNameLowerCasedRecord
+    };
+  }
+});
+
 // node_modules/undici/lib/core/util.js
 var require_util = __commonJS({
   "node_modules/undici/lib/core/util.js"(exports2, module2) {
@@ -1154,6 +1269,7 @@ var require_util = __commonJS({
     var { Blob: Blob2 } = require("buffer");
     var nodeUtil = require("util");
     var { stringify: stringify2 } = require("querystring");
+    var { headerNameLowerCasedRecord } = require_constants();
     var [nodeMajor, nodeMinor] = process.versions.node.split(".").map((v) => Number(v));
     function nop() {
     }
@@ -1296,6 +1412,9 @@ var require_util = __commonJS({
     function parseKeepAliveTimeout(val) {
       const m = val.toString().match(KEEPALIVE_TIMEOUT_EXPR);
       return m ? parseInt(m[1], 10) * 1e3 : null;
+    }
+    function headerNameToString(value) {
+      return headerNameLowerCasedRecord[value] || value.toLowerCase();
     }
     function parseHeaders(headers, obj = {}) {
       if (!Array.isArray(headers))
@@ -1500,6 +1619,7 @@ var require_util = __commonJS({
       isIterable,
       isAsyncIterable,
       isDestroyed,
+      headerNameToString,
       parseRawHeaders,
       parseHeaders,
       parseKeepAliveTimeout,
@@ -3030,7 +3150,7 @@ var require_main = __commonJS({
 });
 
 // node_modules/undici/lib/fetch/constants.js
-var require_constants = __commonJS({
+var require_constants2 = __commonJS({
   "node_modules/undici/lib/fetch/constants.js"(exports2, module2) {
     "use strict";
     var { MessageChannel, receiveMessageOnPort } = require("worker_threads");
@@ -3268,15 +3388,18 @@ var require_global = __commonJS({
 var require_util2 = __commonJS({
   "node_modules/undici/lib/fetch/util.js"(exports2, module2) {
     "use strict";
-    var { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = require_constants();
+    var { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = require_constants2();
     var { getGlobalOrigin } = require_global();
     var { performance: performance2 } = require("perf_hooks");
     var { isBlobLike, toUSVString, ReadableStreamFrom } = require_util();
     var assert5 = require("assert");
     var { isUint8Array } = require("util/types");
+    var supportedHashes = [];
     var crypto4;
     try {
       crypto4 = require("crypto");
+      const possibleRelevantHashes = ["sha256", "sha384", "sha512"];
+      supportedHashes = crypto4.getHashes().filter((hash) => possibleRelevantHashes.includes(hash));
     } catch {
     }
     function responseURL(response) {
@@ -3552,45 +3675,37 @@ var require_util2 = __commonJS({
       if (parsedMetadata.length === 0) {
         return true;
       }
-      const list = parsedMetadata.sort((c, d) => d.algo.localeCompare(c.algo));
-      const strongest = list[0].algo;
-      const metadata = list.filter((item) => item.algo === strongest);
+      const strongest = getStrongestMetadata(parsedMetadata);
+      const metadata = filterMetadataListByAlgorithm(parsedMetadata, strongest);
       for (const item of metadata) {
         const algorithm = item.algo;
-        let expectedValue = item.hash;
-        if (expectedValue.endsWith("==")) {
-          expectedValue = expectedValue.slice(0, -2);
-        }
+        const expectedValue = item.hash;
         let actualValue = crypto4.createHash(algorithm).update(bytes).digest("base64");
-        if (actualValue.endsWith("==")) {
-          actualValue = actualValue.slice(0, -2);
+        if (actualValue[actualValue.length - 1] === "=") {
+          if (actualValue[actualValue.length - 2] === "=") {
+            actualValue = actualValue.slice(0, -2);
+          } else {
+            actualValue = actualValue.slice(0, -1);
+          }
         }
-        if (actualValue === expectedValue) {
-          return true;
-        }
-        let actualBase64URL = crypto4.createHash(algorithm).update(bytes).digest("base64url");
-        if (actualBase64URL.endsWith("==")) {
-          actualBase64URL = actualBase64URL.slice(0, -2);
-        }
-        if (actualBase64URL === expectedValue) {
+        if (compareBase64Mixed(actualValue, expectedValue)) {
           return true;
         }
       }
       return false;
     }
-    var parseHashWithOptions = /((?<algo>sha256|sha384|sha512)-(?<hash>[A-z0-9+/]{1}.*={0,2}))( +[\x21-\x7e]?)?/i;
+    var parseHashWithOptions = /(?<algo>sha256|sha384|sha512)-((?<hash>[A-Za-z0-9+/]+|[A-Za-z0-9_-]+)={0,2}(?:\s|$)( +[!-~]*)?)?/i;
     function parseMetadata(metadata) {
       const result = [];
       let empty = true;
-      const supportedHashes = crypto4.getHashes();
       for (const token of metadata.split(" ")) {
         empty = false;
         const parsedToken = parseHashWithOptions.exec(token);
-        if (parsedToken === null || parsedToken.groups === void 0) {
+        if (parsedToken === null || parsedToken.groups === void 0 || parsedToken.groups.algo === void 0) {
           continue;
         }
-        const algorithm = parsedToken.groups.algo;
-        if (supportedHashes.includes(algorithm.toLowerCase())) {
+        const algorithm = parsedToken.groups.algo.toLowerCase();
+        if (supportedHashes.includes(algorithm)) {
           result.push(parsedToken.groups);
         }
       }
@@ -3598,6 +3713,51 @@ var require_util2 = __commonJS({
         return "no metadata";
       }
       return result;
+    }
+    function getStrongestMetadata(metadataList) {
+      let algorithm = metadataList[0].algo;
+      if (algorithm[3] === "5") {
+        return algorithm;
+      }
+      for (let i = 1; i < metadataList.length; ++i) {
+        const metadata = metadataList[i];
+        if (metadata.algo[3] === "5") {
+          algorithm = "sha512";
+          break;
+        } else if (algorithm[3] === "3") {
+          continue;
+        } else if (metadata.algo[3] === "3") {
+          algorithm = "sha384";
+        }
+      }
+      return algorithm;
+    }
+    function filterMetadataListByAlgorithm(metadataList, algorithm) {
+      if (metadataList.length === 1) {
+        return metadataList;
+      }
+      let pos = 0;
+      for (let i = 0; i < metadataList.length; ++i) {
+        if (metadataList[i].algo === algorithm) {
+          metadataList[pos++] = metadataList[i];
+        }
+      }
+      metadataList.length = pos;
+      return metadataList;
+    }
+    function compareBase64Mixed(actualValue, expectedValue) {
+      if (actualValue.length !== expectedValue.length) {
+        return false;
+      }
+      for (let i = 0; i < actualValue.length; ++i) {
+        if (actualValue[i] !== expectedValue[i]) {
+          if (actualValue[i] === "+" && expectedValue[i] === "-" || actualValue[i] === "/" && expectedValue[i] === "_") {
+            continue;
+          }
+          return false;
+        }
+      }
+      return true;
     }
     function tryUpgradeRequestToAPotentiallyTrustworthyURL(request) {
     }
@@ -3822,7 +3982,8 @@ var require_util2 = __commonJS({
       urlHasHttpsScheme,
       urlIsHttpHttpsScheme,
       readAllBytes,
-      normalizeMethodRecord
+      normalizeMethodRecord,
+      parseMetadata
     };
   }
 });
@@ -4859,7 +5020,7 @@ var require_body = __commonJS({
     var { FormData } = require_formdata();
     var { kState } = require_symbols2();
     var { webidl } = require_webidl();
-    var { DOMException: DOMException2, structuredClone } = require_constants();
+    var { DOMException: DOMException2, structuredClone } = require_constants2();
     var { Blob: Blob2, File: NativeFile } = require("buffer");
     var { kBodyUsed } = require_symbols();
     var assert5 = require("assert");
@@ -5955,7 +6116,7 @@ var require_utils2 = __commonJS({
 });
 
 // node_modules/undici/lib/llhttp/constants.js
-var require_constants2 = __commonJS({
+var require_constants3 = __commonJS({
   "node_modules/undici/lib/llhttp/constants.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6390,7 +6551,17 @@ var require_RedirectHandler = __commonJS({
       }
     }
     function shouldRemoveHeader(header, removeContent, unknownOrigin) {
-      return header.length === 4 && header.toString().toLowerCase() === "host" || removeContent && header.toString().toLowerCase().indexOf("content-") === 0 || unknownOrigin && header.length === 13 && header.toString().toLowerCase() === "authorization" || unknownOrigin && header.length === 6 && header.toString().toLowerCase() === "cookie";
+      if (header.length === 4) {
+        return util.headerNameToString(header) === "host";
+      }
+      if (removeContent && util.headerNameToString(header).startsWith("content-")) {
+        return true;
+      }
+      if (unknownOrigin && (header.length === 13 || header.length === 6 || header.length === 19)) {
+        const name = util.headerNameToString(header);
+        return name === "authorization" || name === "cookie" || name === "proxy-authorization";
+      }
+      return false;
     }
     function cleanRequestHeaders(headers, removeContent, unknownOrigin) {
       const ret = [];
@@ -6835,7 +7006,7 @@ var require_client = __commonJS({
       );
       resume(client);
     }
-    var constants = require_constants2();
+    var constants = require_constants3();
     var createRedirectInterceptor = require_redirectInterceptor();
     var EMPTY_BUF = Buffer.alloc(0);
     async function lazyllhttp() {
@@ -11539,7 +11710,7 @@ var require_response = __commonJS({
       redirectStatusSet,
       nullBodyStatus,
       DOMException: DOMException2
-    } = require_constants();
+    } = require_constants2();
     var { kState, kHeaders, kGuard, kRealm } = require_symbols2();
     var { webidl } = require_webidl();
     var { FormData } = require_formdata();
@@ -11921,7 +12092,7 @@ var require_request2 = __commonJS({
       requestCredentials,
       requestCache,
       requestDuplex
-    } = require_constants();
+    } = require_constants2();
     var { kEnumerableProperty } = util;
     var { kHeaders, kSignal, kState, kGuard, kRealm } = require_symbols2();
     var { webidl } = require_webidl();
@@ -12590,7 +12761,7 @@ var require_fetch = __commonJS({
       requestBodyHeader,
       subresourceSet,
       DOMException: DOMException2
-    } = require_constants();
+    } = require_constants2();
     var { kHeadersList } = require_symbols();
     var EE = require("events");
     var { Readable, pipeline } = require("stream");
@@ -13954,7 +14125,7 @@ var require_util4 = __commonJS({
     } = require_symbols3();
     var { ProgressEvent } = require_progressevent();
     var { getEncoding } = require_encoding();
-    var { DOMException: DOMException2 } = require_constants();
+    var { DOMException: DOMException2 } = require_constants2();
     var { serializeAMimeType, parseMIMEType } = require_dataURL();
     var { types: types3 } = require("util");
     var { StringDecoder } = require("string_decoder");
@@ -15070,7 +15241,7 @@ var require_cachestorage = __commonJS({
 });
 
 // node_modules/undici/lib/cookies/constants.js
-var require_constants3 = __commonJS({
+var require_constants4 = __commonJS({
   "node_modules/undici/lib/cookies/constants.js"(exports2, module2) {
     "use strict";
     var maxAttributeValueSize = 1024;
@@ -15245,7 +15416,7 @@ var require_util6 = __commonJS({
 var require_parse = __commonJS({
   "node_modules/undici/lib/cookies/parse.js"(exports2, module2) {
     "use strict";
-    var { maxNameValuePairSize, maxAttributeValueSize } = require_constants3();
+    var { maxNameValuePairSize, maxAttributeValueSize } = require_constants4();
     var { isCTLExcludingHtab } = require_util6();
     var { collectASequenceOfCodePointsFast } = require_dataURL();
     var assert5 = require("assert");
@@ -15510,7 +15681,7 @@ var require_cookies = __commonJS({
 });
 
 // node_modules/undici/lib/websocket/constants.js
-var require_constants4 = __commonJS({
+var require_constants5 = __commonJS({
   "node_modules/undici/lib/websocket/constants.js"(exports2, module2) {
     "use strict";
     var uid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -15818,7 +15989,7 @@ var require_util7 = __commonJS({
   "node_modules/undici/lib/websocket/util.js"(exports2, module2) {
     "use strict";
     var { kReadyState, kController, kResponse, kBinaryType, kWebSocketURL } = require_symbols5();
-    var { states, opcodes } = require_constants4();
+    var { states, opcodes } = require_constants5();
     var { MessageEvent, ErrorEvent } = require_events();
     function isEstablished(ws) {
       return ws[kReadyState] === states.OPEN;
@@ -15908,7 +16079,7 @@ var require_connection = __commonJS({
   "node_modules/undici/lib/websocket/connection.js"(exports2, module2) {
     "use strict";
     var diagnosticsChannel = require("diagnostics_channel");
-    var { uid, states } = require_constants4();
+    var { uid, states } = require_constants5();
     var {
       kReadyState,
       kSentClose,
@@ -16055,7 +16226,7 @@ var require_connection = __commonJS({
 var require_frame = __commonJS({
   "node_modules/undici/lib/websocket/frame.js"(exports2, module2) {
     "use strict";
-    var { maxUnsigned16Bit } = require_constants4();
+    var { maxUnsigned16Bit } = require_constants5();
     var crypto4;
     try {
       crypto4 = require("crypto");
@@ -16114,7 +16285,7 @@ var require_receiver = __commonJS({
     "use strict";
     var { Writable } = require("stream");
     var diagnosticsChannel = require("diagnostics_channel");
-    var { parserStates, opcodes, states, emptyBuffer } = require_constants4();
+    var { parserStates, opcodes, states, emptyBuffer } = require_constants5();
     var { kReadyState, kSentClose, kResponse, kReceivedClose } = require_symbols5();
     var { isValidStatusCode, failWebsocketConnection, websocketMessageReceived } = require_util7();
     var { WebsocketFrameSend } = require_frame();
@@ -16349,10 +16520,10 @@ var require_websocket = __commonJS({
   "node_modules/undici/lib/websocket/websocket.js"(exports2, module2) {
     "use strict";
     var { webidl } = require_webidl();
-    var { DOMException: DOMException2 } = require_constants();
+    var { DOMException: DOMException2 } = require_constants2();
     var { URLSerializer } = require_dataURL();
     var { getGlobalOrigin } = require_global();
-    var { staticPropertyDescriptors, states, opcodes, emptyBuffer } = require_constants4();
+    var { staticPropertyDescriptors, states, opcodes, emptyBuffer } = require_constants5();
     var {
       kWebSocketURL,
       kReadyState,
@@ -17384,7 +17555,7 @@ var require_lib = __commonJS({
         if (this._keepAlive && useProxy) {
           agent = this._proxyAgent;
         }
-        if (this._keepAlive && !useProxy) {
+        if (!useProxy) {
           agent = this._agent;
         }
         if (agent) {
@@ -17413,13 +17584,10 @@ var require_lib = __commonJS({
           agent = tunnelAgent(agentOptions);
           this._proxyAgent = agent;
         }
-        if (this._keepAlive && !agent) {
+        if (!agent) {
           const options = { keepAlive: this._keepAlive, maxSockets };
           agent = usingSsl ? new https.Agent(options) : new http.Agent(options);
           this._agent = agent;
-        }
-        if (!agent) {
-          agent = usingSsl ? https.globalAgent : http.globalAgent;
         }
         if (usingSsl && this._ignoreSslError) {
           agent.options = Object.assign(agent.options || {}, {
@@ -29378,19 +29546,35 @@ var require_semver = __commonJS({
     var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || /* istanbul ignore next */
     9007199254740991;
     var MAX_SAFE_COMPONENT_LENGTH = 16;
+    var MAX_SAFE_BUILD_LENGTH = MAX_LENGTH - 6;
     var re = exports2.re = [];
+    var safeRe = exports2.safeRe = [];
     var src = exports2.src = [];
     var t = exports2.tokens = {};
     var R = 0;
     function tok(n) {
       t[n] = R++;
     }
+    var LETTERDASHNUMBER = "[a-zA-Z0-9-]";
+    var safeRegexReplacements = [
+      ["\\s", 1],
+      ["\\d", MAX_LENGTH],
+      [LETTERDASHNUMBER, MAX_SAFE_BUILD_LENGTH]
+    ];
+    function makeSafeRe(value) {
+      for (var i2 = 0; i2 < safeRegexReplacements.length; i2++) {
+        var token = safeRegexReplacements[i2][0];
+        var max = safeRegexReplacements[i2][1];
+        value = value.split(token + "*").join(token + "{0," + max + "}").split(token + "+").join(token + "{1," + max + "}");
+      }
+      return value;
+    }
     tok("NUMERICIDENTIFIER");
     src[t.NUMERICIDENTIFIER] = "0|[1-9]\\d*";
     tok("NUMERICIDENTIFIERLOOSE");
-    src[t.NUMERICIDENTIFIERLOOSE] = "[0-9]+";
+    src[t.NUMERICIDENTIFIERLOOSE] = "\\d+";
     tok("NONNUMERICIDENTIFIER");
-    src[t.NONNUMERICIDENTIFIER] = "\\d*[a-zA-Z-][a-zA-Z0-9-]*";
+    src[t.NONNUMERICIDENTIFIER] = "\\d*[a-zA-Z-]" + LETTERDASHNUMBER + "*";
     tok("MAINVERSION");
     src[t.MAINVERSION] = "(" + src[t.NUMERICIDENTIFIER] + ")\\.(" + src[t.NUMERICIDENTIFIER] + ")\\.(" + src[t.NUMERICIDENTIFIER] + ")";
     tok("MAINVERSIONLOOSE");
@@ -29404,7 +29588,7 @@ var require_semver = __commonJS({
     tok("PRERELEASELOOSE");
     src[t.PRERELEASELOOSE] = "(?:-?(" + src[t.PRERELEASEIDENTIFIERLOOSE] + "(?:\\." + src[t.PRERELEASEIDENTIFIERLOOSE] + ")*))";
     tok("BUILDIDENTIFIER");
-    src[t.BUILDIDENTIFIER] = "[0-9A-Za-z-]+";
+    src[t.BUILDIDENTIFIER] = LETTERDASHNUMBER + "+";
     tok("BUILD");
     src[t.BUILD] = "(?:\\+(" + src[t.BUILDIDENTIFIER] + "(?:\\." + src[t.BUILDIDENTIFIER] + ")*))";
     tok("FULL");
@@ -29433,11 +29617,13 @@ var require_semver = __commonJS({
     src[t.COERCE] = "(^|[^\\d])(\\d{1," + MAX_SAFE_COMPONENT_LENGTH + "})(?:\\.(\\d{1," + MAX_SAFE_COMPONENT_LENGTH + "}))?(?:\\.(\\d{1," + MAX_SAFE_COMPONENT_LENGTH + "}))?(?:$|[^\\d])";
     tok("COERCERTL");
     re[t.COERCERTL] = new RegExp(src[t.COERCE], "g");
+    safeRe[t.COERCERTL] = new RegExp(makeSafeRe(src[t.COERCE]), "g");
     tok("LONETILDE");
     src[t.LONETILDE] = "(?:~>?)";
     tok("TILDETRIM");
     src[t.TILDETRIM] = "(\\s*)" + src[t.LONETILDE] + "\\s+";
     re[t.TILDETRIM] = new RegExp(src[t.TILDETRIM], "g");
+    safeRe[t.TILDETRIM] = new RegExp(makeSafeRe(src[t.TILDETRIM]), "g");
     var tildeTrimReplace = "$1~";
     tok("TILDE");
     src[t.TILDE] = "^" + src[t.LONETILDE] + src[t.XRANGEPLAIN] + "$";
@@ -29448,6 +29634,7 @@ var require_semver = __commonJS({
     tok("CARETTRIM");
     src[t.CARETTRIM] = "(\\s*)" + src[t.LONECARET] + "\\s+";
     re[t.CARETTRIM] = new RegExp(src[t.CARETTRIM], "g");
+    safeRe[t.CARETTRIM] = new RegExp(makeSafeRe(src[t.CARETTRIM]), "g");
     var caretTrimReplace = "$1^";
     tok("CARET");
     src[t.CARET] = "^" + src[t.LONECARET] + src[t.XRANGEPLAIN] + "$";
@@ -29460,6 +29647,7 @@ var require_semver = __commonJS({
     tok("COMPARATORTRIM");
     src[t.COMPARATORTRIM] = "(\\s*)" + src[t.GTLT] + "\\s*(" + src[t.LOOSEPLAIN] + "|" + src[t.XRANGEPLAIN] + ")";
     re[t.COMPARATORTRIM] = new RegExp(src[t.COMPARATORTRIM], "g");
+    safeRe[t.COMPARATORTRIM] = new RegExp(makeSafeRe(src[t.COMPARATORTRIM]), "g");
     var comparatorTrimReplace = "$1$2$3";
     tok("HYPHENRANGE");
     src[t.HYPHENRANGE] = "^\\s*(" + src[t.XRANGEPLAIN] + ")\\s+-\\s+(" + src[t.XRANGEPLAIN] + ")\\s*$";
@@ -29471,6 +29659,7 @@ var require_semver = __commonJS({
       debug8(i, src[i]);
       if (!re[i]) {
         re[i] = new RegExp(src[i]);
+        safeRe[i] = new RegExp(makeSafeRe(src[i]));
       }
     }
     var i;
@@ -29491,7 +29680,7 @@ var require_semver = __commonJS({
       if (version2.length > MAX_LENGTH) {
         return null;
       }
-      var r = options.loose ? re[t.LOOSE] : re[t.FULL];
+      var r = options.loose ? safeRe[t.LOOSE] : safeRe[t.FULL];
       if (!r.test(version2)) {
         return null;
       }
@@ -29537,7 +29726,7 @@ var require_semver = __commonJS({
       debug8("SemVer", version2, options);
       this.options = options;
       this.loose = !!options.loose;
-      var m = version2.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
+      var m = version2.trim().match(options.loose ? safeRe[t.LOOSE] : safeRe[t.FULL]);
       if (!m) {
         throw new TypeError("Invalid Version: " + version2);
       }
@@ -29889,6 +30078,7 @@ var require_semver = __commonJS({
       if (!(this instanceof Comparator)) {
         return new Comparator(comp, options);
       }
+      comp = comp.trim().split(/\s+/).join(" ");
       debug8("comparator", comp, options);
       this.options = options;
       this.loose = !!options.loose;
@@ -29902,7 +30092,7 @@ var require_semver = __commonJS({
     }
     var ANY = {};
     Comparator.prototype.parse = function(comp) {
-      var r = this.options.loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR];
+      var r = this.options.loose ? safeRe[t.COMPARATORLOOSE] : safeRe[t.COMPARATOR];
       var m = comp.match(r);
       if (!m) {
         throw new TypeError("Invalid comparator: " + comp);
@@ -29990,14 +30180,14 @@ var require_semver = __commonJS({
       this.options = options;
       this.loose = !!options.loose;
       this.includePrerelease = !!options.includePrerelease;
-      this.raw = range;
-      this.set = range.split(/\s*\|\|\s*/).map(function(range2) {
+      this.raw = range.trim().split(/\s+/).join(" ");
+      this.set = this.raw.split("||").map(function(range2) {
         return this.parseRange(range2.trim());
       }, this).filter(function(c) {
         return c.length;
       });
       if (!this.set.length) {
-        throw new TypeError("Invalid SemVer Range: " + range);
+        throw new TypeError("Invalid SemVer Range: " + this.raw);
       }
       this.format();
     }
@@ -30012,16 +30202,15 @@ var require_semver = __commonJS({
     };
     Range.prototype.parseRange = function(range) {
       var loose = this.options.loose;
-      range = range.trim();
-      var hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
+      var hr = loose ? safeRe[t.HYPHENRANGELOOSE] : safeRe[t.HYPHENRANGE];
       range = range.replace(hr, hyphenReplace);
       debug8("hyphen replace", range);
-      range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
-      debug8("comparator trim", range, re[t.COMPARATORTRIM]);
-      range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
-      range = range.replace(re[t.CARETTRIM], caretTrimReplace);
+      range = range.replace(safeRe[t.COMPARATORTRIM], comparatorTrimReplace);
+      debug8("comparator trim", range, safeRe[t.COMPARATORTRIM]);
+      range = range.replace(safeRe[t.TILDETRIM], tildeTrimReplace);
+      range = range.replace(safeRe[t.CARETTRIM], caretTrimReplace);
       range = range.split(/\s+/).join(" ");
-      var compRe = loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR];
+      var compRe = loose ? safeRe[t.COMPARATORLOOSE] : safeRe[t.COMPARATOR];
       var set2 = range.split(" ").map(function(comp) {
         return parseComparator(comp, this.options);
       }, this).join(" ").split(/\s+/);
@@ -30090,7 +30279,7 @@ var require_semver = __commonJS({
       }).join(" ");
     }
     function replaceTilde(comp, options) {
-      var r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
+      var r = options.loose ? safeRe[t.TILDELOOSE] : safeRe[t.TILDE];
       return comp.replace(r, function(_, M, m, p, pr) {
         debug8("tilde", comp, _, M, m, p, pr);
         var ret;
@@ -30117,7 +30306,7 @@ var require_semver = __commonJS({
     }
     function replaceCaret(comp, options) {
       debug8("caret", comp, options);
-      var r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
+      var r = options.loose ? safeRe[t.CARETLOOSE] : safeRe[t.CARET];
       return comp.replace(r, function(_, M, m, p, pr) {
         debug8("caret", comp, _, M, m, p, pr);
         var ret;
@@ -30166,7 +30355,7 @@ var require_semver = __commonJS({
     }
     function replaceXRange(comp, options) {
       comp = comp.trim();
-      var r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
+      var r = options.loose ? safeRe[t.XRANGELOOSE] : safeRe[t.XRANGE];
       return comp.replace(r, function(ret, gtlt, M, m, p, pr) {
         debug8("xRange", comp, ret, gtlt, M, m, p, pr);
         var xM = isX(M);
@@ -30218,7 +30407,7 @@ var require_semver = __commonJS({
     }
     function replaceStars(comp, options) {
       debug8("replaceStars", comp, options);
-      return comp.trim().replace(re[t.STAR], "");
+      return comp.trim().replace(safeRe[t.STAR], "");
     }
     function hyphenReplace($0, from, fM, fm, fp, fpr, fb, to, tM, tm, tp, tpr, tb) {
       if (isX(fM)) {
@@ -30468,16 +30657,16 @@ var require_semver = __commonJS({
       options = options || {};
       var match2 = null;
       if (!options.rtl) {
-        match2 = version2.match(re[t.COERCE]);
+        match2 = version2.match(safeRe[t.COERCE]);
       } else {
         var next;
-        while ((next = re[t.COERCERTL].exec(version2)) && (!match2 || match2.index + match2[0].length !== version2.length)) {
+        while ((next = safeRe[t.COERCERTL].exec(version2)) && (!match2 || match2.index + match2[0].length !== version2.length)) {
           if (!match2 || next.index + next[0].length !== match2.index + match2[0].length) {
             match2 = next;
           }
-          re[t.COERCERTL].lastIndex = next.index + next[1].length + next[2].length;
+          safeRe[t.COERCERTL].lastIndex = next.index + next[1].length + next[2].length;
         }
-        re[t.COERCERTL].lastIndex = -1;
+        safeRe[t.COERCERTL].lastIndex = -1;
       }
       if (match2 === null) {
         return null;
@@ -33480,7 +33669,8 @@ function getFetchUrl(settings) {
   const encodedOwner = encodeURIComponent(settings.repositoryOwner);
   const encodedName = encodeURIComponent(settings.repositoryName);
   if (settings.sshKey) {
-    return `git@${serviceUrl.hostname}:${encodedOwner}/${encodedName}.git`;
+    const user = settings.sshUser.length > 0 ? settings.sshUser : "git";
+    return `${user}@${serviceUrl.hostname}:${encodedOwner}/${encodedName}.git`;
   }
   return `${serviceUrl.origin}/${encodedOwner}/${encodedName}`;
 }
@@ -34059,6 +34249,7 @@ var GitVersion = class {
 
 // node_modules/checkout/src/git-command-manager.ts
 var MinimumGitVersion = new GitVersion("2.18");
+var MinimumGitSparseCheckoutVersion = new GitVersion("2.28");
 async function createCommandManager(workingDirectory, lfs, doSparseCheckout) {
   return await GitCommandManager.createCommandManager(
     workingDirectory,
@@ -34077,6 +34268,7 @@ var GitCommandManager = class _GitCommandManager {
   lfs = false;
   doSparseCheckout = false;
   workingDirectory = "";
+  gitVersion = new GitVersion();
   // Private constructor; use createCommandManager()
   constructor() {
   }
@@ -34141,6 +34333,9 @@ var GitCommandManager = class _GitCommandManager {
       result.push(branch);
     }
     return result;
+  }
+  async disableSparseCheckout() {
+    await this.execGit(["sparse-checkout", "disable"]);
   }
   async sparseCheckout(sparseCheckout) {
     await this.execGit(["sparse-checkout", "set", ...sparseCheckout]);
@@ -34378,6 +34573,9 @@ ${sparseCheckout.join("\n")}
     const output = await this.execGit(["reset", "--hard", "HEAD"], true);
     return output.exitCode === 0;
   }
+  async version() {
+    return this.gitVersion;
+  }
   static async createCommandManager(workingDirectory, lfs, doSparseCheckout) {
     const result = new _GitCommandManager();
     await result.initializeCommandManager(
@@ -34425,21 +34623,21 @@ ${sparseCheckout.join("\n")}
     }
     this.gitPath = await io2.which("git", true);
     core5.debug("Getting git version");
-    let gitVersion = new GitVersion();
+    this.gitVersion = new GitVersion();
     let gitOutput = await this.execGit(["version"]);
     let stdout = gitOutput.stdout.trim();
     if (!stdout.includes("\n")) {
       const match2 = stdout.match(/\d+\.\d+(\.\d+)?/);
       if (match2) {
-        gitVersion = new GitVersion(match2[0]);
+        this.gitVersion = new GitVersion(match2[0]);
       }
     }
-    if (!gitVersion.isValid()) {
+    if (!this.gitVersion.isValid()) {
       throw new Error("Unable to determine git version");
     }
-    if (!gitVersion.checkMinimum(MinimumGitVersion)) {
+    if (!this.gitVersion.checkMinimum(MinimumGitVersion)) {
       throw new Error(
-        `Minimum required git version is ${MinimumGitVersion}. Your git ('${this.gitPath}') is ${gitVersion}`
+        `Minimum required git version is ${MinimumGitVersion}. Your git ('${this.gitPath}') is ${this.gitVersion}`
       );
     }
     if (this.lfs) {
@@ -34466,14 +34664,13 @@ ${sparseCheckout.join("\n")}
     }
     this.doSparseCheckout = doSparseCheckout;
     if (this.doSparseCheckout) {
-      const minimumGitSparseCheckoutVersion = new GitVersion("2.25");
-      if (!gitVersion.checkMinimum(minimumGitSparseCheckoutVersion)) {
+      if (!this.gitVersion.checkMinimum(MinimumGitSparseCheckoutVersion)) {
         throw new Error(
-          `Minimum Git version required for sparse checkout is ${minimumGitSparseCheckoutVersion}. Your git ('${this.gitPath}') is ${gitVersion}`
+          `Minimum Git version required for sparse checkout is ${MinimumGitSparseCheckoutVersion}. Your git ('${this.gitPath}') is ${this.gitVersion}`
         );
       }
     }
-    const gitHttpUserAgent = `git/${gitVersion} (github-actions-checkout)`;
+    const gitHttpUserAgent = `git/${this.gitVersion} (github-actions-checkout)`;
     core5.debug(`Set git useragent to: ${gitHttpUserAgent}`);
     this.gitEnv["GIT_HTTP_USER_AGENT"] = gitHttpUserAgent;
   }
@@ -34805,7 +35002,12 @@ async function getSource(settings) {
       await git.lfsFetch(checkoutInfo.startPoint || checkoutInfo.ref);
       core8.endGroup();
     }
-    if (settings.sparseCheckout) {
+    if (!settings.sparseCheckout) {
+      let gitVersion = await git.version();
+      if (gitVersion.checkMinimum(MinimumGitSparseCheckoutVersion)) {
+        await git.disableSparseCheckout();
+      }
+    } else {
       core8.startGroup("Setting up sparse checkout");
       if (settings.sparseCheckoutConeMode) {
         await git.sparseCheckout(settings.sparseCheckout);
@@ -34990,6 +35192,7 @@ async function getInputs() {
   result.sshKey = core10.getInput("ssh-key");
   result.sshKnownHosts = core10.getInput("ssh-known-hosts");
   result.sshStrict = (core10.getInput("ssh-strict") || "true").toUpperCase() === "TRUE";
+  result.sshUser = core10.getInput("ssh-user");
   result.persistCredentials = (core10.getInput("persist-credentials") || "false").toUpperCase() === "TRUE";
   result.workflowOrganizationId = await getOrganizationId();
   result.setSafeDirectory = (core10.getInput("set-safe-directory") || "true").toUpperCase() === "TRUE";

@@ -1141,6 +1141,121 @@ var require_errors = __commonJS({
   }
 });
 
+// node_modules/undici/lib/core/constants.js
+var require_constants = __commonJS({
+  "node_modules/undici/lib/core/constants.js"(exports2, module2) {
+    "use strict";
+    var headerNameLowerCasedRecord = {};
+    var wellknownHeaderNames = [
+      "Accept",
+      "Accept-Encoding",
+      "Accept-Language",
+      "Accept-Ranges",
+      "Access-Control-Allow-Credentials",
+      "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Methods",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Expose-Headers",
+      "Access-Control-Max-Age",
+      "Access-Control-Request-Headers",
+      "Access-Control-Request-Method",
+      "Age",
+      "Allow",
+      "Alt-Svc",
+      "Alt-Used",
+      "Authorization",
+      "Cache-Control",
+      "Clear-Site-Data",
+      "Connection",
+      "Content-Disposition",
+      "Content-Encoding",
+      "Content-Language",
+      "Content-Length",
+      "Content-Location",
+      "Content-Range",
+      "Content-Security-Policy",
+      "Content-Security-Policy-Report-Only",
+      "Content-Type",
+      "Cookie",
+      "Cross-Origin-Embedder-Policy",
+      "Cross-Origin-Opener-Policy",
+      "Cross-Origin-Resource-Policy",
+      "Date",
+      "Device-Memory",
+      "Downlink",
+      "ECT",
+      "ETag",
+      "Expect",
+      "Expect-CT",
+      "Expires",
+      "Forwarded",
+      "From",
+      "Host",
+      "If-Match",
+      "If-Modified-Since",
+      "If-None-Match",
+      "If-Range",
+      "If-Unmodified-Since",
+      "Keep-Alive",
+      "Last-Modified",
+      "Link",
+      "Location",
+      "Max-Forwards",
+      "Origin",
+      "Permissions-Policy",
+      "Pragma",
+      "Proxy-Authenticate",
+      "Proxy-Authorization",
+      "RTT",
+      "Range",
+      "Referer",
+      "Referrer-Policy",
+      "Refresh",
+      "Retry-After",
+      "Sec-WebSocket-Accept",
+      "Sec-WebSocket-Extensions",
+      "Sec-WebSocket-Key",
+      "Sec-WebSocket-Protocol",
+      "Sec-WebSocket-Version",
+      "Server",
+      "Server-Timing",
+      "Service-Worker-Allowed",
+      "Service-Worker-Navigation-Preload",
+      "Set-Cookie",
+      "SourceMap",
+      "Strict-Transport-Security",
+      "Supports-Loading-Mode",
+      "TE",
+      "Timing-Allow-Origin",
+      "Trailer",
+      "Transfer-Encoding",
+      "Upgrade",
+      "Upgrade-Insecure-Requests",
+      "User-Agent",
+      "Vary",
+      "Via",
+      "WWW-Authenticate",
+      "X-Content-Type-Options",
+      "X-DNS-Prefetch-Control",
+      "X-Frame-Options",
+      "X-Permitted-Cross-Domain-Policies",
+      "X-Powered-By",
+      "X-Requested-With",
+      "X-XSS-Protection"
+    ];
+    for (let i = 0; i < wellknownHeaderNames.length; ++i) {
+      const key = wellknownHeaderNames[i];
+      const lowerCasedKey = key.toLowerCase();
+      headerNameLowerCasedRecord[key] = headerNameLowerCasedRecord[lowerCasedKey] = lowerCasedKey;
+    }
+    Object.setPrototypeOf(headerNameLowerCasedRecord, null);
+    module2.exports = {
+      wellknownHeaderNames,
+      headerNameLowerCasedRecord
+    };
+  }
+});
+
 // node_modules/undici/lib/core/util.js
 var require_util = __commonJS({
   "node_modules/undici/lib/core/util.js"(exports2, module2) {
@@ -1154,6 +1269,7 @@ var require_util = __commonJS({
     var { Blob: Blob2 } = require("buffer");
     var nodeUtil = require("util");
     var { stringify: stringify2 } = require("querystring");
+    var { headerNameLowerCasedRecord } = require_constants();
     var [nodeMajor, nodeMinor] = process.versions.node.split(".").map((v) => Number(v));
     function nop() {
     }
@@ -1296,6 +1412,9 @@ var require_util = __commonJS({
     function parseKeepAliveTimeout(val) {
       const m = val.toString().match(KEEPALIVE_TIMEOUT_EXPR);
       return m ? parseInt(m[1], 10) * 1e3 : null;
+    }
+    function headerNameToString(value) {
+      return headerNameLowerCasedRecord[value] || value.toLowerCase();
     }
     function parseHeaders(headers, obj = {}) {
       if (!Array.isArray(headers))
@@ -1500,6 +1619,7 @@ var require_util = __commonJS({
       isIterable,
       isAsyncIterable,
       isDestroyed,
+      headerNameToString,
       parseRawHeaders,
       parseHeaders,
       parseKeepAliveTimeout,
@@ -3030,7 +3150,7 @@ var require_main = __commonJS({
 });
 
 // node_modules/undici/lib/fetch/constants.js
-var require_constants = __commonJS({
+var require_constants2 = __commonJS({
   "node_modules/undici/lib/fetch/constants.js"(exports2, module2) {
     "use strict";
     var { MessageChannel, receiveMessageOnPort } = require("worker_threads");
@@ -3268,15 +3388,18 @@ var require_global = __commonJS({
 var require_util2 = __commonJS({
   "node_modules/undici/lib/fetch/util.js"(exports2, module2) {
     "use strict";
-    var { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = require_constants();
+    var { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = require_constants2();
     var { getGlobalOrigin } = require_global();
     var { performance: performance2 } = require("perf_hooks");
     var { isBlobLike, toUSVString, ReadableStreamFrom } = require_util();
     var assert = require("assert");
     var { isUint8Array } = require("util/types");
+    var supportedHashes = [];
     var crypto4;
     try {
       crypto4 = require("crypto");
+      const possibleRelevantHashes = ["sha256", "sha384", "sha512"];
+      supportedHashes = crypto4.getHashes().filter((hash) => possibleRelevantHashes.includes(hash));
     } catch {
     }
     function responseURL(response) {
@@ -3552,45 +3675,37 @@ var require_util2 = __commonJS({
       if (parsedMetadata.length === 0) {
         return true;
       }
-      const list = parsedMetadata.sort((c, d) => d.algo.localeCompare(c.algo));
-      const strongest = list[0].algo;
-      const metadata = list.filter((item) => item.algo === strongest);
+      const strongest = getStrongestMetadata(parsedMetadata);
+      const metadata = filterMetadataListByAlgorithm(parsedMetadata, strongest);
       for (const item of metadata) {
         const algorithm = item.algo;
-        let expectedValue = item.hash;
-        if (expectedValue.endsWith("==")) {
-          expectedValue = expectedValue.slice(0, -2);
-        }
+        const expectedValue = item.hash;
         let actualValue = crypto4.createHash(algorithm).update(bytes).digest("base64");
-        if (actualValue.endsWith("==")) {
-          actualValue = actualValue.slice(0, -2);
+        if (actualValue[actualValue.length - 1] === "=") {
+          if (actualValue[actualValue.length - 2] === "=") {
+            actualValue = actualValue.slice(0, -2);
+          } else {
+            actualValue = actualValue.slice(0, -1);
+          }
         }
-        if (actualValue === expectedValue) {
-          return true;
-        }
-        let actualBase64URL = crypto4.createHash(algorithm).update(bytes).digest("base64url");
-        if (actualBase64URL.endsWith("==")) {
-          actualBase64URL = actualBase64URL.slice(0, -2);
-        }
-        if (actualBase64URL === expectedValue) {
+        if (compareBase64Mixed(actualValue, expectedValue)) {
           return true;
         }
       }
       return false;
     }
-    var parseHashWithOptions = /((?<algo>sha256|sha384|sha512)-(?<hash>[A-z0-9+/]{1}.*={0,2}))( +[\x21-\x7e]?)?/i;
+    var parseHashWithOptions = /(?<algo>sha256|sha384|sha512)-((?<hash>[A-Za-z0-9+/]+|[A-Za-z0-9_-]+)={0,2}(?:\s|$)( +[!-~]*)?)?/i;
     function parseMetadata(metadata) {
       const result = [];
       let empty3 = true;
-      const supportedHashes = crypto4.getHashes();
       for (const token of metadata.split(" ")) {
         empty3 = false;
         const parsedToken = parseHashWithOptions.exec(token);
-        if (parsedToken === null || parsedToken.groups === void 0) {
+        if (parsedToken === null || parsedToken.groups === void 0 || parsedToken.groups.algo === void 0) {
           continue;
         }
-        const algorithm = parsedToken.groups.algo;
-        if (supportedHashes.includes(algorithm.toLowerCase())) {
+        const algorithm = parsedToken.groups.algo.toLowerCase();
+        if (supportedHashes.includes(algorithm)) {
           result.push(parsedToken.groups);
         }
       }
@@ -3598,6 +3713,51 @@ var require_util2 = __commonJS({
         return "no metadata";
       }
       return result;
+    }
+    function getStrongestMetadata(metadataList) {
+      let algorithm = metadataList[0].algo;
+      if (algorithm[3] === "5") {
+        return algorithm;
+      }
+      for (let i = 1; i < metadataList.length; ++i) {
+        const metadata = metadataList[i];
+        if (metadata.algo[3] === "5") {
+          algorithm = "sha512";
+          break;
+        } else if (algorithm[3] === "3") {
+          continue;
+        } else if (metadata.algo[3] === "3") {
+          algorithm = "sha384";
+        }
+      }
+      return algorithm;
+    }
+    function filterMetadataListByAlgorithm(metadataList, algorithm) {
+      if (metadataList.length === 1) {
+        return metadataList;
+      }
+      let pos = 0;
+      for (let i = 0; i < metadataList.length; ++i) {
+        if (metadataList[i].algo === algorithm) {
+          metadataList[pos++] = metadataList[i];
+        }
+      }
+      metadataList.length = pos;
+      return metadataList;
+    }
+    function compareBase64Mixed(actualValue, expectedValue) {
+      if (actualValue.length !== expectedValue.length) {
+        return false;
+      }
+      for (let i = 0; i < actualValue.length; ++i) {
+        if (actualValue[i] !== expectedValue[i]) {
+          if (actualValue[i] === "+" && expectedValue[i] === "-" || actualValue[i] === "/" && expectedValue[i] === "_") {
+            continue;
+          }
+          return false;
+        }
+      }
+      return true;
     }
     function tryUpgradeRequestToAPotentiallyTrustworthyURL(request) {
     }
@@ -3822,7 +3982,8 @@ var require_util2 = __commonJS({
       urlHasHttpsScheme,
       urlIsHttpHttpsScheme,
       readAllBytes,
-      normalizeMethodRecord
+      normalizeMethodRecord,
+      parseMetadata
     };
   }
 });
@@ -4859,7 +5020,7 @@ var require_body = __commonJS({
     var { FormData: FormData2 } = require_formdata();
     var { kState } = require_symbols2();
     var { webidl } = require_webidl();
-    var { DOMException: DOMException2, structuredClone } = require_constants();
+    var { DOMException: DOMException2, structuredClone } = require_constants2();
     var { Blob: Blob2, File: NativeFile } = require("buffer");
     var { kBodyUsed } = require_symbols();
     var assert = require("assert");
@@ -5955,7 +6116,7 @@ var require_utils2 = __commonJS({
 });
 
 // node_modules/undici/lib/llhttp/constants.js
-var require_constants2 = __commonJS({
+var require_constants3 = __commonJS({
   "node_modules/undici/lib/llhttp/constants.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6390,7 +6551,17 @@ var require_RedirectHandler = __commonJS({
       }
     }
     function shouldRemoveHeader(header, removeContent, unknownOrigin) {
-      return header.length === 4 && header.toString().toLowerCase() === "host" || removeContent && header.toString().toLowerCase().indexOf("content-") === 0 || unknownOrigin && header.length === 13 && header.toString().toLowerCase() === "authorization" || unknownOrigin && header.length === 6 && header.toString().toLowerCase() === "cookie";
+      if (header.length === 4) {
+        return util.headerNameToString(header) === "host";
+      }
+      if (removeContent && util.headerNameToString(header).startsWith("content-")) {
+        return true;
+      }
+      if (unknownOrigin && (header.length === 13 || header.length === 6 || header.length === 19)) {
+        const name = util.headerNameToString(header);
+        return name === "authorization" || name === "cookie" || name === "proxy-authorization";
+      }
+      return false;
     }
     function cleanRequestHeaders(headers, removeContent, unknownOrigin) {
       const ret = [];
@@ -6835,7 +7006,7 @@ var require_client = __commonJS({
       );
       resume(client);
     }
-    var constants = require_constants2();
+    var constants = require_constants3();
     var createRedirectInterceptor = require_redirectInterceptor();
     var EMPTY_BUF = Buffer.alloc(0);
     async function lazyllhttp() {
@@ -11539,7 +11710,7 @@ var require_response = __commonJS({
       redirectStatusSet,
       nullBodyStatus,
       DOMException: DOMException2
-    } = require_constants();
+    } = require_constants2();
     var { kState, kHeaders, kGuard, kRealm } = require_symbols2();
     var { webidl } = require_webidl();
     var { FormData: FormData2 } = require_formdata();
@@ -11921,7 +12092,7 @@ var require_request2 = __commonJS({
       requestCredentials,
       requestCache,
       requestDuplex
-    } = require_constants();
+    } = require_constants2();
     var { kEnumerableProperty } = util;
     var { kHeaders, kSignal, kState, kGuard, kRealm } = require_symbols2();
     var { webidl } = require_webidl();
@@ -12590,7 +12761,7 @@ var require_fetch = __commonJS({
       requestBodyHeader,
       subresourceSet,
       DOMException: DOMException2
-    } = require_constants();
+    } = require_constants2();
     var { kHeadersList } = require_symbols();
     var EE = require("events");
     var { Readable, pipeline } = require("stream");
@@ -13954,7 +14125,7 @@ var require_util4 = __commonJS({
     } = require_symbols3();
     var { ProgressEvent } = require_progressevent();
     var { getEncoding } = require_encoding();
-    var { DOMException: DOMException2 } = require_constants();
+    var { DOMException: DOMException2 } = require_constants2();
     var { serializeAMimeType, parseMIMEType } = require_dataURL();
     var { types: types2 } = require("util");
     var { StringDecoder } = require("string_decoder");
@@ -15070,7 +15241,7 @@ var require_cachestorage = __commonJS({
 });
 
 // node_modules/undici/lib/cookies/constants.js
-var require_constants3 = __commonJS({
+var require_constants4 = __commonJS({
   "node_modules/undici/lib/cookies/constants.js"(exports2, module2) {
     "use strict";
     var maxAttributeValueSize = 1024;
@@ -15245,7 +15416,7 @@ var require_util6 = __commonJS({
 var require_parse = __commonJS({
   "node_modules/undici/lib/cookies/parse.js"(exports2, module2) {
     "use strict";
-    var { maxNameValuePairSize, maxAttributeValueSize } = require_constants3();
+    var { maxNameValuePairSize, maxAttributeValueSize } = require_constants4();
     var { isCTLExcludingHtab } = require_util6();
     var { collectASequenceOfCodePointsFast } = require_dataURL();
     var assert = require("assert");
@@ -15510,7 +15681,7 @@ var require_cookies = __commonJS({
 });
 
 // node_modules/undici/lib/websocket/constants.js
-var require_constants4 = __commonJS({
+var require_constants5 = __commonJS({
   "node_modules/undici/lib/websocket/constants.js"(exports2, module2) {
     "use strict";
     var uid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -15818,7 +15989,7 @@ var require_util7 = __commonJS({
   "node_modules/undici/lib/websocket/util.js"(exports2, module2) {
     "use strict";
     var { kReadyState, kController, kResponse, kBinaryType, kWebSocketURL } = require_symbols5();
-    var { states, opcodes } = require_constants4();
+    var { states, opcodes } = require_constants5();
     var { MessageEvent, ErrorEvent } = require_events();
     function isEstablished(ws) {
       return ws[kReadyState] === states.OPEN;
@@ -15908,7 +16079,7 @@ var require_connection = __commonJS({
   "node_modules/undici/lib/websocket/connection.js"(exports2, module2) {
     "use strict";
     var diagnosticsChannel = require("diagnostics_channel");
-    var { uid, states } = require_constants4();
+    var { uid, states } = require_constants5();
     var {
       kReadyState,
       kSentClose,
@@ -16055,7 +16226,7 @@ var require_connection = __commonJS({
 var require_frame = __commonJS({
   "node_modules/undici/lib/websocket/frame.js"(exports2, module2) {
     "use strict";
-    var { maxUnsigned16Bit } = require_constants4();
+    var { maxUnsigned16Bit } = require_constants5();
     var crypto4;
     try {
       crypto4 = require("crypto");
@@ -16114,7 +16285,7 @@ var require_receiver = __commonJS({
     "use strict";
     var { Writable } = require("stream");
     var diagnosticsChannel = require("diagnostics_channel");
-    var { parserStates, opcodes, states, emptyBuffer } = require_constants4();
+    var { parserStates, opcodes, states, emptyBuffer } = require_constants5();
     var { kReadyState, kSentClose, kResponse, kReceivedClose } = require_symbols5();
     var { isValidStatusCode, failWebsocketConnection, websocketMessageReceived } = require_util7();
     var { WebsocketFrameSend } = require_frame();
@@ -16349,10 +16520,10 @@ var require_websocket = __commonJS({
   "node_modules/undici/lib/websocket/websocket.js"(exports2, module2) {
     "use strict";
     var { webidl } = require_webidl();
-    var { DOMException: DOMException2 } = require_constants();
+    var { DOMException: DOMException2 } = require_constants2();
     var { URLSerializer } = require_dataURL();
     var { getGlobalOrigin } = require_global();
-    var { staticPropertyDescriptors, states, opcodes, emptyBuffer } = require_constants4();
+    var { staticPropertyDescriptors, states, opcodes, emptyBuffer } = require_constants5();
     var {
       kWebSocketURL,
       kReadyState,
@@ -17384,7 +17555,7 @@ var require_lib = __commonJS({
         if (this._keepAlive && useProxy) {
           agent = this._proxyAgent;
         }
-        if (this._keepAlive && !useProxy) {
+        if (!useProxy) {
           agent = this._agent;
         }
         if (agent) {
@@ -17413,13 +17584,10 @@ var require_lib = __commonJS({
           agent = tunnelAgent(agentOptions);
           this._proxyAgent = agent;
         }
-        if (this._keepAlive && !agent) {
+        if (!agent) {
           const options = { keepAlive: this._keepAlive, maxSockets };
           agent = usingSsl ? new https.Agent(options) : new http.Agent(options);
           this._agent = agent;
-        }
-        if (!agent) {
-          agent = usingSsl ? https.globalAgent : http.globalAgent;
         }
         if (usingSsl && this._ignoreSslError) {
           agent.options = Object.assign(agent.options || {}, {
@@ -25760,166 +25928,6 @@ var require_parameters = __commonJS({
     tslib_1.__exportStar(require_swapSprint(), exports2);
     tslib_1.__exportStar(require_toggleFeatures2(), exports2);
     tslib_1.__exportStar(require_updateSprint(), exports2);
-  }
-});
-
-// node_modules/jira.js/out/services/authenticationService/base64Encoder.js
-var require_base64Encoder = __commonJS({
-  "node_modules/jira.js/out/services/authenticationService/base64Encoder.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Base64Encoder = void 0;
-    var Base64Encoder;
-    (function(Base64Encoder2) {
-      const base64Sequence = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-      const utf8Encode = (value) => {
-        value = value.replace(/\r\n/g, "\n");
-        let utftext = "";
-        for (let n = 0; n < value.length; n++) {
-          const c = value.charCodeAt(n);
-          if (c < 128) {
-            utftext += String.fromCharCode(c);
-          } else if (c > 127 && c < 2048) {
-            utftext += String.fromCharCode(c >> 6 | 192);
-            utftext += String.fromCharCode(c & 63 | 128);
-          } else {
-            utftext += String.fromCharCode(c >> 12 | 224);
-            utftext += String.fromCharCode(c >> 6 & 63 | 128);
-            utftext += String.fromCharCode(c & 63 | 128);
-          }
-        }
-        return utftext;
-      };
-      Base64Encoder2.encode = (input) => {
-        let output = "";
-        let chr1;
-        let chr2;
-        let chr3;
-        let enc1;
-        let enc2;
-        let enc3;
-        let enc4;
-        let i = 0;
-        input = utf8Encode(input);
-        while (i < input.length) {
-          chr1 = input.charCodeAt(i++);
-          chr2 = input.charCodeAt(i++);
-          chr3 = input.charCodeAt(i++);
-          enc1 = chr1 >> 2;
-          enc2 = (chr1 & 3) << 4 | chr2 >> 4;
-          enc3 = (chr2 & 15) << 2 | chr3 >> 6;
-          enc4 = chr3 & 63;
-          if (isNaN(chr2)) {
-            enc3 = enc4 = 64;
-          } else if (isNaN(chr3)) {
-            enc4 = 64;
-          }
-          output += `${base64Sequence.charAt(enc1)}${base64Sequence.charAt(enc2)}${base64Sequence.charAt(enc3)}${base64Sequence.charAt(enc4)}`;
-        }
-        return output;
-      };
-    })(Base64Encoder || (exports2.Base64Encoder = Base64Encoder = {}));
-  }
-});
-
-// node_modules/jira.js/out/services/authenticationService/authentications/createBasicAuthenticationToken.js
-var require_createBasicAuthenticationToken = __commonJS({
-  "node_modules/jira.js/out/services/authenticationService/authentications/createBasicAuthenticationToken.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.createBasicAuthenticationToken = void 0;
-    var base64Encoder_1 = require_base64Encoder();
-    function createBasicAuthenticationToken(authenticationData) {
-      let login;
-      let secret;
-      if ("username" in authenticationData) {
-        login = authenticationData.username;
-        secret = authenticationData.password;
-      } else {
-        login = authenticationData.email;
-        secret = authenticationData.apiToken;
-      }
-      const token = base64Encoder_1.Base64Encoder.encode(`${login}:${secret}`);
-      return `Basic ${token}`;
-    }
-    exports2.createBasicAuthenticationToken = createBasicAuthenticationToken;
-  }
-});
-
-// node_modules/jira.js/out/services/authenticationService/authentications/createOAuth2AuthenticationToken.js
-var require_createOAuth2AuthenticationToken = __commonJS({
-  "node_modules/jira.js/out/services/authenticationService/authentications/createOAuth2AuthenticationToken.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.createOAuth2AuthenticationToken = void 0;
-    function createOAuth2AuthenticationToken(authenticationData) {
-      return `Bearer ${authenticationData.accessToken}`;
-    }
-    exports2.createOAuth2AuthenticationToken = createOAuth2AuthenticationToken;
-  }
-});
-
-// node_modules/jira.js/out/services/authenticationService/authentications/createPATAuthentication.js
-var require_createPATAuthentication = __commonJS({
-  "node_modules/jira.js/out/services/authenticationService/authentications/createPATAuthentication.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.createPATAuthentication = void 0;
-    function createPATAuthentication(pat) {
-      return `Bearer ${pat}`;
-    }
-    exports2.createPATAuthentication = createPATAuthentication;
-  }
-});
-
-// node_modules/jira.js/out/services/authenticationService/authentications/index.js
-var require_authentications = __commonJS({
-  "node_modules/jira.js/out/services/authenticationService/authentications/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_createBasicAuthenticationToken(), exports2);
-    tslib_1.__exportStar(require_createOAuth2AuthenticationToken(), exports2);
-    tslib_1.__exportStar(require_createPATAuthentication(), exports2);
-  }
-});
-
-// node_modules/jira.js/out/services/authenticationService/getAuthenticationToken.js
-var require_getAuthenticationToken = __commonJS({
-  "node_modules/jira.js/out/services/authenticationService/getAuthenticationToken.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getAuthenticationToken = void 0;
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var authentications_1 = require_authentications();
-    function getAuthenticationToken(authentication) {
-      return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        if (!authentication) {
-          return void 0;
-        }
-        if (authentication.basic) {
-          return (0, authentications_1.createBasicAuthenticationToken)(authentication.basic);
-        }
-        if (authentication.oauth2) {
-          return (0, authentications_1.createOAuth2AuthenticationToken)(authentication.oauth2);
-        }
-        if (authentication.personalAccessToken) {
-          return (0, authentications_1.createPATAuthentication)(authentication.personalAccessToken);
-        }
-        return void 0;
-      });
-    }
-    exports2.getAuthenticationToken = getAuthenticationToken;
-  }
-});
-
-// node_modules/jira.js/out/services/authenticationService/index.js
-var require_authenticationService = __commonJS({
-  "node_modules/jira.js/out/services/authenticationService/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_getAuthenticationToken(), exports2);
   }
 });
 
@@ -35460,7 +35468,8 @@ var require_follow_redirects = __commonJS({
       "port",
       "protocol",
       "query",
-      "search"
+      "search",
+      "hash"
     ];
     var events = ["abort", "aborted", "connect", "error", "socket", "timeout"];
     var eventHandlers = /* @__PURE__ */ Object.create(null);
@@ -35755,7 +35764,7 @@ var require_follow_redirects = __commonJS({
       this._isRedirect = true;
       spreadUrlObject(redirectUrl, this._options);
       if (redirectUrl.protocol !== currentUrlParts.protocol && redirectUrl.protocol !== "https:" || redirectUrl.host !== currentHost && !isSubdomain(redirectUrl.host, currentHost)) {
-        removeMatchingHeaders(/^(?:authorization|cookie)$/i, this._options.headers);
+        removeMatchingHeaders(/^(?:(?:proxy-)?authorization|cookie)$/i, this._options.headers);
       }
       if (isFunction(beforeRedirect)) {
         var responseDetails = {
@@ -35932,7 +35941,7 @@ var require_axios = __commonJS({
     var followRedirects = require_follow_redirects();
     var zlib = require("zlib");
     var stream = require("stream");
-    var EventEmitter = require("events");
+    var events = require("events");
     function _interopDefaultLegacy(e) {
       return e && typeof e === "object" && "default" in e ? e : { "default": e };
     }
@@ -35944,7 +35953,6 @@ var require_axios = __commonJS({
     var followRedirects__default = /* @__PURE__ */ _interopDefaultLegacy(followRedirects);
     var zlib__default = /* @__PURE__ */ _interopDefaultLegacy(zlib);
     var stream__default = /* @__PURE__ */ _interopDefaultLegacy(stream);
-    var EventEmitter__default = /* @__PURE__ */ _interopDefaultLegacy(EventEmitter);
     function bind3(fn, thisArg) {
       return function wrap() {
         return fn.apply(thisArg, arguments);
@@ -36668,6 +36676,8 @@ var require_axios = __commonJS({
     function formDataToJSON(formData) {
       function buildPath(path, value, target, index) {
         let name = path[index++];
+        if (name === "__proto__")
+          return true;
         const isNumericKey = Number.isFinite(+name);
         const isLast = index >= path.length;
         name = !name && utils$1.isArray(target) ? target.length : name;
@@ -36722,9 +36732,6 @@ var require_axios = __commonJS({
         }
         const isFormData2 = utils$1.isFormData(data);
         if (isFormData2) {
-          if (!hasJSONContentType) {
-            return data;
-          }
           return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
         }
         if (utils$1.isArrayBuffer(data) || utils$1.isBuffer(data) || utils$1.isStream(data) || utils$1.isFile(data) || utils$1.isBlob(data)) {
@@ -37110,7 +37117,7 @@ var require_axios = __commonJS({
       }
       return requestedURL;
     }
-    var VERSION = "1.6.3";
+    var VERSION = "1.6.8";
     function parseProtocol(url2) {
       const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url2);
       return match && match[1] || "";
@@ -37482,12 +37489,12 @@ var require_axios = __commonJS({
     var supportedProtocols = platform.protocols.map((protocol) => {
       return protocol + ":";
     });
-    function dispatchBeforeRedirect(options) {
+    function dispatchBeforeRedirect(options, responseDetails) {
       if (options.beforeRedirects.proxy) {
         options.beforeRedirects.proxy(options);
       }
       if (options.beforeRedirects.config) {
-        options.beforeRedirects.config(options);
+        options.beforeRedirects.config(options, responseDetails);
       }
     }
     function setProxy(options, configProxy, location) {
@@ -37567,12 +37574,15 @@ var require_axios = __commonJS({
           const _lookup = callbackify$1(lookup, (value) => utils$1.isArray(value) ? value : [value]);
           lookup = (hostname, opt, cb) => {
             _lookup(hostname, opt, (err, arg0, arg1) => {
+              if (err) {
+                return cb(err);
+              }
               const addresses = utils$1.isArray(arg0) ? arg0.map((addr) => buildAddressEntry(addr)) : [buildAddressEntry(arg0, arg1)];
               opt.all ? cb(err, addresses) : cb(err, addresses[0].address, addresses[0].family);
             });
           };
         }
-        const emitter = new EventEmitter__default["default"]();
+        const emitter = new events.EventEmitter();
         const onFinished = () => {
           if (config.cancelToken) {
             config.cancelToken.unsubscribe(abort);
@@ -38295,7 +38305,7 @@ var require_axios = __commonJS({
         return Promise.reject(reason);
       });
     }
-    var headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? thing.toJSON() : thing;
+    var headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? { ...thing } : thing;
     function mergeConfig(config1, config2) {
       config2 = config2 || {};
       const config = {};
@@ -38446,7 +38456,24 @@ var require_axios = __commonJS({
        *
        * @returns {Promise} The Promise to be fulfilled
        */
-      request(configOrUrl, config) {
+      async request(configOrUrl, config) {
+        try {
+          return await this._request(configOrUrl, config);
+        } catch (err) {
+          if (err instanceof Error) {
+            let dummy;
+            Error.captureStackTrace ? Error.captureStackTrace(dummy = {}) : dummy = new Error();
+            const stack = dummy.stack ? dummy.stack.replace(/^.+\n/, "") : "";
+            if (!err.stack) {
+              err.stack = stack;
+            } else if (stack && !String(err.stack).endsWith(stack.replace(/^.+\n.+\n/, ""))) {
+              err.stack += "\n" + stack;
+            }
+          }
+          throw err;
+        }
+      }
+      _request(configOrUrl, config) {
         if (typeof configOrUrl === "string") {
           config = config || {};
           config.url = configOrUrl;
@@ -38769,6 +38796,166 @@ var require_axios = __commonJS({
   }
 });
 
+// node_modules/jira.js/out/services/authenticationService/base64Encoder.js
+var require_base64Encoder = __commonJS({
+  "node_modules/jira.js/out/services/authenticationService/base64Encoder.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.Base64Encoder = void 0;
+    var Base64Encoder;
+    (function(Base64Encoder2) {
+      const base64Sequence = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+      const utf8Encode = (value) => {
+        value = value.replace(/\r\n/g, "\n");
+        let utftext = "";
+        for (let n = 0; n < value.length; n++) {
+          const c = value.charCodeAt(n);
+          if (c < 128) {
+            utftext += String.fromCharCode(c);
+          } else if (c > 127 && c < 2048) {
+            utftext += String.fromCharCode(c >> 6 | 192);
+            utftext += String.fromCharCode(c & 63 | 128);
+          } else {
+            utftext += String.fromCharCode(c >> 12 | 224);
+            utftext += String.fromCharCode(c >> 6 & 63 | 128);
+            utftext += String.fromCharCode(c & 63 | 128);
+          }
+        }
+        return utftext;
+      };
+      Base64Encoder2.encode = (input) => {
+        let output = "";
+        let chr1;
+        let chr2;
+        let chr3;
+        let enc1;
+        let enc2;
+        let enc3;
+        let enc4;
+        let i = 0;
+        input = utf8Encode(input);
+        while (i < input.length) {
+          chr1 = input.charCodeAt(i++);
+          chr2 = input.charCodeAt(i++);
+          chr3 = input.charCodeAt(i++);
+          enc1 = chr1 >> 2;
+          enc2 = (chr1 & 3) << 4 | chr2 >> 4;
+          enc3 = (chr2 & 15) << 2 | chr3 >> 6;
+          enc4 = chr3 & 63;
+          if (isNaN(chr2)) {
+            enc3 = enc4 = 64;
+          } else if (isNaN(chr3)) {
+            enc4 = 64;
+          }
+          output += `${base64Sequence.charAt(enc1)}${base64Sequence.charAt(enc2)}${base64Sequence.charAt(enc3)}${base64Sequence.charAt(enc4)}`;
+        }
+        return output;
+      };
+    })(Base64Encoder || (exports2.Base64Encoder = Base64Encoder = {}));
+  }
+});
+
+// node_modules/jira.js/out/services/authenticationService/authentications/createBasicAuthenticationToken.js
+var require_createBasicAuthenticationToken = __commonJS({
+  "node_modules/jira.js/out/services/authenticationService/authentications/createBasicAuthenticationToken.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.createBasicAuthenticationToken = void 0;
+    var base64Encoder_1 = require_base64Encoder();
+    function createBasicAuthenticationToken(authenticationData) {
+      let login;
+      let secret;
+      if ("username" in authenticationData) {
+        login = authenticationData.username;
+        secret = authenticationData.password;
+      } else {
+        login = authenticationData.email;
+        secret = authenticationData.apiToken;
+      }
+      const token = base64Encoder_1.Base64Encoder.encode(`${login}:${secret}`);
+      return `Basic ${token}`;
+    }
+    exports2.createBasicAuthenticationToken = createBasicAuthenticationToken;
+  }
+});
+
+// node_modules/jira.js/out/services/authenticationService/authentications/createOAuth2AuthenticationToken.js
+var require_createOAuth2AuthenticationToken = __commonJS({
+  "node_modules/jira.js/out/services/authenticationService/authentications/createOAuth2AuthenticationToken.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.createOAuth2AuthenticationToken = void 0;
+    function createOAuth2AuthenticationToken(authenticationData) {
+      return `Bearer ${authenticationData.accessToken}`;
+    }
+    exports2.createOAuth2AuthenticationToken = createOAuth2AuthenticationToken;
+  }
+});
+
+// node_modules/jira.js/out/services/authenticationService/authentications/createPATAuthentication.js
+var require_createPATAuthentication = __commonJS({
+  "node_modules/jira.js/out/services/authenticationService/authentications/createPATAuthentication.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.createPATAuthentication = void 0;
+    function createPATAuthentication(pat) {
+      return `Bearer ${pat}`;
+    }
+    exports2.createPATAuthentication = createPATAuthentication;
+  }
+});
+
+// node_modules/jira.js/out/services/authenticationService/authentications/index.js
+var require_authentications = __commonJS({
+  "node_modules/jira.js/out/services/authenticationService/authentications/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_createBasicAuthenticationToken(), exports2);
+    tslib_1.__exportStar(require_createOAuth2AuthenticationToken(), exports2);
+    tslib_1.__exportStar(require_createPATAuthentication(), exports2);
+  }
+});
+
+// node_modules/jira.js/out/services/authenticationService/getAuthenticationToken.js
+var require_getAuthenticationToken = __commonJS({
+  "node_modules/jira.js/out/services/authenticationService/getAuthenticationToken.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getAuthenticationToken = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    var authentications_1 = require_authentications();
+    function getAuthenticationToken(authentication) {
+      return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        if (!authentication) {
+          return void 0;
+        }
+        if (authentication.basic) {
+          return (0, authentications_1.createBasicAuthenticationToken)(authentication.basic);
+        }
+        if (authentication.oauth2) {
+          return (0, authentications_1.createOAuth2AuthenticationToken)(authentication.oauth2);
+        }
+        if (authentication.personalAccessToken) {
+          return (0, authentications_1.createPATAuthentication)(authentication.personalAccessToken);
+        }
+        return void 0;
+      });
+    }
+    exports2.getAuthenticationToken = getAuthenticationToken;
+  }
+});
+
+// node_modules/jira.js/out/services/authenticationService/index.js
+var require_authenticationService = __commonJS({
+  "node_modules/jira.js/out/services/authenticationService/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_getAuthenticationToken(), exports2);
+  }
+});
+
 // node_modules/jira.js/out/clients/baseClient.js
 var require_baseClient = __commonJS({
   "node_modules/jira.js/out/clients/baseClient.js"(exports2) {
@@ -38776,8 +38963,8 @@ var require_baseClient = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.BaseClient = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var authenticationService_1 = require_authenticationService();
     var axios_1 = require_axios();
+    var authenticationService_1 = require_authenticationService();
     var STRICT_GDPR_FLAG = "x-atlassian-force-account-id";
     var ATLASSIAN_TOKEN_CHECK_FLAG = "X-Atlassian-Token";
     var ATLASSIAN_TOKEN_CHECK_NOCHECK_VALUE = "no-check";
@@ -38810,7 +38997,6 @@ var require_baseClient = __commonJS({
             return part && parts.push(part);
           }
           parts.push(`${this.encode(key)}=${this.encode(value)}`);
-          return;
         });
         return parts.join("&");
       }
@@ -40066,8 +40252,8 @@ var require_issueAttachments = __commonJS({
         });
       }
       addAttachment(parameters, callback) {
-        var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          var _a;
           const formData = new FormData2();
           const attachments = Array.isArray(parameters.attachment) ? parameters.attachment : [parameters.attachment];
           attachments.forEach((attachment) => formData.append("file", attachment.file, attachment.filename));
@@ -57314,8 +57500,8 @@ var require_issueAttachments2 = __commonJS({
         });
       }
       addAttachment(parameters, callback) {
-        var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          var _a;
           const formData = new FormData2();
           const attachments = Array.isArray(parameters.attachment) ? parameters.attachment : [parameters.attachment];
           attachments.forEach((attachment) => formData.append("file", attachment.file, attachment.filename));
@@ -59003,8 +59189,8 @@ var require_issues2 = __commonJS({
         });
       }
       createIssue(parameters, callback) {
-        var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          var _a;
           if (((_a = parameters.fields) === null || _a === void 0 ? void 0 : _a.description) && typeof parameters.fields.description === "string") {
             parameters.fields.description = {
               type: "doc",
@@ -59120,8 +59306,8 @@ var require_issues2 = __commonJS({
         });
       }
       editIssue(parameters, callback) {
-        var _a, _b;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          var _a, _b;
           if (((_a = parameters.fields) === null || _a === void 0 ? void 0 : _a.description) && typeof parameters.fields.description === "string") {
             const { fields: { description } } = yield this.getIssue({ issueIdOrKey: parameters.issueIdOrKey });
             parameters.fields.description = {
@@ -59269,8 +59455,8 @@ var require_issues2 = __commonJS({
         });
       }
       doTransition(parameters, callback) {
-        var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          var _a;
           if (((_a = parameters.fields) === null || _a === void 0 ? void 0 : _a.description) && typeof parameters.fields.description === "string") {
             parameters.fields.description = {
               type: "doc",
@@ -73688,8 +73874,8 @@ var require_serviceDesk = __commonJS({
         });
       }
       attachTemporaryFile(parameters, callback) {
-        var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          var _a;
           const formData = new FormData2();
           const attachments = Array.isArray(parameters.attachment) ? parameters.attachment : [parameters.attachment];
           attachments.forEach((attachment) => formData.append("file", attachment.file, attachment.filename));
