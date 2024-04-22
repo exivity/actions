@@ -1,4 +1,4 @@
-name: 'NPM Publish'
+name: 'npm-publish'
 description: 'Publishes a public package to the npm registry'
 inputs:
   token:
