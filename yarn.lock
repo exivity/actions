@@ -469,10 +469,10 @@ chalk@^2.4.1:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-"checkout@https://github.com/actions/checkout#v4.1.5":
-  version "4.1.4"
-  uid "44c2b7a8a4ea60a981eaca3cf939b5f4305c123b"
-  resolved "https://github.com/actions/checkout#44c2b7a8a4ea60a981eaca3cf939b5f4305c123b"
+"checkout@https://github.com/actions/checkout#v4.1.6":
+  version "4.1.6"
+  uid a5ac7e51b41094c92402da3b24376905380afc29
+  resolved "https://github.com/actions/checkout#a5ac7e51b41094c92402da3b24376905380afc29"
   dependencies:
     "@actions/core" "^1.10.1"
     "@actions/exec" "^1.1.1"
