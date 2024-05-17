@@ -933,10 +933,10 @@ jackspeak@^2.3.6:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
-jira.js@3.0.5:
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-3.0.5.tgz#83e4d450bc58f267094efbf31a5a7c0bafc2c59d"
-  integrity sha512-czIz7IxSGgW8eO9POYV7KTyLfRvrUvnw0DWfRZp4zWwPtiTNL8tkDa4E8HuFeOBk/aCG2SG0mJ/kdrKInn3cQw==
+jira.js@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-4.0.0.tgz#cb1c632d30f96e395e84dfa5ed916e0c41e568fa"
+  integrity sha512-gFBKo4yjWmG3b6OZ8wz5xKLfa5GURg93FmAVX3YM3X5qtw7DvayXGsfe5JZnTaHD//qU2GCULYp4gz5POTggPg==
   dependencies:
     axios "^1.6.8"
     form-data "^4.0.0"
