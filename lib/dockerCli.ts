@@ -55,7 +55,7 @@ export async function dockerBuild({
     .join(' ')
 
   const ssh = useSSH ? '--ssh default' : ''
-  const secretArgs = secrets ? `--secret id=npmrc,src=${secrets}` : ''
+  const secretArgs = secrets ? `--secret ${secrets}` : ''
 
   const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} -f ${dockerfile} -t ${getImageFQN(
     image,
