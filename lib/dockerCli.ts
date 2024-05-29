@@ -30,6 +30,7 @@ type BuildOptions = {
   labels: { [key: string]: string }
   image: Image
   useSSH: boolean
+  buildArgs: Record<string, string>
 }
 
 export type Image = {
@@ -45,6 +46,7 @@ export async function dockerBuild({
   labels,
   image,
   useSSH,
+  buildArgs, // Add buildArgs to function parameters
 }: BuildOptions) {
   info('Building image...')
 
@@ -53,11 +55,16 @@ export async function dockerBuild({
     .map(([key, value]) => `--label "${key}=${value}"`)
     .join(' ')
 
+  // Concat list of build args
+  const buildArgsOptions = Object.entries(buildArgs)
+    .map(([key, value]) => `--build-arg ${key}=${value}`)
+    .join(' ')
+
   const ssh = useSSH ? '--ssh default' : ''
 
   const cmd = `/usr/bin/bash -c "docker build ${ssh} -f ${dockerfile} -t ${getImageFQN(
     image,
-  )} ${labelOptions} ${context}"`
+  )} ${labelOptions} ${buildArgsOptions} ${context}"`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd, undefined, {

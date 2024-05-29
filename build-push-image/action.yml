@@ -34,6 +34,10 @@ inputs:
     description: Pass the SSH agent to the build context
     required: false
     default: 'false'
+  buildArgs:
+    description: Build arguments for Docker build
+    required: false
+    default: ''
 runs:
   using: node20
   main: dist/index.js
