@@ -62,15 +62,13 @@ export async function dockerBuild({
   )} ${labelOptions} ${context}"`
   debug(`Executing command:\n${cmd}`)
 
-  console.log(cmd);
-
-//   await exec(cmd, undefined, {
-//     env: {
-//       ...process.env,
-//       DOCKER_BUILDKIT: '1',
-//     },
-//   })
-// }
+  await exec(cmd, undefined, {
+    env: {
+      ...process.env,
+      DOCKER_BUILDKIT: '1',
+    },
+  })
+}
 
 export async function dockerAddTag(off: Image, on: Image) {
   info('Retagging image...')
