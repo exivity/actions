@@ -57,7 +57,7 @@ export async function dockerBuild({
   const ssh = useSSH ? '--ssh default' : ''
   const secretArgs = secrets ? `--secret ${secrets}` : ''
 
-  const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} -f ${dockerfile} -t ${getImageFQN(
+  const cmd = `/usr/bin/bash -c "docker build --secret id=npmrc,src=$HOME/.npmrc ${ssh} ${secretArgs} -f ${dockerfile} -t ${getImageFQN(
     image,
   )} ${labelOptions} ${context}"`
   debug(`Executing command:\n${cmd}`)
