@@ -61,8 +61,8 @@ needed.
 | `registry`   |          | `"ghcr.io"`      | Registry to use, e.g. `"ghcr.io"` (default) or `"docker.io"` (for Docker Hub) |
 | `user`       |          | `github.actor`   | Username for the Docker registry                                              |
 | `password`   |          | `github.token`   | Password for the Docker registry                                              |
-| `secrets`    | false    |                  | Secrets for Docker build                                                      |
 | `useSSH`     | false    | `false`          | Whether to use SSH for Git operations                                         |
+| `secrets`    | false    |                  | Secrets for Docker build like `id=npmrc,src=$HOME/.npmrc`                     |
 
 # `commit-status`
 

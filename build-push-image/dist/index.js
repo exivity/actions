@@ -18280,14 +18280,14 @@ var require_core = __commonJS({
       return val.trim();
     }
     exports2.getInput = getInput4;
-    function getMultilineInput2(name, options) {
+    function getMultilineInput(name, options) {
       const inputs = getInput4(name, options).split("\n").filter((x) => x !== "");
       if (options && options.trimWhitespace === false) {
         return inputs;
       }
       return inputs.map((input) => input.trim());
     }
-    exports2.getMultilineInput = getMultilineInput2;
+    exports2.getMultilineInput = getMultilineInput;
     function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
@@ -25138,7 +25138,7 @@ async function dockerBuild({
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
   const ssh = useSSH ? "--ssh default" : "";
-  const secretArgs = secrets ? secrets.map((secret) => `--secret ${secret}`).join(",") : "";
+  const secretArgs = secrets ? `--secret ${secrets}` : "";
   const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} -f ${dockerfile} -t ${getImageFQN(
     image
   )} ${labelOptions} ${context2}"`;
@@ -25290,7 +25290,7 @@ async function run() {
   const user = (0, import_core5.getInput)("user");
   const password = (0, import_core5.getInput)("password");
   const useSSH = (0, import_core5.getBooleanInput)("useSSH");
-  const secrets = (0, import_core5.getMultilineInput)("secrets");
+  const secrets = (0, import_core5.getInput)("secrets");
   const labels = getLabels(name);
   const tag = branchToTag();
   const image = { registry, namespace, name, tag };

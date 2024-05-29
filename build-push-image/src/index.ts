@@ -1,9 +1,4 @@
-import {
-  getInput,
-  setFailed,
-  getBooleanInput,
-  getMultilineInput,
-} from '@actions/core'
+import { getInput, setFailed, getBooleanInput } from '@actions/core'
 import { table } from '../../lib/core'
 import {
   dockerBuild,
@@ -25,7 +20,7 @@ async function run() {
   const user = getInput('user')
   const password = getInput('password')
   const useSSH = getBooleanInput('useSSH')
-  const secrets = getMultilineInput('secrets')
+  const secrets = getInput('secrets')
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
