@@ -10,6 +10,16 @@ import { getOwnerInput, getRepoInput } from '../../lib/github'
 import { branchToTag, getLabels } from '../../lib/image'
 import { writeMetadataFile } from './metadataFile'
 
+function parseBuildArgs(buildArgsStr: string): Record<string, string> {
+  const buildArgs: Record<string, string> = {}
+  const pairs = buildArgsStr.split(',')
+  pairs.forEach(pair => {
+    const [key, value] = pair.split('=')
+    buildArgs[key] = value
+  })
+  return buildArgs
+}
+
 async function run() {
   // Inputs
   const namespace = getOwnerInput('namespace')
@@ -20,6 +30,8 @@ async function run() {
   const user = getInput('user')
   const password = getInput('password')
   const useSSH = getBooleanInput('useSSH')
+  const buildArgsStr = getInput('buildArgs')
+  const buildArgs = parseBuildArgs(buildArgsStr)
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -44,6 +56,7 @@ async function run() {
     labels,
     image,
     useSSH,
+    buildArgs,
   })
 
   await dockerPush(image)
