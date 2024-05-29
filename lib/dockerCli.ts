@@ -45,7 +45,8 @@ export async function dockerBuild({
   labels,
   image,
   useSSH,
-}: BuildOptions) {
+  secrets,
+}: BuildOptions & { secrets?: string }) {
   info('Building image...')
 
   // Concat list of labels
@@ -54,8 +55,9 @@ export async function dockerBuild({
     .join(' ')
 
   const ssh = useSSH ? '--ssh default' : ''
+  const secretArgs = secrets ? `--secret id=npmrc,src=${secrets}` : ''
 
-  const cmd = `/usr/bin/bash -c "docker build ${ssh} -f ${dockerfile} -t ${getImageFQN(
+  const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} -f ${dockerfile} -t ${getImageFQN(
     image,
   )} ${labelOptions} ${context}"`
   debug(`Executing command:\n${cmd}`)
