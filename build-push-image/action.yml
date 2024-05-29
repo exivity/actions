@@ -37,6 +37,7 @@ inputs:
   secrets:
     description: Secrets for Docker build
     required: false
+    type: sequence
 runs:
   using: node20
   main: dist/index.js
