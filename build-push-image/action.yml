@@ -34,6 +34,9 @@ inputs:
     description: Pass the SSH agent to the build context
     required: false
     default: 'false'
+  secrets:
+    description: Secrets for Docker build
+    required: false
 runs:
   using: node20
   main: dist/index.js
