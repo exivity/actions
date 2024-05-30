@@ -49,6 +49,13 @@ export async function dockerBuild({
   secrets,
   platform,
 }: BuildOptions & { secrets?: string }) {
+  info('Install docker buildx...')
+  await exec(
+    'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes',
+  )
+  await exec('docker buildx create --name mybuilder --use')
+  await exec('docker buildx inspect --bootstrap')
+
   info('Building image...')
 
   // Concat list of labels

@@ -25136,6 +25136,12 @@ async function dockerBuild({
   secrets,
   platform
 }) {
+  (0, import_core2.info)("Install docker buildx...");
+  await (0, import_exec2.exec)(
+    "docker run --rm --privileged multiarch/qemu-user-static --reset -p yes"
+  );
+  await (0, import_exec2.exec)("docker buildx create --name mybuilder --use");
+  await (0, import_exec2.exec)("docker buildx inspect --bootstrap");
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
   const ssh = useSSH ? "--ssh default" : "";
