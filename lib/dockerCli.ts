@@ -30,6 +30,7 @@ type BuildOptions = {
   labels: { [key: string]: string }
   image: Image
   useSSH: boolean
+  secrets: string
   platform: string
 }
 
@@ -48,7 +49,7 @@ export async function dockerBuild({
   useSSH,
   secrets,
   platform,
-}: BuildOptions & { secrets?: string }) {
+}: BuildOptions & {}) {
   info('Install docker buildx...')
   await exec(
     'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes',
