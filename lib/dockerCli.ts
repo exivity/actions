@@ -30,6 +30,8 @@ type BuildOptions = {
   labels: { [key: string]: string }
   image: Image
   useSSH: boolean
+  secrets: string
+  platform: string
 }
 
 export type Image = {
@@ -46,7 +48,15 @@ export async function dockerBuild({
   image,
   useSSH,
   secrets,
-}: BuildOptions & { secrets?: string }) {
+  platform,
+}: BuildOptions & {}) {
+  info('Install docker buildx...')
+  await exec(
+    'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes',
+  )
+  await exec('docker buildx create --name mybuilder --use')
+  await exec('docker buildx inspect --bootstrap')
+
   info('Building image...')
 
   // Concat list of labels
@@ -56,8 +66,9 @@ export async function dockerBuild({
 
   const ssh = useSSH ? '--ssh default' : ''
   const secretArgs = secrets ? `--secret ${secrets}` : ''
+  const platformArgs = platform ? `--platform ${platform}` : ''
 
-  const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} -f ${dockerfile} -t ${getImageFQN(
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${platformArgs} -f ${dockerfile} -t ${getImageFQN(
     image,
   )} ${labelOptions} ${context}"`
   debug(`Executing command:\n${cmd}`)

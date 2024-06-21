@@ -21,6 +21,7 @@ async function run() {
   const password = getInput('password')
   const useSSH = getBooleanInput('useSSH')
   const secrets = getInput('secrets')
+  const platform = getInput('platform')
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -46,6 +47,7 @@ async function run() {
     image,
     useSSH,
     secrets,
+    platform,
   })
 
   await dockerPush(image)
