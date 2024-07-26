@@ -63,6 +63,7 @@ needed.
 | `password`   |          | `github.token`   | Password for the Docker registry                                              |
 | `useSSH`     | false    | `false`          | Whether to use SSH for Git operations                                         |
 | `secrets`    | false    |                  | Secrets for Docker build like `id=npmrc,src=$HOME/.npmrc`                     |
+| `platform`   | false    |                  | Platforms for Docker build like `'linux/amd64,linux/arm/v7,linux/arm64`       |
 
 # `commit-status`
 
