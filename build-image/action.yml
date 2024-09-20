@@ -1,0 +1,42 @@
+name: build-push-image
+description: Builds and pushes a component image
+inputs:
+  owner:
+    description: The namespace of the image repository
+    required: false
+  name:
+    description: The name of the image repository
+    required: false
+  component:
+    description: The name of the image repository (deprecated)
+    required: false
+  dockerfile:
+    description: Path to the Dockerfile
+    required: false
+    default: ./Dockerfile
+  context:
+    description: Path to the Docker context
+    required: false
+    default: .
+  registry:
+    description: The Docker registry to use
+    required: false
+    default: ghcr.io
+  user:
+    description: Username for Docker registry
+    required: false
+    default: ${{ github.actor }}
+  password:
+    description: Password for Docker registry
+    required: false
+    default: ${{ github.token }}
+  useSSH:
+    description: Pass the SSH agent to the build context
+    required: false
+    default: 'false'
+  secrets:
+    description: Secrets for Docker build
+    required: false
+runs:
+  using: node20
+  main: dist/index.js
