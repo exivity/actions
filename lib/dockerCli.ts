@@ -56,7 +56,7 @@ export async function dockerBuild({
     .join(' ')
 
   const ssh = useSSH ? '--ssh default' : ''
-  const secretArgs = secrets ? `--secret id=${secrets}` : ''
+  const secretArgs = secrets ? `--secret ${secrets}` : ''
   const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : ''
 
   // Correct command structure with context at the end

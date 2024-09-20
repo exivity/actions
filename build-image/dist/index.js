@@ -25191,7 +25191,7 @@ async function dockerBuild({
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
   const ssh = useSSH ? "--ssh default" : "";
-  const secretArgs = secrets ? `--secret id=${secrets}` : "";
+  const secretArgs = secrets ? `--secret ${secrets}` : "";
   const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : "";
   const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} -f ${dockerfile} -t ${getImageFQN(
     image
