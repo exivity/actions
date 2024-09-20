@@ -3,7 +3,6 @@ import { table } from '../../lib/core'
 import {
   dockerBuild,
   dockerLogin,
-  dockerPush,
   getImageFQN,
 } from '../../lib/dockerCli'
 import { getOwnerInput, getRepoInput } from '../../lib/github'
@@ -47,8 +46,6 @@ async function run() {
     useSSH,
     secrets,
   })
-
-  await dockerPush(image)
 }
 
 run().catch(setFailed)

@@ -1,4 +1,4 @@
-name: build-push-image
+name: build-image
 description: Builds and pushes a component image
 inputs:
   owner:
