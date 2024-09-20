@@ -27,7 +27,6 @@ async function run() {
   table('Labels', JSON.stringify(labels, undefined, 2))
 
   await writeMetadataFile(name)
-
   await dockerLogin({
     registry,
     user,
