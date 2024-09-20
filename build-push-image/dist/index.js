@@ -25185,13 +25185,15 @@ async function dockerBuild({
   labels,
   image,
   useSSH,
-  secrets
+  secrets,
+  buildArgs
 }) {
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
   const ssh = useSSH ? "--ssh default" : "";
   const secretArgs = secrets ? `--secret ${secrets}` : "";
-  const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} -f ${dockerfile} -t ${getImageFQN(
+  const buildArgsOptions = buildArgs ? buildArgs : "";
+  const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} ${buildArgsOptions} -f ${dockerfile} -t ${getImageFQN(
     image
   )} ${labelOptions} ${context2}"`;
   (0, import_core2.debug)(`Executing command:

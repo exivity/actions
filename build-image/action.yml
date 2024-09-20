@@ -37,6 +37,9 @@ inputs:
   secrets:
     description: Secrets for Docker build
     required: false
+  buildArgs:
+    description: BuildArgs for Docker build
+    required: false
 runs:
   using: node20
   main: dist/index.js

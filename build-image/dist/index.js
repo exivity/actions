@@ -25185,13 +25185,15 @@ async function dockerBuild({
   labels,
   image,
   useSSH,
-  secrets
+  secrets,
+  buildArgs
 }) {
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
   const ssh = useSSH ? "--ssh default" : "";
   const secretArgs = secrets ? `--secret ${secrets}` : "";
-  const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} -f ${dockerfile} -t ${getImageFQN(
+  const buildArgsOptions = buildArgs ? buildArgs : "";
+  const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} ${buildArgsOptions} -f ${dockerfile} -t ${getImageFQN(
     image
   )} ${labelOptions} ${context2}"`;
   (0, import_core2.debug)(`Executing command:
@@ -25336,6 +25338,7 @@ async function run() {
   const password = (0, import_core5.getInput)("password");
   const useSSH = (0, import_core5.getBooleanInput)("useSSH");
   const secrets = (0, import_core5.getInput)("secrets");
+  const buildArgs = (0, import_core5.getInput)("buildArgs");
   const labels = getLabels(name);
   const tag = branchToTag();
   const image = { registry, namespace, name, tag };
@@ -25354,7 +25357,8 @@ async function run() {
     labels,
     image,
     useSSH,
-    secrets
+    secrets,
+    buildArgs
   });
 }
 run().catch(import_core5.setFailed);
