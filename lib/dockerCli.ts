@@ -56,10 +56,11 @@ export async function dockerBuild({
     .join(' ')
 
   const ssh = useSSH ? '--ssh default' : ''
-  const secretArgs = secrets ? `--secret ${secrets}` : ''
-  const buildArgsOptions = buildArgs ? buildArgs : ''
+  const secretArgs = secrets ? `--secret id=${secrets}` : ''
+  const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : ''
 
-  const cmd = `/usr/bin/bash -c "docker build ${ssh} ${secretArgs} ${buildArgsOptions} -f ${dockerfile} -t ${getImageFQN(
+  // Correct command structure with context at the end
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} -f ${dockerfile} -t ${getImageFQN(
     image,
   )} ${labelOptions} ${context}"`
   debug(`Executing command:\n${cmd}`)
