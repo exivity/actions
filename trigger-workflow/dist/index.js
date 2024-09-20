@@ -561,10 +561,10 @@ var require_proxy = __commonJS({
       })();
       if (proxyVar) {
         try {
-          return new URL(proxyVar);
+          return new DecodedURL(proxyVar);
         } catch (_a) {
           if (!proxyVar.startsWith("http://") && !proxyVar.startsWith("https://"))
-            return new URL(`http://${proxyVar}`);
+            return new DecodedURL(`http://${proxyVar}`);
         }
       } else {
         return void 0;
@@ -607,6 +607,19 @@ var require_proxy = __commonJS({
       const hostLower = host.toLowerCase();
       return hostLower === "localhost" || hostLower.startsWith("127.") || hostLower.startsWith("[::1]") || hostLower.startsWith("[0:0:0:0:0:0:0:1]");
     }
+    var DecodedURL = class extends URL {
+      constructor(url, base) {
+        super(url, base);
+        this._decodedUsername = decodeURIComponent(super.username);
+        this._decodedPassword = decodeURIComponent(super.password);
+      }
+      get username() {
+        return this._decodedUsername;
+      }
+      get password() {
+        return this._decodedPassword;
+      }
+    };
   }
 });
 
@@ -1512,16 +1525,16 @@ var require_util = __commonJS({
         yield Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
       }
     }
-    var ReadableStream;
+    var ReadableStream2;
     function ReadableStreamFrom(iterable) {
-      if (!ReadableStream) {
-        ReadableStream = require("stream/web").ReadableStream;
+      if (!ReadableStream2) {
+        ReadableStream2 = require("stream/web").ReadableStream;
       }
-      if (ReadableStream.from) {
-        return ReadableStream.from(convertIterableToBuffer(iterable));
+      if (ReadableStream2.from) {
+        return ReadableStream2.from(convertIterableToBuffer(iterable));
       }
       let iterator;
-      return new ReadableStream(
+      return new ReadableStream2(
         {
           async start() {
             iterator = iterable[Symbol.asyncIterator]();
@@ -1854,11 +1867,11 @@ var require_PartStream = __commonJS({
   "node_modules/@fastify/busboy/deps/dicer/lib/PartStream.js"(exports2, module2) {
     "use strict";
     var inherits = require("node:util").inherits;
-    var ReadableStream = require("node:stream").Readable;
+    var ReadableStream2 = require("node:stream").Readable;
     function PartStream(opts) {
-      ReadableStream.call(this, opts);
+      ReadableStream2.call(this, opts);
     }
-    inherits(PartStream, ReadableStream);
+    inherits(PartStream, ReadableStream2);
     PartStream.prototype._read = function(n) {
     };
     module2.exports = PartStream;
@@ -2373,6 +2386,7 @@ var require_basename = __commonJS({
       for (var i = path.length - 1; i >= 0; --i) {
         switch (path.charCodeAt(i)) {
           case 47:
+          // '/'
           case 92:
             path = path.slice(i + 1);
             return path === ".." || path === "." ? "" : path;
@@ -3607,7 +3621,21 @@ var require_util2 = __commonJS({
           return referrerOrigin;
         }
         case "strict-origin":
+        // eslint-disable-line
+        /**
+           * 1. If referrerURL is a potentially trustworthy URL and
+           * request’s current URL is not a potentially trustworthy URL,
+           * then return no referrer.
+           * 2. Return referrerOrigin
+          */
         case "no-referrer-when-downgrade":
+        // eslint-disable-line
+        /**
+         * 1. If referrerURL is a potentially trustworthy URL and
+         * request’s current URL is not a potentially trustworthy URL,
+         * then return no referrer.
+         * 2. Return referrerOrigin
+        */
         default:
           return isNonPotentiallyTrustWorthy ? "no-referrer" : referrerOrigin;
       }
@@ -3861,12 +3889,12 @@ var require_util2 = __commonJS({
         errorSteps(e);
       }
     }
-    var ReadableStream = globalThis.ReadableStream;
+    var ReadableStream2 = globalThis.ReadableStream;
     function isReadableStreamLike(stream) {
-      if (!ReadableStream) {
-        ReadableStream = require("stream/web").ReadableStream;
+      if (!ReadableStream2) {
+        ReadableStream2 = require("stream/web").ReadableStream;
       }
-      return stream instanceof ReadableStream || stream[Symbol.toStringTag] === "ReadableStream" && typeof stream.tee === "function";
+      return stream instanceof ReadableStream2 || stream[Symbol.toStringTag] === "ReadableStream" && typeof stream.tee === "function";
     }
     var MAXIMUM_ARGUMENT_LENGTH = 65535;
     function isomorphicDecode(input) {
@@ -5008,21 +5036,21 @@ var require_body = __commonJS({
     var { isUint8Array, isArrayBuffer } = require("util/types");
     var { File: UndiciFile } = require_file();
     var { parseMIMEType, serializeAMimeType } = require_dataURL();
-    var ReadableStream = globalThis.ReadableStream;
+    var ReadableStream2 = globalThis.ReadableStream;
     var File = NativeFile ?? UndiciFile;
     var textEncoder = new TextEncoder();
     var textDecoder = new TextDecoder();
     function extractBody(object, keepalive = false) {
-      if (!ReadableStream) {
-        ReadableStream = require("stream/web").ReadableStream;
+      if (!ReadableStream2) {
+        ReadableStream2 = require("stream/web").ReadableStream;
       }
       let stream = null;
-      if (object instanceof ReadableStream) {
+      if (object instanceof ReadableStream2) {
         stream = object;
       } else if (isBlobLike(object)) {
         stream = object.stream();
       } else {
-        stream = new ReadableStream({
+        stream = new ReadableStream2({
           async pull(controller) {
             controller.enqueue(
               typeof source === "string" ? textEncoder.encode(source) : source
@@ -5112,14 +5140,14 @@ Content-Type: ${value.type || "application/octet-stream"}\r
             "Response body object should not be disturbed or locked"
           );
         }
-        stream = object instanceof ReadableStream ? object : ReadableStreamFrom(object);
+        stream = object instanceof ReadableStream2 ? object : ReadableStreamFrom(object);
       }
       if (typeof source === "string" || util.isBuffer(source)) {
         length = Buffer.byteLength(source);
       }
       if (action != null) {
         let iterator;
-        stream = new ReadableStream({
+        stream = new ReadableStream2({
           async start() {
             iterator = action(object)[Symbol.asyncIterator]();
           },
@@ -5146,10 +5174,10 @@ Content-Type: ${value.type || "application/octet-stream"}\r
       return [body, type];
     }
     function safelyExtractBody(object, keepalive = false) {
-      if (!ReadableStream) {
-        ReadableStream = require("stream/web").ReadableStream;
+      if (!ReadableStream2) {
+        ReadableStream2 = require("stream/web").ReadableStream;
       }
-      if (object instanceof ReadableStream) {
+      if (object instanceof ReadableStream2) {
         assert(!util.isDisturbed(object), "The body has already been consumed.");
         assert(!object.locked, "The stream is locked.");
       }
@@ -5385,7 +5413,7 @@ var require_request = __commonJS({
       channels.trailers = { hasSubscribers: false };
       channels.error = { hasSubscribers: false };
     }
-    var Request = class _Request {
+    var Request2 = class _Request {
       constructor(origin, {
         path,
         method,
@@ -5720,7 +5748,7 @@ var require_request = __commonJS({
         }
       }
     }
-    module2.exports = Request;
+    module2.exports = Request2;
   }
 });
 
@@ -6600,7 +6628,7 @@ var require_client = __commonJS({
     var { pipeline } = require("stream");
     var util = require_util();
     var timers = require_timers();
-    var Request = require_request();
+    var Request2 = require_request();
     var DispatcherBase = require_dispatcher_base();
     var {
       RequestContentLengthMismatchError,
@@ -6880,7 +6908,7 @@ var require_client = __commonJS({
       }
       [kDispatch](opts, handler) {
         const origin = opts.origin || this[kUrl].origin;
-        const request = this[kHTTPConnVersion] === "h2" ? Request[kHTTP2BuildRequest](origin, opts, handler) : Request[kHTTP1BuildRequest](origin, opts, handler);
+        const request = this[kHTTPConnVersion] === "h2" ? Request2[kHTTP2BuildRequest](origin, opts, handler) : Request2[kHTTP1BuildRequest](origin, opts, handler);
         this[kQueue].push(request);
         if (this[kResuming]) {
         } else if (util.bodyLength(request.body) == null && util.isIterable(request.body)) {
@@ -7833,7 +7861,7 @@ upgrade: ${upgrade}\r
     function writeH2(client, session, request) {
       const { body, method, path, host, upgrade, expectContinue, signal, headers: reqHeaders } = request;
       let headers;
-      if (typeof reqHeaders === "string") headers = Request[kHTTP2CopyHeaders](reqHeaders.trim());
+      if (typeof reqHeaders === "string") headers = Request2[kHTTP2CopyHeaders](reqHeaders.trim());
       else headers = reqHeaders;
       if (upgrade) {
         errorRequest(client, request, new Error("Upgrade not supported for H2"));
@@ -11680,9 +11708,9 @@ var require_response = __commonJS({
     var { kHeadersList, kConstruct } = require_symbols();
     var assert = require("assert");
     var { types } = require("util");
-    var ReadableStream = globalThis.ReadableStream || require("stream/web").ReadableStream;
+    var ReadableStream2 = globalThis.ReadableStream || require("stream/web").ReadableStream;
     var textEncoder = new TextEncoder("utf-8");
-    var Response = class _Response {
+    var Response2 = class _Response {
       // Creates network error Response.
       static error() {
         const relevantRealm = { settingsObject: {} };
@@ -11824,8 +11852,8 @@ var require_response = __commonJS({
         return clonedResponseObject;
       }
     };
-    mixinBody(Response);
-    Object.defineProperties(Response.prototype, {
+    mixinBody(Response2);
+    Object.defineProperties(Response2.prototype, {
       type: kEnumerableProperty,
       url: kEnumerableProperty,
       status: kEnumerableProperty,
@@ -11841,7 +11869,7 @@ var require_response = __commonJS({
         configurable: true
       }
     });
-    Object.defineProperties(Response, {
+    Object.defineProperties(Response2, {
       json: kEnumerableProperty,
       redirect: kEnumerableProperty,
       error: kEnumerableProperty
@@ -11967,7 +11995,7 @@ var require_response = __commonJS({
       }
     }
     webidl.converters.ReadableStream = webidl.interfaceConverter(
-      ReadableStream
+      ReadableStream2
     );
     webidl.converters.FormData = webidl.interfaceConverter(
       FormData2
@@ -11994,7 +12022,7 @@ var require_response = __commonJS({
       return webidl.converters.DOMString(V);
     };
     webidl.converters.BodyInit = function(V) {
-      if (V instanceof ReadableStream) {
+      if (V instanceof ReadableStream2) {
         return webidl.converters.ReadableStream(V);
       }
       if (V?.[Symbol.asyncIterator]) {
@@ -12023,7 +12051,7 @@ var require_response = __commonJS({
       makeResponse,
       makeAppropriateNetworkError,
       filterResponse,
-      Response,
+      Response: Response2,
       cloneResponse
     };
   }
@@ -12067,7 +12095,7 @@ var require_request2 = __commonJS({
     var requestFinalizer = new FinalizationRegistry(({ signal, abort }) => {
       signal.removeEventListener("abort", abort);
     });
-    var Request = class _Request {
+    var Request2 = class _Request {
       // https://fetch.spec.whatwg.org/#dom-request
       constructor(input, init = {}) {
         if (input === kConstruct) {
@@ -12496,7 +12524,7 @@ var require_request2 = __commonJS({
         return clonedRequestObject;
       }
     };
-    mixinBody(Request);
+    mixinBody(Request2);
     function makeRequest(init) {
       const request = {
         method: "GET",
@@ -12547,7 +12575,7 @@ var require_request2 = __commonJS({
       }
       return newRequest;
     }
-    Object.defineProperties(Request.prototype, {
+    Object.defineProperties(Request2.prototype, {
       method: kEnumerableProperty,
       url: kEnumerableProperty,
       headers: kEnumerableProperty,
@@ -12574,13 +12602,13 @@ var require_request2 = __commonJS({
       }
     });
     webidl.converters.Request = webidl.interfaceConverter(
-      Request
+      Request2
     );
     webidl.converters.RequestInfo = function(V) {
       if (typeof V === "string") {
         return webidl.converters.USVString(V);
       }
-      if (V instanceof Request) {
+      if (V instanceof Request2) {
         return webidl.converters.Request(V);
       }
       return webidl.converters.USVString(V);
@@ -12664,7 +12692,7 @@ var require_request2 = __commonJS({
         allowedValues: requestDuplex
       }
     ]);
-    module2.exports = { Request, makeRequest };
+    module2.exports = { Request: Request2, makeRequest };
   }
 });
 
@@ -12673,14 +12701,14 @@ var require_fetch = __commonJS({
   "node_modules/undici/lib/fetch/index.js"(exports2, module2) {
     "use strict";
     var {
-      Response,
+      Response: Response2,
       makeNetworkError,
       makeAppropriateNetworkError,
       filterResponse,
       makeResponse
     } = require_response();
     var { Headers } = require_headers();
-    var { Request, makeRequest } = require_request2();
+    var { Request: Request2, makeRequest } = require_request2();
     var zlib = require("zlib");
     var {
       bytesMatch,
@@ -12734,7 +12762,7 @@ var require_fetch = __commonJS({
     var { STATUS_CODES } = require("http");
     var GET_OR_HEAD = ["GET", "HEAD"];
     var resolveObjectURL;
-    var ReadableStream = globalThis.ReadableStream;
+    var ReadableStream2 = globalThis.ReadableStream;
     var Fetch = class extends EE {
       constructor(dispatcher) {
         super();
@@ -12766,12 +12794,12 @@ var require_fetch = __commonJS({
         this.emit("terminated", error);
       }
     };
-    function fetch(input, init = {}) {
+    function fetch2(input, init = {}) {
       webidl.argumentLengthCheck(arguments, 1, { header: "globalThis.fetch" });
       const p = createDeferredPromise();
       let requestObject;
       try {
-        requestObject = new Request(input, init);
+        requestObject = new Request2(input, init);
       } catch (e) {
         p.reject(e);
         return p.promise;
@@ -12813,7 +12841,7 @@ var require_fetch = __commonJS({
           );
           return Promise.resolve();
         }
-        responseObject = new Response();
+        responseObject = new Response2();
         responseObject[kState] = response;
         responseObject[kRealm] = relevantRealm;
         responseObject[kHeaders][kHeadersList] = response.headersList;
@@ -13481,10 +13509,10 @@ var require_fetch = __commonJS({
       const cancelAlgorithm = (reason) => {
         fetchParams.controller.abort(reason);
       };
-      if (!ReadableStream) {
-        ReadableStream = require("stream/web").ReadableStream;
+      if (!ReadableStream2) {
+        ReadableStream2 = require("stream/web").ReadableStream;
       }
-      const stream = new ReadableStream(
+      const stream = new ReadableStream2(
         {
           async start(controller) {
             fetchParams.controller.controller = controller;
@@ -13696,7 +13724,7 @@ var require_fetch = __commonJS({
       }
     }
     module2.exports = {
-      fetch,
+      fetch: fetch2,
       Fetch,
       fetching,
       finalizeAndReportTiming
@@ -14570,8 +14598,8 @@ var require_cache = __commonJS({
     var { kEnumerableProperty, isDisturbed } = require_util();
     var { kHeadersList } = require_symbols();
     var { webidl } = require_webidl();
-    var { Response, cloneResponse } = require_response();
-    var { Request } = require_request2();
+    var { Response: Response2, cloneResponse } = require_response();
+    var { Request: Request2 } = require_request2();
     var { kState, kHeaders, kGuard, kRealm } = require_symbols2();
     var { fetching } = require_fetch();
     var { urlIsHttpHttpsScheme, createDeferredPromise, readAllBytes } = require_util2();
@@ -14606,13 +14634,13 @@ var require_cache = __commonJS({
         options = webidl.converters.CacheQueryOptions(options);
         let r = null;
         if (request !== void 0) {
-          if (request instanceof Request) {
+          if (request instanceof Request2) {
             r = request[kState];
             if (r.method !== "GET" && !options.ignoreMethod) {
               return [];
             }
           } else if (typeof request === "string") {
-            r = new Request(request)[kState];
+            r = new Request2(request)[kState];
           }
         }
         const responses = [];
@@ -14628,7 +14656,7 @@ var require_cache = __commonJS({
         }
         const responseList = [];
         for (const response of responses) {
-          const responseObject = new Response(response.body?.source ?? null);
+          const responseObject = new Response2(response.body?.source ?? null);
           const body = responseObject[kState].body;
           responseObject[kState] = response;
           responseObject[kState].body = body;
@@ -14666,7 +14694,7 @@ var require_cache = __commonJS({
         }
         const fetchControllers = [];
         for (const request of requests) {
-          const r = new Request(request)[kState];
+          const r = new Request2(request)[kState];
           if (!urlIsHttpHttpsScheme(r.url)) {
             throw webidl.errors.exception({
               header: "Cache.addAll",
@@ -14750,10 +14778,10 @@ var require_cache = __commonJS({
         request = webidl.converters.RequestInfo(request);
         response = webidl.converters.Response(response);
         let innerRequest = null;
-        if (request instanceof Request) {
+        if (request instanceof Request2) {
           innerRequest = request[kState];
         } else {
-          innerRequest = new Request(request)[kState];
+          innerRequest = new Request2(request)[kState];
         }
         if (!urlIsHttpHttpsScheme(innerRequest.url) || innerRequest.method !== "GET") {
           throw webidl.errors.exception({
@@ -14830,14 +14858,14 @@ var require_cache = __commonJS({
         request = webidl.converters.RequestInfo(request);
         options = webidl.converters.CacheQueryOptions(options);
         let r = null;
-        if (request instanceof Request) {
+        if (request instanceof Request2) {
           r = request[kState];
           if (r.method !== "GET" && !options.ignoreMethod) {
             return false;
           }
         } else {
           assert(typeof request === "string");
-          r = new Request(request)[kState];
+          r = new Request2(request)[kState];
         }
         const operations = [];
         const operation = {
@@ -14875,13 +14903,13 @@ var require_cache = __commonJS({
         options = webidl.converters.CacheQueryOptions(options);
         let r = null;
         if (request !== void 0) {
-          if (request instanceof Request) {
+          if (request instanceof Request2) {
             r = request[kState];
             if (r.method !== "GET" && !options.ignoreMethod) {
               return [];
             }
           } else if (typeof request === "string") {
-            r = new Request(request)[kState];
+            r = new Request2(request)[kState];
           }
         }
         const promise = createDeferredPromise();
@@ -14899,7 +14927,7 @@ var require_cache = __commonJS({
         queueMicrotask(() => {
           const requestList = [];
           for (const request2 of requests) {
-            const requestObject = new Request("https://a");
+            const requestObject = new Request2("https://a");
             requestObject[kState] = request2;
             requestObject[kHeaders][kHeadersList] = request2.headersList;
             requestObject[kHeaders][kGuard] = "immutable";
@@ -15083,7 +15111,7 @@ var require_cache = __commonJS({
         converter: webidl.converters.DOMString
       }
     ]);
-    webidl.converters.Response = webidl.interfaceConverter(Response);
+    webidl.converters.Response = webidl.interfaceConverter(Response2);
     webidl.converters["sequence<RequestInfo>"] = webidl.sequenceConverter(
       webidl.converters.RequestInfo
     );
@@ -16966,7 +16994,7 @@ var require_undici = __commonJS({
     module2.exports.getGlobalDispatcher = getGlobalDispatcher;
     if (util.nodeMajor > 16 || util.nodeMajor === 16 && util.nodeMinor >= 8) {
       let fetchImpl = null;
-      module2.exports.fetch = async function fetch(resource) {
+      module2.exports.fetch = async function fetch2(resource) {
         if (!fetchImpl) {
           fetchImpl = require_fetch().fetch;
         }
@@ -17560,7 +17588,7 @@ var require_lib = __commonJS({
         }
         const usingSsl = parsedUrl.protocol === "https:";
         proxyAgent = new undici_1.ProxyAgent(Object.assign({ uri: proxyUrl.href, pipelining: !this._keepAlive ? 0 : 1 }, (proxyUrl.username || proxyUrl.password) && {
-          token: `${proxyUrl.username}:${proxyUrl.password}`
+          token: `Basic ${Buffer.from(`${proxyUrl.username}:${proxyUrl.password}`).toString("base64")}`
         }));
         this._proxyAgentDispatcher = proxyAgent;
         if (usingSsl && this._ignoreSslError) {
@@ -19292,16 +19320,16 @@ var require_dist_node5 = __commonJS({
       let headers = {};
       let status;
       let url;
-      let { fetch } = globalThis;
+      let { fetch: fetch2 } = globalThis;
       if ((_b = requestOptions.request) == null ? void 0 : _b.fetch) {
-        fetch = requestOptions.request.fetch;
+        fetch2 = requestOptions.request.fetch;
       }
-      if (!fetch) {
+      if (!fetch2) {
         throw new Error(
           "fetch is not set. Please pass a fetch implementation as new Octokit({ request: { fetch }}). Learn more at https://github.com/octokit/octokit.js/#fetch-missing"
         );
       }
-      return fetch(requestOptions.url, {
+      return fetch2(requestOptions.url, {
         method: requestOptions.method,
         body: requestOptions.body,
         headers: requestOptions.headers,
@@ -22578,15 +22606,23 @@ function __await(v) {
 function __asyncGenerator(thisArg, _arguments, generator) {
   if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
   var g = generator.apply(thisArg, _arguments || []), i, q = [];
-  return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
+  return i = {}, verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function() {
     return this;
   }, i;
-  function verb(n) {
-    if (g[n]) i[n] = function(v) {
-      return new Promise(function(a, b) {
-        q.push([n, v, a, b]) > 1 || resume(n, v);
-      });
+  function awaitReturn(f) {
+    return function(v) {
+      return Promise.resolve(v).then(f, reject);
     };
+  }
+  function verb(n, f) {
+    if (g[n]) {
+      i[n] = function(v) {
+        return new Promise(function(a, b) {
+          q.push([n, v, a, b]) > 1 || resume(n, v);
+        });
+      };
+      if (f) i[n] = f(i[n]);
+    }
   }
   function resume(n, v) {
     try {
@@ -22678,7 +22714,7 @@ function __classPrivateFieldIn(state, receiver) {
 function __addDisposableResource(env, value, async) {
   if (value !== null && value !== void 0) {
     if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
-    var dispose;
+    var dispose, inner;
     if (async) {
       if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
       dispose = value[Symbol.asyncDispose];
@@ -22686,8 +22722,16 @@ function __addDisposableResource(env, value, async) {
     if (dispose === void 0) {
       if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
       dispose = value[Symbol.dispose];
+      if (async) inner = dispose;
     }
     if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
+    if (inner) dispose = function() {
+      try {
+        inner.call(this);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
     env.stack.push({ value, dispose, async });
   } else if (async) {
     env.stack.push({ async: true });
@@ -35620,6 +35664,7 @@ var require_axios = __commonJS({
       kind === "object" && isFunction(thing.toString) && thing.toString() === "[object FormData]"));
     };
     var isURLSearchParams = kindOfTest("URLSearchParams");
+    var [isReadableStream, isRequest, isResponse, isHeaders] = ["ReadableStream", "Request", "Response", "Headers"].map(kindOfTest);
     var trim = (str) => str.trim ? str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
     function forEach(obj, fn, { allOwnKeys = false } = {}) {
       if (obj === null || typeof obj === "undefined") {
@@ -35823,8 +35868,7 @@ var require_axios = __commonJS({
     var noop = () => {
     };
     var toFiniteNumber = (value, defaultValue) => {
-      value = +value;
-      return Number.isFinite(value) ? value : defaultValue;
+      return value != null && Number.isFinite(value = +value) ? value : defaultValue;
     };
     var ALPHA = "abcdefghijklmnopqrstuvwxyz";
     var DIGIT = "0123456789";
@@ -35868,6 +35912,26 @@ var require_axios = __commonJS({
     };
     var isAsyncFn = kindOfTest("AsyncFunction");
     var isThenable = (thing) => thing && (isObject(thing) || isFunction(thing)) && isFunction(thing.then) && isFunction(thing.catch);
+    var _setImmediate = ((setImmediateSupported, postMessageSupported) => {
+      if (setImmediateSupported) {
+        return setImmediate;
+      }
+      return postMessageSupported ? ((token, callbacks) => {
+        _global.addEventListener("message", ({ source, data }) => {
+          if (source === _global && data === token) {
+            callbacks.length && callbacks.shift()();
+          }
+        }, false);
+        return (cb) => {
+          callbacks.push(cb);
+          _global.postMessage(token, "*");
+        };
+      })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
+    })(
+      typeof setImmediate === "function",
+      isFunction(_global.postMessage)
+    );
+    var asap = typeof queueMicrotask !== "undefined" ? queueMicrotask.bind(_global) : typeof process !== "undefined" && process.nextTick || _setImmediate;
     var utils$1 = {
       isArray,
       isArrayBuffer,
@@ -35879,6 +35943,10 @@ var require_axios = __commonJS({
       isBoolean,
       isObject,
       isPlainObject,
+      isReadableStream,
+      isRequest,
+      isResponse,
+      isHeaders,
       isUndefined,
       isDate,
       isFile,
@@ -35920,7 +35988,9 @@ var require_axios = __commonJS({
       isSpecCompliantForm,
       toJSONObject,
       isAsyncFn,
-      isThenable
+      isThenable,
+      setImmediate: _setImmediate,
+      asap
     };
     function AxiosError(message, code, config, request, response) {
       Error.call(this);
@@ -36239,11 +36309,13 @@ var require_axios = __commonJS({
       return typeof WorkerGlobalScope !== "undefined" && // eslint-disable-next-line no-undef
       self instanceof WorkerGlobalScope && typeof self.importScripts === "function";
     })();
+    var origin = hasBrowserEnv && window.location.href || "http://localhost";
     var utils = /* @__PURE__ */ Object.freeze({
       __proto__: null,
       hasBrowserEnv,
       hasStandardBrowserWebWorkerEnv,
-      hasStandardBrowserEnv
+      hasStandardBrowserEnv,
+      origin
     });
     var platform = {
       ...utils,
@@ -36325,7 +36397,7 @@ var require_axios = __commonJS({
     }
     var defaults = {
       transitional: transitionalDefaults,
-      adapter: ["xhr", "http"],
+      adapter: ["xhr", "http", "fetch"],
       transformRequest: [function transformRequest(data, headers) {
         const contentType = headers.getContentType() || "";
         const hasJSONContentType = contentType.indexOf("application/json") > -1;
@@ -36337,7 +36409,7 @@ var require_axios = __commonJS({
         if (isFormData2) {
           return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
         }
-        if (utils$1.isArrayBuffer(data) || utils$1.isBuffer(data) || utils$1.isStream(data) || utils$1.isFile(data) || utils$1.isBlob(data)) {
+        if (utils$1.isArrayBuffer(data) || utils$1.isBuffer(data) || utils$1.isStream(data) || utils$1.isFile(data) || utils$1.isBlob(data) || utils$1.isReadableStream(data)) {
           return data;
         }
         if (utils$1.isArrayBufferView(data)) {
@@ -36371,6 +36443,9 @@ var require_axios = __commonJS({
         const transitional = this.transitional || defaults.transitional;
         const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
         const JSONRequested = this.responseType === "json";
+        if (utils$1.isResponse(data) || utils$1.isReadableStream(data)) {
+          return data;
+        }
         if (data && utils$1.isString(data) && (forcedJSONParsing && !this.responseType || JSONRequested)) {
           const silentJSONParsing = transitional && transitional.silentJSONParsing;
           const strictJSONParsing = !silentJSONParsing && JSONRequested;
@@ -36529,6 +36604,10 @@ var require_axios = __commonJS({
           setHeaders(header, valueOrRewrite);
         } else if (utils$1.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
           setHeaders(parseHeaders(header), valueOrRewrite);
+        } else if (utils$1.isHeaders(header)) {
+          for (const [key, value] of header.entries()) {
+            setHeader(value, key, rewrite);
+          }
         } else {
           header != null && setHeader(valueOrRewrite, header, rewrite);
         }
@@ -36719,7 +36798,7 @@ var require_axios = __commonJS({
       }
       return requestedURL;
     }
-    var VERSION = "1.6.8";
+    var VERSION = "1.7.4";
     function parseProtocol(url2) {
       const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url2);
       return match && match[1] || "";
@@ -36751,62 +36830,6 @@ var require_axios = __commonJS({
       }
       throw new AxiosError("Unsupported protocol " + protocol, AxiosError.ERR_NOT_SUPPORT);
     }
-    function throttle(fn, freq) {
-      let timestamp = 0;
-      const threshold = 1e3 / freq;
-      let timer = null;
-      return function throttled(force, args) {
-        const now = Date.now();
-        if (force || now - timestamp > threshold) {
-          if (timer) {
-            clearTimeout(timer);
-            timer = null;
-          }
-          timestamp = now;
-          return fn.apply(null, args);
-        }
-        if (!timer) {
-          timer = setTimeout(() => {
-            timer = null;
-            timestamp = Date.now();
-            return fn.apply(null, args);
-          }, threshold - (now - timestamp));
-        }
-      };
-    }
-    function speedometer(samplesCount, min) {
-      samplesCount = samplesCount || 10;
-      const bytes = new Array(samplesCount);
-      const timestamps = new Array(samplesCount);
-      let head = 0;
-      let tail = 0;
-      let firstSampleTS;
-      min = min !== void 0 ? min : 1e3;
-      return function push(chunkLength) {
-        const now = Date.now();
-        const startedAt = timestamps[tail];
-        if (!firstSampleTS) {
-          firstSampleTS = now;
-        }
-        bytes[head] = chunkLength;
-        timestamps[head] = now;
-        let i = tail;
-        let bytesCount = 0;
-        while (i !== head) {
-          bytesCount += bytes[i++];
-          i = i % samplesCount;
-        }
-        head = (head + 1) % samplesCount;
-        if (head === tail) {
-          tail = (tail + 1) % samplesCount;
-        }
-        if (now - firstSampleTS < min) {
-          return;
-        }
-        const passed = startedAt && now - startedAt;
-        return passed ? Math.round(bytesCount * 1e3 / passed) : void 0;
-      };
-    }
     var kInternals = Symbol("internals");
     var AxiosTransformStream = class extends stream__default["default"].Transform {
       constructor(options) {
@@ -36823,11 +36846,8 @@ var require_axios = __commonJS({
         super({
           readableHighWaterMark: options.chunkSize
         });
-        const self2 = this;
         const internals = this[kInternals] = {
-          length: options.length,
           timeWindow: options.timeWindow,
-          ticksRate: options.ticksRate,
           chunkSize: options.chunkSize,
           maxRate: options.maxRate,
           minChunkSize: options.minChunkSize,
@@ -36838,7 +36858,6 @@ var require_axios = __commonJS({
           bytes: 0,
           onReadCallback: null
         };
-        const _speedometer = speedometer(internals.ticksRate * options.samplesCount, internals.timeWindow);
         this.on("newListener", (event) => {
           if (event === "progress") {
             if (!internals.isCaptured) {
@@ -36846,30 +36865,6 @@ var require_axios = __commonJS({
             }
           }
         });
-        let bytesNotified = 0;
-        internals.updateProgress = throttle(function throttledHandler() {
-          const totalBytes = internals.length;
-          const bytesTransferred = internals.bytesSeen;
-          const progressBytes = bytesTransferred - bytesNotified;
-          if (!progressBytes || self2.destroyed) return;
-          const rate = _speedometer(progressBytes);
-          bytesNotified = bytesTransferred;
-          process.nextTick(() => {
-            self2.emit("progress", {
-              "loaded": bytesTransferred,
-              "total": totalBytes,
-              "progress": totalBytes ? bytesTransferred / totalBytes : void 0,
-              "bytes": progressBytes,
-              "rate": rate ? rate : void 0,
-              "estimated": rate && totalBytes && bytesTransferred <= totalBytes ? (totalBytes - bytesTransferred) / rate : void 0
-            });
-          });
-        }, internals.ticksRate);
-        const onFinish = () => {
-          internals.updateProgress(true);
-        };
-        this.once("end", onFinish);
-        this.once("error", onFinish);
       }
       _read(size) {
         const internals = this[kInternals];
@@ -36879,7 +36874,6 @@ var require_axios = __commonJS({
         return super._read(size);
       }
       _transform(chunk, encoding, callback) {
-        const self2 = this;
         const internals = this[kInternals];
         const maxRate = internals.maxRate;
         const readableHighWaterMark = this.readableHighWaterMark;
@@ -36887,14 +36881,12 @@ var require_axios = __commonJS({
         const divider = 1e3 / timeWindow;
         const bytesThreshold = maxRate / divider;
         const minChunkSize = internals.minChunkSize !== false ? Math.max(internals.minChunkSize, bytesThreshold * 0.01) : 0;
-        function pushChunk(_chunk, _callback) {
+        const pushChunk = (_chunk, _callback) => {
           const bytes = Buffer.byteLength(_chunk);
           internals.bytesSeen += bytes;
           internals.bytes += bytes;
-          if (internals.isCaptured) {
-            internals.updateProgress();
-          }
-          if (self2.push(_chunk)) {
+          internals.isCaptured && this.emit("progress", internals.bytesSeen);
+          if (this.push(_chunk)) {
             process.nextTick(_callback);
           } else {
             internals.onReadCallback = () => {
@@ -36902,7 +36894,7 @@ var require_axios = __commonJS({
               process.nextTick(_callback);
             };
           }
-        }
+        };
         const transformChunk = (_chunk, _callback) => {
           const chunkSize = Buffer.byteLength(_chunk);
           let chunkRemainder = null;
@@ -36947,10 +36939,6 @@ var require_axios = __commonJS({
             callback(null);
           }
         });
-      }
-      setLength(length) {
-        this[kInternals].length = +length;
-        return this;
       }
     };
     var AxiosTransformStream$1 = AxiosTransformStream;
@@ -37076,6 +37064,104 @@ var require_axios = __commonJS({
       } : fn;
     };
     var callbackify$1 = callbackify;
+    function speedometer(samplesCount, min) {
+      samplesCount = samplesCount || 10;
+      const bytes = new Array(samplesCount);
+      const timestamps = new Array(samplesCount);
+      let head = 0;
+      let tail = 0;
+      let firstSampleTS;
+      min = min !== void 0 ? min : 1e3;
+      return function push(chunkLength) {
+        const now = Date.now();
+        const startedAt = timestamps[tail];
+        if (!firstSampleTS) {
+          firstSampleTS = now;
+        }
+        bytes[head] = chunkLength;
+        timestamps[head] = now;
+        let i = tail;
+        let bytesCount = 0;
+        while (i !== head) {
+          bytesCount += bytes[i++];
+          i = i % samplesCount;
+        }
+        head = (head + 1) % samplesCount;
+        if (head === tail) {
+          tail = (tail + 1) % samplesCount;
+        }
+        if (now - firstSampleTS < min) {
+          return;
+        }
+        const passed = startedAt && now - startedAt;
+        return passed ? Math.round(bytesCount * 1e3 / passed) : void 0;
+      };
+    }
+    function throttle(fn, freq) {
+      let timestamp = 0;
+      let threshold = 1e3 / freq;
+      let lastArgs;
+      let timer;
+      const invoke = (args, now = Date.now()) => {
+        timestamp = now;
+        lastArgs = null;
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        fn.apply(null, args);
+      };
+      const throttled = (...args) => {
+        const now = Date.now();
+        const passed = now - timestamp;
+        if (passed >= threshold) {
+          invoke(args, now);
+        } else {
+          lastArgs = args;
+          if (!timer) {
+            timer = setTimeout(() => {
+              timer = null;
+              invoke(lastArgs);
+            }, threshold - passed);
+          }
+        }
+      };
+      const flush = () => lastArgs && invoke(lastArgs);
+      return [throttled, flush];
+    }
+    var progressEventReducer = (listener, isDownloadStream, freq = 3) => {
+      let bytesNotified = 0;
+      const _speedometer = speedometer(50, 250);
+      return throttle((e) => {
+        const loaded = e.loaded;
+        const total = e.lengthComputable ? e.total : void 0;
+        const progressBytes = loaded - bytesNotified;
+        const rate = _speedometer(progressBytes);
+        const inRange = loaded <= total;
+        bytesNotified = loaded;
+        const data = {
+          loaded,
+          total,
+          progress: total ? loaded / total : void 0,
+          bytes: progressBytes,
+          rate: rate ? rate : void 0,
+          estimated: rate && total && inRange ? (total - loaded) / rate : void 0,
+          event: e,
+          lengthComputable: total != null,
+          [isDownloadStream ? "download" : "upload"]: true
+        };
+        listener(data);
+      }, freq);
+    };
+    var progressEventDecorator = (total, throttled) => {
+      const lengthComputable = total != null;
+      return [(loaded) => throttled[0]({
+        lengthComputable,
+        total,
+        loaded
+      }), throttled[1]];
+    };
+    var asyncDecorator = (fn) => (...args) => utils$1.asap(() => fn(...args));
     var zlibOptions = {
       flush: zlib__default["default"].constants.Z_SYNC_FLUSH,
       finishFlush: zlib__default["default"].constants.Z_SYNC_FLUSH
@@ -37090,6 +37176,10 @@ var require_axios = __commonJS({
     var supportedProtocols = platform.protocols.map((protocol) => {
       return protocol + ":";
     });
+    var flushOnFinish = (stream2, [throttled, flush]) => {
+      stream2.on("end", flush).on("error", flush);
+      return throttled;
+    };
     function dispatchBeforeRedirect(options, responseDetails) {
       if (options.beforeRedirects.proxy) {
         options.beforeRedirects.proxy(options);
@@ -37210,7 +37300,7 @@ var require_axios = __commonJS({
           }
         }
         const fullPath = buildFullPath(config.baseURL, config.url);
-        const parsed = new URL(fullPath, "http://localhost");
+        const parsed = new URL(fullPath, utils$1.hasBrowserEnv ? platform.origin : void 0);
         const protocol = parsed.protocol || supportedProtocols[0];
         if (protocol === "data:") {
           let convertedData;
@@ -37254,8 +37344,7 @@ var require_axios = __commonJS({
         }
         const headers = AxiosHeaders$1.from(config.headers).normalize();
         headers.set("User-Agent", "axios/" + VERSION, false);
-        const onDownloadProgress = config.onDownloadProgress;
-        const onUploadProgress = config.onUploadProgress;
+        const { onUploadProgress, onDownloadProgress } = config;
         const maxRate = config.maxRate;
         let maxUploadRate = void 0;
         let maxDownloadRate = void 0;
@@ -37314,14 +37403,15 @@ var require_axios = __commonJS({
             data = stream__default["default"].Readable.from(data, { objectMode: false });
           }
           data = stream__default["default"].pipeline([data, new AxiosTransformStream$1({
-            length: contentLength,
             maxRate: utils$1.toFiniteNumber(maxUploadRate)
           })], utils$1.noop);
-          onUploadProgress && data.on("progress", (progress) => {
-            onUploadProgress(Object.assign(progress, {
-              upload: true
-            }));
-          });
+          onUploadProgress && data.on("progress", flushOnFinish(
+            data,
+            progressEventDecorator(
+              contentLength,
+              progressEventReducer(asyncDecorator(onUploadProgress), false, 3)
+            )
+          ));
         }
         let auth = void 0;
         if (config.auth) {
@@ -37401,16 +37491,17 @@ var require_axios = __commonJS({
           if (req.destroyed) return;
           const streams = [res];
           const responseLength = +res.headers["content-length"];
-          if (onDownloadProgress) {
+          if (onDownloadProgress || maxDownloadRate) {
             const transformStream = new AxiosTransformStream$1({
-              length: utils$1.toFiniteNumber(responseLength),
               maxRate: utils$1.toFiniteNumber(maxDownloadRate)
             });
-            onDownloadProgress && transformStream.on("progress", (progress) => {
-              onDownloadProgress(Object.assign(progress, {
-                download: true
-              }));
-            });
+            onDownloadProgress && transformStream.on("progress", flushOnFinish(
+              transformStream,
+              progressEventDecorator(
+                responseLength,
+                progressEventReducer(asyncDecorator(onDownloadProgress), true, 3)
+              )
+            ));
             streams.push(transformStream);
           }
           let responseStream = res;
@@ -37420,6 +37511,7 @@ var require_axios = __commonJS({
               delete res.headers["content-encoding"];
             }
             switch ((res.headers["content-encoding"] || "").toLowerCase()) {
+              /*eslint default-case:0*/
               case "gzip":
               case "x-gzip":
               case "compress":
@@ -37569,37 +37661,6 @@ var require_axios = __commonJS({
         }
       });
     };
-    var cookies = platform.hasStandardBrowserEnv ? (
-      // Standard browser envs support document.cookie
-      {
-        write(name, value, expires, path, domain, secure) {
-          const cookie = [name + "=" + encodeURIComponent(value)];
-          utils$1.isNumber(expires) && cookie.push("expires=" + new Date(expires).toGMTString());
-          utils$1.isString(path) && cookie.push("path=" + path);
-          utils$1.isString(domain) && cookie.push("domain=" + domain);
-          secure === true && cookie.push("secure");
-          document.cookie = cookie.join("; ");
-        },
-        read(name) {
-          const match = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
-          return match ? decodeURIComponent(match[3]) : null;
-        },
-        remove(name) {
-          this.write(name, "", Date.now() - 864e5);
-        }
-      }
-    ) : (
-      // Non-standard browser env (web workers, react-native) lack needed support.
-      {
-        write() {
-        },
-        read() {
-          return null;
-        },
-        remove() {
-        }
-      }
-    );
     var isURLSameOrigin = platform.hasStandardBrowserEnv ? (
       // Standard browser envs have full support of the APIs needed to test
       // whether the request URL is of the same origin as current location.
@@ -37639,62 +37700,165 @@ var require_axios = __commonJS({
         };
       }()
     );
-    function progressEventReducer(listener, isDownloadStream) {
-      let bytesNotified = 0;
-      const _speedometer = speedometer(50, 250);
-      return (e) => {
-        const loaded = e.loaded;
-        const total = e.lengthComputable ? e.total : void 0;
-        const progressBytes = loaded - bytesNotified;
-        const rate = _speedometer(progressBytes);
-        const inRange = loaded <= total;
-        bytesNotified = loaded;
-        const data = {
-          loaded,
-          total,
-          progress: total ? loaded / total : void 0,
-          bytes: progressBytes,
-          rate: rate ? rate : void 0,
-          estimated: rate && total && inRange ? (total - loaded) / rate : void 0,
-          event: e
-        };
-        data[isDownloadStream ? "download" : "upload"] = true;
-        listener(data);
+    var cookies = platform.hasStandardBrowserEnv ? (
+      // Standard browser envs support document.cookie
+      {
+        write(name, value, expires, path, domain, secure) {
+          const cookie = [name + "=" + encodeURIComponent(value)];
+          utils$1.isNumber(expires) && cookie.push("expires=" + new Date(expires).toGMTString());
+          utils$1.isString(path) && cookie.push("path=" + path);
+          utils$1.isString(domain) && cookie.push("domain=" + domain);
+          secure === true && cookie.push("secure");
+          document.cookie = cookie.join("; ");
+        },
+        read(name) {
+          const match = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
+          return match ? decodeURIComponent(match[3]) : null;
+        },
+        remove(name) {
+          this.write(name, "", Date.now() - 864e5);
+        }
+      }
+    ) : (
+      // Non-standard browser env (web workers, react-native) lack needed support.
+      {
+        write() {
+        },
+        read() {
+          return null;
+        },
+        remove() {
+        }
+      }
+    );
+    var headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? { ...thing } : thing;
+    function mergeConfig(config1, config2) {
+      config2 = config2 || {};
+      const config = {};
+      function getMergedValue(target, source, caseless) {
+        if (utils$1.isPlainObject(target) && utils$1.isPlainObject(source)) {
+          return utils$1.merge.call({ caseless }, target, source);
+        } else if (utils$1.isPlainObject(source)) {
+          return utils$1.merge({}, source);
+        } else if (utils$1.isArray(source)) {
+          return source.slice();
+        }
+        return source;
+      }
+      function mergeDeepProperties(a, b, caseless) {
+        if (!utils$1.isUndefined(b)) {
+          return getMergedValue(a, b, caseless);
+        } else if (!utils$1.isUndefined(a)) {
+          return getMergedValue(void 0, a, caseless);
+        }
+      }
+      function valueFromConfig2(a, b) {
+        if (!utils$1.isUndefined(b)) {
+          return getMergedValue(void 0, b);
+        }
+      }
+      function defaultToConfig2(a, b) {
+        if (!utils$1.isUndefined(b)) {
+          return getMergedValue(void 0, b);
+        } else if (!utils$1.isUndefined(a)) {
+          return getMergedValue(void 0, a);
+        }
+      }
+      function mergeDirectKeys(a, b, prop) {
+        if (prop in config2) {
+          return getMergedValue(a, b);
+        } else if (prop in config1) {
+          return getMergedValue(void 0, a);
+        }
+      }
+      const mergeMap = {
+        url: valueFromConfig2,
+        method: valueFromConfig2,
+        data: valueFromConfig2,
+        baseURL: defaultToConfig2,
+        transformRequest: defaultToConfig2,
+        transformResponse: defaultToConfig2,
+        paramsSerializer: defaultToConfig2,
+        timeout: defaultToConfig2,
+        timeoutMessage: defaultToConfig2,
+        withCredentials: defaultToConfig2,
+        withXSRFToken: defaultToConfig2,
+        adapter: defaultToConfig2,
+        responseType: defaultToConfig2,
+        xsrfCookieName: defaultToConfig2,
+        xsrfHeaderName: defaultToConfig2,
+        onUploadProgress: defaultToConfig2,
+        onDownloadProgress: defaultToConfig2,
+        decompress: defaultToConfig2,
+        maxContentLength: defaultToConfig2,
+        maxBodyLength: defaultToConfig2,
+        beforeRedirect: defaultToConfig2,
+        transport: defaultToConfig2,
+        httpAgent: defaultToConfig2,
+        httpsAgent: defaultToConfig2,
+        cancelToken: defaultToConfig2,
+        socketPath: defaultToConfig2,
+        responseEncoding: defaultToConfig2,
+        validateStatus: mergeDirectKeys,
+        headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
       };
+      utils$1.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop) {
+        const merge2 = mergeMap[prop] || mergeDeepProperties;
+        const configValue = merge2(config1[prop], config2[prop], prop);
+        utils$1.isUndefined(configValue) && merge2 !== mergeDirectKeys || (config[prop] = configValue);
+      });
+      return config;
     }
+    var resolveConfig = (config) => {
+      const newConfig = mergeConfig({}, config);
+      let { data, withXSRFToken, xsrfHeaderName, xsrfCookieName, headers, auth } = newConfig;
+      newConfig.headers = headers = AxiosHeaders$1.from(headers);
+      newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+      if (auth) {
+        headers.set(
+          "Authorization",
+          "Basic " + btoa((auth.username || "") + ":" + (auth.password ? unescape(encodeURIComponent(auth.password)) : ""))
+        );
+      }
+      let contentType;
+      if (utils$1.isFormData(data)) {
+        if (platform.hasStandardBrowserEnv || platform.hasStandardBrowserWebWorkerEnv) {
+          headers.setContentType(void 0);
+        } else if ((contentType = headers.getContentType()) !== false) {
+          const [type, ...tokens] = contentType ? contentType.split(";").map((token) => token.trim()).filter(Boolean) : [];
+          headers.setContentType([type || "multipart/form-data", ...tokens].join("; "));
+        }
+      }
+      if (platform.hasStandardBrowserEnv) {
+        withXSRFToken && utils$1.isFunction(withXSRFToken) && (withXSRFToken = withXSRFToken(newConfig));
+        if (withXSRFToken || withXSRFToken !== false && isURLSameOrigin(newConfig.url)) {
+          const xsrfValue = xsrfHeaderName && xsrfCookieName && cookies.read(xsrfCookieName);
+          if (xsrfValue) {
+            headers.set(xsrfHeaderName, xsrfValue);
+          }
+        }
+      }
+      return newConfig;
+    };
     var isXHRAdapterSupported = typeof XMLHttpRequest !== "undefined";
     var xhrAdapter = isXHRAdapterSupported && function(config) {
       return new Promise(function dispatchXhrRequest(resolve, reject) {
-        let requestData = config.data;
-        const requestHeaders = AxiosHeaders$1.from(config.headers).normalize();
-        let { responseType, withXSRFToken } = config;
+        const _config = resolveConfig(config);
+        let requestData = _config.data;
+        const requestHeaders = AxiosHeaders$1.from(_config.headers).normalize();
+        let { responseType, onUploadProgress, onDownloadProgress } = _config;
         let onCanceled;
+        let uploadThrottled, downloadThrottled;
+        let flushUpload, flushDownload;
         function done() {
-          if (config.cancelToken) {
-            config.cancelToken.unsubscribe(onCanceled);
-          }
-          if (config.signal) {
-            config.signal.removeEventListener("abort", onCanceled);
-          }
-        }
-        let contentType;
-        if (utils$1.isFormData(requestData)) {
-          if (platform.hasStandardBrowserEnv || platform.hasStandardBrowserWebWorkerEnv) {
-            requestHeaders.setContentType(false);
-          } else if ((contentType = requestHeaders.getContentType()) !== false) {
-            const [type, ...tokens] = contentType ? contentType.split(";").map((token) => token.trim()).filter(Boolean) : [];
-            requestHeaders.setContentType([type || "multipart/form-data", ...tokens].join("; "));
-          }
+          flushUpload && flushUpload();
+          flushDownload && flushDownload();
+          _config.cancelToken && _config.cancelToken.unsubscribe(onCanceled);
+          _config.signal && _config.signal.removeEventListener("abort", onCanceled);
         }
         let request = new XMLHttpRequest();
-        if (config.auth) {
-          const username = config.auth.username || "";
-          const password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : "";
-          requestHeaders.set("Authorization", "Basic " + btoa(username + ":" + password));
-        }
-        const fullPath = buildFullPath(config.baseURL, config.url);
-        request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
-        request.timeout = config.timeout;
+        request.open(_config.method.toUpperCase(), _config.url, true);
+        request.timeout = _config.timeout;
         function onloadend() {
           if (!request) {
             return;
@@ -37745,10 +37909,10 @@ var require_axios = __commonJS({
           request = null;
         };
         request.ontimeout = function handleTimeout() {
-          let timeoutErrorMessage = config.timeout ? "timeout of " + config.timeout + "ms exceeded" : "timeout exceeded";
-          const transitional = config.transitional || transitionalDefaults;
-          if (config.timeoutErrorMessage) {
-            timeoutErrorMessage = config.timeoutErrorMessage;
+          let timeoutErrorMessage = _config.timeout ? "timeout of " + _config.timeout + "ms exceeded" : "timeout exceeded";
+          const transitional = _config.transitional || transitionalDefaults;
+          if (_config.timeoutErrorMessage) {
+            timeoutErrorMessage = _config.timeoutErrorMessage;
           }
           reject(new AxiosError(
             timeoutErrorMessage,
@@ -37758,34 +37922,28 @@ var require_axios = __commonJS({
           ));
           request = null;
         };
-        if (platform.hasStandardBrowserEnv) {
-          withXSRFToken && utils$1.isFunction(withXSRFToken) && (withXSRFToken = withXSRFToken(config));
-          if (withXSRFToken || withXSRFToken !== false && isURLSameOrigin(fullPath)) {
-            const xsrfValue = config.xsrfHeaderName && config.xsrfCookieName && cookies.read(config.xsrfCookieName);
-            if (xsrfValue) {
-              requestHeaders.set(config.xsrfHeaderName, xsrfValue);
-            }
-          }
-        }
         requestData === void 0 && requestHeaders.setContentType(null);
         if ("setRequestHeader" in request) {
           utils$1.forEach(requestHeaders.toJSON(), function setRequestHeader(val, key) {
             request.setRequestHeader(key, val);
           });
         }
-        if (!utils$1.isUndefined(config.withCredentials)) {
-          request.withCredentials = !!config.withCredentials;
+        if (!utils$1.isUndefined(_config.withCredentials)) {
+          request.withCredentials = !!_config.withCredentials;
         }
         if (responseType && responseType !== "json") {
-          request.responseType = config.responseType;
+          request.responseType = _config.responseType;
         }
-        if (typeof config.onDownloadProgress === "function") {
-          request.addEventListener("progress", progressEventReducer(config.onDownloadProgress, true));
+        if (onDownloadProgress) {
+          [downloadThrottled, flushDownload] = progressEventReducer(onDownloadProgress, true);
+          request.addEventListener("progress", downloadThrottled);
         }
-        if (typeof config.onUploadProgress === "function" && request.upload) {
-          request.upload.addEventListener("progress", progressEventReducer(config.onUploadProgress));
+        if (onUploadProgress && request.upload) {
+          [uploadThrottled, flushUpload] = progressEventReducer(onUploadProgress);
+          request.upload.addEventListener("progress", uploadThrottled);
+          request.upload.addEventListener("loadend", flushUpload);
         }
-        if (config.cancelToken || config.signal) {
+        if (_config.cancelToken || _config.signal) {
           onCanceled = (cancel) => {
             if (!request) {
               return;
@@ -37794,12 +37952,12 @@ var require_axios = __commonJS({
             request.abort();
             request = null;
           };
-          config.cancelToken && config.cancelToken.subscribe(onCanceled);
-          if (config.signal) {
-            config.signal.aborted ? onCanceled() : config.signal.addEventListener("abort", onCanceled);
+          _config.cancelToken && _config.cancelToken.subscribe(onCanceled);
+          if (_config.signal) {
+            _config.signal.aborted ? onCanceled() : _config.signal.addEventListener("abort", onCanceled);
           }
         }
-        const protocol = parseProtocol(fullPath);
+        const protocol = parseProtocol(_config.url);
         if (protocol && platform.protocols.indexOf(protocol) === -1) {
           reject(new AxiosError("Unsupported protocol " + protocol + ":", AxiosError.ERR_BAD_REQUEST, config));
           return;
@@ -37807,9 +37965,261 @@ var require_axios = __commonJS({
         request.send(requestData || null);
       });
     };
+    var composeSignals = (signals, timeout) => {
+      let controller = new AbortController();
+      let aborted;
+      const onabort = function(cancel) {
+        if (!aborted) {
+          aborted = true;
+          unsubscribe();
+          const err = cancel instanceof Error ? cancel : this.reason;
+          controller.abort(err instanceof AxiosError ? err : new CanceledError(err instanceof Error ? err.message : err));
+        }
+      };
+      let timer = timeout && setTimeout(() => {
+        onabort(new AxiosError(`timeout ${timeout} of ms exceeded`, AxiosError.ETIMEDOUT));
+      }, timeout);
+      const unsubscribe = () => {
+        if (signals) {
+          timer && clearTimeout(timer);
+          timer = null;
+          signals.forEach((signal2) => {
+            signal2 && (signal2.removeEventListener ? signal2.removeEventListener("abort", onabort) : signal2.unsubscribe(onabort));
+          });
+          signals = null;
+        }
+      };
+      signals.forEach((signal2) => signal2 && signal2.addEventListener && signal2.addEventListener("abort", onabort));
+      const { signal } = controller;
+      signal.unsubscribe = unsubscribe;
+      return [signal, () => {
+        timer && clearTimeout(timer);
+        timer = null;
+      }];
+    };
+    var composeSignals$1 = composeSignals;
+    var streamChunk = function* (chunk, chunkSize) {
+      let len = chunk.byteLength;
+      if (!chunkSize || len < chunkSize) {
+        yield chunk;
+        return;
+      }
+      let pos = 0;
+      let end;
+      while (pos < len) {
+        end = pos + chunkSize;
+        yield chunk.slice(pos, end);
+        pos = end;
+      }
+    };
+    var readBytes = async function* (iterable, chunkSize, encode2) {
+      for await (const chunk of iterable) {
+        yield* streamChunk(ArrayBuffer.isView(chunk) ? chunk : await encode2(String(chunk)), chunkSize);
+      }
+    };
+    var trackStream = (stream2, chunkSize, onProgress, onFinish, encode2) => {
+      const iterator = readBytes(stream2, chunkSize, encode2);
+      let bytes = 0;
+      let done;
+      let _onFinish = (e) => {
+        if (!done) {
+          done = true;
+          onFinish && onFinish(e);
+        }
+      };
+      return new ReadableStream({
+        async pull(controller) {
+          try {
+            const { done: done2, value } = await iterator.next();
+            if (done2) {
+              _onFinish();
+              controller.close();
+              return;
+            }
+            let len = value.byteLength;
+            if (onProgress) {
+              let loadedBytes = bytes += len;
+              onProgress(loadedBytes);
+            }
+            controller.enqueue(new Uint8Array(value));
+          } catch (err) {
+            _onFinish(err);
+            throw err;
+          }
+        },
+        cancel(reason) {
+          _onFinish(reason);
+          return iterator.return();
+        }
+      }, {
+        highWaterMark: 2
+      });
+    };
+    var isFetchSupported = typeof fetch === "function" && typeof Request === "function" && typeof Response === "function";
+    var isReadableStreamSupported = isFetchSupported && typeof ReadableStream === "function";
+    var encodeText = isFetchSupported && (typeof TextEncoder === "function" ? /* @__PURE__ */ ((encoder) => (str) => encoder.encode(str))(new TextEncoder()) : async (str) => new Uint8Array(await new Response(str).arrayBuffer()));
+    var test = (fn, ...args) => {
+      try {
+        return !!fn(...args);
+      } catch (e) {
+        return false;
+      }
+    };
+    var supportsRequestStream = isReadableStreamSupported && test(() => {
+      let duplexAccessed = false;
+      const hasContentType = new Request(platform.origin, {
+        body: new ReadableStream(),
+        method: "POST",
+        get duplex() {
+          duplexAccessed = true;
+          return "half";
+        }
+      }).headers.has("Content-Type");
+      return duplexAccessed && !hasContentType;
+    });
+    var DEFAULT_CHUNK_SIZE = 64 * 1024;
+    var supportsResponseStream = isReadableStreamSupported && test(() => utils$1.isReadableStream(new Response("").body));
+    var resolvers = {
+      stream: supportsResponseStream && ((res) => res.body)
+    };
+    isFetchSupported && ((res) => {
+      ["text", "arrayBuffer", "blob", "formData", "stream"].forEach((type) => {
+        !resolvers[type] && (resolvers[type] = utils$1.isFunction(res[type]) ? (res2) => res2[type]() : (_, config) => {
+          throw new AxiosError(`Response type '${type}' is not supported`, AxiosError.ERR_NOT_SUPPORT, config);
+        });
+      });
+    })(new Response());
+    var getBodyLength = async (body) => {
+      if (body == null) {
+        return 0;
+      }
+      if (utils$1.isBlob(body)) {
+        return body.size;
+      }
+      if (utils$1.isSpecCompliantForm(body)) {
+        return (await new Request(body).arrayBuffer()).byteLength;
+      }
+      if (utils$1.isArrayBufferView(body) || utils$1.isArrayBuffer(body)) {
+        return body.byteLength;
+      }
+      if (utils$1.isURLSearchParams(body)) {
+        body = body + "";
+      }
+      if (utils$1.isString(body)) {
+        return (await encodeText(body)).byteLength;
+      }
+    };
+    var resolveBodyLength = async (headers, body) => {
+      const length = utils$1.toFiniteNumber(headers.getContentLength());
+      return length == null ? getBodyLength(body) : length;
+    };
+    var fetchAdapter = isFetchSupported && (async (config) => {
+      let {
+        url: url2,
+        method,
+        data,
+        signal,
+        cancelToken,
+        timeout,
+        onDownloadProgress,
+        onUploadProgress,
+        responseType,
+        headers,
+        withCredentials = "same-origin",
+        fetchOptions
+      } = resolveConfig(config);
+      responseType = responseType ? (responseType + "").toLowerCase() : "text";
+      let [composedSignal, stopTimeout] = signal || cancelToken || timeout ? composeSignals$1([signal, cancelToken], timeout) : [];
+      let finished, request;
+      const onFinish = () => {
+        !finished && setTimeout(() => {
+          composedSignal && composedSignal.unsubscribe();
+        });
+        finished = true;
+      };
+      let requestContentLength;
+      try {
+        if (onUploadProgress && supportsRequestStream && method !== "get" && method !== "head" && (requestContentLength = await resolveBodyLength(headers, data)) !== 0) {
+          let _request = new Request(url2, {
+            method: "POST",
+            body: data,
+            duplex: "half"
+          });
+          let contentTypeHeader;
+          if (utils$1.isFormData(data) && (contentTypeHeader = _request.headers.get("content-type"))) {
+            headers.setContentType(contentTypeHeader);
+          }
+          if (_request.body) {
+            const [onProgress, flush] = progressEventDecorator(
+              requestContentLength,
+              progressEventReducer(asyncDecorator(onUploadProgress))
+            );
+            data = trackStream(_request.body, DEFAULT_CHUNK_SIZE, onProgress, flush, encodeText);
+          }
+        }
+        if (!utils$1.isString(withCredentials)) {
+          withCredentials = withCredentials ? "include" : "omit";
+        }
+        request = new Request(url2, {
+          ...fetchOptions,
+          signal: composedSignal,
+          method: method.toUpperCase(),
+          headers: headers.normalize().toJSON(),
+          body: data,
+          duplex: "half",
+          credentials: withCredentials
+        });
+        let response = await fetch(request);
+        const isStreamResponse = supportsResponseStream && (responseType === "stream" || responseType === "response");
+        if (supportsResponseStream && (onDownloadProgress || isStreamResponse)) {
+          const options = {};
+          ["status", "statusText", "headers"].forEach((prop) => {
+            options[prop] = response[prop];
+          });
+          const responseContentLength = utils$1.toFiniteNumber(response.headers.get("content-length"));
+          const [onProgress, flush] = onDownloadProgress && progressEventDecorator(
+            responseContentLength,
+            progressEventReducer(asyncDecorator(onDownloadProgress), true)
+          ) || [];
+          response = new Response(
+            trackStream(response.body, DEFAULT_CHUNK_SIZE, onProgress, () => {
+              flush && flush();
+              isStreamResponse && onFinish();
+            }, encodeText),
+            options
+          );
+        }
+        responseType = responseType || "text";
+        let responseData = await resolvers[utils$1.findKey(resolvers, responseType) || "text"](response, config);
+        !isStreamResponse && onFinish();
+        stopTimeout && stopTimeout();
+        return await new Promise((resolve, reject) => {
+          settle(resolve, reject, {
+            data: responseData,
+            headers: AxiosHeaders$1.from(response.headers),
+            status: response.status,
+            statusText: response.statusText,
+            config,
+            request
+          });
+        });
+      } catch (err) {
+        onFinish();
+        if (err && err.name === "TypeError" && /fetch/i.test(err.message)) {
+          throw Object.assign(
+            new AxiosError("Network Error", AxiosError.ERR_NETWORK, config, request),
+            {
+              cause: err.cause || err
+            }
+          );
+        }
+        throw AxiosError.from(err, err && err.code, config, request);
+      }
+    });
     var knownAdapters = {
       http: httpAdapter,
-      xhr: xhrAdapter
+      xhr: xhrAdapter,
+      fetch: fetchAdapter
     };
     utils$1.forEach(knownAdapters, (fn, value) => {
       if (fn) {
@@ -37901,84 +38311,6 @@ var require_axios = __commonJS({
         return Promise.reject(reason);
       });
     }
-    var headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? { ...thing } : thing;
-    function mergeConfig(config1, config2) {
-      config2 = config2 || {};
-      const config = {};
-      function getMergedValue(target, source, caseless) {
-        if (utils$1.isPlainObject(target) && utils$1.isPlainObject(source)) {
-          return utils$1.merge.call({ caseless }, target, source);
-        } else if (utils$1.isPlainObject(source)) {
-          return utils$1.merge({}, source);
-        } else if (utils$1.isArray(source)) {
-          return source.slice();
-        }
-        return source;
-      }
-      function mergeDeepProperties(a, b, caseless) {
-        if (!utils$1.isUndefined(b)) {
-          return getMergedValue(a, b, caseless);
-        } else if (!utils$1.isUndefined(a)) {
-          return getMergedValue(void 0, a, caseless);
-        }
-      }
-      function valueFromConfig2(a, b) {
-        if (!utils$1.isUndefined(b)) {
-          return getMergedValue(void 0, b);
-        }
-      }
-      function defaultToConfig2(a, b) {
-        if (!utils$1.isUndefined(b)) {
-          return getMergedValue(void 0, b);
-        } else if (!utils$1.isUndefined(a)) {
-          return getMergedValue(void 0, a);
-        }
-      }
-      function mergeDirectKeys(a, b, prop) {
-        if (prop in config2) {
-          return getMergedValue(a, b);
-        } else if (prop in config1) {
-          return getMergedValue(void 0, a);
-        }
-      }
-      const mergeMap = {
-        url: valueFromConfig2,
-        method: valueFromConfig2,
-        data: valueFromConfig2,
-        baseURL: defaultToConfig2,
-        transformRequest: defaultToConfig2,
-        transformResponse: defaultToConfig2,
-        paramsSerializer: defaultToConfig2,
-        timeout: defaultToConfig2,
-        timeoutMessage: defaultToConfig2,
-        withCredentials: defaultToConfig2,
-        withXSRFToken: defaultToConfig2,
-        adapter: defaultToConfig2,
-        responseType: defaultToConfig2,
-        xsrfCookieName: defaultToConfig2,
-        xsrfHeaderName: defaultToConfig2,
-        onUploadProgress: defaultToConfig2,
-        onDownloadProgress: defaultToConfig2,
-        decompress: defaultToConfig2,
-        maxContentLength: defaultToConfig2,
-        maxBodyLength: defaultToConfig2,
-        beforeRedirect: defaultToConfig2,
-        transport: defaultToConfig2,
-        httpAgent: defaultToConfig2,
-        httpsAgent: defaultToConfig2,
-        cancelToken: defaultToConfig2,
-        socketPath: defaultToConfig2,
-        responseEncoding: defaultToConfig2,
-        validateStatus: mergeDirectKeys,
-        headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
-      };
-      utils$1.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop) {
-        const merge2 = mergeMap[prop] || mergeDeepProperties;
-        const configValue = merge2(config1[prop], config2[prop], prop);
-        utils$1.isUndefined(configValue) && merge2 !== mergeDirectKeys || (config[prop] = configValue);
-      });
-      return config;
-    }
     var validators$1 = {};
     ["object", "boolean", "number", "function", "string", "symbol"].forEach((type, i) => {
       validators$1[type] = function validator2(thing) {
@@ -38060,10 +38392,13 @@ var require_axios = __commonJS({
             let dummy;
             Error.captureStackTrace ? Error.captureStackTrace(dummy = {}) : dummy = new Error();
             const stack = dummy.stack ? dummy.stack.replace(/^.+\n/, "") : "";
-            if (!err.stack) {
-              err.stack = stack;
-            } else if (stack && !String(err.stack).endsWith(stack.replace(/^.+\n.+\n/, ""))) {
-              err.stack += "\n" + stack;
+            try {
+              if (!err.stack) {
+                err.stack = stack;
+              } else if (stack && !String(err.stack).endsWith(stack.replace(/^.+\n.+\n/, ""))) {
+                err.stack += "\n" + stack;
+              }
+            } catch (e) {
             }
           }
           throw err;
@@ -73171,7 +73506,7 @@ var require_request3 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Request = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var Request = class {
+    var Request2 = class {
       constructor(client) {
         this.client = client;
       }
@@ -73529,7 +73864,7 @@ var require_request3 = __commonJS({
         });
       }
     };
-    exports2.Request = Request;
+    exports2.Request = Request2;
   }
 });
 

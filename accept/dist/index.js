@@ -561,10 +561,10 @@ var require_proxy = __commonJS({
       })();
       if (proxyVar) {
         try {
-          return new URL(proxyVar);
+          return new DecodedURL(proxyVar);
         } catch (_a) {
           if (!proxyVar.startsWith("http://") && !proxyVar.startsWith("https://"))
-            return new URL(`http://${proxyVar}`);
+            return new DecodedURL(`http://${proxyVar}`);
         }
       } else {
         return void 0;
@@ -607,6 +607,19 @@ var require_proxy = __commonJS({
       const hostLower = host.toLowerCase();
       return hostLower === "localhost" || hostLower.startsWith("127.") || hostLower.startsWith("[::1]") || hostLower.startsWith("[0:0:0:0:0:0:0:1]");
     }
+    var DecodedURL = class extends URL {
+      constructor(url, base) {
+        super(url, base);
+        this._decodedUsername = decodeURIComponent(super.username);
+        this._decodedPassword = decodeURIComponent(super.password);
+      }
+      get username() {
+        return this._decodedUsername;
+      }
+      get password() {
+        return this._decodedPassword;
+      }
+    };
   }
 });
 
@@ -2373,6 +2386,7 @@ var require_basename = __commonJS({
       for (var i = path8.length - 1; i >= 0; --i) {
         switch (path8.charCodeAt(i)) {
           case 47:
+          // '/'
           case 92:
             path8 = path8.slice(i + 1);
             return path8 === ".." || path8 === "." ? "" : path8;
@@ -3607,7 +3621,21 @@ var require_util2 = __commonJS({
           return referrerOrigin;
         }
         case "strict-origin":
+        // eslint-disable-line
+        /**
+           * 1. If referrerURL is a potentially trustworthy URL and
+           * request’s current URL is not a potentially trustworthy URL,
+           * then return no referrer.
+           * 2. Return referrerOrigin
+          */
         case "no-referrer-when-downgrade":
+        // eslint-disable-line
+        /**
+         * 1. If referrerURL is a potentially trustworthy URL and
+         * request’s current URL is not a potentially trustworthy URL,
+         * then return no referrer.
+         * 2. Return referrerOrigin
+        */
         default:
           return isNonPotentiallyTrustWorthy ? "no-referrer" : referrerOrigin;
       }
@@ -17560,7 +17588,7 @@ var require_lib = __commonJS({
         }
         const usingSsl = parsedUrl.protocol === "https:";
         proxyAgent = new undici_1.ProxyAgent(Object.assign({ uri: proxyUrl.href, pipelining: !this._keepAlive ? 0 : 1 }, (proxyUrl.username || proxyUrl.password) && {
-          token: `${proxyUrl.username}:${proxyUrl.password}`
+          token: `Basic ${Buffer.from(`${proxyUrl.username}:${proxyUrl.password}`).toString("base64")}`
         }));
         this._proxyAgentDispatcher = proxyAgent;
         if (usingSsl && this._ignoreSslError) {
@@ -23855,6 +23883,8 @@ var require_semver = __commonJS({
           this.inc("patch", identifier);
           this.inc("pre", identifier);
           break;
+        // If the input is a non-prerelease version, this acts the same as
+        // prepatch.
         case "prerelease":
           if (this.prerelease.length === 0) {
             this.inc("patch", identifier);
@@ -23882,6 +23912,8 @@ var require_semver = __commonJS({
           }
           this.prerelease = [];
           break;
+        // This probably shouldn't be used publicly.
+        // 1.0.0 "pre" would become 1.0.0-0 which is the wrong direction.
         case "pre":
           if (this.prerelease.length === 0) {
             this.prerelease = [0];
@@ -24546,6 +24578,7 @@ var require_semver = __commonJS({
                 compver.prerelease.push(0);
               }
               compver.raw = compver.format();
+            /* fallthrough */
             case "":
             case ">=":
               if (!minver || gt(minver, compver)) {
@@ -24555,6 +24588,7 @@ var require_semver = __commonJS({
             case "<":
             case "<=":
               break;
+            /* istanbul ignore next */
             default:
               throw new Error("Unexpected operation: " + comparator.operator);
           }
@@ -27549,8 +27583,10 @@ async function getCheckoutInfo(git, ref, commit) {
   } else if (upperRef.startsWith("REFS/PULL/")) {
     const branch = ref.substring("refs/pull/".length);
     result.ref = `refs/remotes/pull/${branch}`;
-  } else if (upperRef.startsWith("REFS/")) {
+  } else if (upperRef.startsWith("REFS/TAGS/")) {
     result.ref = ref;
+  } else if (upperRef.startsWith("REFS/") && commit) {
+    result.ref = commit;
   } else {
     if (await git.branchExists(true, `origin/${ref}`)) {
       result.ref = ref;

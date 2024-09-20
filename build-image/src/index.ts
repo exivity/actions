@@ -1,10 +1,6 @@
 import { getInput, setFailed, getBooleanInput } from '@actions/core'
 import { table } from '../../lib/core'
-import {
-  dockerBuild,
-  dockerLogin,
-  getImageFQN,
-} from '../../lib/dockerCli'
+import { dockerBuild, dockerLogin, getImageFQN } from '../../lib/dockerCli'
 import { getOwnerInput, getRepoInput } from '../../lib/github'
 import { branchToTag, getLabels } from '../../lib/image'
 import { writeMetadataFile } from './metadataFile'

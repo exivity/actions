@@ -561,10 +561,10 @@ var require_proxy = __commonJS({
       })();
       if (proxyVar) {
         try {
-          return new URL(proxyVar);
+          return new DecodedURL(proxyVar);
         } catch (_a) {
           if (!proxyVar.startsWith("http://") && !proxyVar.startsWith("https://"))
-            return new URL(`http://${proxyVar}`);
+            return new DecodedURL(`http://${proxyVar}`);
         }
       } else {
         return void 0;
@@ -607,6 +607,19 @@ var require_proxy = __commonJS({
       const hostLower = host.toLowerCase();
       return hostLower === "localhost" || hostLower.startsWith("127.") || hostLower.startsWith("[::1]") || hostLower.startsWith("[0:0:0:0:0:0:0:1]");
     }
+    var DecodedURL = class extends URL {
+      constructor(url, base) {
+        super(url, base);
+        this._decodedUsername = decodeURIComponent(super.username);
+        this._decodedPassword = decodeURIComponent(super.password);
+      }
+      get username() {
+        return this._decodedUsername;
+      }
+      get password() {
+        return this._decodedPassword;
+      }
+    };
   }
 });
 
@@ -2373,6 +2386,7 @@ var require_basename = __commonJS({
       for (var i = path2.length - 1; i >= 0; --i) {
         switch (path2.charCodeAt(i)) {
           case 47:
+          // '/'
           case 92:
             path2 = path2.slice(i + 1);
             return path2 === ".." || path2 === "." ? "" : path2;
@@ -3607,7 +3621,21 @@ var require_util2 = __commonJS({
           return referrerOrigin;
         }
         case "strict-origin":
+        // eslint-disable-line
+        /**
+           * 1. If referrerURL is a potentially trustworthy URL and
+           * request’s current URL is not a potentially trustworthy URL,
+           * then return no referrer.
+           * 2. Return referrerOrigin
+          */
         case "no-referrer-when-downgrade":
+        // eslint-disable-line
+        /**
+         * 1. If referrerURL is a potentially trustworthy URL and
+         * request’s current URL is not a potentially trustworthy URL,
+         * then return no referrer.
+         * 2. Return referrerOrigin
+        */
         default:
           return isNonPotentiallyTrustWorthy ? "no-referrer" : referrerOrigin;
       }
@@ -17560,7 +17588,7 @@ var require_lib = __commonJS({
         }
         const usingSsl = parsedUrl.protocol === "https:";
         proxyAgent = new undici_1.ProxyAgent(Object.assign({ uri: proxyUrl.href, pipelining: !this._keepAlive ? 0 : 1 }, (proxyUrl.username || proxyUrl.password) && {
-          token: `${proxyUrl.username}:${proxyUrl.password}`
+          token: `Basic ${Buffer.from(`${proxyUrl.username}:${proxyUrl.password}`).toString("base64")}`
         }));
         this._proxyAgentDispatcher = proxyAgent;
         if (usingSsl && this._ignoreSslError) {
@@ -19420,12 +19448,14 @@ var require_dotnet = __commonJS({
     var wrapper_1 = require_wrapper();
     function dotNetDependencyInstallInstructions() {
       switch (process.platform) {
+        /* istanbul ignore next */
         case "win32":
           return "No wrapper necessary";
         case "darwin":
           return "Run `brew install mono` to install Mono on macOS via Homebrew.";
         case "linux":
           return "Consult your Linux distribution's package manager to determine how to install Mono.";
+        /* istanbul ignore next */
         default:
           return "Consult your operating system's package manager to determine how to install Mono.";
       }
@@ -19461,12 +19491,14 @@ var require_exe = __commonJS({
     var arch_1 = require_arch();
     function exeDependencyInstallInstructions() {
       switch (process.platform) {
+        /* istanbul ignore next */
         case "win32":
           return "No wrapper necessary";
         case "darwin":
           return "Run `brew install --cask wine-stable` to install 64-bit wine on macOS via Homebrew.";
         case "linux":
           return "Consult your Linux distribution's package manager to determine how to install Wine.";
+        /* istanbul ignore next */
         default:
           return "Consult your operating system's package manager to determine how to install Wine.";
       }
