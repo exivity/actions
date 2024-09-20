@@ -7,6 +7,11 @@ inputs:
   name:
     description: The name of the image repository
     required: false
+  imageName:
+    description:
+      The name of the image. When not provided it will be generated from the
+      owner, name, registry and branch
+    required: false
   component:
     description: The name of the image repository (deprecated)
     required: false

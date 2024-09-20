@@ -9,6 +9,7 @@ async function run() {
   // Inputs
   const namespace = getOwnerInput('namespace')
   const name = getRepoInput('name')
+  const imageName = getRepoInput('imageName')
   const dockerfile = getInput('dockerfile')
   const context = getInput('context')
   const registry = getInput('registry')
@@ -39,6 +40,7 @@ async function run() {
     context,
     labels,
     image,
+    imageName,
     useSSH,
     secrets,
     buildArgs,

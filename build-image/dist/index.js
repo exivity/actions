@@ -25183,6 +25183,7 @@ async function dockerBuild({
   dockerfile,
   context: context2,
   labels,
+  imageName,
   image,
   useSSH,
   secrets,
@@ -25193,9 +25194,8 @@ async function dockerBuild({
   const ssh = useSSH ? "--ssh default" : "";
   const secretArgs = secrets ? `--secret ${secrets}` : "";
   const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : "";
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} -f ${dockerfile} -t ${getImageFQN(
-    image
-  )} ${labelOptions} ${context2}"`;
+  const nameOfImage = imageName ? imageName : getImageFQN(image);
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2}"`;
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
   await (0, import_exec2.exec)(cmd, void 0, {
@@ -25331,6 +25331,7 @@ ${contents}`);
 async function run() {
   const namespace = getOwnerInput("namespace");
   const name = getRepoInput("name");
+  const imageName = getRepoInput("imageName");
   const dockerfile = (0, import_core5.getInput)("dockerfile");
   const context2 = (0, import_core5.getInput)("context");
   const registry = (0, import_core5.getInput)("registry");
@@ -25356,6 +25357,7 @@ async function run() {
     context: context2,
     labels,
     image,
+    imageName,
     useSSH,
     secrets,
     buildArgs

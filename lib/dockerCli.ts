@@ -29,6 +29,7 @@ type BuildOptions = {
   context: string
   labels: { [key: string]: string }
   image: Image
+  imageName: string
   useSSH: boolean
   buildArgs?: string // Changed to a simple string
 }
@@ -44,6 +45,7 @@ export async function dockerBuild({
   dockerfile,
   context,
   labels,
+  imageName,
   image,
   useSSH,
   secrets,
@@ -59,10 +61,9 @@ export async function dockerBuild({
   const secretArgs = secrets ? `--secret ${secrets}` : ''
   const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : ''
 
+  const nameOfImage = imageName ? imageName : getImageFQN(image)
   // Correct command structure with context at the end
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} -f ${dockerfile} -t ${getImageFQN(
-    image,
-  )} ${labelOptions} ${context}"`
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context}"`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd, undefined, {
