@@ -9,7 +9,7 @@ async function run() {
   // Inputs
   const namespace = getOwnerInput('namespace')
   const name = getRepoInput('name')
-  const imageName = getRepoInput('imageName')
+  const imageName = getRepoInput('image-name')
   const dockerfile = getInput('dockerfile')
   const context = getInput('context')
   const registry = getInput('registry')

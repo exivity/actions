@@ -25331,7 +25331,7 @@ ${contents}`);
 async function run() {
   const namespace = getOwnerInput("namespace");
   const name = getRepoInput("name");
-  const imageName = getRepoInput("imageName");
+  const imageName = getRepoInput("image-name");
   const dockerfile = (0, import_core5.getInput)("dockerfile");
   const context2 = (0, import_core5.getInput)("context");
   const registry = (0, import_core5.getInput)("registry");
