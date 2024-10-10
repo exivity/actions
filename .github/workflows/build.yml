@@ -12,5 +12,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache-dependency-path: yarn.lock
+          cache: 'yarn'
+
       - run: yarn
+      - run: yarn format
       - run: yarn build
+
+      - name: Check committed files
+        id: check_committed
+        run: |
+          git diff --exit-code || exit 1
+        continue-on-error: true
+
+      - name: Commit and push changes
+        if: steps.check_committed.outcome == 'failure'
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add .
+          git commit -m "Automated SDK update"
+          git push origin ${{ github.head_ref }}
