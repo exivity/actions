@@ -35,6 +35,7 @@ function capitalizeFirstLetter(string: string) {
 
 export function getLabels(name: string) {
   const { owner, fqn } = getRepository()
+  const tag = getTag()
 
   return {
     'org.opencontainers.image.vendor': capitalizeFirstLetter(owner),
@@ -43,6 +44,7 @@ export function getLabels(name: string) {
     'org.opencontainers.image.source': `https://github.com/${fqn}`,
     'org.opencontainers.image.created': new Date().toISOString(),
     'org.opencontainers.image.revision': getSha(),
+    'org.opencontainers.image.version': tag,
     ...(owner === 'exivity'
       ? {
           'org.opencontainers.image.url': 'https://exivity.com',
