@@ -23210,7 +23210,7 @@ var import_exec2 = __toESM(require_exec());
 var import_os = require("os");
 var import_path2 = __toESM(require("path"));
 var image = "exivity/postgres";
-var defaultVersion = "14.0";
+var defaultVersion = "16.4";
 async function startPostgres(password = "postgres") {
   const script = (0, import_os.platform)() === "win32" ? "postgres-start-windows.sh" : "postgres-start-linux.sh";
   await (0, import_exec2.exec)(`bash ${script}`, void 0, {
