@@ -14,7 +14,7 @@ jobs:
   db_test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2019]
+        os: [ubuntu-latest, windows-2022]
         mode: [host, docker]
         version: ['12.3', '13.0', '14.0']
         exclude:
@@ -23,7 +23,7 @@ jobs:
             version: '12.3'
           - mode: host
             version: '13.0'
-          - os: windows-2019
+          - os: windows-2022
             mode: docker
     runs-on: ${{ matrix.os }}
     steps:

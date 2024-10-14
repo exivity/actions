@@ -10,7 +10,7 @@ jobs:
   rcedit_test:
     strategy:
       matrix:
-        os: [windows-2019]
+        os: [windows-2022]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
