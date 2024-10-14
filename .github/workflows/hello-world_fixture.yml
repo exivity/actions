@@ -10,7 +10,7 @@ jobs:
   hello-world_fixture:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
     runs-on: ${{ matrix.os }}
     steps:
       - run: |
