@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-push-image_test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./build-push-image

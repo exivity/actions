@@ -10,11 +10,11 @@ jobs:
   virustotal_test:
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-2019]
+        os: [ubuntu-latest, windows-2019]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - if: matrix.os == 'ubuntu-22.04'
+      - if: matrix.os == 'ubuntu-latest'
         uses: ./virustotal
         with:
           path: fixtures/hello/build/hello

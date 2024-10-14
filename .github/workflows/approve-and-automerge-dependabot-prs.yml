@@ -6,7 +6,7 @@ permissions: write-all
 
 jobs:
   approve-and-automerge-dependabot-prs:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v4
