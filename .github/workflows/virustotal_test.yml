@@ -10,7 +10,7 @@ jobs:
   virustotal_test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-2022]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +20,7 @@ jobs:
           path: fixtures/hello/build/hello
           virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
           gh-token: ${{ secrets.GITHUB_TOKEN }}
-      - if: matrix.os == 'windows-latest'
+      - if: matrix.os == 'windows-2022'
         uses: ./virustotal
         with:
           path: fixtures/hello/build/hello.exe
