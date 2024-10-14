@@ -21,6 +21,8 @@ jobs:
             version: '12.3'
           - mode: host
             version: '13.0'
+          - os: windows-2019
+            mode: docker
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
