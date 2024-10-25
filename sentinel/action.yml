@@ -1,0 +1,5 @@
+name: 'sentinel'
+description: 'The ultimate repo overwatch'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
