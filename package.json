@@ -27,6 +27,7 @@
     "build:retag-image": "yarn esbuild:generic retag-image/src/index.ts --outfile=retag-image/dist/index.js",
     "build:review": "yarn esbuild:generic review/src/index.ts --outfile=review/dist/index.js",
     "build:semantic-pull-request": "yarn esbuild:generic semantic-pull-request/src/index.ts --outfile=semantic-pull-request/dist/index.js",
+    "build:sentinel": "yarn esbuild:generic sentinel/src/index.ts --outfile=sentinel/dist/index.js",
     "build:sign-file": "yarn esbuild:generic sign-file/src/index.ts --outfile=sign-file/dist/index.js",
     "build:slack": "yarn esbuild:generic slack/src/index.ts --outfile=slack/dist/index.js",
     "build:trigger-workflow": "yarn esbuild:generic trigger-workflow/src/index.ts --outfile=trigger-workflow/dist/index.js",
