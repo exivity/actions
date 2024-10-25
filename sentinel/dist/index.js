@@ -83998,21 +83998,25 @@ async function main() {
     console.log(`Analyzing repository: ${repoName}`);
     const workflowFiles = await getWorkflowFiles(repoName);
     for (const file of workflowFiles) {
-      const content = await getFileContent("exivity", repoName, file.path);
-      if (content) {
-        const { osTypes, actionsUsed } = extractData(content);
-        for (const os of osTypes) {
-          if (!osUsageMap.has(os)) {
-            osUsageMap.set(os, /* @__PURE__ */ new Set());
+      try {
+        const content = await getFileContent("exivity", repoName, file.path);
+        if (content) {
+          const { osTypes, actionsUsed } = extractData(content);
+          for (const os of osTypes) {
+            if (!osUsageMap.has(os)) {
+              osUsageMap.set(os, /* @__PURE__ */ new Set());
+            }
+            osUsageMap.get(os).add(repoName);
           }
-          osUsageMap.get(os).add(repoName);
-        }
-        for (const action of actionsUsed) {
-          if (!actionUsageMap.has(action)) {
-            actionUsageMap.set(action, /* @__PURE__ */ new Set());
+          for (const action of actionsUsed) {
+            if (!actionUsageMap.has(action)) {
+              actionUsageMap.set(action, /* @__PURE__ */ new Set());
+            }
+            actionUsageMap.get(action).add(repoName);
           }
-          actionUsageMap.get(action).add(repoName);
         }
+      } catch (error) {
+        console.error(`Error analyzing ${repoName}/${file.path}: ${error}`);
       }
     }
   }

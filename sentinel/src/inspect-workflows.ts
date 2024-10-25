@@ -103,25 +103,29 @@ export async function main() {
     const workflowFiles = await getWorkflowFiles(repoName)
 
     for (const file of workflowFiles) {
-      const content = await getFileContent('exivity', repoName, file.path)
-      if (content) {
-        const { osTypes, actionsUsed } = extractData(content)
+      try {
+        const content = await getFileContent('exivity', repoName, file.path)
+        if (content) {
+          const { osTypes, actionsUsed } = extractData(content)
 
-        // Map OS types to repositories
-        for (const os of osTypes) {
-          if (!osUsageMap.has(os)) {
-            osUsageMap.set(os, new Set())
+          // Map OS types to repositories
+          for (const os of osTypes) {
+            if (!osUsageMap.has(os)) {
+              osUsageMap.set(os, new Set())
+            }
+            osUsageMap.get(os)!.add(repoName)
           }
-          osUsageMap.get(os)!.add(repoName)
-        }
 
-        // Map actions to repositories
-        for (const action of actionsUsed) {
-          if (!actionUsageMap.has(action)) {
-            actionUsageMap.set(action, new Set())
+          // Map actions to repositories
+          for (const action of actionsUsed) {
+            if (!actionUsageMap.has(action)) {
+              actionUsageMap.set(action, new Set())
+            }
+            actionUsageMap.get(action)!.add(repoName)
           }
-          actionUsageMap.get(action)!.add(repoName)
         }
+      } catch (error) {
+        console.error(`Error analyzing ${repoName}/${file.path}: ${error}`)
       }
     }
   }
