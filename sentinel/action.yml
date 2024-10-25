@@ -1,5 +1,10 @@
 name: 'sentinel'
 description: 'The ultimate repo overwatch'
+inputs:
+  gh-token:
+    description: A GitHub token with access repositories
+    required: false
+    default: ${{ github.token }}
 runs:
   using: 'node20'
   main: 'dist/index.js'
