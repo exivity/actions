@@ -321,10 +321,10 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@types/adm-zip@0.5.5":
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/@types/adm-zip/-/adm-zip-0.5.5.tgz#4588042726aa5f351d7ea88232e4a952f60e7c1a"
-  integrity sha512-YCGstVMjc4LTY5uK9/obvxBya93axZOVOyf2GSUulADzmLhYE45u2nAssCs/fWBs1Ifq5Vat75JTPwd5XZoPJw==
+"@types/adm-zip@0.5.6":
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/@types/adm-zip/-/adm-zip-0.5.6.tgz#12e010a45f68a40cbaf9906a329baf4ee7749c67"
+  integrity sha512-lRlcSLg5Yoo7C2H2AUiAoYlvifWoCx/se7iUNiCBTfEVVYFVn+Tr9ZGed4K73tYgLe9O4PjdJvbxlkdAOx/qiw==
   dependencies:
     "@types/node" "*"
 
