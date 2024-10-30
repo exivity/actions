@@ -83972,9 +83972,15 @@ function extractData(yamlContent) {
     for (const job of Object.values(data.jobs)) {
       if (job["runs-on"]) {
         if (Array.isArray(job["runs-on"])) {
-          job["runs-on"].forEach((os) => osTypes.add(os));
+          job["runs-on"].forEach((os) => {
+            if (!os.includes("matrix")) {
+              osTypes.add(os);
+            }
+          });
         } else {
-          osTypes.add(job["runs-on"]);
+          if (typeof job["runs-on"] === "string" && !job["runs-on"].includes("matrix")) {
+            osTypes.add(job["runs-on"]);
+          }
         }
       }
       if (Array.isArray(job.steps)) {
@@ -83994,33 +84000,37 @@ async function main() {
   console.log(`Found ${repos.length} repositories.`);
   const osUsageMap = /* @__PURE__ */ new Map();
   const actionUsageMap = /* @__PURE__ */ new Map();
-  for (const repo of repos) {
-    const repoName = repo.name;
-    console.log(`Analyzing repository: ${repoName}`);
-    const workflowFiles = await getWorkflowFiles(repoName);
-    for (const file of workflowFiles) {
-      try {
-        const content = await getFileContent("exivity", repoName, file.path);
-        if (content) {
-          const { osTypes, actionsUsed } = extractData(content);
-          for (const os of osTypes) {
-            if (!osUsageMap.has(os)) {
-              osUsageMap.set(os, /* @__PURE__ */ new Set());
+  await Promise.all(
+    repos.map(async (repo) => {
+      const repoName = repo.name;
+      console.log(`Analyzing repository: ${repoName}`);
+      const workflowFiles = await getWorkflowFiles(repoName);
+      await Promise.all(
+        workflowFiles.map(async (file) => {
+          try {
+            const content = await getFileContent("exivity", repoName, file.path);
+            if (content) {
+              const { osTypes, actionsUsed } = extractData(content);
+              for (const os of osTypes) {
+                if (!osUsageMap.has(os)) {
+                  osUsageMap.set(os, /* @__PURE__ */ new Set());
+                }
+                osUsageMap.get(os).add(repoName);
+              }
+              for (const action of actionsUsed) {
+                if (!actionUsageMap.has(action)) {
+                  actionUsageMap.set(action, /* @__PURE__ */ new Set());
+                }
+                actionUsageMap.get(action).add(repoName);
+              }
             }
-            osUsageMap.get(os).add(repoName);
+          } catch (error) {
+            console.error(`Error analyzing ${repoName}/${file.path}: ${error}`);
           }
-          for (const action of actionsUsed) {
-            if (!actionUsageMap.has(action)) {
-              actionUsageMap.set(action, /* @__PURE__ */ new Set());
-            }
-            actionUsageMap.get(action).add(repoName);
-          }
-        }
-      } catch (error) {
-        console.error(`Error analyzing ${repoName}/${file.path}: ${error}`);
-      }
-    }
-  }
+        })
+      );
+    })
+  );
   const reportFilePath = (0, import_core5.getInput)("report-file");
   const reportPath = path.join(process.cwd(), reportFilePath);
   let reportContent = `# Workflow Analysis Report - ${(/* @__PURE__ */ new Date()).toISOString()}

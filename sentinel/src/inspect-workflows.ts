@@ -69,9 +69,18 @@ function extractData(yamlContent: string): WorkflowData {
       // Extract OS types
       if (job['runs-on']) {
         if (Array.isArray(job['runs-on'])) {
-          job['runs-on'].forEach((os: string) => osTypes.add(os))
+          job['runs-on'].forEach((os: string) => {
+            if (!os.includes('matrix')) {
+              osTypes.add(os)
+            }
+          })
         } else {
-          osTypes.add(job['runs-on'])
+          if (
+            typeof job['runs-on'] === 'string' &&
+            !job['runs-on'].includes('matrix')
+          ) {
+            osTypes.add(job['runs-on'])
+          }
         }
       }
 
@@ -97,39 +106,45 @@ export async function main() {
   const osUsageMap = new Map<string, Set<string>>()
   const actionUsageMap = new Map<string, Set<string>>()
 
-  for (const repo of repos) {
-    const repoName = repo.name
-    console.log(`Analyzing repository: ${repoName}`)
+  // Process repositories in parallel
+  await Promise.all(
+    repos.map(async (repo) => {
+      const repoName = repo.name
+      console.log(`Analyzing repository: ${repoName}`)
 
-    const workflowFiles = await getWorkflowFiles(repoName)
+      const workflowFiles = await getWorkflowFiles(repoName)
 
-    for (const file of workflowFiles) {
-      try {
-        const content = await getFileContent('exivity', repoName, file.path)
-        if (content) {
-          const { osTypes, actionsUsed } = extractData(content)
+      // Process workflow files in parallel
+      await Promise.all(
+        workflowFiles.map(async (file) => {
+          try {
+            const content = await getFileContent('exivity', repoName, file.path)
+            if (content) {
+              const { osTypes, actionsUsed } = extractData(content)
 
-          // Map OS types to repositories
-          for (const os of osTypes) {
-            if (!osUsageMap.has(os)) {
-              osUsageMap.set(os, new Set())
+              // Map OS types to repositories
+              for (const os of osTypes) {
+                if (!osUsageMap.has(os)) {
+                  osUsageMap.set(os, new Set())
+                }
+                osUsageMap.get(os)!.add(repoName)
+              }
+
+              // Map actions to repositories
+              for (const action of actionsUsed) {
+                if (!actionUsageMap.has(action)) {
+                  actionUsageMap.set(action, new Set())
+                }
+                actionUsageMap.get(action)!.add(repoName)
+              }
             }
-            osUsageMap.get(os)!.add(repoName)
+          } catch (error) {
+            console.error(`Error analyzing ${repoName}/${file.path}: ${error}`)
           }
-
-          // Map actions to repositories
-          for (const action of actionsUsed) {
-            if (!actionUsageMap.has(action)) {
-              actionUsageMap.set(action, new Set())
-            }
-            actionUsageMap.get(action)!.add(repoName)
-          }
-        }
-      } catch (error) {
-        console.error(`Error analyzing ${repoName}/${file.path}: ${error}`)
-      }
-    }
-  }
+        }),
+      )
+    }),
+  )
 
   // Get the report file path from input or use default
   const reportFilePath = getInput('report-file')
