@@ -86,7 +86,7 @@ function extractData(yamlContent: string): WorkflowData {
     }
   }
 
-  return { osTypes, actionsUsed }
+  return { osTypes: osTypes, actionsUsed }
 }
 
 export async function main() {
