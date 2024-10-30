@@ -84026,26 +84026,36 @@ async function main() {
   let reportContent = `# Workflow Analysis Report ${(/* @__PURE__ */ new Date()).toISOString()}
 
 `;
-  reportContent += "<details>\n<summary>## Operating Systems Used</summary>\n\n";
+  reportContent += `
+  ## Operating Systems Used
+  <details><summary>Show me</summary>
+  `;
   for (const [os, repos2] of osUsageMap.entries()) {
-    reportContent += `### ${os}
-`;
+    reportContent += `
+    ### ${os}
+    <details><summary>Show me</summary>
+    `;
     repos2.forEach((repoName) => {
       reportContent += `- ${repoName}
 `;
     });
-    reportContent += "\n";
+    reportContent += "</details>\n";
   }
   reportContent += "</details>\n\n";
-  reportContent += "<details>\n<summary>## Actions Used</summary>\n\n";
+  reportContent += `
+  ## Actions Used
+  <details><summary>Show me</summary>
+  `;
   for (const [action, repos2] of actionUsageMap.entries()) {
-    reportContent += `### ${action}
-`;
+    reportContent += `
+    ### ${action}
+    <details><summary>Show me</summary>
+    `;
     repos2.forEach((repoName) => {
       reportContent += `- ${repoName}
 `;
     });
-    reportContent += "\n";
+    reportContent += "</details>\n";
   }
   reportContent += "</details>\n\n";
   await fs.promises.writeFile(reportPath, reportContent);

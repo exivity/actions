@@ -138,24 +138,36 @@ export async function main() {
   let reportContent = `# Workflow Analysis Report ${new Date().toISOString()}\n\n`
 
   // OS Usage Section
-  reportContent += '<details>\n<summary>## Operating Systems Used</summary>\n\n'
+  reportContent += `
+  ## Operating Systems Used
+  <details><summary>Show me</summary>
+  `
   for (const [os, repos] of osUsageMap.entries()) {
-    reportContent += `### ${os}\n`
+    reportContent += `
+    ### ${os}
+    <details><summary>Show me</summary>
+    `
     repos.forEach((repoName) => {
       reportContent += `- ${repoName}\n`
     })
-    reportContent += '\n'
+    reportContent += '</details>\n'
   }
   reportContent += '</details>\n\n'
 
   // Actions Usage Section
-  reportContent += '<details>\n<summary>## Actions Used</summary>\n\n'
+  reportContent += `
+  ## Actions Used
+  <details><summary>Show me</summary>
+  `
   for (const [action, repos] of actionUsageMap.entries()) {
-    reportContent += `### ${action}\n`
+    reportContent += `
+    ### ${action}
+    <details><summary>Show me</summary>
+    `
     repos.forEach((repoName) => {
       reportContent += `- ${repoName}\n`
     })
-    reportContent += '\n'
+    reportContent += '</details>\n'
   }
   reportContent += '</details>\n\n'
 
