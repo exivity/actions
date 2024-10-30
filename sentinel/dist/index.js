@@ -84020,7 +84020,7 @@ async function main() {
       }
     }
   }
-  const reportDir = path.join(__dirname, "..", "report");
+  const reportDir = path.join(__dirname, "report");
   if (!fs.existsSync(reportDir)) {
     fs.mkdirSync(reportDir);
   }
