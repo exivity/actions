@@ -135,17 +135,15 @@ export async function main() {
   const reportFilePath = getInput('report-file')
   const reportPath = path.join(process.cwd(), reportFilePath)
 
-  let reportContent = `# Workflow Analysis Rep ort\n\n`
+  let reportContent = `# Workflow Analysis Report\n\n`
 
   // OS Usage Section
-  reportContent += `
-  ## Operating Systems Used
-  `
+  reportContent += `## Operating Systems Used\n`
   for (const [os, repos] of osUsageMap.entries()) {
-    reportContent += `### ${os}`
+    reportContent += `### ${os}\n`
 
     if (repos.size > 3) {
-      reportContent += `\n<details><summary>Show me the rest</summary>\n`
+      reportContent += `<details><summary>Show me the rest</summary>\n`
     }
 
     repos.forEach((repoName) => {
@@ -158,14 +156,12 @@ export async function main() {
   }
 
   // Actions Usage Section
-  reportContent += `
-  ## Actions Used
-  `
+  reportContent += `## Actions Used\n`
   for (const [action, repos] of actionUsageMap.entries()) {
-    reportContent += `### ${action}`
+    reportContent += `### ${action}\n`
 
     if (repos.size > 3) {
-      reportContent += `\n<details><summary>Show me the rest</summary>\n`
+      reportContent += `<details><summary>Show me the rest</summary>\n`
     }
 
     repos.forEach((repoName) => {

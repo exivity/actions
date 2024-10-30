@@ -84023,17 +84023,16 @@ async function main() {
   }
   const reportFilePath = (0, import_core5.getInput)("report-file");
   const reportPath = path.join(process.cwd(), reportFilePath);
-  let reportContent = `# Workflow Analysis Rep ort
+  let reportContent = `# Workflow Analysis Report
 
 `;
-  reportContent += `
-  ## Operating Systems Used
-  `;
+  reportContent += `## Operating Systems Used
+`;
   for (const [os, repos2] of osUsageMap.entries()) {
-    reportContent += `### ${os}`;
+    reportContent += `### ${os}
+`;
     if (repos2.size > 3) {
-      reportContent += `
-<details><summary>Show me the rest</summary>
+      reportContent += `<details><summary>Show me the rest</summary>
 `;
     }
     repos2.forEach((repoName) => {
@@ -84044,14 +84043,13 @@ async function main() {
       reportContent += "</details>\n";
     }
   }
-  reportContent += `
-  ## Actions Used
-  `;
+  reportContent += `## Actions Used
+`;
   for (const [action, repos2] of actionUsageMap.entries()) {
-    reportContent += `### ${action}`;
+    reportContent += `### ${action}
+`;
     if (repos2.size > 3) {
-      reportContent += `
-<details><summary>Show me the rest</summary>
+      reportContent += `<details><summary>Show me the rest</summary>
 `;
     }
     repos2.forEach((repoName) => {
