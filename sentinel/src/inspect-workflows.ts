@@ -135,10 +135,10 @@ export async function main() {
   const reportFilePath = getInput('report-file')
   const reportPath = path.join(process.cwd(), reportFilePath)
 
-  let reportContent = '# Workflow Analysis Report\n\n'
+  let reportContent = `# Workflow Analysis Report ${new Date().toISOString()}\n\n`
 
   // OS Usage Section
-  reportContent += '## Operating Systems Used\n\n'
+  reportContent += '<details>\n<summary>## Operating Systems Used</summary>\n\n'
   for (const [os, repos] of osUsageMap.entries()) {
     reportContent += `### ${os}\n`
     repos.forEach((repoName) => {
@@ -146,9 +146,10 @@ export async function main() {
     })
     reportContent += '\n'
   }
+  reportContent += '</details>\n\n'
 
   // Actions Usage Section
-  reportContent += '## Actions Used\n\n'
+  reportContent += '<details>\n<summary>## Actions Used</summary>\n\n'
   for (const [action, repos] of actionUsageMap.entries()) {
     reportContent += `### ${action}\n`
     repos.forEach((repoName) => {
@@ -156,6 +157,7 @@ export async function main() {
     })
     reportContent += '\n'
   }
+  reportContent += '</details>\n\n'
 
   // Write the report to the specified file
   await fs.promises.writeFile(reportPath, reportContent)

@@ -84023,8 +84023,10 @@ async function main() {
   }
   const reportFilePath = (0, import_core5.getInput)("report-file");
   const reportPath = path.join(process.cwd(), reportFilePath);
-  let reportContent = "# Workflow Analysis Report\n\n";
-  reportContent += "## Operating Systems Used\n\n";
+  let reportContent = `# Workflow Analysis Report ${(/* @__PURE__ */ new Date()).toISOString()}
+
+`;
+  reportContent += "<details>\n<summary>## Operating Systems Used</summary>\n\n";
   for (const [os, repos2] of osUsageMap.entries()) {
     reportContent += `### ${os}
 `;
@@ -84034,7 +84036,8 @@ async function main() {
     });
     reportContent += "\n";
   }
-  reportContent += "## Actions Used\n\n";
+  reportContent += "</details>\n\n";
+  reportContent += "<details>\n<summary>## Actions Used</summary>\n\n";
   for (const [action, repos2] of actionUsageMap.entries()) {
     reportContent += `### ${action}
 `;
@@ -84044,6 +84047,7 @@ async function main() {
     });
     reportContent += "\n";
   }
+  reportContent += "</details>\n\n";
   await fs.promises.writeFile(reportPath, reportContent);
   console.log(`Report generated at ${reportPath}`);
   console.log("Report Content:");
