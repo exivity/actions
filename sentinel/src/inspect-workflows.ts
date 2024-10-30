@@ -137,26 +137,31 @@ export async function main() {
   }
 
   const reportPath = path.join(reportDir, 'output_report.md')
-  const reportStream = fs.createWriteStream(reportPath)
 
-  reportStream.write('# Workflow Analysis Report\n\n')
+  let reportContent = '# Workflow Analysis Report\n\n'
 
   // OS Usage Section
-  reportStream.write('## Operating Systems Used\n\n')
+  reportContent += '## Operating Systems Used\n\n'
   for (const [os, repos] of osUsageMap.entries()) {
-    reportStream.write(`### ${os}\n`)
-    repos.forEach((repoName) => reportStream.write(`- ${repoName}\n`))
-    reportStream.write('\n')
+    reportContent += `### ${os}\n`
+    repos.forEach((repoName) => {
+      reportContent += `- ${repoName}\n`
+    })
+    reportContent += '\n'
   }
 
   // Actions Usage Section
-  reportStream.write('## Actions Used\n\n')
+  reportContent += '## Actions Used\n\n'
   for (const [action, repos] of actionUsageMap.entries()) {
-    reportStream.write(`### ${action}\n`)
-    repos.forEach((repoName) => reportStream.write(`- ${repoName}\n`))
-    reportStream.write('\n')
+    reportContent += `### ${action}\n`
+    repos.forEach((repoName) => {
+      reportContent += `- ${repoName}\n`
+    })
+    reportContent += '\n'
   }
 
-  reportStream.end()
+  // Write the report to file
+  await fs.promises.writeFile(reportPath, reportContent)
+
   console.log(`Report generated at ${reportPath}`)
 }

@@ -46822,8 +46822,8 @@ var require_axios = __commonJS({
     axios.toFormData = toFormData;
     axios.AxiosError = AxiosError;
     axios.Cancel = axios.CanceledError;
-    axios.all = function all(promises) {
-      return Promise.all(promises);
+    axios.all = function all(promises2) {
+      return Promise.all(promises2);
     };
     axios.spread = spread;
     axios.isAxiosError = isAxiosError;
@@ -84025,25 +84025,28 @@ async function main() {
     fs.mkdirSync(reportDir);
   }
   const reportPath = path.join(reportDir, "output_report.md");
-  const reportStream = fs.createWriteStream(reportPath);
-  reportStream.write("# Workflow Analysis Report\n\n");
-  reportStream.write("## Operating Systems Used\n\n");
+  let reportContent = "# Workflow Analysis Report\n\n";
+  reportContent += "## Operating Systems Used\n\n";
   for (const [os, repos2] of osUsageMap.entries()) {
-    reportStream.write(`### ${os}
-`);
-    repos2.forEach((repoName) => reportStream.write(`- ${repoName}
-`));
-    reportStream.write("\n");
+    reportContent += `### ${os}
+`;
+    repos2.forEach((repoName) => {
+      reportContent += `- ${repoName}
+`;
+    });
+    reportContent += "\n";
   }
-  reportStream.write("## Actions Used\n\n");
+  reportContent += "## Actions Used\n\n";
   for (const [action, repos2] of actionUsageMap.entries()) {
-    reportStream.write(`### ${action}
-`);
-    repos2.forEach((repoName) => reportStream.write(`- ${repoName}
-`));
-    reportStream.write("\n");
+    reportContent += `### ${action}
+`;
+    repos2.forEach((repoName) => {
+      reportContent += `- ${repoName}
+`;
+    });
+    reportContent += "\n";
   }
-  reportStream.end();
+  await fs.promises.writeFile(reportPath, reportContent);
   console.log(`Report generated at ${reportPath}`);
 }
 
