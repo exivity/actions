@@ -84023,41 +84023,45 @@ async function main() {
   }
   const reportFilePath = (0, import_core5.getInput)("report-file");
   const reportPath = path.join(process.cwd(), reportFilePath);
-  let reportContent = `# Workflow Analysis Report ${(/* @__PURE__ */ new Date()).toISOString()}
+  let reportContent = `# Workflow Analysis Rep ort
 
 `;
   reportContent += `
   ## Operating Systems Used
-  <details><summary>Show me</summary>
   `;
   for (const [os, repos2] of osUsageMap.entries()) {
-    reportContent += `
-    ### ${os}
-    <details><summary>Show me</summary>
-    `;
+    reportContent += `### ${os}`;
+    if (repos2.size > 3) {
+      reportContent += `
+<details><summary>Show me the rest</summary>
+`;
+    }
     repos2.forEach((repoName) => {
       reportContent += `- ${repoName}
 `;
     });
-    reportContent += "</details>\n";
+    if (repos2.size > 3) {
+      reportContent += "</details>\n";
+    }
   }
-  reportContent += "</details>\n\n";
   reportContent += `
   ## Actions Used
-  <details><summary>Show me</summary>
   `;
   for (const [action, repos2] of actionUsageMap.entries()) {
-    reportContent += `
-    ### ${action}
-    <details><summary>Show me</summary>
-    `;
+    reportContent += `### ${action}`;
+    if (repos2.size > 3) {
+      reportContent += `
+<details><summary>Show me the rest</summary>
+`;
+    }
     repos2.forEach((repoName) => {
       reportContent += `- ${repoName}
 `;
     });
-    reportContent += "</details>\n";
+    if (repos2.size > 3) {
+      reportContent += "</details>\n";
+    }
   }
-  reportContent += "</details>\n\n";
   await fs.promises.writeFile(reportPath, reportContent);
   console.log(`Report generated at ${reportPath}`);
   console.log("Report Content:");

@@ -135,41 +135,47 @@ export async function main() {
   const reportFilePath = getInput('report-file')
   const reportPath = path.join(process.cwd(), reportFilePath)
 
-  let reportContent = `# Workflow Analysis Report ${new Date().toISOString()}\n\n`
+  let reportContent = `# Workflow Analysis Rep ort\n\n`
 
   // OS Usage Section
   reportContent += `
   ## Operating Systems Used
-  <details><summary>Show me</summary>
   `
   for (const [os, repos] of osUsageMap.entries()) {
-    reportContent += `
-    ### ${os}
-    <details><summary>Show me</summary>
-    `
+    reportContent += `### ${os}`
+
+    if (repos.size > 3) {
+      reportContent += `\n<details><summary>Show me the rest</summary>\n`
+    }
+
     repos.forEach((repoName) => {
       reportContent += `- ${repoName}\n`
     })
-    reportContent += '</details>\n'
+
+    if (repos.size > 3) {
+      reportContent += '</details>\n'
+    }
   }
-  reportContent += '</details>\n\n'
 
   // Actions Usage Section
   reportContent += `
   ## Actions Used
-  <details><summary>Show me</summary>
   `
   for (const [action, repos] of actionUsageMap.entries()) {
-    reportContent += `
-    ### ${action}
-    <details><summary>Show me</summary>
-    `
+    reportContent += `### ${action}`
+
+    if (repos.size > 3) {
+      reportContent += `\n<details><summary>Show me the rest</summary>\n`
+    }
+
     repos.forEach((repoName) => {
       reportContent += `- ${repoName}\n`
     })
-    reportContent += '</details>\n'
+
+    if (repos.size > 3) {
+      reportContent += '</details>\n'
+    }
   }
-  reportContent += '</details>\n\n'
 
   // Write the report to the specified file
   await fs.promises.writeFile(reportPath, reportContent)
