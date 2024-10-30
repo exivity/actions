@@ -80697,11 +80697,17 @@ var transitionIds = {
 };
 async function transitionToReleased(issueIdOrKey) {
   const jiraClient2 = getJiraClient();
-  const issue = await jiraClient2.issues.getIssue({
-    issueIdOrKey,
-    fields: ["status"],
-    expand: ["transitions"]
-  });
+  let issue;
+  try {
+    issue = await jiraClient2.issues.getIssue({
+      issueIdOrKey,
+      fields: ["status"],
+      expand: ["transitions"]
+    });
+  } catch (err) {
+    (0, import_console8.info)(`Could not get ${issueIdOrKey}: ${JSON.stringify(err)}`);
+    return;
+  }
   let status = issue.fields.status.name;
   while (status !== "Released") {
     let flowKey;
