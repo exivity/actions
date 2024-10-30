@@ -19111,7 +19111,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path2.delimiter}${process.env["PATH"]}`;
     }
     exports2.addPath = addPath;
-    function getInput4(name, options) {
+    function getInput5(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -19121,9 +19121,9 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports2.getInput = getInput4;
+    exports2.getInput = getInput5;
     function getMultilineInput(name, options) {
-      const inputs = getInput4(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput5(name, options).split("\n").filter((x) => x !== "");
       if (options && options.trimWhitespace === false) {
         return inputs;
       }
@@ -19133,7 +19133,7 @@ var require_core = __commonJS({
     function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput4(name, options);
+      const val = getInput5(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -83888,7 +83888,7 @@ var require_out = __commonJS({
 });
 
 // sentinel/src/index.ts
-var import_core5 = __toESM(require_core());
+var import_core6 = __toESM(require_core());
 
 // sentinel/src/inspect-workflows.ts
 var yaml = __toESM(require_dist());
@@ -83921,6 +83921,7 @@ var getOctoKitClient = () => {
 };
 
 // sentinel/src/inspect-workflows.ts
+var import_core5 = __toESM(require_core());
 async function getRepos() {
   const octokit = getOctoKitClient();
   const repos = [];
@@ -84020,11 +84021,8 @@ async function main() {
       }
     }
   }
-  const reportDir = path.join(__dirname, "report");
-  if (!fs.existsSync(reportDir)) {
-    fs.mkdirSync(reportDir);
-  }
-  const reportPath = path.join(reportDir, "output_report.md");
+  const reportFilePath = (0, import_core5.getInput)("report-file");
+  const reportPath = path.join(process.cwd(), reportFilePath);
   let reportContent = "# Workflow Analysis Report\n\n";
   reportContent += "## Operating Systems Used\n\n";
   for (const [os, repos2] of osUsageMap.entries()) {
@@ -84054,10 +84052,10 @@ async function main() {
 
 // sentinel/src/index.ts
 async function run() {
-  (0, import_core5.info)("Inspecting workflows");
+  (0, import_core6.info)("Inspecting workflows");
   main();
 }
-run().catch(import_core5.setFailed);
+run().catch(import_core6.setFailed);
 /*! Bundled license information:
 
 undici/lib/fetch/body.js:

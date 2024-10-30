@@ -2,6 +2,7 @@ import * as yaml from 'yaml'
 import * as fs from 'fs'
 import * as path from 'path'
 import { getOctoKitClient } from '../../release/src/common/inputs'
+import { getInput } from '@actions/core'
 
 interface WorkflowData {
   osTypes: Set<string>
@@ -130,13 +131,9 @@ export async function main() {
     }
   }
 
-  // Generate the report
-  const reportDir = path.join(__dirname, 'report')
-  if (!fs.existsSync(reportDir)) {
-    fs.mkdirSync(reportDir)
-  }
-
-  const reportPath = path.join(reportDir, 'output_report.md')
+  // Get the report file path from input or use default
+  const reportFilePath = getInput('report-file')
+  const reportPath = path.join(process.cwd(), reportFilePath)
 
   let reportContent = '# Workflow Analysis Report\n\n'
 
@@ -160,7 +157,7 @@ export async function main() {
     reportContent += '\n'
   }
 
-  // Write the report to file
+  // Write the report to the specified file
   await fs.promises.writeFile(reportPath, reportContent)
 
   console.log(`Report generated at ${reportPath}`)
