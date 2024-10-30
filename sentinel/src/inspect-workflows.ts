@@ -135,41 +135,45 @@ export async function main() {
   const reportFilePath = getInput('report-file')
   const reportPath = path.join(process.cwd(), reportFilePath)
 
-  let reportContent = `# Workflow Analysis Report\n\n`
+  let reportContent = `# Workflow Analysis Report - ${new Date().toISOString()}\n\n`
 
   // OS Usage Section
-  reportContent += `## Operating Systems Used\n`
+  reportContent += `## Operating Systems Used\n\n`
   for (const [os, repos] of osUsageMap.entries()) {
-    reportContent += `### ${os}\n`
+    reportContent += `### ${os}\n\n`
 
-    if (repos.size > 3) {
-      reportContent += `<details><summary>Show me the rest</summary>\n`
-    }
-
-    repos.forEach((repoName) => {
-      reportContent += `- ${repoName}\n`
-    })
-
-    if (repos.size > 3) {
-      reportContent += '</details>\n'
+    const repoList = Array.from(repos)
+    if (repoList.length > 3) {
+      reportContent += `<details><summary>Show ${repoList.length} repositories</summary>\n\n`
+      repoList.forEach((repoName) => {
+        reportContent += `- ${repoName}\n`
+      })
+      reportContent += `\n</details>\n\n`
+    } else {
+      repoList.forEach((repoName) => {
+        reportContent += `- ${repoName}\n`
+      })
+      reportContent += `\n`
     }
   }
 
   // Actions Usage Section
-  reportContent += `## Actions Used\n`
+  reportContent += `## Actions Used\n\n`
   for (const [action, repos] of actionUsageMap.entries()) {
-    reportContent += `### ${action}\n`
+    reportContent += `### ${action}\n\n`
 
-    if (repos.size > 3) {
-      reportContent += `<details><summary>Show me the rest</summary>\n`
-    }
-
-    repos.forEach((repoName) => {
-      reportContent += `- ${repoName}\n`
-    })
-
-    if (repos.size > 3) {
-      reportContent += '</details>\n'
+    const repoList = Array.from(repos)
+    if (repoList.length > 3) {
+      reportContent += `<details><summary>Show ${repoList.length} repositories</summary>\n\n`
+      repoList.forEach((repoName) => {
+        reportContent += `- ${repoName}\n`
+      })
+      reportContent += `\n</details>\n\n`
+    } else {
+      repoList.forEach((repoName) => {
+        reportContent += `- ${repoName}\n`
+      })
+      reportContent += `\n`
     }
   }
 

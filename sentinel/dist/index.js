@@ -84023,41 +84023,65 @@ async function main() {
   }
   const reportFilePath = (0, import_core5.getInput)("report-file");
   const reportPath = path.join(process.cwd(), reportFilePath);
-  let reportContent = `# Workflow Analysis Report
+  let reportContent = `# Workflow Analysis Report - ${(/* @__PURE__ */ new Date()).toISOString()}
 
 `;
   reportContent += `## Operating Systems Used
+
 `;
   for (const [os, repos2] of osUsageMap.entries()) {
     reportContent += `### ${os}
+
 `;
-    if (repos2.size > 3) {
-      reportContent += `<details><summary>Show me the rest</summary>
+    const repoList = Array.from(repos2);
+    if (repoList.length > 3) {
+      reportContent += `<details><summary>Show ${repoList.length} repositories</summary>
+
 `;
-    }
-    repos2.forEach((repoName) => {
-      reportContent += `- ${repoName}
+      repoList.forEach((repoName) => {
+        reportContent += `- ${repoName}
 `;
-    });
-    if (repos2.size > 3) {
-      reportContent += "</details>\n";
+      });
+      reportContent += `
+</details>
+
+`;
+    } else {
+      repoList.forEach((repoName) => {
+        reportContent += `- ${repoName}
+`;
+      });
+      reportContent += `
+`;
     }
   }
   reportContent += `## Actions Used
+
 `;
   for (const [action, repos2] of actionUsageMap.entries()) {
     reportContent += `### ${action}
+
 `;
-    if (repos2.size > 3) {
-      reportContent += `<details><summary>Show me the rest</summary>
+    const repoList = Array.from(repos2);
+    if (repoList.length > 3) {
+      reportContent += `<details><summary>Show ${repoList.length} repositories</summary>
+
 `;
-    }
-    repos2.forEach((repoName) => {
-      reportContent += `- ${repoName}
+      repoList.forEach((repoName) => {
+        reportContent += `- ${repoName}
 `;
-    });
-    if (repos2.size > 3) {
-      reportContent += "</details>\n";
+      });
+      reportContent += `
+</details>
+
+`;
+    } else {
+      repoList.forEach((repoName) => {
+        reportContent += `- ${repoName}
+`;
+      });
+      reportContent += `
+`;
     }
   }
   await fs.promises.writeFile(reportPath, reportContent);
