@@ -84048,6 +84048,8 @@ async function main() {
   }
   await fs.promises.writeFile(reportPath, reportContent);
   console.log(`Report generated at ${reportPath}`);
+  console.log("Report Content:");
+  console.log(reportContent);
 }
 
 // sentinel/src/index.ts
