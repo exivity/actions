@@ -58,11 +58,11 @@ jobs:
   process-binary_test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2022]
+        os: [ubuntu-24.04, windows-2022]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - if: matrix.os == 'ubuntu-latest'
+      - if: startsWith(matrix.os, 'ubuntu')
         uses: ./process-binary
         with:
           path: fixtures/hello/build/hello
@@ -70,7 +70,7 @@ jobs:
           certificate-password: ${{ env.CERTIFICATE_PASSWORD }}
           virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
           gh-token: ${{ secrets.GITHUB_TOKEN }}
-      - if: matrix.os == 'windows-2022'
+      - if: startsWith(matrix.os, 'windows')
         uses: ./process-binary
         with:
           path: fixtures/hello/build/hello.exe
