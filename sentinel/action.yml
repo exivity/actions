@@ -1,0 +1,14 @@
+name: 'sentinel'
+description: 'The ultimate repo overwatch'
+inputs:
+  gh-token:
+    description: A GitHub token with access repositories
+    required: false
+    default: ${{ github.token }}
+  report-file:
+    description: The file path to write the report to
+    required: false
+    default: 'README.md'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

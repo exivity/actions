@@ -21,11 +21,17 @@ const transitionIds = {
 export async function transitionToReleased(issueIdOrKey: string) {
   const jiraClient = getJiraClient()
 
-  const issue = await jiraClient.issues.getIssue({
-    issueIdOrKey,
-    fields: ['status'],
-    expand: ['transitions'],
-  })
+  let issue
+  try {
+    issue = await jiraClient.issues.getIssue({
+      issueIdOrKey,
+      fields: ['status'],
+      expand: ['transitions'],
+    })
+  } catch (err) {
+    info(`Could not get ${issueIdOrKey}: ${JSON.stringify(err)}`)
+    return
+  }
 
   let status = issue.fields.status.name
 
