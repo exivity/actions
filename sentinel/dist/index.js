@@ -83974,6 +83974,19 @@ async function getFileContent(owner, repo, filePath) {
   }
   return null;
 }
+async function runWithConcurrencyLimit(limit, tasks) {
+  const results = [];
+  let index = 0;
+  async function worker() {
+    while (index < tasks.length) {
+      const currentIndex = index++;
+      results[currentIndex] = await tasks[currentIndex]();
+    }
+  }
+  const workers = Array.from({ length: Math.min(limit, tasks.length) }, worker);
+  await Promise.all(workers);
+  return results;
+}
 
 // sentinel/src/analyse-workflows.ts
 function extractData(yamlContent) {
@@ -84012,37 +84025,35 @@ async function analyseWorkflows() {
   console.log(`Found ${repos.length} repositories.`);
   const osUsageMap = /* @__PURE__ */ new Map();
   const actionUsageMap = /* @__PURE__ */ new Map();
-  await Promise.all(
-    repos.map(async (repo) => {
-      const repoName = repo.name;
-      console.log(`Analyzing repository: ${repoName}`);
-      const workflowFiles = await getWorkflowFiles(repoName);
-      await Promise.all(
-        workflowFiles.map(async (file) => {
-          try {
-            const content = await getFileContent("exivity", repoName, file.path);
-            if (content) {
-              const { osTypes, actionsUsed } = extractData(content);
-              for (const os of osTypes) {
-                if (!osUsageMap.has(os)) {
-                  osUsageMap.set(os, /* @__PURE__ */ new Set());
-                }
-                osUsageMap.get(os).add(repoName);
-              }
-              for (const action of actionsUsed) {
-                if (!actionUsageMap.has(action)) {
-                  actionUsageMap.set(action, /* @__PURE__ */ new Set());
-                }
-                actionUsageMap.get(action).add(repoName);
-              }
+  const repoTasks = repos.map((repo) => async () => {
+    const repoName = repo.name;
+    console.log(`Analyzing repository: ${repoName}`);
+    const workflowFiles = await getWorkflowFiles(repoName);
+    const fileTasks = workflowFiles.map((file) => async () => {
+      try {
+        const content = await getFileContent("exivity", repoName, file.path);
+        if (content) {
+          const { osTypes, actionsUsed } = extractData(content);
+          for (const os of osTypes) {
+            if (!osUsageMap.has(os)) {
+              osUsageMap.set(os, /* @__PURE__ */ new Set());
             }
-          } catch (error) {
-            console.error(`Error analyzing ${repoName}/${file.path}: ${error}`);
+            osUsageMap.get(os).add(repoName);
           }
-        })
-      );
-    })
-  );
+          for (const action of actionsUsed) {
+            if (!actionUsageMap.has(action)) {
+              actionUsageMap.set(action, /* @__PURE__ */ new Set());
+            }
+            actionUsageMap.get(action).add(repoName);
+          }
+        }
+      } catch (error) {
+        console.error(`Error analyzing ${repoName}/${file.path}: ${error}`);
+      }
+    });
+    await runWithConcurrencyLimit(90, fileTasks);
+  });
+  await runWithConcurrencyLimit(90, repoTasks);
   const reportFilePath = (0, import_core5.getInput)("report-file");
   const reportPath = path.join(process.cwd(), reportFilePath);
   let reportContent = `# Workflow Analysis Report - ${(/* @__PURE__ */ new Date()).toISOString()}
@@ -84177,7 +84188,7 @@ async function updateRepoWorkflows(repoName, workflowFiles, searchPattern, repla
     sha: refData.object.sha
   });
   let filesChanged = 0;
-  for (const file of workflowFiles) {
+  const fileTasks = workflowFiles.map((file) => async () => {
     const content = await getFileContent("exivity", repoName, file.path);
     if (content && content.includes(searchPattern)) {
       const updatedContent = content.replace(
@@ -84198,7 +84209,8 @@ async function updateRepoWorkflows(repoName, workflowFiles, searchPattern, repla
         filesChanged++;
       }
     }
-  }
+  });
+  await runWithConcurrencyLimit(90, fileTasks);
   if (filesChanged > 0) {
     const { data: prData } = await octokit.rest.pulls.create({
       owner: "exivity",
@@ -84229,26 +84241,25 @@ async function updateWorkflows() {
   (0, import_core6.info)(`Replacing "${searchPattern}" with "${replacePattern}" in workflows`);
   const repos = await getRepos();
   const prLinks = [];
-  await Promise.all(
-    repos.map(async (repo) => {
-      try {
-        const repoName = repo.name;
-        (0, import_core6.info)(`Processing repository: ${repoName}`);
-        const workflowFiles = await getWorkflowFiles(repoName);
-        const prLink = await updateRepoWorkflows(
-          repoName,
-          workflowFiles,
-          searchPattern,
-          replacePattern
-        );
-        if (prLink) {
-          prLinks.push(`- [${repoName}](${prLink})`);
-        }
-      } catch (error) {
-        (0, import_core6.info)(`Error processing repository ${repo.name}: ${error}`);
+  const repoTasks = repos.map((repo) => async () => {
+    try {
+      const repoName = repo.name;
+      (0, import_core6.info)(`Processing repository: ${repoName}`);
+      const workflowFiles = await getWorkflowFiles(repoName);
+      const prLink = await updateRepoWorkflows(
+        repoName,
+        workflowFiles,
+        searchPattern,
+        replacePattern
+      );
+      if (prLink) {
+        prLinks.push(`- [${repoName}](${prLink})`);
       }
-    })
-  );
+    } catch (error) {
+      (0, import_core6.info)(`Error processing repository ${repo.name}: ${error}`);
+    }
+  });
+  await runWithConcurrencyLimit(90, repoTasks);
   const reportFilePath = (0, import_core6.getInput)("report-file");
   const reportPath = path2.join(process.cwd(), reportFilePath);
   let reportContent = "";

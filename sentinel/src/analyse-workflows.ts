@@ -3,7 +3,12 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { getOctoKitClient } from '../../release/src/common/inputs'
 import { getInput } from '@actions/core'
-import { getFileContent, getRepos, getWorkflowFiles } from './utils'
+import {
+  getFileContent,
+  getRepos,
+  getWorkflowFiles,
+  runWithConcurrencyLimit,
+} from './utils'
 
 interface WorkflowData {
   osTypes: Set<string>
@@ -57,45 +62,47 @@ export async function analyseWorkflows() {
   const osUsageMap = new Map<string, Set<string>>()
   const actionUsageMap = new Map<string, Set<string>>()
 
-  // Process repositories in parallel
-  await Promise.all(
-    repos.map(async (repo) => {
-      const repoName = repo.name
-      console.log(`Analyzing repository: ${repoName}`)
+  // Create tasks for repositories
+  const repoTasks = repos.map((repo) => async () => {
+    const repoName = repo.name
+    console.log(`Analyzing repository: ${repoName}`)
 
-      const workflowFiles = await getWorkflowFiles(repoName)
+    const workflowFiles = await getWorkflowFiles(repoName)
 
-      // Process workflow files in parallel
-      await Promise.all(
-        workflowFiles.map(async (file) => {
-          try {
-            const content = await getFileContent('exivity', repoName, file.path)
-            if (content) {
-              const { osTypes, actionsUsed } = extractData(content)
+    // Create tasks for workflow files
+    const fileTasks = workflowFiles.map((file) => async () => {
+      try {
+        const content = await getFileContent('exivity', repoName, file.path)
+        if (content) {
+          const { osTypes, actionsUsed } = extractData(content)
 
-              // Map OS types to repositories
-              for (const os of osTypes) {
-                if (!osUsageMap.has(os)) {
-                  osUsageMap.set(os, new Set())
-                }
-                osUsageMap.get(os)!.add(repoName)
-              }
-
-              // Map actions to repositories
-              for (const action of actionsUsed) {
-                if (!actionUsageMap.has(action)) {
-                  actionUsageMap.set(action, new Set())
-                }
-                actionUsageMap.get(action)!.add(repoName)
-              }
+          // Map OS types to repositories
+          for (const os of osTypes) {
+            if (!osUsageMap.has(os)) {
+              osUsageMap.set(os, new Set())
             }
-          } catch (error) {
-            console.error(`Error analyzing ${repoName}/${file.path}: ${error}`)
+            osUsageMap.get(os)!.add(repoName)
           }
-        }),
-      )
-    }),
-  )
+
+          // Map actions to repositories
+          for (const action of actionsUsed) {
+            if (!actionUsageMap.has(action)) {
+              actionUsageMap.set(action, new Set())
+            }
+            actionUsageMap.get(action)!.add(repoName)
+          }
+        }
+      } catch (error) {
+        console.error(`Error analyzing ${repoName}/${file.path}: ${error}`)
+      }
+    })
+
+    // Limit concurrency for workflow files
+    await runWithConcurrencyLimit(90, fileTasks)
+  })
+
+  // Limit concurrency for repositories
+  await runWithConcurrencyLimit(90, repoTasks)
 
   // Get the report file path from input or use default
   const reportFilePath = getInput('report-file')

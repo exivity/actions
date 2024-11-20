@@ -53,3 +53,23 @@ export async function getFileContent(
   }
   return null
 }
+
+// Add a helper function to limit concurrency
+export async function runWithConcurrencyLimit<T>(
+  limit: number,
+  tasks: (() => Promise<T>)[],
+): Promise<T[]> {
+  const results: T[] = []
+  let index = 0
+
+  async function worker() {
+    while (index < tasks.length) {
+      const currentIndex = index++
+      results[currentIndex] = await tasks[currentIndex]()
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(limit, tasks.length) }, worker)
+  await Promise.all(workers)
+  return results
+}

@@ -3,7 +3,12 @@ import * as path from 'path'
 import { getOctoKitClient } from '../../release/src/common/inputs'
 import { getInput, info } from '@actions/core'
 
-import { getFileContent, getRepos, getWorkflowFiles } from './utils'
+import {
+  getFileContent,
+  getRepos,
+  getWorkflowFiles,
+  runWithConcurrencyLimit,
+} from './utils'
 
 async function updateRepoWorkflows(
   repoName: string,
@@ -38,8 +43,8 @@ async function updateRepoWorkflows(
 
   let filesChanged = 0
 
-  // Update workflow files
-  for (const file of workflowFiles) {
+  // Create tasks for workflow files
+  const fileTasks = workflowFiles.map((file) => async () => {
     const content = await getFileContent('exivity', repoName, file.path)
     if (content && content.includes(searchPattern)) {
       const updatedContent = content.replace(
@@ -60,7 +65,10 @@ async function updateRepoWorkflows(
         filesChanged++
       }
     }
-  }
+  })
+
+  // Limit concurrency for workflow files
+  await runWithConcurrencyLimit(90, fileTasks)
 
   if (filesChanged > 0) {
     // Create a pull request
@@ -99,28 +107,30 @@ export async function updateWorkflows() {
   const repos = await getRepos()
   const prLinks: string[] = []
 
-  await Promise.all(
-    repos.map(async (repo) => {
-      try {
-        const repoName = repo.name
-        info(`Processing repository: ${repoName}`)
+  // Create tasks for repositories
+  const repoTasks = repos.map((repo) => async () => {
+    try {
+      const repoName = repo.name
+      info(`Processing repository: ${repoName}`)
 
-        const workflowFiles = await getWorkflowFiles(repoName)
+      const workflowFiles = await getWorkflowFiles(repoName)
 
-        const prLink = await updateRepoWorkflows(
-          repoName,
-          workflowFiles,
-          searchPattern,
-          replacePattern,
-        )
-        if (prLink) {
-          prLinks.push(`- [${repoName}](${prLink})`)
-        }
-      } catch (error) {
-        info(`Error processing repository ${repo.name}: ${error}`)
+      const prLink = await updateRepoWorkflows(
+        repoName,
+        workflowFiles,
+        searchPattern,
+        replacePattern,
+      )
+      if (prLink) {
+        prLinks.push(`- [${repoName}](${prLink})`)
       }
-    }),
-  )
+    } catch (error) {
+      info(`Error processing repository ${repo.name}: ${error}`)
+    }
+  })
+
+  // Limit concurrency for repositories
+  await runWithConcurrencyLimit(90, repoTasks)
 
   // Update the report file with PR links
   const reportFilePath = getInput('report-file')
