@@ -99,22 +99,28 @@ export async function updateWorkflows() {
   const repos = await getRepos()
   const prLinks: string[] = []
 
-  for (const repo of repos) {
-    const repoName = repo.name
-    info(`Processing repository: ${repoName}`)
+  await Promise.all(
+    repos.map(async (repo) => {
+      try {
+        const repoName = repo.name
+        info(`Processing repository: ${repoName}`)
 
-    const workflowFiles = await getWorkflowFiles(repoName)
+        const workflowFiles = await getWorkflowFiles(repoName)
 
-    const prLink = await updateRepoWorkflows(
-      repoName,
-      workflowFiles,
-      searchPattern,
-      replacePattern,
-    )
-    if (prLink) {
-      prLinks.push(`- [${repoName}](${prLink})`)
-    }
-  }
+        const prLink = await updateRepoWorkflows(
+          repoName,
+          workflowFiles,
+          searchPattern,
+          replacePattern,
+        )
+        if (prLink) {
+          prLinks.push(`- [${repoName}](${prLink})`)
+        }
+      } catch (error) {
+        info(`Error processing repository ${repo.name}: ${error}`)
+      }
+    }),
+  )
 
   // Update the report file with PR links
   const reportFilePath = getInput('report-file')

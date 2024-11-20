@@ -20519,21 +20519,29 @@ ${indent}`) + "'";
         start = start.replace(/\n+/g, `$&${indent}`);
       }
       const indentSize = indent ? "2" : "1";
-      let header = (literal ? "|" : ">") + (startWithSpace ? indentSize : "") + chomp;
+      let header = (startWithSpace ? indentSize : "") + chomp;
       if (comment) {
         header += " " + commentString(comment.replace(/ ?[\r\n]+/g, " "));
         if (onComment)
           onComment();
       }
-      if (literal) {
-        value = value.replace(/\n+/g, `$&${indent}`);
-        return `${header}
-${indent}${start}${value}${end}`;
-      }
-      value = value.replace(/\n+/g, "\n$&").replace(/(?:^|\n)([\t ].*)(?:([\n\t ]*)\n(?![\n\t ]))?/g, "$1$2").replace(/\n+/g, `$&${indent}`);
-      const body = foldFlowLines.foldFlowLines(`${start}${value}${end}`, indent, foldFlowLines.FOLD_BLOCK, getFoldOptions(ctx, true));
-      return `${header}
+      if (!literal) {
+        const foldedValue = value.replace(/\n+/g, "\n$&").replace(/(?:^|\n)([\t ].*)(?:([\n\t ]*)\n(?![\n\t ]))?/g, "$1$2").replace(/\n+/g, `$&${indent}`);
+        let literalFallback = false;
+        const foldOptions = getFoldOptions(ctx, true);
+        if (blockQuote !== "folded" && type !== Scalar.Scalar.BLOCK_FOLDED) {
+          foldOptions.onOverflow = () => {
+            literalFallback = true;
+          };
+        }
+        const body = foldFlowLines.foldFlowLines(`${start}${foldedValue}${end}`, indent, foldFlowLines.FOLD_BLOCK, foldOptions);
+        if (!literalFallback)
+          return `>${header}
 ${indent}${body}`;
+      }
+      value = value.replace(/\n+/g, `$&${indent}`);
+      return `|${header}
+${indent}${start}${value}${end}`;
     }
     function plainString(item, ctx, onComment, onChompKeep) {
       const { type, value } = item;
@@ -21728,7 +21736,7 @@ var require_schema2 = __commonJS({
         identify: (value) => typeof value === "boolean",
         default: true,
         tag: "tag:yaml.org,2002:bool",
-        test: /^true|false$/,
+        test: /^true$|^false$/,
         resolve: (str) => str === "true",
         stringify: stringifyJSON
       },
@@ -22312,7 +22320,7 @@ var require_timestamp = __commonJS({
         }
         return new Date(date);
       },
-      stringify: ({ value }) => value.toISOString().replace(/((T00:00)?:00)?\.000Z$/, "")
+      stringify: ({ value }) => value.toISOString().replace(/(T00:00:00)?\.000Z$/, "")
     };
     exports2.floatTime = floatTime;
     exports2.intTime = intTime;
@@ -84221,20 +84229,26 @@ async function updateWorkflows() {
   (0, import_core6.info)(`Replacing "${searchPattern}" with "${replacePattern}" in workflows`);
   const repos = await getRepos();
   const prLinks = [];
-  for (const repo of repos) {
-    const repoName = repo.name;
-    (0, import_core6.info)(`Processing repository: ${repoName}`);
-    const workflowFiles = await getWorkflowFiles(repoName);
-    const prLink = await updateRepoWorkflows(
-      repoName,
-      workflowFiles,
-      searchPattern,
-      replacePattern
-    );
-    if (prLink) {
-      prLinks.push(`- [${repoName}](${prLink})`);
-    }
-  }
+  await Promise.all(
+    repos.map(async (repo) => {
+      try {
+        const repoName = repo.name;
+        (0, import_core6.info)(`Processing repository: ${repoName}`);
+        const workflowFiles = await getWorkflowFiles(repoName);
+        const prLink = await updateRepoWorkflows(
+          repoName,
+          workflowFiles,
+          searchPattern,
+          replacePattern
+        );
+        if (prLink) {
+          prLinks.push(`- [${repoName}](${prLink})`);
+        }
+      } catch (error) {
+        (0, import_core6.info)(`Error processing repository ${repo.name}: ${error}`);
+      }
+    })
+  );
   const reportFilePath = (0, import_core6.getInput)("report-file");
   const reportPath = path2.join(process.cwd(), reportFilePath);
   let reportContent = "";
