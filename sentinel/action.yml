@@ -2,13 +2,27 @@ name: 'sentinel'
 description: 'The ultimate repo overwatch'
 inputs:
   gh-token:
-    description: A GitHub token with access repositories
+    description: A GitHub token with access to repositories
     required: false
     default: ${{ github.token }}
   report-file:
     description: The file path to write the report to
     required: false
     default: 'README.md'
+  mode:
+    description: 'Mode of operation: analyse or update'
+    required: false
+    default: 'analyse'
+  search-pattern:
+    description:
+      'The pattern to search for in workflow files (e.g., ubuntu-latest)'
+    required: false
+    default: ''
+  replace-pattern:
+    description:
+      'The pattern to replace the search pattern with (e.g., ubuntu-22.04)'
+    required: false
+    default: ''
 runs:
   using: 'node20'
   main: 'dist/index.js'

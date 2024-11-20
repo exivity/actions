@@ -1,10 +1,22 @@
-import { info, setFailed } from '@actions/core'
-import { main } from './inspect-workflows'
+import { info, setFailed, getInput } from '@actions/core'
+import { analyseWorkflows } from './analyse-workflows'
+import { updateWorkflows } from './update-workflows'
 
 async function run() {
-  info('Inspecting workflows')
+  try {
+    const mode = getInput('mode')
 
-  main()
+    if (mode === 'update') {
+      info('Running in update mode')
+      await updateWorkflows()
+    } else {
+      info('Running in analyse mode')
+      await analyseWorkflows()
+    }
+  } catch (error: unknown) {
+    // @ts-ignore
+    setFailed(error?.message || error)
+  }
 }
 
-run().catch(setFailed)
+run()

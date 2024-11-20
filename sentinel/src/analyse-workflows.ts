@@ -3,60 +3,11 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { getOctoKitClient } from '../../release/src/common/inputs'
 import { getInput } from '@actions/core'
+import { getFileContent, getRepos, getWorkflowFiles } from './utils'
 
 interface WorkflowData {
   osTypes: Set<string>
   actionsUsed: Set<string>
-}
-
-async function getRepos() {
-  const octokit = getOctoKitClient()
-
-  const repos: any[] = []
-  for await (const response of octokit.paginate.iterator(
-    octokit.rest.repos.listForOrg,
-    {
-      org: 'exivity',
-      type: 'all',
-      per_page: 100,
-    },
-  )) {
-    response.data.forEach((item) => repos.push(item))
-  }
-  return repos
-}
-
-async function getWorkflowFiles(repoName: string) {
-  const octokit = getOctoKitClient()
-  try {
-    const response = await octokit.rest.repos.getContent({
-      owner: 'exivity',
-      repo: repoName,
-      path: '.github/workflows',
-    })
-
-    if (Array.isArray(response.data)) {
-      return response.data.filter((item) => item.type === 'file')
-    }
-  } catch {
-    // Repository might not have a workflows directory
-  }
-  return []
-}
-
-async function getFileContent(owner: string, repo: string, filePath: string) {
-  const octokit = getOctoKitClient()
-
-  const response = await octokit.rest.repos.getContent({
-    owner,
-    repo,
-    path: filePath,
-  })
-
-  if ('content' in response.data) {
-    return Buffer.from(response.data.content, 'base64').toString('utf8')
-  }
-  return null
 }
 
 function extractData(yamlContent: string): WorkflowData {
@@ -98,7 +49,7 @@ function extractData(yamlContent: string): WorkflowData {
   return { osTypes: osTypes, actionsUsed }
 }
 
-export async function main() {
+export async function analyseWorkflows() {
   console.log('Starting analysis...')
   const repos = await getRepos()
   console.log(`Found ${repos.length} repositories.`)
@@ -192,8 +143,53 @@ export async function main() {
     }
   }
 
+  // Update report with PR links, removing links to closed PRs
+  const prLinks = await getUpdatedPrLinks()
+
+  if (prLinks.length > 0) {
+    reportContent += `## Open Pull Requests\n\n`
+    prLinks.forEach((link) => {
+      reportContent += `${link}\n`
+    })
+    reportContent += `\n`
+  }
+
   // Write the report to the specified file
   await fs.promises.writeFile(reportPath, reportContent)
 
   console.log(`Report generated at ${reportPath}`)
+}
+
+// Helper function to check PR statuses and update links
+async function getUpdatedPrLinks() {
+  const octokit = getOctoKitClient()
+  const reportFilePath = getInput('report-file')
+  const reportPath = path.join(process.cwd(), reportFilePath)
+  const prLinks: string[] = []
+
+  if (fs.existsSync(reportPath)) {
+    const reportContent = await fs.promises.readFile(reportPath, 'utf8')
+    const linkRegex = /^- \[.*\]\((.*)\)$/gm
+    let match
+    while ((match = linkRegex.exec(reportContent)) !== null) {
+      const prUrl = match[1]
+      const prMatch = prUrl.match(
+        /https:\/\/github\.com\/exivity\/([^/]+)\/pull\/(\d+)/,
+      )
+      if (prMatch) {
+        const repoName = prMatch[1]
+        const prNumber = parseInt(prMatch[2], 10)
+        const { data: prData } = await octokit.rest.pulls.get({
+          owner: 'exivity',
+          repo: repoName,
+          pull_number: prNumber,
+        })
+        if (prData.state === 'open') {
+          prLinks.push(`- [${repoName}](${prUrl})`)
+        }
+      }
+    }
+  }
+
+  return prLinks
 }
