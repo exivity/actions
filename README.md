@@ -230,7 +230,7 @@ on: delete
 
 jobs:
   purge-ghcr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: exivity/actions/purge-ghcr@main
         with:
@@ -484,7 +484,7 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: exivity/actions/virustotal@main
         with:

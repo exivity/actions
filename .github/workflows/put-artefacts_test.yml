@@ -12,7 +12,7 @@ jobs:
   put-artefacts_test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2022]
+        os: [ubuntu-24.04, windows-2022]
         zip: [true, false]
     runs-on: ${{ matrix.os }}
     steps:

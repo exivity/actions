@@ -15,7 +15,7 @@ jobs:
   release_ping-test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2022]
+        os: [ubuntu-24.04, windows-2022]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
 
   release_prepare-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,7 +49,7 @@ jobs:
         run: cat fixtures/release/CHANGELOG.md || true
 
   release_release-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
