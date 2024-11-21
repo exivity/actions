@@ -19739,8 +19739,8 @@ var require_escape = __commonJS({
     }
     function escapeArgument(arg, doubleEscapeMetaChars) {
       arg = `${arg}`;
-      arg = arg.replace(/(\\*)"/g, '$1$1\\"');
-      arg = arg.replace(/(\\*)$/, "$1$1");
+      arg = arg.replace(/(?=(\\+?)?)\1"/g, '$1$1\\"');
+      arg = arg.replace(/(?=(\\+?)?)\1$/, "$1$1");
       arg = `"${arg}"`;
       arg = arg.replace(metaCharsRegExp, "^$1");
       if (doubleEscapeMetaChars) {
@@ -19886,7 +19886,7 @@ var require_enoent = __commonJS({
       const originalEmit = cp.emit;
       cp.emit = function(name, arg1) {
         if (name === "exit") {
-          const err = verifyENOENT(arg1, parsed, "spawn");
+          const err = verifyENOENT(arg1, parsed);
           if (err) {
             return originalEmit.call(cp, "error", err);
           }
