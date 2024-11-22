@@ -150,53 +150,11 @@ export async function analyseWorkflows() {
     }
   }
 
-  // Update report with PR links, removing links to closed PRs
-  const prLinks = await getUpdatedPrLinks()
-
-  if (prLinks.length > 0) {
-    reportContent += `## Open Pull Requests\n\n`
-    prLinks.forEach((link) => {
-      reportContent += `${link}\n`
-    })
-    reportContent += `\n`
-  }
-
   // Write the report to the specified file
-  await fs.promises.writeFile(reportPath, reportContent)
-
-  console.log(`Report generated at ${reportPath}`)
-}
-
-// Helper function to check PR statuses and update links
-async function getUpdatedPrLinks() {
-  const octokit = getOctoKitClient()
-  const reportFilePath = getInput('report-file')
-  const reportPath = path.join(process.cwd(), reportFilePath)
-  const prLinks: string[] = []
-
-  if (fs.existsSync(reportPath)) {
-    const reportContent = await fs.promises.readFile(reportPath, 'utf8')
-    const linkRegex = /^- \[.*\]\((.*)\)$/gm
-    let match
-    while ((match = linkRegex.exec(reportContent)) !== null) {
-      const prUrl = match[1]
-      const prMatch = prUrl.match(
-        /https:\/\/github\.com\/exivity\/([^/]+)\/pull\/(\d+)/,
-      )
-      if (prMatch) {
-        const repoName = prMatch[1]
-        const prNumber = parseInt(prMatch[2], 10)
-        const { data: prData } = await octokit.rest.pulls.get({
-          owner: 'exivity',
-          repo: repoName,
-          pull_number: prNumber,
-        })
-        if (prData.state === 'open') {
-          prLinks.push(`- [${repoName}](${prUrl})`)
-        }
-      }
-    }
+  try {
+    await fs.promises.writeFile(reportPath, reportContent)
+    console.log(`Report generated at ${reportPath}`)
+  } catch (error) {
+    console.error(`Error writing report file: ${error}`)
   }
-
-  return prLinks
 }

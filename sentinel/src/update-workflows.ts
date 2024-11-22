@@ -9,6 +9,7 @@ import {
   getWorkflowFiles,
   runWithConcurrencyLimit,
 } from './utils'
+import { savePrLinks } from './pr-links'
 
 async function updateRepoWorkflows(
   repoName: string,
@@ -143,14 +144,8 @@ export async function updateWorkflows() {
     reportContent = `# Workflow Report - ${new Date().toISOString()}\n\n`
   }
 
-  if (prLinks.length > 0) {
-    reportContent += `## Open Pull Requests\n\n`
-    prLinks.forEach((link) => {
-      reportContent += `${link}\n`
-    })
-    reportContent += `\n`
-  }
-
   await fs.promises.writeFile(reportPath, reportContent)
   info(`Report updated at ${reportPath}`)
+
+  await savePrLinks(prLinks)
 }

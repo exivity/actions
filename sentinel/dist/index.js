@@ -185,7 +185,7 @@ var require_file_command = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.prepareKeyValueMessage = exports2.issueFileCommand = void 0;
     var crypto = __importStar2(require("crypto"));
-    var fs3 = __importStar2(require("fs"));
+    var fs4 = __importStar2(require("fs"));
     var os = __importStar2(require("os"));
     var utils_1 = require_utils();
     function issueFileCommand(command, message) {
@@ -193,10 +193,10 @@ var require_file_command = __commonJS({
       if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
       }
-      if (!fs3.existsSync(filePath)) {
+      if (!fs4.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
       }
-      fs3.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os.EOL}`, {
+      fs4.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os.EOL}`, {
         encoding: "utf8"
       });
     }
@@ -999,14 +999,14 @@ var require_util = __commonJS({
         }
         const port = url.port != null ? url.port : url.protocol === "https:" ? 443 : 80;
         let origin = url.origin != null ? url.origin : `${url.protocol}//${url.hostname}:${port}`;
-        let path3 = url.path != null ? url.path : `${url.pathname || ""}${url.search || ""}`;
+        let path4 = url.path != null ? url.path : `${url.pathname || ""}${url.search || ""}`;
         if (origin.endsWith("/")) {
           origin = origin.substring(0, origin.length - 1);
         }
-        if (path3 && !path3.startsWith("/")) {
-          path3 = `/${path3}`;
+        if (path4 && !path4.startsWith("/")) {
+          path4 = `/${path4}`;
         }
-        url = new URL(origin + path3);
+        url = new URL(origin + path4);
       }
       return url;
     }
@@ -2054,20 +2054,20 @@ var require_parseParams = __commonJS({
 var require_basename = __commonJS({
   "node_modules/@fastify/busboy/lib/utils/basename.js"(exports2, module2) {
     "use strict";
-    module2.exports = function basename(path3) {
-      if (typeof path3 !== "string") {
+    module2.exports = function basename(path4) {
+      if (typeof path4 !== "string") {
         return "";
       }
-      for (var i = path3.length - 1; i >= 0; --i) {
-        switch (path3.charCodeAt(i)) {
+      for (var i = path4.length - 1; i >= 0; --i) {
+        switch (path4.charCodeAt(i)) {
           case 47:
           // '/'
           case 92:
-            path3 = path3.slice(i + 1);
-            return path3 === ".." || path3 === "." ? "" : path3;
+            path4 = path4.slice(i + 1);
+            return path4 === ".." || path4 === "." ? "" : path4;
         }
       }
-      return path3 === ".." || path3 === "." ? "" : path3;
+      return path4 === ".." || path4 === "." ? "" : path4;
     };
   }
 });
@@ -5090,7 +5090,7 @@ var require_request = __commonJS({
     }
     var Request2 = class _Request {
       constructor(origin, {
-        path: path3,
+        path: path4,
         method,
         body,
         headers,
@@ -5104,11 +5104,11 @@ var require_request = __commonJS({
         throwOnError,
         expectContinue
       }, handler) {
-        if (typeof path3 !== "string") {
+        if (typeof path4 !== "string") {
           throw new InvalidArgumentError("path must be a string");
-        } else if (path3[0] !== "/" && !(path3.startsWith("http://") || path3.startsWith("https://")) && method !== "CONNECT") {
+        } else if (path4[0] !== "/" && !(path4.startsWith("http://") || path4.startsWith("https://")) && method !== "CONNECT") {
           throw new InvalidArgumentError("path must be an absolute URL or start with a slash");
-        } else if (invalidPathRegex.exec(path3) !== null) {
+        } else if (invalidPathRegex.exec(path4) !== null) {
           throw new InvalidArgumentError("invalid request path");
         }
         if (typeof method !== "string") {
@@ -5171,7 +5171,7 @@ var require_request = __commonJS({
         this.completed = false;
         this.aborted = false;
         this.upgrade = upgrade || null;
-        this.path = query ? util.buildURL(path3, query) : path3;
+        this.path = query ? util.buildURL(path4, query) : path4;
         this.origin = origin;
         this.idempotent = idempotent == null ? method === "HEAD" || method === "GET" : idempotent;
         this.blocking = blocking == null ? false : blocking;
@@ -6179,9 +6179,9 @@ var require_RedirectHandler = __commonJS({
           return this.handler.onHeaders(statusCode, headers, resume, statusText);
         }
         const { origin, pathname, search } = util.parseURL(new URL(this.location, this.opts.origin && new URL(this.opts.path, this.opts.origin)));
-        const path3 = search ? `${pathname}${search}` : pathname;
+        const path4 = search ? `${pathname}${search}` : pathname;
         this.opts.headers = cleanRequestHeaders(this.opts.headers, statusCode === 303, this.opts.origin !== origin);
-        this.opts.path = path3;
+        this.opts.path = path4;
         this.opts.origin = origin;
         this.opts.maxRedirections = 0;
         this.opts.query = null;
@@ -7421,7 +7421,7 @@ var require_client = __commonJS({
         writeH2(client, client[kHTTP2Session], request);
         return;
       }
-      const { body, method, path: path3, host, upgrade, headers, blocking, reset } = request;
+      const { body, method, path: path4, host, upgrade, headers, blocking, reset } = request;
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH";
       if (body && typeof body.read === "function") {
         body.read(0);
@@ -7471,7 +7471,7 @@ var require_client = __commonJS({
       if (blocking) {
         socket[kBlocking] = true;
       }
-      let header = `${method} ${path3} HTTP/1.1\r
+      let header = `${method} ${path4} HTTP/1.1\r
 `;
       if (typeof host === "string") {
         header += `host: ${host}\r
@@ -7534,7 +7534,7 @@ upgrade: ${upgrade}\r
       return true;
     }
     function writeH2(client, session, request) {
-      const { body, method, path: path3, host, upgrade, expectContinue, signal, headers: reqHeaders } = request;
+      const { body, method, path: path4, host, upgrade, expectContinue, signal, headers: reqHeaders } = request;
       let headers;
       if (typeof reqHeaders === "string") headers = Request2[kHTTP2CopyHeaders](reqHeaders.trim());
       else headers = reqHeaders;
@@ -7577,7 +7577,7 @@ upgrade: ${upgrade}\r
         });
         return true;
       }
-      headers[HTTP2_HEADER_PATH] = path3;
+      headers[HTTP2_HEADER_PATH] = path4;
       headers[HTTP2_HEADER_SCHEME] = "https";
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH";
       if (body && typeof body.read === "function") {
@@ -9809,20 +9809,20 @@ var require_mock_utils = __commonJS({
       }
       return true;
     }
-    function safeUrl(path3) {
-      if (typeof path3 !== "string") {
-        return path3;
+    function safeUrl(path4) {
+      if (typeof path4 !== "string") {
+        return path4;
       }
-      const pathSegments = path3.split("?");
+      const pathSegments = path4.split("?");
       if (pathSegments.length !== 2) {
-        return path3;
+        return path4;
       }
       const qp = new URLSearchParams(pathSegments.pop());
       qp.sort();
       return [...pathSegments, qp.toString()].join("?");
     }
-    function matchKey(mockDispatch2, { path: path3, method, body, headers }) {
-      const pathMatch = matchValue(mockDispatch2.path, path3);
+    function matchKey(mockDispatch2, { path: path4, method, body, headers }) {
+      const pathMatch = matchValue(mockDispatch2.path, path4);
       const methodMatch = matchValue(mockDispatch2.method, method);
       const bodyMatch = typeof mockDispatch2.body !== "undefined" ? matchValue(mockDispatch2.body, body) : true;
       const headersMatch = matchHeaders(mockDispatch2, headers);
@@ -9840,7 +9840,7 @@ var require_mock_utils = __commonJS({
     function getMockDispatch(mockDispatches, key) {
       const basePath = key.query ? buildURL(key.path, key.query) : key.path;
       const resolvedPath = typeof basePath === "string" ? safeUrl(basePath) : basePath;
-      let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path: path3 }) => matchValue(safeUrl(path3), resolvedPath));
+      let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path: path4 }) => matchValue(safeUrl(path4), resolvedPath));
       if (matchedMockDispatches.length === 0) {
         throw new MockNotMatchedError(`Mock dispatch not matched for path '${resolvedPath}'`);
       }
@@ -9877,9 +9877,9 @@ var require_mock_utils = __commonJS({
       }
     }
     function buildKey(opts) {
-      const { path: path3, method, body, headers, query } = opts;
+      const { path: path4, method, body, headers, query } = opts;
       return {
-        path: path3,
+        path: path4,
         method,
         body,
         headers,
@@ -10328,10 +10328,10 @@ var require_pending_interceptors_formatter = __commonJS({
       }
       format(pendingInterceptors) {
         const withPrettyHeaders = pendingInterceptors.map(
-          ({ method, path: path3, data: { statusCode }, persist, times, timesInvoked, origin }) => ({
+          ({ method, path: path4, data: { statusCode }, persist, times, timesInvoked, origin }) => ({
             Method: method,
             Origin: origin,
-            Path: path3,
+            Path: path4,
             "Status code": statusCode,
             Persistent: persist ? "\u2705" : "\u274C",
             Invocations: timesInvoked,
@@ -14949,8 +14949,8 @@ var require_util6 = __commonJS({
         }
       }
     }
-    function validateCookiePath(path3) {
-      for (const char of path3) {
+    function validateCookiePath(path4) {
+      for (const char of path4) {
         const code = char.charCodeAt(0);
         if (code < 33 || char === ";") {
           throw new Error("Invalid cookie path");
@@ -16642,11 +16642,11 @@ var require_undici = __commonJS({
           if (typeof opts.path !== "string") {
             throw new InvalidArgumentError("invalid opts.path");
           }
-          let path3 = opts.path;
+          let path4 = opts.path;
           if (!opts.path.startsWith("/")) {
-            path3 = `/${path3}`;
+            path4 = `/${path4}`;
           }
-          url = new URL(util.parseOrigin(url).origin + path3);
+          url = new URL(util.parseOrigin(url).origin + path4);
         } else {
           if (!opts) {
             opts = typeof url === "object" ? url : {};
@@ -17869,7 +17869,7 @@ var require_path_utils = __commonJS({
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.toPlatformPath = exports2.toWin32Path = exports2.toPosixPath = void 0;
-    var path3 = __importStar2(require("path"));
+    var path4 = __importStar2(require("path"));
     function toPosixPath(pth) {
       return pth.replace(/[\\]/g, "/");
     }
@@ -17879,7 +17879,7 @@ var require_path_utils = __commonJS({
     }
     exports2.toWin32Path = toWin32Path;
     function toPlatformPath(pth) {
-      return pth.replace(/[/\\]/g, path3.sep);
+      return pth.replace(/[/\\]/g, path4.sep);
     }
     exports2.toPlatformPath = toPlatformPath;
   }
@@ -17942,12 +17942,12 @@ var require_io_util = __commonJS({
     var _a;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCmdPath = exports2.tryGetExecutablePath = exports2.isRooted = exports2.isDirectory = exports2.exists = exports2.READONLY = exports2.UV_FS_O_EXLOCK = exports2.IS_WINDOWS = exports2.unlink = exports2.symlink = exports2.stat = exports2.rmdir = exports2.rm = exports2.rename = exports2.readlink = exports2.readdir = exports2.open = exports2.mkdir = exports2.lstat = exports2.copyFile = exports2.chmod = void 0;
-    var fs3 = __importStar2(require("fs"));
-    var path3 = __importStar2(require("path"));
-    _a = fs3.promises, exports2.chmod = _a.chmod, exports2.copyFile = _a.copyFile, exports2.lstat = _a.lstat, exports2.mkdir = _a.mkdir, exports2.open = _a.open, exports2.readdir = _a.readdir, exports2.readlink = _a.readlink, exports2.rename = _a.rename, exports2.rm = _a.rm, exports2.rmdir = _a.rmdir, exports2.stat = _a.stat, exports2.symlink = _a.symlink, exports2.unlink = _a.unlink;
+    var fs4 = __importStar2(require("fs"));
+    var path4 = __importStar2(require("path"));
+    _a = fs4.promises, exports2.chmod = _a.chmod, exports2.copyFile = _a.copyFile, exports2.lstat = _a.lstat, exports2.mkdir = _a.mkdir, exports2.open = _a.open, exports2.readdir = _a.readdir, exports2.readlink = _a.readlink, exports2.rename = _a.rename, exports2.rm = _a.rm, exports2.rmdir = _a.rmdir, exports2.stat = _a.stat, exports2.symlink = _a.symlink, exports2.unlink = _a.unlink;
     exports2.IS_WINDOWS = process.platform === "win32";
     exports2.UV_FS_O_EXLOCK = 268435456;
-    exports2.READONLY = fs3.constants.O_RDONLY;
+    exports2.READONLY = fs4.constants.O_RDONLY;
     function exists(fsPath) {
       return __awaiter2(this, void 0, void 0, function* () {
         try {
@@ -17992,7 +17992,7 @@ var require_io_util = __commonJS({
         }
         if (stats && stats.isFile()) {
           if (exports2.IS_WINDOWS) {
-            const upperExt = path3.extname(filePath).toUpperCase();
+            const upperExt = path4.extname(filePath).toUpperCase();
             if (extensions.some((validExt) => validExt.toUpperCase() === upperExt)) {
               return filePath;
             }
@@ -18016,11 +18016,11 @@ var require_io_util = __commonJS({
           if (stats && stats.isFile()) {
             if (exports2.IS_WINDOWS) {
               try {
-                const directory = path3.dirname(filePath);
-                const upperName = path3.basename(filePath).toUpperCase();
+                const directory = path4.dirname(filePath);
+                const upperName = path4.basename(filePath).toUpperCase();
                 for (const actualName of yield exports2.readdir(directory)) {
                   if (upperName === actualName.toUpperCase()) {
-                    filePath = path3.join(directory, actualName);
+                    filePath = path4.join(directory, actualName);
                     break;
                   }
                 }
@@ -18115,7 +18115,7 @@ var require_io = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.findInPath = exports2.which = exports2.mkdirP = exports2.rmRF = exports2.mv = exports2.cp = void 0;
     var assert_1 = require("assert");
-    var path3 = __importStar2(require("path"));
+    var path4 = __importStar2(require("path"));
     var ioUtil = __importStar2(require_io_util());
     function cp(source, dest, options = {}) {
       return __awaiter2(this, void 0, void 0, function* () {
@@ -18124,7 +18124,7 @@ var require_io = __commonJS({
         if (destStat && destStat.isFile() && !force) {
           return;
         }
-        const newDest = destStat && destStat.isDirectory() && copySourceDirectory ? path3.join(dest, path3.basename(source)) : dest;
+        const newDest = destStat && destStat.isDirectory() && copySourceDirectory ? path4.join(dest, path4.basename(source)) : dest;
         if (!(yield ioUtil.exists(source))) {
           throw new Error(`no such file or directory: ${source}`);
         }
@@ -18136,7 +18136,7 @@ var require_io = __commonJS({
             yield cpDirRecursive(source, newDest, 0, force);
           }
         } else {
-          if (path3.relative(source, newDest) === "") {
+          if (path4.relative(source, newDest) === "") {
             throw new Error(`'${newDest}' and '${source}' are the same file`);
           }
           yield copyFile(source, newDest, force);
@@ -18149,7 +18149,7 @@ var require_io = __commonJS({
         if (yield ioUtil.exists(dest)) {
           let destExists = true;
           if (yield ioUtil.isDirectory(dest)) {
-            dest = path3.join(dest, path3.basename(source));
+            dest = path4.join(dest, path4.basename(source));
             destExists = yield ioUtil.exists(dest);
           }
           if (destExists) {
@@ -18160,7 +18160,7 @@ var require_io = __commonJS({
             }
           }
         }
-        yield mkdirP(path3.dirname(dest));
+        yield mkdirP(path4.dirname(dest));
         yield ioUtil.rename(source, dest);
       });
     }
@@ -18223,7 +18223,7 @@ var require_io = __commonJS({
         }
         const extensions = [];
         if (ioUtil.IS_WINDOWS && process.env["PATHEXT"]) {
-          for (const extension of process.env["PATHEXT"].split(path3.delimiter)) {
+          for (const extension of process.env["PATHEXT"].split(path4.delimiter)) {
             if (extension) {
               extensions.push(extension);
             }
@@ -18236,12 +18236,12 @@ var require_io = __commonJS({
           }
           return [];
         }
-        if (tool.includes(path3.sep)) {
+        if (tool.includes(path4.sep)) {
           return [];
         }
         const directories = [];
         if (process.env.PATH) {
-          for (const p of process.env.PATH.split(path3.delimiter)) {
+          for (const p of process.env.PATH.split(path4.delimiter)) {
             if (p) {
               directories.push(p);
             }
@@ -18249,7 +18249,7 @@ var require_io = __commonJS({
         }
         const matches = [];
         for (const directory of directories) {
-          const filePath = yield ioUtil.tryGetExecutablePath(path3.join(directory, tool), extensions);
+          const filePath = yield ioUtil.tryGetExecutablePath(path4.join(directory, tool), extensions);
           if (filePath) {
             matches.push(filePath);
           }
@@ -18365,7 +18365,7 @@ var require_toolrunner = __commonJS({
     var os = __importStar2(require("os"));
     var events = __importStar2(require("events"));
     var child = __importStar2(require("child_process"));
-    var path3 = __importStar2(require("path"));
+    var path4 = __importStar2(require("path"));
     var io = __importStar2(require_io());
     var ioUtil = __importStar2(require_io_util());
     var timers_1 = require("timers");
@@ -18580,7 +18580,7 @@ var require_toolrunner = __commonJS({
       exec() {
         return __awaiter2(this, void 0, void 0, function* () {
           if (!ioUtil.isRooted(this.toolPath) && (this.toolPath.includes("/") || IS_WINDOWS && this.toolPath.includes("\\"))) {
-            this.toolPath = path3.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
+            this.toolPath = path4.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
           }
           this.toolPath = yield io.which(this.toolPath, true);
           return new Promise((resolve, reject) => __awaiter2(this, void 0, void 0, function* () {
@@ -19080,7 +19080,7 @@ var require_core = __commonJS({
     var file_command_1 = require_file_command();
     var utils_1 = require_utils();
     var os = __importStar2(require("os"));
-    var path3 = __importStar2(require("path"));
+    var path4 = __importStar2(require("path"));
     var oidc_utils_1 = require_oidc_utils();
     var ExitCode;
     (function(ExitCode2) {
@@ -19108,10 +19108,10 @@ var require_core = __commonJS({
       } else {
         (0, command_1.issueCommand)("add-path", {}, inputPath);
       }
-      process.env["PATH"] = `${inputPath}${path3.delimiter}${process.env["PATH"]}`;
+      process.env["PATH"] = `${inputPath}${path4.delimiter}${process.env["PATH"]}`;
     }
     exports2.addPath = addPath;
-    function getInput7(name, options) {
+    function getInput8(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -19121,9 +19121,9 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports2.getInput = getInput7;
+    exports2.getInput = getInput8;
     function getMultilineInput(name, options) {
-      const inputs = getInput7(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput8(name, options).split("\n").filter((x) => x !== "");
       if (options && options.trimWhitespace === false) {
         return inputs;
       }
@@ -19133,7 +19133,7 @@ var require_core = __commonJS({
     function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput7(name, options);
+      const val = getInput8(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -19322,17 +19322,17 @@ var require_visit = __commonJS({
     visit.BREAK = BREAK;
     visit.SKIP = SKIP;
     visit.REMOVE = REMOVE;
-    function visit_(key, node, visitor, path3) {
-      const ctrl = callVisitor(key, node, visitor, path3);
+    function visit_(key, node, visitor, path4) {
+      const ctrl = callVisitor(key, node, visitor, path4);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key, path3, ctrl);
-        return visit_(key, ctrl, visitor, path3);
+        replaceNode(key, path4, ctrl);
+        return visit_(key, ctrl, visitor, path4);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path3 = Object.freeze(path3.concat(node));
+          path4 = Object.freeze(path4.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = visit_(i, node.items[i], visitor, path3);
+            const ci = visit_(i, node.items[i], visitor, path4);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -19343,13 +19343,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path3 = Object.freeze(path3.concat(node));
-          const ck = visit_("key", node.key, visitor, path3);
+          path4 = Object.freeze(path4.concat(node));
+          const ck = visit_("key", node.key, visitor, path4);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = visit_("value", node.value, visitor, path3);
+          const cv = visit_("value", node.value, visitor, path4);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -19370,17 +19370,17 @@ var require_visit = __commonJS({
     visitAsync.BREAK = BREAK;
     visitAsync.SKIP = SKIP;
     visitAsync.REMOVE = REMOVE;
-    async function visitAsync_(key, node, visitor, path3) {
-      const ctrl = await callVisitor(key, node, visitor, path3);
+    async function visitAsync_(key, node, visitor, path4) {
+      const ctrl = await callVisitor(key, node, visitor, path4);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key, path3, ctrl);
-        return visitAsync_(key, ctrl, visitor, path3);
+        replaceNode(key, path4, ctrl);
+        return visitAsync_(key, ctrl, visitor, path4);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path3 = Object.freeze(path3.concat(node));
+          path4 = Object.freeze(path4.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = await visitAsync_(i, node.items[i], visitor, path3);
+            const ci = await visitAsync_(i, node.items[i], visitor, path4);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -19391,13 +19391,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path3 = Object.freeze(path3.concat(node));
-          const ck = await visitAsync_("key", node.key, visitor, path3);
+          path4 = Object.freeze(path4.concat(node));
+          const ck = await visitAsync_("key", node.key, visitor, path4);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = await visitAsync_("value", node.value, visitor, path3);
+          const cv = await visitAsync_("value", node.value, visitor, path4);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -19424,23 +19424,23 @@ var require_visit = __commonJS({
       }
       return visitor;
     }
-    function callVisitor(key, node, visitor, path3) {
+    function callVisitor(key, node, visitor, path4) {
       if (typeof visitor === "function")
-        return visitor(key, node, path3);
+        return visitor(key, node, path4);
       if (identity.isMap(node))
-        return visitor.Map?.(key, node, path3);
+        return visitor.Map?.(key, node, path4);
       if (identity.isSeq(node))
-        return visitor.Seq?.(key, node, path3);
+        return visitor.Seq?.(key, node, path4);
       if (identity.isPair(node))
-        return visitor.Pair?.(key, node, path3);
+        return visitor.Pair?.(key, node, path4);
       if (identity.isScalar(node))
-        return visitor.Scalar?.(key, node, path3);
+        return visitor.Scalar?.(key, node, path4);
       if (identity.isAlias(node))
-        return visitor.Alias?.(key, node, path3);
+        return visitor.Alias?.(key, node, path4);
       return void 0;
     }
-    function replaceNode(key, path3, node) {
-      const parent = path3[path3.length - 1];
+    function replaceNode(key, path4, node) {
+      const parent = path4[path4.length - 1];
       if (identity.isCollection(parent)) {
         parent.items[key] = node;
       } else if (identity.isPair(parent)) {
@@ -20038,10 +20038,10 @@ var require_Collection = __commonJS({
     var createNode = require_createNode();
     var identity = require_identity();
     var Node = require_Node();
-    function collectionFromPath(schema, path3, value) {
+    function collectionFromPath(schema, path4, value) {
       let v = value;
-      for (let i = path3.length - 1; i >= 0; --i) {
-        const k = path3[i];
+      for (let i = path4.length - 1; i >= 0; --i) {
+        const k = path4[i];
         if (typeof k === "number" && Number.isInteger(k) && k >= 0) {
           const a = [];
           a[k] = v;
@@ -20060,7 +20060,7 @@ var require_Collection = __commonJS({
         sourceObjects: /* @__PURE__ */ new Map()
       });
     }
-    var isEmptyPath = (path3) => path3 == null || typeof path3 === "object" && !!path3[Symbol.iterator]().next().done;
+    var isEmptyPath = (path4) => path4 == null || typeof path4 === "object" && !!path4[Symbol.iterator]().next().done;
     var Collection = class extends Node.NodeBase {
       constructor(type, schema) {
         super(type);
@@ -20090,11 +20090,11 @@ var require_Collection = __commonJS({
        * be a Pair instance or a `{ key, value }` object, which may not have a key
        * that already exists in the map.
        */
-      addIn(path3, value) {
-        if (isEmptyPath(path3))
+      addIn(path4, value) {
+        if (isEmptyPath(path4))
           this.add(value);
         else {
-          const [key, ...rest] = path3;
+          const [key, ...rest] = path4;
           const node = this.get(key, true);
           if (identity.isCollection(node))
             node.addIn(rest, value);
@@ -20108,8 +20108,8 @@ var require_Collection = __commonJS({
        * Removes a value from the collection.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path3) {
-        const [key, ...rest] = path3;
+      deleteIn(path4) {
+        const [key, ...rest] = path4;
         if (rest.length === 0)
           return this.delete(key);
         const node = this.get(key, true);
@@ -20123,8 +20123,8 @@ var require_Collection = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path3, keepScalar) {
-        const [key, ...rest] = path3;
+      getIn(path4, keepScalar) {
+        const [key, ...rest] = path4;
         const node = this.get(key, true);
         if (rest.length === 0)
           return !keepScalar && identity.isScalar(node) ? node.value : node;
@@ -20142,8 +20142,8 @@ var require_Collection = __commonJS({
       /**
        * Checks if the collection includes a value with the key `key`.
        */
-      hasIn(path3) {
-        const [key, ...rest] = path3;
+      hasIn(path4) {
+        const [key, ...rest] = path4;
         if (rest.length === 0)
           return this.has(key);
         const node = this.get(key, true);
@@ -20153,8 +20153,8 @@ var require_Collection = __commonJS({
        * Sets a value in this collection. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path3, value) {
-        const [key, ...rest] = path3;
+      setIn(path4, value) {
+        const [key, ...rest] = path4;
         if (rest.length === 0) {
           this.set(key, value);
         } else {
@@ -22656,9 +22656,9 @@ var require_Document = __commonJS({
           this.contents.add(value);
       }
       /** Adds a value to the document. */
-      addIn(path3, value) {
+      addIn(path4, value) {
         if (assertCollection(this.contents))
-          this.contents.addIn(path3, value);
+          this.contents.addIn(path4, value);
       }
       /**
        * Create a new `Alias` node, ensuring that the target `node` has the required anchor.
@@ -22733,14 +22733,14 @@ var require_Document = __commonJS({
        * Removes a value from the document.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path3) {
-        if (Collection.isEmptyPath(path3)) {
+      deleteIn(path4) {
+        if (Collection.isEmptyPath(path4)) {
           if (this.contents == null)
             return false;
           this.contents = null;
           return true;
         }
-        return assertCollection(this.contents) ? this.contents.deleteIn(path3) : false;
+        return assertCollection(this.contents) ? this.contents.deleteIn(path4) : false;
       }
       /**
        * Returns item at `key`, or `undefined` if not found. By default unwraps
@@ -22755,10 +22755,10 @@ var require_Document = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path3, keepScalar) {
-        if (Collection.isEmptyPath(path3))
+      getIn(path4, keepScalar) {
+        if (Collection.isEmptyPath(path4))
           return !keepScalar && identity.isScalar(this.contents) ? this.contents.value : this.contents;
-        return identity.isCollection(this.contents) ? this.contents.getIn(path3, keepScalar) : void 0;
+        return identity.isCollection(this.contents) ? this.contents.getIn(path4, keepScalar) : void 0;
       }
       /**
        * Checks if the document includes a value with the key `key`.
@@ -22769,10 +22769,10 @@ var require_Document = __commonJS({
       /**
        * Checks if the document includes a value at `path`.
        */
-      hasIn(path3) {
-        if (Collection.isEmptyPath(path3))
+      hasIn(path4) {
+        if (Collection.isEmptyPath(path4))
           return this.contents !== void 0;
-        return identity.isCollection(this.contents) ? this.contents.hasIn(path3) : false;
+        return identity.isCollection(this.contents) ? this.contents.hasIn(path4) : false;
       }
       /**
        * Sets a value in this document. For `!!set`, `value` needs to be a
@@ -22789,13 +22789,13 @@ var require_Document = __commonJS({
        * Sets a value in this document. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path3, value) {
-        if (Collection.isEmptyPath(path3)) {
+      setIn(path4, value) {
+        if (Collection.isEmptyPath(path4)) {
           this.contents = value;
         } else if (this.contents == null) {
-          this.contents = Collection.collectionFromPath(this.schema, Array.from(path3), value);
+          this.contents = Collection.collectionFromPath(this.schema, Array.from(path4), value);
         } else if (assertCollection(this.contents)) {
-          this.contents.setIn(path3, value);
+          this.contents.setIn(path4, value);
         }
       }
       /**
@@ -24749,9 +24749,9 @@ var require_cst_visit = __commonJS({
     visit.BREAK = BREAK;
     visit.SKIP = SKIP;
     visit.REMOVE = REMOVE;
-    visit.itemAtPath = (cst, path3) => {
+    visit.itemAtPath = (cst, path4) => {
       let item = cst;
-      for (const [field, index] of path3) {
+      for (const [field, index] of path4) {
         const tok = item?.[field];
         if (tok && "items" in tok) {
           item = tok.items[index];
@@ -24760,23 +24760,23 @@ var require_cst_visit = __commonJS({
       }
       return item;
     };
-    visit.parentCollection = (cst, path3) => {
-      const parent = visit.itemAtPath(cst, path3.slice(0, -1));
-      const field = path3[path3.length - 1][0];
+    visit.parentCollection = (cst, path4) => {
+      const parent = visit.itemAtPath(cst, path4.slice(0, -1));
+      const field = path4[path4.length - 1][0];
       const coll = parent?.[field];
       if (coll && "items" in coll)
         return coll;
       throw new Error("Parent collection not found");
     };
-    function _visit(path3, item, visitor) {
-      let ctrl = visitor(item, path3);
+    function _visit(path4, item, visitor) {
+      let ctrl = visitor(item, path4);
       if (typeof ctrl === "symbol")
         return ctrl;
       for (const field of ["key", "value"]) {
         const token = item[field];
         if (token && "items" in token) {
           for (let i = 0; i < token.items.length; ++i) {
-            const ci = _visit(Object.freeze(path3.concat([[field, i]])), token.items[i], visitor);
+            const ci = _visit(Object.freeze(path4.concat([[field, i]])), token.items[i], visitor);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -24787,10 +24787,10 @@ var require_cst_visit = __commonJS({
             }
           }
           if (typeof ctrl === "function" && field === "key")
-            ctrl = ctrl(item, path3);
+            ctrl = ctrl(item, path4);
         }
       }
-      return typeof ctrl === "function" ? ctrl(item, path3) : ctrl;
+      return typeof ctrl === "function" ? ctrl(item, path4) : ctrl;
     }
     exports2.visit = visit;
   }
@@ -26074,14 +26074,14 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs3 = this.flowScalar(this.type);
+              const fs4 = this.flowScalar(this.type);
               if (atNextItem || it.value) {
-                map.items.push({ start, key: fs3, sep: [] });
+                map.items.push({ start, key: fs4, sep: [] });
                 this.onKeyLine = true;
               } else if (it.sep) {
-                this.stack.push(fs3);
+                this.stack.push(fs4);
               } else {
-                Object.assign(it, { key: fs3, sep: [] });
+                Object.assign(it, { key: fs4, sep: [] });
                 this.onKeyLine = true;
               }
               return;
@@ -26199,13 +26199,13 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs3 = this.flowScalar(this.type);
+              const fs4 = this.flowScalar(this.type);
               if (!it || it.value)
-                fc.items.push({ start: [], key: fs3, sep: [] });
+                fc.items.push({ start: [], key: fs4, sep: [] });
               else if (it.sep)
-                this.stack.push(fs3);
+                this.stack.push(fs4);
               else
-                Object.assign(it, { key: fs3, sep: [] });
+                Object.assign(it, { key: fs4, sep: [] });
               return;
             }
             case "flow-map-end":
@@ -26532,8 +26532,8 @@ var require_context = __commonJS({
           if ((0, fs_1.existsSync)(process.env.GITHUB_EVENT_PATH)) {
             this.payload = JSON.parse((0, fs_1.readFileSync)(process.env.GITHUB_EVENT_PATH, { encoding: "utf8" }));
           } else {
-            const path3 = process.env.GITHUB_EVENT_PATH;
-            process.stdout.write(`GITHUB_EVENT_PATH ${path3} does not exist${os_1.EOL}`);
+            const path4 = process.env.GITHUB_EVENT_PATH;
+            process.stdout.write(`GITHUB_EVENT_PATH ${path4} does not exist${os_1.EOL}`);
           }
         }
         this.eventName = process.env.GITHUB_EVENT_NAME;
@@ -42526,11 +42526,11 @@ var require_mime_types = __commonJS({
       }
       return exts[0];
     }
-    function lookup(path3) {
-      if (!path3 || typeof path3 !== "string") {
+    function lookup(path4) {
+      if (!path4 || typeof path4 !== "string") {
         return false;
       }
-      var extension2 = extname("x." + path3).toLowerCase().substr(1);
+      var extension2 = extname("x." + path4).toLowerCase().substr(1);
       if (!extension2) {
         return false;
       }
@@ -42787,11 +42787,11 @@ var require_form_data = __commonJS({
   "node_modules/form-data/lib/form_data.js"(exports2, module2) {
     var CombinedStream = require_combined_stream();
     var util = require("util");
-    var path3 = require("path");
+    var path4 = require("path");
     var http = require("http");
     var https = require("https");
     var parseUrl = require("url").parse;
-    var fs3 = require("fs");
+    var fs4 = require("fs");
     var Stream = require("stream").Stream;
     var mime = require_mime_types();
     var asynckit = require_asynckit();
@@ -42856,7 +42856,7 @@ var require_form_data = __commonJS({
         if (value.end != void 0 && value.end != Infinity && value.start != void 0) {
           callback(null, value.end + 1 - (value.start ? value.start : 0));
         } else {
-          fs3.stat(value.path, function(err, stat) {
+          fs4.stat(value.path, function(err, stat) {
             var fileSize;
             if (err) {
               callback(err);
@@ -42913,11 +42913,11 @@ var require_form_data = __commonJS({
     FormData2.prototype._getContentDisposition = function(value, options) {
       var filename, contentDisposition;
       if (typeof options.filepath === "string") {
-        filename = path3.normalize(options.filepath).replace(/\\/g, "/");
+        filename = path4.normalize(options.filepath).replace(/\\/g, "/");
       } else if (options.filename || value.name || value.path) {
-        filename = path3.basename(options.filename || value.name || value.path);
+        filename = path4.basename(options.filename || value.name || value.path);
       } else if (value.readable && value.hasOwnProperty("httpVersion")) {
-        filename = path3.basename(value.client._httpMessage.path || "");
+        filename = path4.basename(value.client._httpMessage.path || "");
       }
       if (filename) {
         contentDisposition = 'filename="' + filename + '"';
@@ -44157,9 +44157,9 @@ var require_axios = __commonJS({
     function removeBrackets(key) {
       return utils$1.endsWith(key, "[]") ? key.slice(0, -2) : key;
     }
-    function renderKey(path3, key, dots) {
-      if (!path3) return key;
-      return path3.concat(key).map(function each(token, i) {
+    function renderKey(path4, key, dots) {
+      if (!path4) return key;
+      return path4.concat(key).map(function each(token, i) {
         token = removeBrackets(token);
         return !dots && i ? "[" + token + "]" : token;
       }).join(dots ? "." : "");
@@ -44204,9 +44204,9 @@ var require_axios = __commonJS({
         }
         return value;
       }
-      function defaultVisitor(value, key, path3) {
+      function defaultVisitor(value, key, path4) {
         let arr = value;
-        if (value && !path3 && typeof value === "object") {
+        if (value && !path4 && typeof value === "object") {
           if (utils$1.endsWith(key, "{}")) {
             key = metaTokens ? key : key.slice(0, -2);
             value = JSON.stringify(value);
@@ -44225,7 +44225,7 @@ var require_axios = __commonJS({
         if (isVisitable(value)) {
           return true;
         }
-        formData.append(renderKey(path3, key, dots), convertValue(value));
+        formData.append(renderKey(path4, key, dots), convertValue(value));
         return false;
       }
       const stack = [];
@@ -44234,10 +44234,10 @@ var require_axios = __commonJS({
         convertValue,
         isVisitable
       });
-      function build(value, path3) {
+      function build(value, path4) {
         if (utils$1.isUndefined(value)) return;
         if (stack.indexOf(value) !== -1) {
-          throw Error("Circular reference detected in " + path3.join("."));
+          throw Error("Circular reference detected in " + path4.join("."));
         }
         stack.push(value);
         utils$1.forEach(value, function each(el, key) {
@@ -44245,11 +44245,11 @@ var require_axios = __commonJS({
             formData,
             el,
             utils$1.isString(key) ? key.trim() : key,
-            path3,
+            path4,
             exposedHelpers
           );
           if (result === true) {
-            build(el, path3 ? path3.concat(key) : [key]);
+            build(el, path4 ? path4.concat(key) : [key]);
           }
         });
         stack.pop();
@@ -44413,7 +44413,7 @@ var require_axios = __commonJS({
     };
     function toURLEncodedForm(data, options) {
       return toFormData(data, new platform.classes.URLSearchParams(), Object.assign({
-        visitor: function(value, key, path3, helpers) {
+        visitor: function(value, key, path4, helpers) {
           if (platform.isNode && utils$1.isBuffer(value)) {
             this.append(key, value.toString("base64"));
             return false;
@@ -44440,11 +44440,11 @@ var require_axios = __commonJS({
       return obj;
     }
     function formDataToJSON(formData) {
-      function buildPath(path3, value, target, index) {
-        let name = path3[index++];
+      function buildPath(path4, value, target, index) {
+        let name = path4[index++];
         if (name === "__proto__") return true;
         const isNumericKey = Number.isFinite(+name);
-        const isLast = index >= path3.length;
+        const isLast = index >= path4.length;
         name = !name && utils$1.isArray(target) ? target.length : name;
         if (isLast) {
           if (utils$1.hasOwnProp(target, name)) {
@@ -44457,7 +44457,7 @@ var require_axios = __commonJS({
         if (!target[name] || !utils$1.isObject(target[name])) {
           target[name] = [];
         }
-        const result = buildPath(path3, value, target[name], index);
+        const result = buildPath(path4, value, target[name], index);
         if (result && utils$1.isArray(target[name])) {
           target[name] = arrayToObject(target[name]);
         }
@@ -45515,9 +45515,9 @@ var require_axios = __commonJS({
           auth = urlUsername + ":" + urlPassword;
         }
         auth && headers.delete("authorization");
-        let path3;
+        let path4;
         try {
-          path3 = buildURL(
+          path4 = buildURL(
             parsed.pathname + parsed.search,
             config.params,
             config.paramsSerializer
@@ -45535,7 +45535,7 @@ var require_axios = __commonJS({
           false
         );
         const options = {
-          path: path3,
+          path: path4,
           method,
           headers: headers.toJSON(),
           agents: { http: config.httpAgent, https: config.httpsAgent },
@@ -45793,10 +45793,10 @@ var require_axios = __commonJS({
     var cookies = platform.hasStandardBrowserEnv ? (
       // Standard browser envs support document.cookie
       {
-        write(name, value, expires, path3, domain, secure) {
+        write(name, value, expires, path4, domain, secure) {
           const cookie = [name + "=" + encodeURIComponent(value)];
           utils$1.isNumber(expires) && cookie.push("expires=" + new Date(expires).toGMTString());
-          utils$1.isString(path3) && cookie.push("path=" + path3);
+          utils$1.isString(path4) && cookie.push("path=" + path4);
           utils$1.isString(domain) && cookie.push("domain=" + domain);
           secure === true && cookie.push("secure");
           document.cookie = cookie.join("; ");
@@ -46830,8 +46830,8 @@ var require_axios = __commonJS({
     axios.toFormData = toFormData;
     axios.AxiosError = AxiosError;
     axios.Cancel = axios.CanceledError;
-    axios.all = function all(promises3) {
-      return Promise.all(promises3);
+    axios.all = function all(promises4) {
+      return Promise.all(promises4);
     };
     axios.spread = spread;
     axios.isAxiosError = isAxiosError;
@@ -83896,12 +83896,13 @@ var require_out = __commonJS({
 });
 
 // sentinel/src/index.ts
-var import_core7 = __toESM(require_core());
+var import_core8 = __toESM(require_core());
 
 // sentinel/src/analyse-workflows.ts
 var yaml = __toESM(require_dist());
 var fs = __toESM(require("fs"));
 var path = __toESM(require("path"));
+var import_core5 = __toESM(require_core());
 
 // release/src/common/inputs.ts
 var import_github = __toESM(require_github());
@@ -83927,9 +83928,6 @@ var import_exec = __toESM(require_exec());
 var getOctoKitClient = () => {
   return (0, import_github.getOctokit)(getToken());
 };
-
-// sentinel/src/analyse-workflows.ts
-var import_core5 = __toESM(require_core());
 
 // sentinel/src/utils.ts
 async function getRepos() {
@@ -84117,56 +84115,87 @@ async function analyseWorkflows() {
 `;
     }
   }
-  const prLinks = await getUpdatedPrLinks();
-  if (prLinks.length > 0) {
-    reportContent += `## Open Pull Requests
-
-`;
-    prLinks.forEach((link) => {
-      reportContent += `${link}
-`;
-    });
-    reportContent += `
-`;
+  try {
+    await fs.promises.writeFile(reportPath, reportContent);
+    console.log(`Report generated at ${reportPath}`);
+  } catch (error) {
+    console.error(`Error writing report file: ${error}`);
   }
-  await fs.promises.writeFile(reportPath, reportContent);
-  console.log(`Report generated at ${reportPath}`);
 }
+
+// sentinel/src/update-workflows.ts
+var fs3 = __toESM(require("fs"));
+var path3 = __toESM(require("path"));
+var import_core7 = __toESM(require_core());
+
+// sentinel/src/pr-links.ts
+var import_core6 = __toESM(require_core());
+var fs2 = __toESM(require("fs"));
+var path2 = __toESM(require("path"));
 async function getUpdatedPrLinks() {
   const octokit = getOctoKitClient();
-  const reportFilePath = (0, import_core5.getInput)("report-file");
-  const reportPath = path.join(process.cwd(), reportFilePath);
+  const reportFilePath = (0, import_core6.getInput)("report-file");
+  const reportPath = path2.join(process.cwd(), reportFilePath);
   const prLinks = [];
-  if (fs.existsSync(reportPath)) {
-    const reportContent = await fs.promises.readFile(reportPath, "utf8");
-    const linkRegex = /^- \[.*\]\((.*)\)$/gm;
-    let match;
-    while ((match = linkRegex.exec(reportContent)) !== null) {
-      const prUrl = match[1];
-      const prMatch = prUrl.match(
-        /https:\/\/github\.com\/exivity\/([^/]+)\/pull\/(\d+)/
-      );
-      if (prMatch) {
-        const repoName = prMatch[1];
-        const prNumber = parseInt(prMatch[2], 10);
-        const { data: prData } = await octokit.rest.pulls.get({
-          owner: "exivity",
-          repo: repoName,
-          pull_number: prNumber
-        });
-        if (prData.state === "open") {
-          prLinks.push(`- [${repoName}](${prUrl})`);
+  if (fs2.existsSync(reportPath)) {
+    try {
+      const reportContent = await fs2.promises.readFile(reportPath, "utf8");
+      const linkRegex = /^- \[.*\]\((.*)\)$/gm;
+      let match;
+      while ((match = linkRegex.exec(reportContent)) !== null) {
+        const prUrl = match[1];
+        const prMatch = prUrl.match(
+          /https:\/\/github\.com\/exivity\/([^/]+)\/pull\/(\d+)/
+        );
+        if (prMatch) {
+          const repoName = prMatch[1];
+          const prNumber = parseInt(prMatch[2], 10);
+          try {
+            const { data: prData } = await octokit.rest.pulls.get({
+              owner: "exivity",
+              repo: repoName,
+              pull_number: prNumber
+            });
+            if (prData.state === "open") {
+              prLinks.push(`- [${repoName}](${prUrl})`);
+            }
+          } catch (error) {
+            if (error.status !== 404) {
+              console.error(
+                `Error fetching PR data for ${repoName}#${prNumber}: ${error}`
+              );
+            }
+          }
         }
       }
+    } catch (error) {
+      console.error(`Error reading report file: ${error}`);
     }
   }
   return prLinks;
 }
+async function savePrLinks(prLinks) {
+  let prOverview = "";
+  if (prLinks.length > 0) {
+    prOverview += `## Open Pull Requests
+
+`;
+    prLinks.forEach((link) => {
+      prOverview += `${link}
+`;
+    });
+    prOverview += `
+`;
+  }
+  const overviewPath = path2.join(process.cwd(), "pr-overview.md");
+  await fs2.promises.writeFile(overviewPath, prOverview, "utf8");
+}
+async function updatePROverview() {
+  const prLinks = await getUpdatedPrLinks();
+  await savePrLinks(prLinks);
+}
 
 // sentinel/src/update-workflows.ts
-var fs2 = __toESM(require("fs"));
-var path2 = __toESM(require("path"));
-var import_core6 = __toESM(require_core());
 async function updateRepoWorkflows(repoName, workflowFiles, searchPattern, replacePattern) {
   const octokit = getOctoKitClient();
   const branchName = "chore/dev-ops-maintenance";
@@ -84231,20 +84260,20 @@ async function updateRepoWorkflows(repoName, workflowFiles, searchPattern, repla
   }
 }
 async function updateWorkflows() {
-  const searchPattern = (0, import_core6.getInput)("search-pattern");
-  const replacePattern = (0, import_core6.getInput)("replace-pattern");
+  const searchPattern = (0, import_core7.getInput)("search-pattern");
+  const replacePattern = (0, import_core7.getInput)("replace-pattern");
   if (!searchPattern || !replacePattern) {
     throw new Error(
       "Both search-pattern and replace-pattern inputs must be provided in update mode"
     );
   }
-  (0, import_core6.info)(`Replacing "${searchPattern}" with "${replacePattern}" in workflows`);
+  (0, import_core7.info)(`Replacing "${searchPattern}" with "${replacePattern}" in workflows`);
   const repos = await getRepos();
   const prLinks = [];
   const repoTasks = repos.map((repo) => async () => {
     try {
       const repoName = repo.name;
-      (0, import_core6.info)(`Processing repository: ${repoName}`);
+      (0, import_core7.info)(`Processing repository: ${repoName}`);
       const workflowFiles = await getWorkflowFiles(repoName);
       const prLink = await updateRepoWorkflows(
         repoName,
@@ -84256,49 +84285,40 @@ async function updateWorkflows() {
         prLinks.push(`- [${repoName}](${prLink})`);
       }
     } catch (error) {
-      (0, import_core6.info)(`Error processing repository ${repo.name}: ${error}`);
+      (0, import_core7.info)(`Error processing repository ${repo.name}: ${error}`);
     }
   });
   await runWithConcurrencyLimit(90, repoTasks);
-  const reportFilePath = (0, import_core6.getInput)("report-file");
-  const reportPath = path2.join(process.cwd(), reportFilePath);
+  const reportFilePath = (0, import_core7.getInput)("report-file");
+  const reportPath = path3.join(process.cwd(), reportFilePath);
   let reportContent = "";
-  if (fs2.existsSync(reportPath)) {
-    reportContent = await fs2.promises.readFile(reportPath, "utf8");
+  if (fs3.existsSync(reportPath)) {
+    reportContent = await fs3.promises.readFile(reportPath, "utf8");
   } else {
     reportContent = `# Workflow Report - ${(/* @__PURE__ */ new Date()).toISOString()}
 
 `;
   }
-  if (prLinks.length > 0) {
-    reportContent += `## Open Pull Requests
-
-`;
-    prLinks.forEach((link) => {
-      reportContent += `${link}
-`;
-    });
-    reportContent += `
-`;
-  }
-  await fs2.promises.writeFile(reportPath, reportContent);
-  (0, import_core6.info)(`Report updated at ${reportPath}`);
+  await fs3.promises.writeFile(reportPath, reportContent);
+  (0, import_core7.info)(`Report updated at ${reportPath}`);
+  await savePrLinks(prLinks);
 }
 
 // sentinel/src/index.ts
 async function run() {
   try {
-    const mode = (0, import_core7.getInput)("mode");
+    const mode = (0, import_core8.getInput)("mode");
     if (mode === "update") {
-      (0, import_core7.info)("Running in update mode");
+      (0, import_core8.info)("Running in update mode");
       await updateWorkflows();
     } else {
-      (0, import_core7.info)("Running in analyse mode");
+      (0, import_core8.info)("Running in analyse mode");
       await analyseWorkflows();
     }
   } catch (error) {
-    (0, import_core7.setFailed)(error?.message || error);
+    (0, import_core8.setFailed)(error?.message || error);
   }
+  await updatePROverview();
 }
 run();
 /*! Bundled license information:

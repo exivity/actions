@@ -1,6 +1,7 @@
 import { info, setFailed, getInput } from '@actions/core'
 import { analyseWorkflows } from './analyse-workflows'
 import { updateWorkflows } from './update-workflows'
+import { updatePROverview } from './pr-links'
 
 async function run() {
   try {
@@ -17,6 +18,8 @@ async function run() {
     // @ts-ignore
     setFailed(error?.message || error)
   }
+
+  await updatePROverview()
 }
 
 run()
