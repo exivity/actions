@@ -3,16 +3,17 @@ import { getOctoKitClient } from '../../release/src/common/inputs'
 import * as fs from 'fs'
 import * as path from 'path'
 
+const prOverviewFile = 'pr-overview.md'
+
 // Helper function to check PR statuses and update links
 export async function getUpdatedPrLinks() {
   const octokit = getOctoKitClient()
-  const reportFilePath = getInput('report-file')
-  const reportPath = path.join(process.cwd(), reportFilePath)
+  const prOverviewPath = path.join(process.cwd(), prOverviewFile)
   const prLinks: string[] = []
 
-  if (fs.existsSync(reportPath)) {
+  if (fs.existsSync(prOverviewPath)) {
     try {
-      const reportContent = await fs.promises.readFile(reportPath, 'utf8')
+      const reportContent = await fs.promises.readFile(prOverviewPath, 'utf8')
       const linkRegex = /^- \[.*\]\((.*)\)$/gm
       let match
       while ((match = linkRegex.exec(reportContent)) !== null) {
@@ -62,7 +63,7 @@ export async function savePrLinks(prLinks: string[]) {
   }
 
   // Write prOverview to pr-overview.md in the root of the project
-  const overviewPath = path.join(process.cwd(), 'pr-overview.md')
+  const overviewPath = path.join(process.cwd(), prOverviewFile)
   await fs.promises.writeFile(overviewPath, prOverview, 'utf8')
 }
 

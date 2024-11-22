@@ -19111,7 +19111,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path4.delimiter}${process.env["PATH"]}`;
     }
     exports2.addPath = addPath;
-    function getInput8(name, options) {
+    function getInput7(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -19121,9 +19121,9 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports2.getInput = getInput8;
+    exports2.getInput = getInput7;
     function getMultilineInput(name, options) {
-      const inputs = getInput8(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput7(name, options).split("\n").filter((x) => x !== "");
       if (options && options.trimWhitespace === false) {
         return inputs;
       }
@@ -19133,7 +19133,7 @@ var require_core = __commonJS({
     function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput8(name, options);
+      const val = getInput7(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -83896,7 +83896,7 @@ var require_out = __commonJS({
 });
 
 // sentinel/src/index.ts
-var import_core8 = __toESM(require_core());
+var import_core7 = __toESM(require_core());
 
 // sentinel/src/analyse-workflows.ts
 var yaml = __toESM(require_dist());
@@ -84126,20 +84126,19 @@ async function analyseWorkflows() {
 // sentinel/src/update-workflows.ts
 var fs3 = __toESM(require("fs"));
 var path3 = __toESM(require("path"));
-var import_core7 = __toESM(require_core());
+var import_core6 = __toESM(require_core());
 
 // sentinel/src/pr-links.ts
-var import_core6 = __toESM(require_core());
 var fs2 = __toESM(require("fs"));
 var path2 = __toESM(require("path"));
+var prOverviewFile = "pr-overview.md";
 async function getUpdatedPrLinks() {
   const octokit = getOctoKitClient();
-  const reportFilePath = (0, import_core6.getInput)("report-file");
-  const reportPath = path2.join(process.cwd(), reportFilePath);
+  const prOverviewPath = path2.join(process.cwd(), prOverviewFile);
   const prLinks = [];
-  if (fs2.existsSync(reportPath)) {
+  if (fs2.existsSync(prOverviewPath)) {
     try {
-      const reportContent = await fs2.promises.readFile(reportPath, "utf8");
+      const reportContent = await fs2.promises.readFile(prOverviewPath, "utf8");
       const linkRegex = /^- \[.*\]\((.*)\)$/gm;
       let match;
       while ((match = linkRegex.exec(reportContent)) !== null) {
@@ -84187,7 +84186,7 @@ async function savePrLinks(prLinks) {
     prOverview += `
 `;
   }
-  const overviewPath = path2.join(process.cwd(), "pr-overview.md");
+  const overviewPath = path2.join(process.cwd(), prOverviewFile);
   await fs2.promises.writeFile(overviewPath, prOverview, "utf8");
 }
 async function updatePROverview() {
@@ -84260,20 +84259,20 @@ async function updateRepoWorkflows(repoName, workflowFiles, searchPattern, repla
   }
 }
 async function updateWorkflows() {
-  const searchPattern = (0, import_core7.getInput)("search-pattern");
-  const replacePattern = (0, import_core7.getInput)("replace-pattern");
+  const searchPattern = (0, import_core6.getInput)("search-pattern");
+  const replacePattern = (0, import_core6.getInput)("replace-pattern");
   if (!searchPattern || !replacePattern) {
     throw new Error(
       "Both search-pattern and replace-pattern inputs must be provided in update mode"
     );
   }
-  (0, import_core7.info)(`Replacing "${searchPattern}" with "${replacePattern}" in workflows`);
+  (0, import_core6.info)(`Replacing "${searchPattern}" with "${replacePattern}" in workflows`);
   const repos = await getRepos();
   const prLinks = [];
   const repoTasks = repos.map((repo) => async () => {
     try {
       const repoName = repo.name;
-      (0, import_core7.info)(`Processing repository: ${repoName}`);
+      (0, import_core6.info)(`Processing repository: ${repoName}`);
       const workflowFiles = await getWorkflowFiles(repoName);
       const prLink = await updateRepoWorkflows(
         repoName,
@@ -84285,11 +84284,11 @@ async function updateWorkflows() {
         prLinks.push(`- [${repoName}](${prLink})`);
       }
     } catch (error) {
-      (0, import_core7.info)(`Error processing repository ${repo.name}: ${error}`);
+      (0, import_core6.info)(`Error processing repository ${repo.name}: ${error}`);
     }
   });
   await runWithConcurrencyLimit(90, repoTasks);
-  const reportFilePath = (0, import_core7.getInput)("report-file");
+  const reportFilePath = (0, import_core6.getInput)("report-file");
   const reportPath = path3.join(process.cwd(), reportFilePath);
   let reportContent = "";
   if (fs3.existsSync(reportPath)) {
@@ -84300,23 +84299,23 @@ async function updateWorkflows() {
 `;
   }
   await fs3.promises.writeFile(reportPath, reportContent);
-  (0, import_core7.info)(`Report updated at ${reportPath}`);
+  (0, import_core6.info)(`Report updated at ${reportPath}`);
   await savePrLinks(prLinks);
 }
 
 // sentinel/src/index.ts
 async function run() {
   try {
-    const mode = (0, import_core8.getInput)("mode");
+    const mode = (0, import_core7.getInput)("mode");
     if (mode === "update") {
-      (0, import_core8.info)("Running in update mode");
+      (0, import_core7.info)("Running in update mode");
       await updateWorkflows();
     } else {
-      (0, import_core8.info)("Running in analyse mode");
+      (0, import_core7.info)("Running in analyse mode");
       await analyseWorkflows();
     }
   } catch (error) {
-    (0, import_core8.setFailed)(error?.message || error);
+    (0, import_core7.setFailed)(error?.message || error);
   }
   await updatePROverview();
 }
