@@ -85259,19 +85259,11 @@ var getOctoKitClient = () => {
 var contentQueue = new PQueue({ concurrency: 90 });
 var vulnerabilityAlertsQueue = new PQueue({ concurrency: 90 });
 async function getRepos() {
-  const octokit = getOctoKitClient();
-  const repos = [];
-  for await (const response of octokit.paginate.iterator(
-    octokit.rest.repos.listForOrg,
-    {
-      org: "exivity",
-      type: "all",
-      per_page: 100
-    }
-  )) {
-    response.data.forEach((item) => repos.push(item));
-  }
-  return repos;
+  return [
+    { name: "merlin", html_url: "https://github.com/exivity/merlin" },
+    { name: "hermes", html_url: "https://github.com/exivity/hermes" },
+    { name: "actions", html_url: "https://github.com/exivity/actions" }
+  ];
 }
 async function getFiles(repoName, path3) {
   const octokit = getOctoKitClient();
