@@ -85386,7 +85386,9 @@ async function externalActionsReport(repos) {
       if (!actionsUsed.has(action)) {
         actionsUsed.set(action, []);
       }
-      actionsUsed.get(action).push(repo);
+      if (!actionsUsed.get(action).includes(repo)) {
+        actionsUsed.get(action).push(repo);
+      }
     }
   }
   for (const [action, repos2] of actionsUsed) {
@@ -85409,7 +85411,9 @@ async function exivityActionsReport(repos) {
       if (!actionsUsed.has(action)) {
         actionsUsed.set(action, []);
       }
-      actionsUsed.get(action).push(repo);
+      if (!actionsUsed.get(action).includes(repo)) {
+        actionsUsed.get(action).push(repo);
+      }
     }
   }
   for (const [action, repos2] of actionsUsed) {
@@ -85477,7 +85481,9 @@ async function operatingSystemsReport(repos) {
       if (!osUsed.has(os)) {
         osUsed.set(os, []);
       }
-      osUsed.get(os).push(repo);
+      if (!osUsed.get(os).includes(repo)) {
+        osUsed.get(os).push(repo);
+      }
     }
   }
   for (const [os, repos2] of osUsed) {
@@ -85503,15 +85509,15 @@ async function standardsAdherenceReport(repos) {
     }
   }
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile);
-  formatRepoList("Has No CODEOWNERS File", withoutCodeowners);
+  reportContent += formatRepoList("Has No CODEOWNERS File", withoutCodeowners);
   const withoutDependabot = [];
   for (const repo of repos) {
     if (!await hasDependabotAlerts("exivity", repo.name) || !repo.githubFiles?.some((file) => file.name === "dependabot.yml")) {
       withoutDependabot.push(repo);
     }
   }
-  formatRepoList("Has No Dependabot Alerts", withoutDependabot);
-  formatRepoList(
+  reportContent += formatRepoList("Has No Dependabot Alerts", withoutDependabot);
+  reportContent += formatRepoList(
     "Adheres To Standards",
     repos.filter(
       (repo) => !withoutDependabot.includes(repo) && !withoutCodeowners.includes(repo)

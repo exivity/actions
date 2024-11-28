@@ -43,7 +43,10 @@ export async function externalActionsReport(repos: RepoData[]) {
       if (!actionsUsed.has(action)) {
         actionsUsed.set(action, [])
       }
-      actionsUsed.get(action)!.push(repo)
+
+      if (!actionsUsed.get(action)!.includes(repo)) {
+        actionsUsed.get(action)!.push(repo)
+      }
     }
   }
 
@@ -70,7 +73,10 @@ export async function exivityActionsReport(repos: RepoData[]) {
       if (!actionsUsed.has(action)) {
         actionsUsed.set(action, [])
       }
-      actionsUsed.get(action)!.push(repo)
+
+      if (!actionsUsed.get(action)!.includes(repo)) {
+        actionsUsed.get(action)!.push(repo)
+      }
     }
   }
 

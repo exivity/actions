@@ -18,7 +18,7 @@ export async function standardsAdherenceReport(repos: RepoData[]) {
   }
 
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile)
-  formatRepoList('Has No CODEOWNERS File', withoutCodeowners)
+  reportContent += formatRepoList('Has No CODEOWNERS File', withoutCodeowners)
 
   const withoutDependabot: RepoData[] = []
   for (const repo of repos) {
@@ -29,9 +29,9 @@ export async function standardsAdherenceReport(repos: RepoData[]) {
       withoutDependabot.push(repo)
     }
   }
-  formatRepoList('Has No Dependabot Alerts', withoutDependabot)
+  reportContent += formatRepoList('Has No Dependabot Alerts', withoutDependabot)
 
-  formatRepoList(
+  reportContent += formatRepoList(
     'Adheres To Standards',
     repos.filter(
       (repo) =>

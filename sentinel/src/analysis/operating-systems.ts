@@ -73,7 +73,10 @@ export async function operatingSystemsReport(repos: RepoData[]) {
       if (!osUsed.has(os)) {
         osUsed.set(os, [])
       }
-      osUsed.get(os)!.push(repo)
+
+      if (!osUsed.get(os)!.includes(repo)) {
+        osUsed.get(os)!.push(repo)
+      }
     }
   }
 
