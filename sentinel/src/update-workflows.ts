@@ -6,7 +6,7 @@ import { getInput, info } from '@actions/core'
 import {
   getFileContent,
   getRepos,
-  getWorkflowFiles,
+  getFiles,
   runWithConcurrencyLimit,
 } from './utils'
 import { savePrLinks } from './pr-links'
@@ -114,7 +114,7 @@ export async function updateWorkflows() {
       const repoName = repo.name
       info(`Processing repository: ${repoName}`)
 
-      const workflowFiles = await getWorkflowFiles(repoName)
+      const workflowFiles = await getFiles(repoName, '.github/workflows')
 
       const prLink = await updateRepoWorkflows(
         repoName,

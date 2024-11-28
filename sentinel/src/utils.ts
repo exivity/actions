@@ -17,20 +17,20 @@ export async function getRepos() {
   return repos
 }
 
-export async function getWorkflowFiles(repoName: string) {
+export async function getFiles(repoName: string, path: string) {
   const octokit = getOctoKitClient()
   try {
     const response = await octokit.rest.repos.getContent({
       owner: 'exivity',
       repo: repoName,
-      path: '.github/workflows',
+      path,
     })
 
     if (Array.isArray(response.data)) {
       return response.data.filter((item) => item.type === 'file')
     }
   } catch {
-    // Repository might not have a workflows directory
+    // Repository might not have files at the given path
   }
   return []
 }
@@ -54,6 +54,23 @@ export async function getFileContent(
   return null
 }
 
+export async function hasDependabotAlerts(
+  owner: string,
+  repo: string,
+): Promise<boolean> {
+  const octokit = getOctoKitClient()
+
+  try {
+    await octokit.rest.repos.checkVulnerabilityAlerts({
+      owner,
+      repo,
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
 // Add a helper function to limit concurrency
 export async function runWithConcurrencyLimit<T>(
   limit: number,
@@ -72,4 +89,35 @@ export async function runWithConcurrencyLimit<T>(
   const workers = Array.from({ length: Math.min(limit, tasks.length) }, worker)
   await Promise.all(workers)
   return results
+}
+
+export function formatRepoList(
+  title: string,
+  repos: { name: string; url: string }[],
+  subTitle?: boolean,
+): string {
+  let result = ''
+
+  if (subTitle) {
+    result += `### ${title}\n\n`
+  } else {
+    result += `## ${title}\n\n`
+  }
+
+  if (repos.length === 0) {
+    result += 'No repositories found\n'
+  } else if (repos.length > 3) {
+    result += `<details><summary>Show ${repos.length} repositories</summary>\n\n`
+    for (const { name, url } of repos) {
+      result += `- [${name}](${url})\n`
+    }
+    result += `\n</details>\n\n`
+  } else {
+    for (const { name, url } of repos) {
+      result += `- [${name}](${url})\n`
+    }
+    result += `\n`
+  }
+
+  return result
 }
