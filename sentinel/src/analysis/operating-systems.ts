@@ -9,7 +9,13 @@ function getOSUsed(file: FileData): string[] {
     return []
   }
 
-  const data = yaml.parse(file.content)
+  let data
+  try {
+    data = yaml.parse(file.content)
+  } catch {
+    console.error(`Error parsing ${file.path} as yaml`)
+    return []
+  }
   let osTypes = new Set<string>()
 
   if (data && data.jobs) {

@@ -1,9 +1,4 @@
-import {
-  getFileContent,
-  getRepos,
-  getFiles,
-  runWithConcurrencyLimit,
-} from '../utils'
+import { getFileContent, getRepos, getFiles } from '../github-api'
 
 import { exivityActionsReport, externalActionsReport } from './actions'
 import { operatingSystemsReport } from './operating-systems'
@@ -31,19 +26,12 @@ export async function analyseRepositories() {
   )
   console.log(`Found ${repos.length} repositories.`)
 
-  const rootTasks = repos.map((repo) => async () => {
+  for (const repo of repos) {
+    console.log(`Analyzing ${repo.name}...`)
     await retrieveRootFiles(repo)
-  })
-  const workflowTasks = repos.map((repo) => async () => {
     await retrieveWorkflowFiles(repo)
-  })
-  const githubFileTasks = repos.map((repo) => async () => {
     await retrieveGithubFiles(repo)
-  })
-
-  await runWithConcurrencyLimit(40, rootTasks)
-  await runWithConcurrencyLimit(40, workflowTasks)
-  await runWithConcurrencyLimit(40, githubFileTasks)
+  }
 
   for (const repo of repos) {
     for (const file of repo.rootFiles || []) {
@@ -66,7 +54,7 @@ export async function analyseRepositories() {
 }
 
 async function getFileContents(repo: string, files: FileData[]) {
-  const fileTasks = files.map((file) => async () => {
+  for (const file of files) {
     try {
       const content = await getFileContent('exivity', repo, file.path)
       if (content) {
@@ -75,9 +63,8 @@ async function getFileContents(repo: string, files: FileData[]) {
     } catch (error) {
       console.error(`Error analyzing ${repo}/${file.path}: ${error}`)
     }
-  })
+  }
 
-  await runWithConcurrencyLimit(40, fileTasks)
   return files
 }
 

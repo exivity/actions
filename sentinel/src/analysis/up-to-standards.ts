@@ -1,7 +1,8 @@
 import * as fs from 'fs'
 
-import { formatRepoList, hasDependabotAlerts } from '../utils'
+import { formatRepoList } from '../utils'
 import { RepoData } from '.'
+import { hasDependabotAlerts } from '../github-api'
 
 export async function standardsAdherenceReport(repos: RepoData[]) {
   let reportContent = `# Standards Adherence Report - ${new Date().toISOString()}\n\n`
