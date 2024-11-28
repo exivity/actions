@@ -84937,9 +84937,9 @@ async function analyseRepositories() {
   const githubFileTasks = repos.map((repo) => async () => {
     await retrieveGithubFiles(repo);
   });
-  await runWithConcurrencyLimit(90, rootTasks);
-  await runWithConcurrencyLimit(90, workflowTasks);
-  await runWithConcurrencyLimit(90, githubFileTasks);
+  await runWithConcurrencyLimit(40, rootTasks);
+  await runWithConcurrencyLimit(40, workflowTasks);
+  await runWithConcurrencyLimit(40, githubFileTasks);
   for (const repo of repos) {
     for (const file of repo.rootFiles || []) {
       if (file.name === "CODEOWNERS") {
@@ -84965,7 +84965,7 @@ async function getFileContents(repo, files) {
       console.error(`Error analyzing ${repo}/${file.path}: ${error}`);
     }
   });
-  await runWithConcurrencyLimit(90, fileTasks);
+  await runWithConcurrencyLimit(40, fileTasks);
   return files;
 }
 async function retrieveWorkflowFiles(repo) {
