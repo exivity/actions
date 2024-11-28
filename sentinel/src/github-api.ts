@@ -6,26 +6,20 @@ const contentQueue = new PQueue({ concurrency: 90 })
 const vulnerabilityAlertsQueue = new PQueue({ concurrency: 90 })
 
 export async function getRepos() {
-  // TODO: revert as this is for testing
-  //   const octokit = getOctoKitClient()
+  const octokit = getOctoKitClient()
 
-  //   const repos: any[] = []
-  //   for await (const response of octokit.paginate.iterator(
-  //     octokit.rest.repos.listForOrg,
-  //     {
-  //       org: 'exivity',
-  //       type: 'all',
-  //       per_page: 100,
-  //     },
-  //   )) {
-  //     response.data.forEach((item) => repos.push(item))
-  //   }
-  //   return repos
-  return [
-    { name: 'merlin', html_url: 'https://github.com/exivity/merlin' },
-    { name: 'hermes', html_url: 'https://github.com/exivity/hermes' },
-    { name: 'actions', html_url: 'https://github.com/exivity/actions' },
-  ]
+  const repos: any[] = []
+  for await (const response of octokit.paginate.iterator(
+    octokit.rest.repos.listForOrg,
+    {
+      org: 'exivity',
+      type: 'all',
+      per_page: 100,
+    },
+  )) {
+    response.data.forEach((item) => repos.push(item))
+  }
+  return repos
 }
 
 export async function getFiles(repoName: string, path: string) {
