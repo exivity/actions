@@ -1,5 +1,5 @@
 import { info, setFailed, getInput } from '@actions/core'
-import { analyseWorkflows } from './analyse-workflows'
+import { analyseRepositories } from './analysis'
 import { updateWorkflows } from './update-workflows'
 import { updatePROverview } from './pr-links'
 
@@ -12,7 +12,7 @@ async function run() {
       await updateWorkflows()
     } else {
       info('Running in analyse mode')
-      await analyseWorkflows()
+      await analyseRepositories()
     }
   } catch (error: unknown) {
     // @ts-ignore

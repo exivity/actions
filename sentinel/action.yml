@@ -5,10 +5,6 @@ inputs:
     description: A GitHub token with access to repositories
     required: false
     default: ${{ github.token }}
-  report-file:
-    description: The file path to write the report to
-    required: false
-    default: 'README.md'
   mode:
     description: 'Mode of operation: analyse or update'
     required: false

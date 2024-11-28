@@ -3,12 +3,7 @@ import * as path from 'path'
 import { getOctoKitClient } from '../../release/src/common/inputs'
 import { getInput, info } from '@actions/core'
 
-import {
-  getFileContent,
-  getRepos,
-  getWorkflowFiles,
-  runWithConcurrencyLimit,
-} from './utils'
+import { getFileContent, getRepos, getFiles } from './github-api'
 import { savePrLinks } from './pr-links'
 
 async function updateRepoWorkflows(
@@ -44,32 +39,30 @@ async function updateRepoWorkflows(
 
   let filesChanged = 0
 
-  // Create tasks for workflow files
-  const fileTasks = workflowFiles.map((file) => async () => {
-    const content = await getFileContent('exivity', repoName, file.path)
-    if (content && content.includes(searchPattern)) {
-      const updatedContent = content.replace(
-        new RegExp(searchPattern, 'g'),
-        replacePattern,
-      )
-      if (updatedContent !== content) {
-        const encodedContent = Buffer.from(updatedContent).toString('base64')
-        await octokit.rest.repos.createOrUpdateFileContents({
-          owner: 'exivity',
-          repo: repoName,
-          path: file.path,
-          message: commitMessage,
-          content: encodedContent,
-          sha: file.sha,
-          branch: branchName,
-        })
-        filesChanged++
+  await Promise.all(
+    workflowFiles.map(async (file) => {
+      const content = await getFileContent('exivity', repoName, file.path)
+      if (content && content.includes(searchPattern)) {
+        const updatedContent = content.replace(
+          new RegExp(searchPattern, 'g'),
+          replacePattern,
+        )
+        if (updatedContent !== content) {
+          const encodedContent = Buffer.from(updatedContent).toString('base64')
+          await octokit.rest.repos.createOrUpdateFileContents({
+            owner: 'exivity',
+            repo: repoName,
+            path: file.path,
+            message: commitMessage,
+            content: encodedContent,
+            sha: file.sha,
+            branch: branchName,
+          })
+          filesChanged++
+        }
       }
-    }
-  })
-
-  // Limit concurrency for workflow files
-  await runWithConcurrencyLimit(90, fileTasks)
+    }),
+  )
 
   if (filesChanged > 0) {
     // Create a pull request
@@ -109,29 +102,28 @@ export async function updateWorkflows() {
   const prLinks: string[] = []
 
   // Create tasks for repositories
-  const repoTasks = repos.map((repo) => async () => {
-    try {
-      const repoName = repo.name
-      info(`Processing repository: ${repoName}`)
+  await Promise.all(
+    repos.map(async (repo) => {
+      try {
+        const repoName = repo.name
+        info(`Processing repository: ${repoName}`)
 
-      const workflowFiles = await getWorkflowFiles(repoName)
+        const workflowFiles = await getFiles(repoName, '.github/workflows')
 
-      const prLink = await updateRepoWorkflows(
-        repoName,
-        workflowFiles,
-        searchPattern,
-        replacePattern,
-      )
-      if (prLink) {
-        prLinks.push(`- [${repoName}](${prLink})`)
+        const prLink = await updateRepoWorkflows(
+          repoName,
+          workflowFiles,
+          searchPattern,
+          replacePattern,
+        )
+        if (prLink) {
+          prLinks.push(`- [${repoName}](${prLink})`)
+        }
+      } catch (error) {
+        info(`Error processing repository ${repo.name}: ${error}`)
       }
-    } catch (error) {
-      info(`Error processing repository ${repo.name}: ${error}`)
-    }
-  })
-
-  // Limit concurrency for repositories
-  await runWithConcurrencyLimit(90, repoTasks)
+    }),
+  )
 
   // Update the report file with PR links
   const reportFilePath = getInput('report-file')
