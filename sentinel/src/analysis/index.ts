@@ -26,12 +26,15 @@ export async function analyseRepositories() {
   )
   console.log(`Found ${repos.length} repositories.`)
 
-  for (const repo of repos) {
-    console.log(`Analyzing ${repo.name}...`)
-    await retrieveRootFiles(repo)
-    await retrieveWorkflowFiles(repo)
-    await retrieveGithubFiles(repo)
-  }
+  await Promise.all(
+    repos.map(async (repo) => {
+      console.log(`Analyzing ${repo.name}...`)
+      await retrieveRootFiles(repo)
+      await retrieveWorkflowFiles(repo)
+      await retrieveGithubFiles(repo)
+      console.log(`Finished retrieval of ${repo.name}`)
+    }),
+  )
 
   await operatingSystemsReport(repos)
 

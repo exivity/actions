@@ -4,12 +4,18 @@ import * as fs from 'fs'
 import { RepoData, FileData } from '.'
 import { formatRepoList } from '../utils'
 
-function getActionsUsed(file: FileData): string[] {
+function getActionsUsed(repo: string, file: FileData): string[] {
   if (!file.content) {
     return []
   }
 
-  const data = yaml.parse(file.content)
+  let data
+  try {
+    data = yaml.parse(file.content)
+  } catch {
+    console.error(`Error parsing ${file.path} as yaml in repo ${repo}`)
+    return []
+  }
   let actionsUsed = new Set<string>()
 
   if (data && data.jobs) {
@@ -35,7 +41,7 @@ export async function externalActionsReport(repos: RepoData[]) {
 
   for (const repo of repos) {
     const actions = (repo.workflowFiles ?? []).flatMap((file) =>
-      getActionsUsed(file),
+      getActionsUsed(repo.name, file),
     )
     for (const action of actions) {
       if (action.startsWith('exivity/') || action.startsWith('./')) continue
@@ -65,7 +71,7 @@ export async function exivityActionsReport(repos: RepoData[]) {
 
   for (const repo of repos) {
     const actions = (repo.workflowFiles ?? []).flatMap((file) =>
-      getActionsUsed(file),
+      getActionsUsed(repo.name, file),
     )
     for (const action of actions) {
       if (!action.startsWith('exivity/') && !action.startsWith('./')) continue

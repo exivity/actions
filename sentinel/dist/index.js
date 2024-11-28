@@ -85361,11 +85361,17 @@ function formatRepoList(title, repos, subTitle) {
 }
 
 // sentinel/src/analysis/actions.ts
-function getActionsUsed(file) {
+function getActionsUsed(repo, file) {
   if (!file.content) {
     return [];
   }
-  const data = yaml.parse(file.content);
+  let data;
+  try {
+    data = yaml.parse(file.content);
+  } catch {
+    console.error(`Error parsing ${file.path} as yaml in repo ${repo}`);
+    return [];
+  }
   let actionsUsed = /* @__PURE__ */ new Set();
   if (data && data.jobs) {
     for (const job of Object.values(data.jobs)) {
@@ -85387,7 +85393,7 @@ async function externalActionsReport(repos) {
   const actionsUsed = /* @__PURE__ */ new Map();
   for (const repo of repos) {
     const actions = (repo.workflowFiles ?? []).flatMap(
-      (file) => getActionsUsed(file)
+      (file) => getActionsUsed(repo.name, file)
     );
     for (const action of actions) {
       if (action.startsWith("exivity/") || action.startsWith("./")) continue;
@@ -85412,7 +85418,7 @@ async function exivityActionsReport(repos) {
   const actionsUsed = /* @__PURE__ */ new Map();
   for (const repo of repos) {
     const actions = (repo.workflowFiles ?? []).flatMap(
-      (file) => getActionsUsed(file)
+      (file) => getActionsUsed(repo.name, file)
     );
     for (const action of actions) {
       if (!action.startsWith("exivity/") && !action.startsWith("./")) continue;
@@ -85542,12 +85548,15 @@ async function analyseRepositories() {
     (repo) => ({ name: repo.name, url: repo.html_url })
   );
   console.log(`Found ${repos.length} repositories.`);
-  for (const repo of repos) {
-    console.log(`Analyzing ${repo.name}...`);
-    await retrieveRootFiles(repo);
-    await retrieveWorkflowFiles(repo);
-    await retrieveGithubFiles(repo);
-  }
+  await Promise.all(
+    repos.map(async (repo) => {
+      console.log(`Analyzing ${repo.name}...`);
+      await retrieveRootFiles(repo);
+      await retrieveWorkflowFiles(repo);
+      await retrieveGithubFiles(repo);
+      console.log(`Finished retrieval of ${repo.name}`);
+    })
+  );
   await operatingSystemsReport(repos);
   await externalActionsReport(repos);
   await exivityActionsReport(repos);
