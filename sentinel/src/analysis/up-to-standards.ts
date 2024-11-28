@@ -1,11 +1,21 @@
 import * as fs from 'fs'
 
 import { formatRepoList } from '../utils'
-import { RepoData } from '.'
+import { RepoData, setFileDataContent } from '.'
 import { hasDependabotAlerts } from '../github-api'
 
 export async function standardsAdherenceReport(repos: RepoData[]) {
   let reportContent = `# Standards Adherence Report - ${new Date().toISOString()}\n\n`
+
+  for (const repo of repos) {
+    for (const file of repo.rootFiles || []) {
+      if (file.name === 'CODEOWNERS') {
+        await setFileDataContent(repo.name, file)
+        repo.codeownersFile = file
+        break
+      }
+    }
+  }
 
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile)
   formatRepoList('Has No CODEOWNERS File', withoutCodeowners)

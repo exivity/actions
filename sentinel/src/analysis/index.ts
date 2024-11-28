@@ -33,15 +33,6 @@ export async function analyseRepositories() {
     await retrieveGithubFiles(repo)
   }
 
-  for (const repo of repos) {
-    for (const file of repo.rootFiles || []) {
-      if (file.name === 'CODEOWNERS') {
-        repo.codeownersFile = file
-        break
-      }
-    }
-  }
-
   await operatingSystemsReport(repos)
 
   await externalActionsReport(repos)
@@ -53,8 +44,11 @@ export async function analyseRepositories() {
   console.log('Analysis complete.')
 }
 
-async function getFileContents(repo: string, files: FileData[]) {
-  for (const file of files) {
+export async function setFileDataContent(
+  repo: string,
+  file: FileData,
+): Promise<FileData> {
+  if (!file.content) {
     try {
       const content = await getFileContent('exivity', repo, file.path)
       if (content) {
@@ -62,32 +56,31 @@ async function getFileContents(repo: string, files: FileData[]) {
       }
     } catch (error) {
       console.error(`Error analyzing ${repo}/${file.path}: ${error}`)
+      file.content = ''
     }
   }
 
-  return files
+  return file
 }
 
 async function retrieveWorkflowFiles(repo: RepoData) {
-  const workflowFileInfos = (
-    await getFiles(repo.name, '.github/workflows')
-  ).map((file) => ({ name: file.name, path: file.path }) as FileData)
+  const files = (await getFiles(repo.name, '.github/workflows')).map(
+    (file) => ({ name: file.name, path: file.path }) as FileData,
+  )
 
-  repo.workflowFiles = await getFileContents(repo.name, workflowFileInfos)
+  return await Promise.all(
+    files.map((file) => setFileDataContent(repo.name, file)),
+  )
 }
 
 async function retrieveRootFiles(repo: RepoData) {
-  const rootFileInfos = (await getFiles(repo.name, '')).map(
+  return (await getFiles(repo.name, '')).map(
     (file) => ({ name: file.name, path: file.path }) as FileData,
   )
-
-  repo.rootFiles = await getFileContents(repo.name, rootFileInfos)
 }
 
 async function retrieveGithubFiles(repo: RepoData) {
-  const githubFileInfos = (await getFiles(repo.name, '.github')).map(
+  return (await getFiles(repo.name, '.github')).map(
     (file) => ({ name: file.name, path: file.path }) as FileData,
   )
-
-  repo.rootFiles = await getFileContents(repo.name, githubFileInfos)
 }

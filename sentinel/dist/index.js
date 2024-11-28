@@ -85501,6 +85501,15 @@ async function standardsAdherenceReport(repos) {
   let reportContent = `# Standards Adherence Report - ${(/* @__PURE__ */ new Date()).toISOString()}
 
 `;
+  for (const repo of repos) {
+    for (const file of repo.rootFiles || []) {
+      if (file.name === "CODEOWNERS") {
+        await setFileDataContent(repo.name, file);
+        repo.codeownersFile = file;
+        break;
+      }
+    }
+  }
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile);
   formatRepoList("Has No CODEOWNERS File", withoutCodeowners);
   const withoutDependabot = [];
@@ -85533,22 +85542,14 @@ async function analyseRepositories() {
     await retrieveWorkflowFiles(repo);
     await retrieveGithubFiles(repo);
   }
-  for (const repo of repos) {
-    for (const file of repo.rootFiles || []) {
-      if (file.name === "CODEOWNERS") {
-        repo.codeownersFile = file;
-        break;
-      }
-    }
-  }
   await operatingSystemsReport(repos);
   await externalActionsReport(repos);
   await exivityActionsReport(repos);
   await standardsAdherenceReport(repos);
   console.log("Analysis complete.");
 }
-async function getFileContents(repo, files) {
-  for (const file of files) {
+async function setFileDataContent(repo, file) {
+  if (!file.content) {
     try {
       const content = await getFileContent("exivity", repo, file.path);
       if (content) {
@@ -85556,25 +85557,28 @@ async function getFileContents(repo, files) {
       }
     } catch (error) {
       console.error(`Error analyzing ${repo}/${file.path}: ${error}`);
+      file.content = "";
     }
   }
-  return files;
+  return file;
 }
 async function retrieveWorkflowFiles(repo) {
-  const workflowFileInfos = (await getFiles(repo.name, ".github/workflows")).map((file) => ({ name: file.name, path: file.path }));
-  repo.workflowFiles = await getFileContents(repo.name, workflowFileInfos);
+  const files = (await getFiles(repo.name, ".github/workflows")).map(
+    (file) => ({ name: file.name, path: file.path })
+  );
+  return await Promise.all(
+    files.map((file) => setFileDataContent(repo.name, file))
+  );
 }
 async function retrieveRootFiles(repo) {
-  const rootFileInfos = (await getFiles(repo.name, "")).map(
+  return (await getFiles(repo.name, "")).map(
     (file) => ({ name: file.name, path: file.path })
   );
-  repo.rootFiles = await getFileContents(repo.name, rootFileInfos);
 }
 async function retrieveGithubFiles(repo) {
-  const githubFileInfos = (await getFiles(repo.name, ".github")).map(
+  return (await getFiles(repo.name, ".github")).map(
     (file) => ({ name: file.name, path: file.path })
   );
-  repo.rootFiles = await getFileContents(repo.name, githubFileInfos);
 }
 
 // sentinel/src/update-workflows.ts
