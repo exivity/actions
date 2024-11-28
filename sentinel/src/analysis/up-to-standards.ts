@@ -4,7 +4,7 @@ import { formatRepoList, hasDependabotAlerts } from '../utils'
 import { RepoData } from '.'
 
 export async function standardsAdherenceReport(repos: RepoData[]) {
-  let reportContent = `# Standards Adherence Report\n\n`
+  let reportContent = `# Standards Adherence Report - ${new Date().toISOString()}\n\n`
 
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile)
   formatRepoList('Has No CODEOWNERS File', withoutCodeowners)
@@ -28,6 +28,6 @@ export async function standardsAdherenceReport(repos: RepoData[]) {
     ),
   )
 
-  await fs.promises.writeFile('operating-systems.md', reportContent)
+  await fs.promises.writeFile('standards-adherence.md', reportContent)
   console.log(`Operating systems report generated`)
 }

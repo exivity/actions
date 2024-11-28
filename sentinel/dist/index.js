@@ -84788,7 +84788,7 @@ function getActionsUsed(file) {
   return Array.from(actionsUsed);
 }
 async function externalActionsReport(repos) {
-  let reportContent = `# External Actions Report
+  let reportContent = `# External Actions Report - ${(/* @__PURE__ */ new Date()).toISOString()}
 
 `;
   const actionsUsed = /* @__PURE__ */ new Map();
@@ -84811,7 +84811,7 @@ async function externalActionsReport(repos) {
   console.log(`External actions report generated`);
 }
 async function exivityActionsReport(repos) {
-  let reportContent = `# Exivity Actions Report
+  let reportContent = `# Exivity Actions Report - ${(/* @__PURE__ */ new Date()).toISOString()}
 
 `;
   const actionsUsed = /* @__PURE__ */ new Map();
@@ -84874,7 +84874,7 @@ function getOSUsed(file) {
   return Array.from(osTypes);
 }
 async function operatingSystemsReport(repos) {
-  let reportContent = `# Operating Systems Report
+  let reportContent = `# Operating Systems Report - ${(/* @__PURE__ */ new Date()).toISOString()}
 
 `;
   const osUsed = /* @__PURE__ */ new Map();
@@ -84899,7 +84899,7 @@ async function operatingSystemsReport(repos) {
 // sentinel/src/analysis/up-to-standards.ts
 var fs3 = __toESM(require("fs"));
 async function standardsAdherenceReport(repos) {
-  let reportContent = `# Standards Adherence Report
+  let reportContent = `# Standards Adherence Report - ${(/* @__PURE__ */ new Date()).toISOString()}
 
 `;
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile);
@@ -84917,7 +84917,7 @@ async function standardsAdherenceReport(repos) {
       (repo) => !withoutDependabot.includes(repo) && !withoutCodeowners.includes(repo)
     )
   );
-  await fs3.promises.writeFile("operating-systems.md", reportContent);
+  await fs3.promises.writeFile("standards-adherence.md", reportContent);
   console.log(`Operating systems report generated`);
 }
 

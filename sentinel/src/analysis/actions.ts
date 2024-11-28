@@ -29,7 +29,7 @@ function getActionsUsed(file: FileData): string[] {
 }
 
 export async function externalActionsReport(repos: RepoData[]) {
-  let reportContent = `# External Actions Report\n\n`
+  let reportContent = `# External Actions Report - ${new Date().toISOString()}\n\n`
 
   const actionsUsed = new Map<string, RepoData[]>()
 
@@ -56,7 +56,7 @@ export async function externalActionsReport(repos: RepoData[]) {
 }
 
 export async function exivityActionsReport(repos: RepoData[]) {
-  let reportContent = `# Exivity Actions Report\n\n`
+  let reportContent = `# Exivity Actions Report - ${new Date().toISOString()}\n\n`
 
   const actionsUsed = new Map<string, RepoData[]>()
 

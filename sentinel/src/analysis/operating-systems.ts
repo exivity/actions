@@ -55,7 +55,7 @@ function getOSUsed(file: FileData): string[] {
 }
 
 export async function operatingSystemsReport(repos: RepoData[]) {
-  let reportContent = `# Operating Systems Report\n\n`
+  let reportContent = `# Operating Systems Report - ${new Date().toISOString()}\n\n`
 
   const osUsed = new Map<string, RepoData[]>()
 
