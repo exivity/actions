@@ -85558,17 +85558,17 @@ async function retrieveWorkflowFiles(repo) {
   const files = (await getFiles(repo.name, ".github/workflows")).map(
     (file) => ({ name: file.name, path: file.path })
   );
-  return await Promise.all(
+  repo.workflowFiles = await Promise.all(
     files.map((file) => setFileDataContent(repo.name, file))
   );
 }
 async function retrieveRootFiles(repo) {
-  return (await getFiles(repo.name, "")).map(
+  repo.rootFiles = (await getFiles(repo.name, "")).map(
     (file) => ({ name: file.name, path: file.path })
   );
 }
 async function retrieveGithubFiles(repo) {
-  return (await getFiles(repo.name, ".github")).map(
+  repo.githubFiles = (await getFiles(repo.name, ".github")).map(
     (file) => ({ name: file.name, path: file.path })
   );
 }

@@ -68,19 +68,19 @@ async function retrieveWorkflowFiles(repo: RepoData) {
     (file) => ({ name: file.name, path: file.path }) as FileData,
   )
 
-  return await Promise.all(
+  repo.workflowFiles = await Promise.all(
     files.map((file) => setFileDataContent(repo.name, file)),
   )
 }
 
 async function retrieveRootFiles(repo: RepoData) {
-  return (await getFiles(repo.name, '')).map(
+  repo.rootFiles = (await getFiles(repo.name, '')).map(
     (file) => ({ name: file.name, path: file.path }) as FileData,
   )
 }
 
 async function retrieveGithubFiles(repo: RepoData) {
-  return (await getFiles(repo.name, '.github')).map(
+  repo.githubFiles = (await getFiles(repo.name, '.github')).map(
     (file) => ({ name: file.name, path: file.path }) as FileData,
   )
 }
