@@ -8,7 +8,7 @@ async function checkCodeowners(
   repos: RepoData[],
   reportContent: string,
   adheringRepos: RepoData[],
-): Promise<RepoData[]> {
+): Promise<[string, RepoData[]]> {
   for (const repo of repos) {
     for (const file of repo.rootFiles || []) {
       if (file.name === 'CODEOWNERS') {
@@ -36,18 +36,21 @@ async function checkCodeowners(
     withoutCodeownersEmail,
   )
 
-  return adheringRepos.filter(
-    (repo) =>
-      !withoutCodeowners.includes(repo) &&
-      !withoutCodeownersEmail.includes(repo),
-  )
+  return [
+    reportContent,
+    adheringRepos.filter(
+      (repo) =>
+        !withoutCodeowners.includes(repo) &&
+        !withoutCodeownersEmail.includes(repo),
+    ),
+  ]
 }
 
 async function checkDependabot(
   repos: RepoData[],
   reportContent: string,
   adheringRepos: RepoData[],
-): Promise<RepoData[]> {
+): Promise<[string, RepoData[]]> {
   const withoutDependabot: RepoData[] = []
   for (const repo of repos) {
     if (
@@ -59,14 +62,17 @@ async function checkDependabot(
   }
   reportContent += formatRepoList('Has No Dependabot Alerts', withoutDependabot)
 
-  return adheringRepos.filter((repo) => !withoutDependabot.includes(repo))
+  return [
+    reportContent,
+    adheringRepos.filter((repo) => !withoutDependabot.includes(repo)),
+  ]
 }
 
 async function checkTopics(
   repos: RepoData[],
   reportContent: string,
   adheringRepos: RepoData[],
-): Promise<RepoData[]> {
+): Promise<[string, RepoData[]]> {
   const languageTopics = [
     'typescript',
     'javascript',
@@ -105,21 +111,34 @@ async function checkTopics(
   // )
   // reportContent += formatRepoList('Has No Team Topics', withoutTeamTopics)
 
-  return adheringRepos.filter(
-    (repo) => !withoutLanguageTopics.includes(repo),
-    // && !withoutTeamTopics.includes(repo),
-  )
+  return [
+    reportContent,
+    adheringRepos.filter(
+      (repo) => !withoutLanguageTopics.includes(repo),
+      // && !withoutTeamTopics.includes(repo),
+    ),
+  ]
 }
 
 export async function standardsAdherenceReport(repos: RepoData[]) {
   let reportContent = `# Standards Adherence Report - ${new Date().toISOString()}\n\n`
   let adheringRepos = repos
 
-  adheringRepos = await checkCodeowners(repos, reportContent, adheringRepos)
-
-  adheringRepos = await checkDependabot(repos, reportContent, adheringRepos)
-
-  adheringRepos = await checkTopics(repos, reportContent, adheringRepos)
+  ;[reportContent, adheringRepos] = await checkCodeowners(
+    repos,
+    reportContent,
+    adheringRepos,
+  )
+  ;[reportContent, adheringRepos] = await checkDependabot(
+    repos,
+    reportContent,
+    adheringRepos,
+  )
+  ;[reportContent, adheringRepos] = await checkTopics(
+    repos,
+    reportContent,
+    adheringRepos,
+  )
 
   reportContent += formatRepoList('Adheres To Standards', adheringRepos)
 

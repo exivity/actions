@@ -85528,9 +85528,12 @@ async function checkCodeowners(repos, reportContent, adheringRepos) {
     "CODEOWNERS File does not have Email",
     withoutCodeownersEmail
   );
-  return adheringRepos.filter(
-    (repo) => !withoutCodeowners.includes(repo) && !withoutCodeownersEmail.includes(repo)
-  );
+  return [
+    reportContent,
+    adheringRepos.filter(
+      (repo) => !withoutCodeowners.includes(repo) && !withoutCodeownersEmail.includes(repo)
+    )
+  ];
 }
 async function checkDependabot(repos, reportContent, adheringRepos) {
   const withoutDependabot = [];
@@ -85540,7 +85543,10 @@ async function checkDependabot(repos, reportContent, adheringRepos) {
     }
   }
   reportContent += formatRepoList("Has No Dependabot Alerts", withoutDependabot);
-  return adheringRepos.filter((repo) => !withoutDependabot.includes(repo));
+  return [
+    reportContent,
+    adheringRepos.filter((repo) => !withoutDependabot.includes(repo))
+  ];
 }
 async function checkTopics(repos, reportContent, adheringRepos) {
   const languageTopics = [
@@ -85566,19 +85572,34 @@ async function checkTopics(repos, reportContent, adheringRepos) {
     "Has No Language Topics",
     withoutLanguageTopics
   );
-  return adheringRepos.filter(
-    (repo) => !withoutLanguageTopics.includes(repo)
-    // && !withoutTeamTopics.includes(repo),
-  );
+  return [
+    reportContent,
+    adheringRepos.filter(
+      (repo) => !withoutLanguageTopics.includes(repo)
+      // && !withoutTeamTopics.includes(repo),
+    )
+  ];
 }
 async function standardsAdherenceReport(repos) {
   let reportContent = `# Standards Adherence Report - ${(/* @__PURE__ */ new Date()).toISOString()}
 
 `;
   let adheringRepos = repos;
-  adheringRepos = await checkCodeowners(repos, reportContent, adheringRepos);
-  adheringRepos = await checkDependabot(repos, reportContent, adheringRepos);
-  adheringRepos = await checkTopics(repos, reportContent, adheringRepos);
+  [reportContent, adheringRepos] = await checkCodeowners(
+    repos,
+    reportContent,
+    adheringRepos
+  );
+  [reportContent, adheringRepos] = await checkDependabot(
+    repos,
+    reportContent,
+    adheringRepos
+  );
+  [reportContent, adheringRepos] = await checkTopics(
+    repos,
+    reportContent,
+    adheringRepos
+  );
   reportContent += formatRepoList("Adheres To Standards", adheringRepos);
   await fs3.promises.writeFile("standards-adherence.md", reportContent);
   console.log(`Operating systems report generated`);
