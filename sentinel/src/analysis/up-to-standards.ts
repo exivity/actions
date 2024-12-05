@@ -106,10 +106,7 @@ async function checkTopics(
   ]
 
   const withoutLanguageTopics = repos.filter(
-    (repo) =>
-      !repo.topics
-        .map((topic) => topic.toLowerCase().replace('-', ''))
-        .some((topic) => languageTopics.includes(topic)),
+    (repo) => !repo.topics.some((topic) => languageTopics.includes(topic)),
   )
   reportContent += formatRepoList(
     'Has No Language Topics',
