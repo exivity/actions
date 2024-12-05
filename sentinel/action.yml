@@ -19,6 +19,10 @@ inputs:
       'The pattern to replace the search pattern with (e.g., ubuntu-22.04)'
     required: false
     default: ''
+  is-test:
+    description: 'Set to true to run in test mode'
+    required: false
+    default: 'false'
 runs:
   using: 'node20'
   main: 'dist/index.js'

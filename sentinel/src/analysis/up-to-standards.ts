@@ -1,8 +1,14 @@
 import * as fs from 'fs'
+import * as yaml from 'yaml'
 
 import { formatRepoList } from '../utils'
 import { RepoData, setFileDataContent } from '.'
 import { hasDependabotAlerts } from '../github-api'
+
+async function getCodeownersTable() {
+  const content = await fs.promises.readFile('codeowners-emails.yaml', 'utf8')
+  return yaml.parse(content)
+}
 
 async function checkCodeowners(
   repos: RepoData[],
@@ -22,17 +28,24 @@ async function checkCodeowners(
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile)
   reportContent += formatRepoList('Has No CODEOWNERS File', withoutCodeowners)
 
+  const codeownerRegex = /^\* (@[\w\-\.]+|[\w\-\.]+@([\w-]+\.)+[\w-]{2,})$/
+  const codeownersTable = getCodeownersTable()
+
   const withoutCodeownersEmail = repos
     .filter((repo) => !!repo.codeownersFile)
-    .filter((repo) => !!repo.codeownersFile!.content)
-    .filter(
-      (repo) =>
-        !repo
-          .codeownersFile!.content!.split('\n')
-          .some((line) => line.match(/[\w\-\.]+@([\w-]+\.)+[\w-]{2,}/)),
-    )
+    .filter((repo) => {
+      const matched = (
+        repo.codeownersFile?.content?.split('\n')[0] ?? ''
+      ).match(codeownerRegex)
+      if (!matched) return true
+
+      const user = matched[1]
+      if (!user.startsWith('@')) return false
+
+      return !(user.substring(1) in codeownersTable)
+    })
   reportContent += formatRepoList(
-    'CODEOWNERS File does not have Email',
+    'CODEOWNERS File does not have Email or User on First Line',
     withoutCodeownersEmail,
   )
 

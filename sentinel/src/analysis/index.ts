@@ -20,9 +20,9 @@ export interface RepoData {
   codeownersFile?: FileData
 }
 
-export async function analyseRepositories() {
+export async function analyseRepositories(isTest: boolean) {
   console.log('Starting analysis...')
-  const repos = (await getRepos()).map(
+  const repos = (await getRepos(isTest)).map(
     (repo) =>
       ({
         name: repo.name,

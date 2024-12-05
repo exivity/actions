@@ -6,13 +6,14 @@ import { updatePROverview } from './pr-links'
 async function run() {
   try {
     const mode = getInput('mode')
+    const isTest = getInput('is-test') === 'true'
 
     if (mode === 'update') {
       info('Running in update mode')
-      await updateWorkflows()
+      await updateWorkflows(isTest)
     } else {
       info('Running in analyse mode')
-      await analyseRepositories()
+      await analyseRepositories(isTest)
     }
   } catch (error: unknown) {
     // @ts-ignore

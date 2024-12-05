@@ -20554,7 +20554,7 @@ var require_dist_node2 = __commonJS({
         return template.replace(/\/$/, "");
       }
     }
-    function parse3(options) {
+    function parse4(options) {
       let method = options.method.toUpperCase();
       let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
       let headers = Object.assign({}, options.headers);
@@ -20618,7 +20618,7 @@ var require_dist_node2 = __commonJS({
       );
     }
     function endpointWithDefaults(defaults, route, options) {
-      return parse3(merge(defaults, route, options));
+      return parse4(merge(defaults, route, options));
     }
     function withDefaults(oldDefaults, newDefaults) {
       const DEFAULTS2 = merge(oldDefaults, newDefaults);
@@ -20627,7 +20627,7 @@ var require_dist_node2 = __commonJS({
         DEFAULTS: DEFAULTS2,
         defaults: withDefaults.bind(null, DEFAULTS2),
         merge: merge.bind(null, DEFAULTS2),
-        parse: parse3
+        parse: parse4
       });
     }
     var endpoint = withDefaults(null, DEFAULTS);
@@ -77758,10 +77758,10 @@ var require_directives = __commonJS({
     };
     var escapeTagName = (tn) => tn.replace(/[!,[\]{}]/g, (ch) => escapeChars[ch]);
     var Directives = class _Directives {
-      constructor(yaml3, tags) {
+      constructor(yaml4, tags) {
         this.docStart = null;
         this.docEnd = false;
-        this.yaml = Object.assign({}, _Directives.defaultYaml, yaml3);
+        this.yaml = Object.assign({}, _Directives.defaultYaml, yaml4);
         this.tags = Object.assign({}, _Directives.defaultTags, tags);
       }
       clone() {
@@ -84695,7 +84695,7 @@ var require_public_api = __commonJS({
       }
       return doc;
     }
-    function parse3(src, reviver, options) {
+    function parse4(src, reviver, options) {
       let _reviver = void 0;
       if (typeof reviver === "function") {
         _reviver = reviver;
@@ -84736,7 +84736,7 @@ var require_public_api = __commonJS({
         return value.toString(options);
       return new Document.Document(value, _replacer, options).toString(options);
     }
-    exports2.parse = parse3;
+    exports2.parse = parse4;
     exports2.parseAllDocuments = parseAllDocuments;
     exports2.parseDocument = parseDocument;
     exports2.stringify = stringify;
@@ -85258,7 +85258,21 @@ var getOctoKitClient = () => {
 // sentinel/src/github-api.ts
 var contentQueue = new PQueue({ concurrency: 90 });
 var vulnerabilityAlertsQueue = new PQueue({ concurrency: 90 });
-async function getRepos() {
+async function getRepos(isTest) {
+  if (isTest) {
+    return [
+      {
+        name: "hermes",
+        html_url: "https://github.com/exivity/hermes",
+        topics: ["api", "codeless"]
+      },
+      {
+        name: "transformer",
+        html_url: "https://github.com/exivity/transformer",
+        topics: ["go", "back-end", "elt", "codeless"]
+      }
+    ];
+  }
   const octokit = getOctoKitClient();
   const repos = [];
   for await (const response of octokit.paginate.iterator(
@@ -85509,6 +85523,11 @@ async function operatingSystemsReport(repos) {
 
 // sentinel/src/analysis/up-to-standards.ts
 var fs3 = __toESM(require("fs"));
+var yaml3 = __toESM(require_dist());
+async function getCodeownersTable() {
+  const content = await fs3.promises.readFile("codeowners-emails.yaml", "utf8");
+  return yaml3.parse(content);
+}
 async function checkCodeowners(repos, reportContent, adheringRepos) {
   for (const repo of repos) {
     for (const file of repo.rootFiles || []) {
@@ -85521,11 +85540,17 @@ async function checkCodeowners(repos, reportContent, adheringRepos) {
   }
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile);
   reportContent += formatRepoList("Has No CODEOWNERS File", withoutCodeowners);
-  const withoutCodeownersEmail = repos.filter((repo) => !!repo.codeownersFile).filter((repo) => !!repo.codeownersFile.content).filter(
-    (repo) => !repo.codeownersFile.content.split("\n").some((line) => line.match(/[\w\-\.]+@([\w-]+\.)+[\w-]{2,}/))
-  );
+  const codeownerRegex = /^\* (@[\w\-\.]+|[\w\-\.]+@([\w-]+\.)+[\w-]{2,})$/;
+  const codeownersTable = getCodeownersTable();
+  const withoutCodeownersEmail = repos.filter((repo) => !!repo.codeownersFile).filter((repo) => {
+    const matched = (repo.codeownersFile?.content?.split("\n")[0] ?? "").match(codeownerRegex);
+    if (!matched) return true;
+    const user = matched[1];
+    if (!user.startsWith("@")) return false;
+    return !(user.substring(1) in codeownersTable);
+  });
   reportContent += formatRepoList(
-    "CODEOWNERS File does not have Email",
+    "CODEOWNERS File does not have Email or User on First Line",
     withoutCodeownersEmail
   );
   return [
@@ -85606,9 +85631,9 @@ async function standardsAdherenceReport(repos) {
 }
 
 // sentinel/src/analysis/index.ts
-async function analyseRepositories() {
+async function analyseRepositories(isTest) {
   console.log("Starting analysis...");
-  const repos = (await getRepos()).map(
+  const repos = (await getRepos(isTest)).map(
     (repo) => ({
       name: repo.name,
       url: repo.html_url,
@@ -85800,7 +85825,7 @@ async function updateRepoWorkflows(repoName, workflowFiles, searchPattern, repla
     return null;
   }
 }
-async function updateWorkflows() {
+async function updateWorkflows(isTest) {
   const searchPattern = (0, import_core5.getInput)("search-pattern");
   const replacePattern = (0, import_core5.getInput)("replace-pattern");
   if (!searchPattern || !replacePattern) {
@@ -85809,7 +85834,7 @@ async function updateWorkflows() {
     );
   }
   (0, import_core5.info)(`Replacing "${searchPattern}" with "${replacePattern}" in workflows`);
-  const repos = await getRepos();
+  const repos = await getRepos(isTest);
   const prLinks = [];
   await Promise.all(
     repos.map(async (repo) => {
@@ -85850,12 +85875,13 @@ async function updateWorkflows() {
 async function run() {
   try {
     const mode = (0, import_core6.getInput)("mode");
+    const isTest = (0, import_core6.getInput)("is-test") === "true";
     if (mode === "update") {
       (0, import_core6.info)("Running in update mode");
-      await updateWorkflows();
+      await updateWorkflows(isTest);
     } else {
       (0, import_core6.info)("Running in analyse mode");
-      await analyseRepositories();
+      await analyseRepositories(isTest);
     }
   } catch (error) {
     (0, import_core6.setFailed)(error?.message || error);
