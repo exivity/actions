@@ -85509,10 +85509,7 @@ async function operatingSystemsReport(repos) {
 
 // sentinel/src/analysis/up-to-standards.ts
 var fs3 = __toESM(require("fs"));
-async function standardsAdherenceReport(repos) {
-  let reportContent = `# Standards Adherence Report - ${(/* @__PURE__ */ new Date()).toISOString()}
-
-`;
+async function checkCodeowners(repos, reportContent, adheringRepos) {
   for (const repo of repos) {
     for (const file of repo.rootFiles || []) {
       if (file.name === "CODEOWNERS") {
@@ -85524,6 +85521,18 @@ async function standardsAdherenceReport(repos) {
   }
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile);
   reportContent += formatRepoList("Has No CODEOWNERS File", withoutCodeowners);
+  const withoutCodeownersEmail = repos.filter((repo) => !!repo.codeownersFile).filter((repo) => !!repo.codeownersFile.content).filter(
+    (repo) => !repo.codeownersFile.content.split("\n").some((line) => line.match(/[\w\-\.]+@([\w-]+\.)+[\w-]{2,}/))
+  );
+  reportContent += formatRepoList(
+    "CODEOWNERS File does not have Email",
+    withoutCodeownersEmail
+  );
+  return adheringRepos.filter(
+    (repo) => !withoutCodeowners.includes(repo) && !withoutCodeownersEmail.includes(repo)
+  );
+}
+async function checkDependabot(repos, reportContent, adheringRepos) {
   const withoutDependabot = [];
   for (const repo of repos) {
     if (!await hasDependabotAlerts("exivity", repo.name) || !repo.githubFiles?.some((file) => file.name === "dependabot.yml")) {
@@ -85531,12 +85540,46 @@ async function standardsAdherenceReport(repos) {
     }
   }
   reportContent += formatRepoList("Has No Dependabot Alerts", withoutDependabot);
-  reportContent += formatRepoList(
-    "Adheres To Standards",
-    repos.filter(
-      (repo) => !withoutDependabot.includes(repo) && !withoutCodeowners.includes(repo)
-    )
+  return adheringRepos.filter((repo) => !withoutDependabot.includes(repo));
+}
+async function checkTopics(repos, reportContent, adheringRepos) {
+  const languageTopics = [
+    "typescript",
+    "javascript",
+    "php",
+    "golang",
+    "go",
+    "rust",
+    "python",
+    "c",
+    "cpp",
+    "sql",
+    "pulumi",
+    "kubernetes",
+    "css",
+    "no-language"
+  ];
+  const withoutLanguageTopics = repos.filter(
+    (repo) => !repo.topics.map((topic) => topic.toLowerCase().replace("-", "")).some((topic) => languageTopics.includes(topic))
   );
+  reportContent += formatRepoList(
+    "Has No Language Topics",
+    withoutLanguageTopics
+  );
+  return adheringRepos.filter(
+    (repo) => !withoutLanguageTopics.includes(repo)
+    // && !withoutTeamTopics.includes(repo),
+  );
+}
+async function standardsAdherenceReport(repos) {
+  let reportContent = `# Standards Adherence Report - ${(/* @__PURE__ */ new Date()).toISOString()}
+
+`;
+  let adheringRepos = repos;
+  adheringRepos = await checkCodeowners(repos, reportContent, adheringRepos);
+  adheringRepos = await checkDependabot(repos, reportContent, adheringRepos);
+  adheringRepos = await checkTopics(repos, reportContent, adheringRepos);
+  reportContent += formatRepoList("Adheres To Standards", adheringRepos);
   await fs3.promises.writeFile("standards-adherence.md", reportContent);
   console.log(`Operating systems report generated`);
 }
@@ -85545,7 +85588,11 @@ async function standardsAdherenceReport(repos) {
 async function analyseRepositories() {
   console.log("Starting analysis...");
   const repos = (await getRepos()).map(
-    (repo) => ({ name: repo.name, url: repo.html_url })
+    (repo) => ({
+      name: repo.name,
+      url: repo.html_url,
+      topics: repo.topics ?? []
+    })
   );
   console.log(`Found ${repos.length} repositories.`);
   await Promise.all(

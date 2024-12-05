@@ -13,6 +13,7 @@ export interface FileData {
 export interface RepoData {
   name: string
   url: string
+  topics: string[]
   workflowFiles?: FileData[]
   rootFiles?: FileData[]
   githubFiles?: FileData[]
@@ -22,7 +23,12 @@ export interface RepoData {
 export async function analyseRepositories() {
   console.log('Starting analysis...')
   const repos = (await getRepos()).map(
-    (repo) => ({ name: repo.name, url: repo.html_url }) as RepoData,
+    (repo) =>
+      ({
+        name: repo.name,
+        url: repo.html_url,
+        topics: repo.topics ?? [],
+      }) as RepoData,
   )
   console.log(`Found ${repos.length} repositories.`)
 
