@@ -4,9 +4,11 @@ import { formatRepoList } from '../utils'
 import { RepoData, setFileDataContent } from '.'
 import { hasDependabotAlerts } from '../github-api'
 
-export async function standardsAdherenceReport(repos: RepoData[]) {
-  let reportContent = `# Standards Adherence Report - ${new Date().toISOString()}\n\n`
-
+async function checkCodeowners(
+  repos: RepoData[],
+  reportContent: string,
+  adheringRepos: RepoData[],
+): Promise<RepoData[]> {
   for (const repo of repos) {
     for (const file of repo.rootFiles || []) {
       if (file.name === 'CODEOWNERS') {
@@ -20,6 +22,32 @@ export async function standardsAdherenceReport(repos: RepoData[]) {
   const withoutCodeowners = repos.filter((repo) => !repo.codeownersFile)
   reportContent += formatRepoList('Has No CODEOWNERS File', withoutCodeowners)
 
+  const withoutCodeownersEmail = repos
+    .filter((repo) => !!repo.codeownersFile)
+    .filter((repo) => !!repo.codeownersFile!.content)
+    .filter(
+      (repo) =>
+        !repo
+          .codeownersFile!.content!.split('\n')
+          .some((line) => line.match(/[\w\-\.]+@([\w-]+\.)+[\w-]{2,}/)),
+    )
+  reportContent += formatRepoList(
+    'CODEOWNERS File does not have Email',
+    withoutCodeownersEmail,
+  )
+
+  return adheringRepos.filter(
+    (repo) =>
+      !withoutCodeowners.includes(repo) &&
+      !withoutCodeownersEmail.includes(repo),
+  )
+}
+
+async function checkDependabot(
+  repos: RepoData[],
+  reportContent: string,
+  adheringRepos: RepoData[],
+): Promise<RepoData[]> {
   const withoutDependabot: RepoData[] = []
   for (const repo of repos) {
     if (
@@ -31,13 +59,69 @@ export async function standardsAdherenceReport(repos: RepoData[]) {
   }
   reportContent += formatRepoList('Has No Dependabot Alerts', withoutDependabot)
 
-  reportContent += formatRepoList(
-    'Adheres To Standards',
-    repos.filter(
-      (repo) =>
-        !withoutDependabot.includes(repo) && !withoutCodeowners.includes(repo),
-    ),
+  return adheringRepos.filter((repo) => !withoutDependabot.includes(repo))
+}
+
+async function checkTopics(
+  repos: RepoData[],
+  reportContent: string,
+  adheringRepos: RepoData[],
+): Promise<RepoData[]> {
+  const languageTopics = [
+    'typescript',
+    'javascript',
+    'php',
+    'golang',
+    'go',
+    'rust',
+    'python',
+    'c',
+    'cpp',
+    'sql',
+    'pulumi',
+    'kubernetes',
+    'css',
+    'no-language',
+  ]
+
+  const withoutLanguageTopics = repos.filter(
+    (repo) =>
+      !repo.topics
+        .map((topic) => topic.toLowerCase().replace('-', ''))
+        .some((topic) => languageTopics.includes(topic)),
   )
+  reportContent += formatRepoList(
+    'Has No Language Topics',
+    withoutLanguageTopics,
+  )
+
+  // const teamTopics = ['api', 'frontend', 'backend', 'devops']
+
+  // const withoutTeamTopics = repos.filter(
+  //   (repo) =>
+  //     !repo.topics
+  //       .map((topic) => topic.toLowerCase().replace('-', ''))
+  //       .some((topic) => teamTopics.includes(topic)),
+  // )
+  // reportContent += formatRepoList('Has No Team Topics', withoutTeamTopics)
+
+  return adheringRepos.filter(
+    (repo) => !withoutLanguageTopics.includes(repo),
+    // && !withoutTeamTopics.includes(repo),
+  )
+}
+
+export async function standardsAdherenceReport(repos: RepoData[]) {
+  let reportContent = `# Standards Adherence Report - ${new Date().toISOString()}\n\n`
+  let adheringRepos = repos
+
+  adheringRepos = await checkCodeowners(repos, reportContent, adheringRepos)
+
+  adheringRepos = await checkDependabot(repos, reportContent, adheringRepos)
+
+  adheringRepos = await checkTopics(repos, reportContent, adheringRepos)
+
+  reportContent += formatRepoList('Adheres To Standards', adheringRepos)
 
   await fs.promises.writeFile('standards-adherence.md', reportContent)
   console.log(`Operating systems report generated`)
