@@ -18,6 +18,11 @@ export async function getRepos(isTest: boolean) {
         html_url: 'https://github.com/exivity/transformer',
         topics: ['go', 'back-end', 'elt', 'codeless'],
       },
+      {
+        name: 'sentinel',
+        html_url: 'https://github.com/exivity/sentinel',
+        topics: ['no-language', 'dev-ops'],
+      },
     ]
   }
 

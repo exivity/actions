@@ -66,6 +66,8 @@ async function checkDependabot(
 ): Promise<[string, RepoData[]]> {
   const withoutDependabot: RepoData[] = []
   for (const repo of repos) {
+    if (repo.topics.includes('no-language')) continue
+
     if (
       !(await hasDependabotAlerts('exivity', repo.name)) ||
       !repo.githubFiles?.some((file) => file.name === 'dependabot.yml')

@@ -85270,6 +85270,11 @@ async function getRepos(isTest) {
         name: "transformer",
         html_url: "https://github.com/exivity/transformer",
         topics: ["go", "back-end", "elt", "codeless"]
+      },
+      {
+        name: "sentinel",
+        html_url: "https://github.com/exivity/sentinel",
+        topics: ["no-language", "dev-ops"]
       }
     ];
   }
@@ -85563,6 +85568,7 @@ async function checkCodeowners(repos, reportContent, adheringRepos) {
 async function checkDependabot(repos, reportContent, adheringRepos) {
   const withoutDependabot = [];
   for (const repo of repos) {
+    if (repo.topics.includes("no-language")) continue;
     if (!await hasDependabotAlerts("exivity", repo.name) || !repo.githubFiles?.some((file) => file.name === "dependabot.yml")) {
       withoutDependabot.push(repo);
     }
