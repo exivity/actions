@@ -86,7 +86,7 @@ async function updateRepoWorkflows(
   }
 }
 
-export async function updateWorkflows() {
+export async function updateWorkflows(isTest: boolean) {
   const searchPattern = getInput('search-pattern')
   const replacePattern = getInput('replace-pattern')
 
@@ -98,7 +98,7 @@ export async function updateWorkflows() {
 
   info(`Replacing "${searchPattern}" with "${replacePattern}" in workflows`)
 
-  const repos = await getRepos()
+  const repos = await getRepos(isTest)
   const prLinks: string[] = []
 
   // Create tasks for repositories

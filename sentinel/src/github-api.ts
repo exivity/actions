@@ -5,7 +5,27 @@ import { getOctoKitClient } from '../../release/src/common/inputs'
 const contentQueue = new PQueue({ concurrency: 90 })
 const vulnerabilityAlertsQueue = new PQueue({ concurrency: 90 })
 
-export async function getRepos() {
+export async function getRepos(isTest: boolean) {
+  if (isTest) {
+    return [
+      {
+        name: 'hermes',
+        html_url: 'https://github.com/exivity/hermes',
+        topics: ['api', 'codeless'],
+      },
+      {
+        name: 'transformer',
+        html_url: 'https://github.com/exivity/transformer',
+        topics: ['go', 'back-end', 'elt', 'codeless'],
+      },
+      {
+        name: 'sentinel',
+        html_url: 'https://github.com/exivity/sentinel',
+        topics: ['no-language', 'dev-ops'],
+      },
+    ]
+  }
+
   const octokit = getOctoKitClient()
 
   const repos: any[] = []
