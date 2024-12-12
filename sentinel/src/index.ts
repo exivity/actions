@@ -1,6 +1,6 @@
 import { info, setFailed, getInput } from '@actions/core'
 import { analyseRepositories } from './analysis'
-import { updateWorkflows } from './update-workflows'
+import { updateRepositories } from './update'
 import { updatePROverview } from './pr-links'
 
 async function run() {
@@ -10,7 +10,7 @@ async function run() {
 
     if (mode === 'update') {
       info('Running in update mode')
-      await updateWorkflows(isTest)
+      await updateRepositories(isTest)
     } else {
       info('Running in analyse mode')
       await analyseRepositories(isTest)

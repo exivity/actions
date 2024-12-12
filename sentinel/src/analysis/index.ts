@@ -1,35 +1,18 @@
-import { getFileContent, getRepos, getFiles } from '../github-api'
+import {
+  getFileContent,
+  getRepos,
+  getFiles,
+  FileData,
+  RepoData,
+} from '../github-api'
 
 import { exivityActionsReport, externalActionsReport } from './actions'
 import { operatingSystemsReport } from './operating-systems'
 import { standardsAdherenceReport } from './up-to-standards'
 
-export interface FileData {
-  name: string
-  path: string
-  content?: string
-}
-
-export interface RepoData {
-  name: string
-  url: string
-  topics: string[]
-  workflowFiles?: FileData[]
-  rootFiles?: FileData[]
-  githubFiles?: FileData[]
-  codeownersFile?: FileData
-}
-
 export async function analyseRepositories(isTest: boolean) {
   console.log('Starting analysis...')
-  const repos = (await getRepos(isTest)).map(
-    (repo) =>
-      ({
-        name: repo.name,
-        url: repo.html_url,
-        topics: repo.topics ?? [],
-      }) as RepoData,
-  )
+  const repos = await getRepos(isTest)
   console.log(`Found ${repos.length} repositories.`)
 
   await Promise.all(
