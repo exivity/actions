@@ -12,7 +12,7 @@ export interface RepoData {
   name: string
   html_url: string
   default_branch?: string
-  topics: string[]
+  topics?: string[]
   workflowFiles?: FileData[]
   rootFiles?: FileData[]
   githubFiles?: FileData[]
@@ -61,6 +61,22 @@ export async function getRepos(isTest: boolean): Promise<RepoData[]> {
     response.data.forEach((item) => repos.push(item))
   }
   return repos
+}
+
+export async function getRepo(repoName: string): Promise<RepoData> {
+  const octokit = getOctoKitClient()
+
+  try {
+    const repoData = await contentQueue.add(() =>
+      octokit.rest.repos.get({
+        owner: 'exivity',
+        repo: repoName,
+      }),
+    )
+    return repoData!.data
+  } catch (e) {
+    throw new Error(`Error getting repo ${repoName}: ${e}`)
+  }
 }
 
 export async function getFiles(repoName: string, path: string) {
