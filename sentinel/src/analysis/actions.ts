@@ -1,8 +1,8 @@
 import * as yaml from 'yaml'
 import * as fs from 'fs'
 
-import { RepoData, FileData } from '.'
 import { formatRepoList } from '../utils'
+import { FileData, RepoData } from '../github-api'
 
 function getActionsUsed(repo: string, file: FileData): string[] {
   if (!file.content) {

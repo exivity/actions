@@ -2,8 +2,8 @@ import * as fs from 'fs'
 import * as yaml from 'yaml'
 
 import { formatRepoList } from '../utils'
-import { RepoData, setFileDataContent } from '.'
-import { hasDependabotAlerts } from '../github-api'
+import { setFileDataContent } from '.'
+import { hasDependabotAlerts, RepoData } from '../github-api'
 
 async function getCodeownersTable() {
   const content = await fs.promises.readFile('codeowners-emails.yaml', 'utf8')
