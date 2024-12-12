@@ -66,7 +66,7 @@ async function checkDependabot(
 ): Promise<[string, RepoData[]]> {
   const withoutDependabot: RepoData[] = []
   for (const repo of repos) {
-    if (repo.topics.includes('no-language')) continue
+    if ((repo.topics ?? []).includes('no-language')) continue
 
     if (
       !(await hasDependabotAlerts('exivity', repo.name)) ||
@@ -106,7 +106,8 @@ async function checkTopics(
   ]
 
   const withoutLanguageTopics = repos.filter(
-    (repo) => !repo.topics.some((topic) => languageTopics.includes(topic)),
+    (repo) =>
+      !(repo.topics ?? []).some((topic) => languageTopics.includes(topic)),
   )
   reportContent += formatRepoList(
     'Has No Language Topics',
