@@ -6,7 +6,11 @@ import {
   RepoData,
 } from '../github-api'
 
-import { exivityActionsReport, externalActionsReport } from './actions'
+import {
+  actionsStandardsAdherence,
+  exivityActionsReport,
+  externalActionsReport,
+} from './actions'
 import { operatingSystemsReport } from './operating-systems'
 import { standardsAdherenceReport } from './up-to-standards'
 
@@ -30,6 +34,8 @@ export async function analyseRepositories(isTest: boolean) {
   await externalActionsReport(repos)
 
   await exivityActionsReport(repos)
+
+  await actionsStandardsAdherence(repos)
 
   await standardsAdherenceReport(repos)
 

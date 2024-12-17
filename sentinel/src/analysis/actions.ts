@@ -4,9 +4,9 @@ import * as fs from 'fs'
 import { formatRepoList } from '../utils'
 import { FileData, RepoData } from '../github-api'
 
-function getActionsUsed(repo: string, file: FileData): string[] {
+function getActionFile(repo: string, file: FileData): any {
   if (!file.content) {
-    return []
+    return null
   }
 
   let data
@@ -14,8 +14,18 @@ function getActionsUsed(repo: string, file: FileData): string[] {
     data = yaml.parse(file.content)
   } catch {
     console.error(`Error parsing ${file.path} as yaml in repo ${repo}`)
+    return null
+  }
+
+  return data
+}
+
+function getActionsUsed(repo: string, file: FileData): string[] {
+  const data = getActionFile(repo, file)
+  if (!data) {
     return []
   }
+
   let actionsUsed = new Set<string>()
 
   if (data && data.jobs) {
@@ -92,4 +102,50 @@ export async function exivityActionsReport(repos: RepoData[]) {
 
   await fs.promises.writeFile('exivity-actions.md', reportContent)
   console.log(`Exivity actions report generated`)
+}
+
+export async function actionsStandardsAdherence(repos: RepoData[]) {
+  let reportContent = `# Actions Standards Adherence - ${new Date().toISOString()}\n\n`
+
+  const standardsFailed = new Map<string, RepoData[]>()
+  const equalsRegex = /matrix\.os *==/g
+
+  for (const repo of repos) {
+    for (const data of (repo.workflowFiles ?? []).map((file) =>
+      getActionFile(repo.name, file),
+    )) {
+      if (!data || !data.jobs) {
+        continue
+      }
+
+      for (const job of Object.values<any>(data.jobs)) {
+        if (Array.isArray(job.steps)) {
+          for (const step of job.steps) {
+            if (!step.if || typeof step.if !== 'string') {
+              continue
+            }
+
+            const standard =
+              'Matrix OS should be checked with startsWith, not =='
+            if (equalsRegex.test(step.if)) {
+              if (!standardsFailed.has(standard)) {
+                standardsFailed.set(standard, [])
+              }
+
+              if (!standardsFailed.get(standard)!.includes(repo)) {
+                standardsFailed.get(standard)!.push(repo)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  for (const [standard, repos] of standardsFailed) {
+    reportContent += formatRepoList(standard, repos, true)
+  }
+
+  await fs.promises.writeFile('exivity-actions.md', reportContent)
+  console.log(`Exivity actions standards report generated`)
 }
