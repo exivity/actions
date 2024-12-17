@@ -1743,7 +1743,7 @@ var require_Dicer = __commonJS({
       if (this._headerFirst && this._isPreamble) {
         if (!this._part) {
           this._part = new PartStream(this._partOpts);
-          if (this.listenerCount("preamble") !== 0) {
+          if (this._events.preamble) {
             this.emit("preamble", this._part);
           } else {
             this._ignore();
@@ -1806,7 +1806,7 @@ var require_Dicer = __commonJS({
           }
         }
         if (this._dashes === 2) {
-          if (start + i < end && this.listenerCount("trailer") !== 0) {
+          if (start + i < end && this._events.trailer) {
             this.emit("trailer", data.slice(start + i, end));
           }
           this.reset();
@@ -1829,9 +1829,9 @@ var require_Dicer = __commonJS({
         this._part._read = function(n) {
           self._unpause();
         };
-        if (this._isPreamble && this.listenerCount("preamble") !== 0) {
+        if (this._isPreamble && this._events.preamble) {
           this.emit("preamble", this._part);
-        } else if (this._isPreamble !== true && this.listenerCount("part") !== 0) {
+        } else if (this._isPreamble !== true && this._events.part) {
           this.emit("part", this._part);
         } else {
           this._ignore();
@@ -1910,99 +1910,20 @@ var require_decodeText = __commonJS({
       ["utf-8", utf8Decoder],
       ["utf8", utf8Decoder]
     ]);
-    function getDecoder(charset) {
-      let lc;
-      while (true) {
-        switch (charset) {
-          case "utf-8":
-          case "utf8":
-            return decoders.utf8;
-          case "latin1":
-          case "ascii":
-          // TODO: Make these a separate, strict decoder?
-          case "us-ascii":
-          case "iso-8859-1":
-          case "iso8859-1":
-          case "iso88591":
-          case "iso_8859-1":
-          case "windows-1252":
-          case "iso_8859-1:1987":
-          case "cp1252":
-          case "x-cp1252":
-            return decoders.latin1;
-          case "utf16le":
-          case "utf-16le":
-          case "ucs2":
-          case "ucs-2":
-            return decoders.utf16le;
-          case "base64":
-            return decoders.base64;
-          default:
-            if (lc === void 0) {
-              lc = true;
-              charset = charset.toLowerCase();
-              continue;
-            }
-            return decoders.other.bind(charset);
-        }
-      }
-    }
-    var decoders = {
-      utf8: (data, sourceEncoding) => {
-        if (data.length === 0) {
-          return "";
-        }
-        if (typeof data === "string") {
-          data = Buffer.from(data, sourceEncoding);
-        }
-        return data.utf8Slice(0, data.length);
-      },
-      latin1: (data, sourceEncoding) => {
-        if (data.length === 0) {
-          return "";
-        }
-        if (typeof data === "string") {
-          return data;
-        }
-        return data.latin1Slice(0, data.length);
-      },
-      utf16le: (data, sourceEncoding) => {
-        if (data.length === 0) {
-          return "";
-        }
-        if (typeof data === "string") {
-          data = Buffer.from(data, sourceEncoding);
-        }
-        return data.ucs2Slice(0, data.length);
-      },
-      base64: (data, sourceEncoding) => {
-        if (data.length === 0) {
-          return "";
-        }
-        if (typeof data === "string") {
-          data = Buffer.from(data, sourceEncoding);
-        }
-        return data.base64Slice(0, data.length);
-      },
-      other: (data, sourceEncoding) => {
-        if (data.length === 0) {
-          return "";
-        }
-        if (typeof data === "string") {
-          data = Buffer.from(data, sourceEncoding);
-        }
-        if (textDecoders.has(exports2.toString())) {
+    function decodeText(text, textEncoding, destEncoding) {
+      if (text) {
+        if (textDecoders.has(destEncoding)) {
           try {
-            return textDecoders.get(exports2).decode(data);
-          } catch {
+            return textDecoders.get(destEncoding).decode(Buffer.from(text, textEncoding));
+          } catch (e) {
+          }
+        } else {
+          try {
+            textDecoders.set(destEncoding, new TextDecoder(destEncoding));
+            return textDecoders.get(destEncoding).decode(Buffer.from(text, textEncoding));
+          } catch (e) {
           }
         }
-        return typeof data === "string" ? data : data.toString();
-      }
-    };
-    function decodeText(text, sourceEncoding, destEncoding) {
-      if (text) {
-        return getDecoder(destEncoding)(text, sourceEncoding);
       }
       return text;
     }
@@ -2015,510 +1936,19 @@ var require_parseParams = __commonJS({
   "node_modules/@fastify/busboy/lib/utils/parseParams.js"(exports2, module2) {
     "use strict";
     var decodeText = require_decodeText();
-    var RE_ENCODED = /%[a-fA-F0-9][a-fA-F0-9]/g;
-    var EncodedLookup = {
-      "%00": "\0",
-      "%01": "",
-      "%02": "",
-      "%03": "",
-      "%04": "",
-      "%05": "",
-      "%06": "",
-      "%07": "\x07",
-      "%08": "\b",
-      "%09": "	",
-      "%0a": "\n",
-      "%0A": "\n",
-      "%0b": "\v",
-      "%0B": "\v",
-      "%0c": "\f",
-      "%0C": "\f",
-      "%0d": "\r",
-      "%0D": "\r",
-      "%0e": "",
-      "%0E": "",
-      "%0f": "",
-      "%0F": "",
-      "%10": "",
-      "%11": "",
-      "%12": "",
-      "%13": "",
-      "%14": "",
-      "%15": "",
-      "%16": "",
-      "%17": "",
-      "%18": "",
-      "%19": "",
-      "%1a": "",
-      "%1A": "",
-      "%1b": "\x1B",
-      "%1B": "\x1B",
-      "%1c": "",
-      "%1C": "",
-      "%1d": "",
-      "%1D": "",
-      "%1e": "",
-      "%1E": "",
-      "%1f": "",
-      "%1F": "",
-      "%20": " ",
-      "%21": "!",
-      "%22": '"',
-      "%23": "#",
-      "%24": "$",
-      "%25": "%",
-      "%26": "&",
-      "%27": "'",
-      "%28": "(",
-      "%29": ")",
-      "%2a": "*",
-      "%2A": "*",
-      "%2b": "+",
-      "%2B": "+",
-      "%2c": ",",
-      "%2C": ",",
-      "%2d": "-",
-      "%2D": "-",
-      "%2e": ".",
-      "%2E": ".",
-      "%2f": "/",
-      "%2F": "/",
-      "%30": "0",
-      "%31": "1",
-      "%32": "2",
-      "%33": "3",
-      "%34": "4",
-      "%35": "5",
-      "%36": "6",
-      "%37": "7",
-      "%38": "8",
-      "%39": "9",
-      "%3a": ":",
-      "%3A": ":",
-      "%3b": ";",
-      "%3B": ";",
-      "%3c": "<",
-      "%3C": "<",
-      "%3d": "=",
-      "%3D": "=",
-      "%3e": ">",
-      "%3E": ">",
-      "%3f": "?",
-      "%3F": "?",
-      "%40": "@",
-      "%41": "A",
-      "%42": "B",
-      "%43": "C",
-      "%44": "D",
-      "%45": "E",
-      "%46": "F",
-      "%47": "G",
-      "%48": "H",
-      "%49": "I",
-      "%4a": "J",
-      "%4A": "J",
-      "%4b": "K",
-      "%4B": "K",
-      "%4c": "L",
-      "%4C": "L",
-      "%4d": "M",
-      "%4D": "M",
-      "%4e": "N",
-      "%4E": "N",
-      "%4f": "O",
-      "%4F": "O",
-      "%50": "P",
-      "%51": "Q",
-      "%52": "R",
-      "%53": "S",
-      "%54": "T",
-      "%55": "U",
-      "%56": "V",
-      "%57": "W",
-      "%58": "X",
-      "%59": "Y",
-      "%5a": "Z",
-      "%5A": "Z",
-      "%5b": "[",
-      "%5B": "[",
-      "%5c": "\\",
-      "%5C": "\\",
-      "%5d": "]",
-      "%5D": "]",
-      "%5e": "^",
-      "%5E": "^",
-      "%5f": "_",
-      "%5F": "_",
-      "%60": "`",
-      "%61": "a",
-      "%62": "b",
-      "%63": "c",
-      "%64": "d",
-      "%65": "e",
-      "%66": "f",
-      "%67": "g",
-      "%68": "h",
-      "%69": "i",
-      "%6a": "j",
-      "%6A": "j",
-      "%6b": "k",
-      "%6B": "k",
-      "%6c": "l",
-      "%6C": "l",
-      "%6d": "m",
-      "%6D": "m",
-      "%6e": "n",
-      "%6E": "n",
-      "%6f": "o",
-      "%6F": "o",
-      "%70": "p",
-      "%71": "q",
-      "%72": "r",
-      "%73": "s",
-      "%74": "t",
-      "%75": "u",
-      "%76": "v",
-      "%77": "w",
-      "%78": "x",
-      "%79": "y",
-      "%7a": "z",
-      "%7A": "z",
-      "%7b": "{",
-      "%7B": "{",
-      "%7c": "|",
-      "%7C": "|",
-      "%7d": "}",
-      "%7D": "}",
-      "%7e": "~",
-      "%7E": "~",
-      "%7f": "\x7F",
-      "%7F": "\x7F",
-      "%80": "\x80",
-      "%81": "\x81",
-      "%82": "\x82",
-      "%83": "\x83",
-      "%84": "\x84",
-      "%85": "\x85",
-      "%86": "\x86",
-      "%87": "\x87",
-      "%88": "\x88",
-      "%89": "\x89",
-      "%8a": "\x8A",
-      "%8A": "\x8A",
-      "%8b": "\x8B",
-      "%8B": "\x8B",
-      "%8c": "\x8C",
-      "%8C": "\x8C",
-      "%8d": "\x8D",
-      "%8D": "\x8D",
-      "%8e": "\x8E",
-      "%8E": "\x8E",
-      "%8f": "\x8F",
-      "%8F": "\x8F",
-      "%90": "\x90",
-      "%91": "\x91",
-      "%92": "\x92",
-      "%93": "\x93",
-      "%94": "\x94",
-      "%95": "\x95",
-      "%96": "\x96",
-      "%97": "\x97",
-      "%98": "\x98",
-      "%99": "\x99",
-      "%9a": "\x9A",
-      "%9A": "\x9A",
-      "%9b": "\x9B",
-      "%9B": "\x9B",
-      "%9c": "\x9C",
-      "%9C": "\x9C",
-      "%9d": "\x9D",
-      "%9D": "\x9D",
-      "%9e": "\x9E",
-      "%9E": "\x9E",
-      "%9f": "\x9F",
-      "%9F": "\x9F",
-      "%a0": "\xA0",
-      "%A0": "\xA0",
-      "%a1": "\xA1",
-      "%A1": "\xA1",
-      "%a2": "\xA2",
-      "%A2": "\xA2",
-      "%a3": "\xA3",
-      "%A3": "\xA3",
-      "%a4": "\xA4",
-      "%A4": "\xA4",
-      "%a5": "\xA5",
-      "%A5": "\xA5",
-      "%a6": "\xA6",
-      "%A6": "\xA6",
-      "%a7": "\xA7",
-      "%A7": "\xA7",
-      "%a8": "\xA8",
-      "%A8": "\xA8",
-      "%a9": "\xA9",
-      "%A9": "\xA9",
-      "%aa": "\xAA",
-      "%Aa": "\xAA",
-      "%aA": "\xAA",
-      "%AA": "\xAA",
-      "%ab": "\xAB",
-      "%Ab": "\xAB",
-      "%aB": "\xAB",
-      "%AB": "\xAB",
-      "%ac": "\xAC",
-      "%Ac": "\xAC",
-      "%aC": "\xAC",
-      "%AC": "\xAC",
-      "%ad": "\xAD",
-      "%Ad": "\xAD",
-      "%aD": "\xAD",
-      "%AD": "\xAD",
-      "%ae": "\xAE",
-      "%Ae": "\xAE",
-      "%aE": "\xAE",
-      "%AE": "\xAE",
-      "%af": "\xAF",
-      "%Af": "\xAF",
-      "%aF": "\xAF",
-      "%AF": "\xAF",
-      "%b0": "\xB0",
-      "%B0": "\xB0",
-      "%b1": "\xB1",
-      "%B1": "\xB1",
-      "%b2": "\xB2",
-      "%B2": "\xB2",
-      "%b3": "\xB3",
-      "%B3": "\xB3",
-      "%b4": "\xB4",
-      "%B4": "\xB4",
-      "%b5": "\xB5",
-      "%B5": "\xB5",
-      "%b6": "\xB6",
-      "%B6": "\xB6",
-      "%b7": "\xB7",
-      "%B7": "\xB7",
-      "%b8": "\xB8",
-      "%B8": "\xB8",
-      "%b9": "\xB9",
-      "%B9": "\xB9",
-      "%ba": "\xBA",
-      "%Ba": "\xBA",
-      "%bA": "\xBA",
-      "%BA": "\xBA",
-      "%bb": "\xBB",
-      "%Bb": "\xBB",
-      "%bB": "\xBB",
-      "%BB": "\xBB",
-      "%bc": "\xBC",
-      "%Bc": "\xBC",
-      "%bC": "\xBC",
-      "%BC": "\xBC",
-      "%bd": "\xBD",
-      "%Bd": "\xBD",
-      "%bD": "\xBD",
-      "%BD": "\xBD",
-      "%be": "\xBE",
-      "%Be": "\xBE",
-      "%bE": "\xBE",
-      "%BE": "\xBE",
-      "%bf": "\xBF",
-      "%Bf": "\xBF",
-      "%bF": "\xBF",
-      "%BF": "\xBF",
-      "%c0": "\xC0",
-      "%C0": "\xC0",
-      "%c1": "\xC1",
-      "%C1": "\xC1",
-      "%c2": "\xC2",
-      "%C2": "\xC2",
-      "%c3": "\xC3",
-      "%C3": "\xC3",
-      "%c4": "\xC4",
-      "%C4": "\xC4",
-      "%c5": "\xC5",
-      "%C5": "\xC5",
-      "%c6": "\xC6",
-      "%C6": "\xC6",
-      "%c7": "\xC7",
-      "%C7": "\xC7",
-      "%c8": "\xC8",
-      "%C8": "\xC8",
-      "%c9": "\xC9",
-      "%C9": "\xC9",
-      "%ca": "\xCA",
-      "%Ca": "\xCA",
-      "%cA": "\xCA",
-      "%CA": "\xCA",
-      "%cb": "\xCB",
-      "%Cb": "\xCB",
-      "%cB": "\xCB",
-      "%CB": "\xCB",
-      "%cc": "\xCC",
-      "%Cc": "\xCC",
-      "%cC": "\xCC",
-      "%CC": "\xCC",
-      "%cd": "\xCD",
-      "%Cd": "\xCD",
-      "%cD": "\xCD",
-      "%CD": "\xCD",
-      "%ce": "\xCE",
-      "%Ce": "\xCE",
-      "%cE": "\xCE",
-      "%CE": "\xCE",
-      "%cf": "\xCF",
-      "%Cf": "\xCF",
-      "%cF": "\xCF",
-      "%CF": "\xCF",
-      "%d0": "\xD0",
-      "%D0": "\xD0",
-      "%d1": "\xD1",
-      "%D1": "\xD1",
-      "%d2": "\xD2",
-      "%D2": "\xD2",
-      "%d3": "\xD3",
-      "%D3": "\xD3",
-      "%d4": "\xD4",
-      "%D4": "\xD4",
-      "%d5": "\xD5",
-      "%D5": "\xD5",
-      "%d6": "\xD6",
-      "%D6": "\xD6",
-      "%d7": "\xD7",
-      "%D7": "\xD7",
-      "%d8": "\xD8",
-      "%D8": "\xD8",
-      "%d9": "\xD9",
-      "%D9": "\xD9",
-      "%da": "\xDA",
-      "%Da": "\xDA",
-      "%dA": "\xDA",
-      "%DA": "\xDA",
-      "%db": "\xDB",
-      "%Db": "\xDB",
-      "%dB": "\xDB",
-      "%DB": "\xDB",
-      "%dc": "\xDC",
-      "%Dc": "\xDC",
-      "%dC": "\xDC",
-      "%DC": "\xDC",
-      "%dd": "\xDD",
-      "%Dd": "\xDD",
-      "%dD": "\xDD",
-      "%DD": "\xDD",
-      "%de": "\xDE",
-      "%De": "\xDE",
-      "%dE": "\xDE",
-      "%DE": "\xDE",
-      "%df": "\xDF",
-      "%Df": "\xDF",
-      "%dF": "\xDF",
-      "%DF": "\xDF",
-      "%e0": "\xE0",
-      "%E0": "\xE0",
-      "%e1": "\xE1",
-      "%E1": "\xE1",
-      "%e2": "\xE2",
-      "%E2": "\xE2",
-      "%e3": "\xE3",
-      "%E3": "\xE3",
-      "%e4": "\xE4",
-      "%E4": "\xE4",
-      "%e5": "\xE5",
-      "%E5": "\xE5",
-      "%e6": "\xE6",
-      "%E6": "\xE6",
-      "%e7": "\xE7",
-      "%E7": "\xE7",
-      "%e8": "\xE8",
-      "%E8": "\xE8",
-      "%e9": "\xE9",
-      "%E9": "\xE9",
-      "%ea": "\xEA",
-      "%Ea": "\xEA",
-      "%eA": "\xEA",
-      "%EA": "\xEA",
-      "%eb": "\xEB",
-      "%Eb": "\xEB",
-      "%eB": "\xEB",
-      "%EB": "\xEB",
-      "%ec": "\xEC",
-      "%Ec": "\xEC",
-      "%eC": "\xEC",
-      "%EC": "\xEC",
-      "%ed": "\xED",
-      "%Ed": "\xED",
-      "%eD": "\xED",
-      "%ED": "\xED",
-      "%ee": "\xEE",
-      "%Ee": "\xEE",
-      "%eE": "\xEE",
-      "%EE": "\xEE",
-      "%ef": "\xEF",
-      "%Ef": "\xEF",
-      "%eF": "\xEF",
-      "%EF": "\xEF",
-      "%f0": "\xF0",
-      "%F0": "\xF0",
-      "%f1": "\xF1",
-      "%F1": "\xF1",
-      "%f2": "\xF2",
-      "%F2": "\xF2",
-      "%f3": "\xF3",
-      "%F3": "\xF3",
-      "%f4": "\xF4",
-      "%F4": "\xF4",
-      "%f5": "\xF5",
-      "%F5": "\xF5",
-      "%f6": "\xF6",
-      "%F6": "\xF6",
-      "%f7": "\xF7",
-      "%F7": "\xF7",
-      "%f8": "\xF8",
-      "%F8": "\xF8",
-      "%f9": "\xF9",
-      "%F9": "\xF9",
-      "%fa": "\xFA",
-      "%Fa": "\xFA",
-      "%fA": "\xFA",
-      "%FA": "\xFA",
-      "%fb": "\xFB",
-      "%Fb": "\xFB",
-      "%fB": "\xFB",
-      "%FB": "\xFB",
-      "%fc": "\xFC",
-      "%Fc": "\xFC",
-      "%fC": "\xFC",
-      "%FC": "\xFC",
-      "%fd": "\xFD",
-      "%Fd": "\xFD",
-      "%fD": "\xFD",
-      "%FD": "\xFD",
-      "%fe": "\xFE",
-      "%Fe": "\xFE",
-      "%fE": "\xFE",
-      "%FE": "\xFE",
-      "%ff": "\xFF",
-      "%Ff": "\xFF",
-      "%fF": "\xFF",
-      "%FF": "\xFF"
-    };
-    function encodedReplacer(match) {
-      return EncodedLookup[match];
+    var RE_ENCODED = /%([a-fA-F0-9]{2})/g;
+    function encodedReplacer(match, byte) {
+      return String.fromCharCode(parseInt(byte, 16));
     }
-    var STATE_KEY = 0;
-    var STATE_VALUE = 1;
-    var STATE_CHARSET = 2;
-    var STATE_LANG = 3;
     function parseParams(str) {
       const res = [];
-      let state = STATE_KEY;
+      let state = "key";
       let charset = "";
       let inquote = false;
       let escaping = false;
       let p = 0;
       let tmp = "";
-      const len = str.length;
-      for (var i = 0; i < len; ++i) {
+      for (var i = 0, len = str.length; i < len; ++i) {
         const char = str[i];
         if (char === "\\" && inquote) {
           if (escaping) {
@@ -2531,7 +1961,7 @@ var require_parseParams = __commonJS({
           if (!escaping) {
             if (inquote) {
               inquote = false;
-              state = STATE_KEY;
+              state = "key";
             } else {
               inquote = true;
             }
@@ -2544,22 +1974,26 @@ var require_parseParams = __commonJS({
             tmp += "\\";
           }
           escaping = false;
-          if ((state === STATE_CHARSET || state === STATE_LANG) && char === "'") {
-            if (state === STATE_CHARSET) {
-              state = STATE_LANG;
+          if ((state === "charset" || state === "lang") && char === "'") {
+            if (state === "charset") {
+              state = "lang";
               charset = tmp.substring(1);
             } else {
-              state = STATE_VALUE;
+              state = "value";
             }
             tmp = "";
             continue;
-          } else if (state === STATE_KEY && (char === "*" || char === "=") && res.length) {
-            state = char === "*" ? STATE_CHARSET : STATE_VALUE;
+          } else if (state === "key" && (char === "*" || char === "=") && res.length) {
+            if (char === "*") {
+              state = "charset";
+            } else {
+              state = "value";
+            }
             res[p] = [tmp, void 0];
             tmp = "";
             continue;
           } else if (!inquote && char === ";") {
-            state = STATE_KEY;
+            state = "key";
             if (charset) {
               if (tmp.length) {
                 tmp = decodeText(
@@ -2778,7 +2212,7 @@ var require_multipart = __commonJS({
               return skipPart(part);
             }
             ++nfiles;
-            if (boy.listenerCount("file") === 0) {
+            if (!boy._events.file) {
               self.parser._ignore();
               return;
             }
@@ -19966,7 +19400,7 @@ var require_dist_node = __commonJS({
       if (typeof navigator === "object" && "userAgent" in navigator) {
         return navigator.userAgent;
       }
-      if (typeof process === "object" && process.version !== void 0) {
+      if (typeof process === "object" && "version" in process) {
         return `Node.js/${process.version.substr(1)} (${process.platform}; ${process.arch})`;
       }
       return "<environment undetectable>";
@@ -20071,10 +19505,7 @@ var require_before_after_hook = __commonJS({
     var bind = Function.bind;
     var bindable = bind.bind(bind);
     function bindApi(hook, state, name) {
-      var removeHookRef = bindable(removeHook, null).apply(
-        null,
-        name ? [state, name] : [state]
-      );
+      var removeHookRef = bindable(removeHook, null).apply(null, name ? [state, name] : [state]);
       hook.api = { remove: removeHookRef };
       hook.remove = removeHookRef;
       ["before", "error", "after", "wrap"].forEach(function(kind) {
@@ -20102,9 +19533,7 @@ var require_before_after_hook = __commonJS({
     var collectionHookDeprecationMessageDisplayed = false;
     function Hook() {
       if (!collectionHookDeprecationMessageDisplayed) {
-        console.warn(
-          '[before-after-hook]: "Hook()" repurposing warning, use "Hook.Collection()". Read more: https://git.io/upgrade-before-after-hook-to-1.4'
-        );
+        console.warn('[before-after-hook]: "Hook()" repurposing warning, use "Hook.Collection()". Read more: https://git.io/upgrade-before-after-hook-to-1.4');
         collectionHookDeprecationMessageDisplayed = true;
       }
       return HookCollection();
@@ -20115,6 +19544,30 @@ var require_before_after_hook = __commonJS({
     module2.exports.Hook = Hook;
     module2.exports.Singular = Hook.Singular;
     module2.exports.Collection = Hook.Collection;
+  }
+});
+
+// node_modules/is-plain-object/dist/is-plain-object.js
+var require_is_plain_object = __commonJS({
+  "node_modules/is-plain-object/dist/is-plain-object.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    function isObject(o) {
+      return Object.prototype.toString.call(o) === "[object Object]";
+    }
+    function isPlainObject(o) {
+      var ctor, prot;
+      if (isObject(o) === false) return false;
+      ctor = o.constructor;
+      if (ctor === void 0) return true;
+      prot = ctor.prototype;
+      if (isObject(prot) === false) return false;
+      if (prot.hasOwnProperty("isPrototypeOf") === false) {
+        return false;
+      }
+      return true;
+    }
+    exports2.isPlainObject = isPlainObject;
   }
 });
 
@@ -20145,7 +19598,7 @@ var require_dist_node2 = __commonJS({
     });
     module2.exports = __toCommonJS(dist_src_exports);
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "9.0.5";
+    var VERSION = "9.0.1";
     var userAgent = `octokit-endpoint.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`;
     var DEFAULTS = {
       method: "GET",
@@ -20167,21 +19620,11 @@ var require_dist_node2 = __commonJS({
         return newObj;
       }, {});
     }
-    function isPlainObject(value) {
-      if (typeof value !== "object" || value === null)
-        return false;
-      if (Object.prototype.toString.call(value) !== "[object Object]")
-        return false;
-      const proto = Object.getPrototypeOf(value);
-      if (proto === null)
-        return true;
-      const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
-      return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
-    }
+    var import_is_plain_object = require_is_plain_object();
     function mergeDeep(defaults, options) {
       const result = Object.assign({}, defaults);
       Object.keys(options).forEach((key) => {
-        if (isPlainObject(options[key])) {
+        if ((0, import_is_plain_object.isPlainObject)(options[key])) {
           if (!(key in defaults))
             Object.assign(result, { [key]: options[key] });
           else
@@ -20246,13 +19689,10 @@ var require_dist_node2 = __commonJS({
       return matches.map(removeNonChars).reduce((a, b) => a.concat(b), []);
     }
     function omit(object, keysToOmit) {
-      const result = { __proto__: null };
-      for (const key of Object.keys(object)) {
-        if (keysToOmit.indexOf(key) === -1) {
-          result[key] = object[key];
-        }
-      }
-      return result;
+      return Object.keys(object).filter((option) => !keysToOmit.includes(option)).reduce((obj, key) => {
+        obj[key] = object[key];
+        return obj;
+      }, {});
     }
     function encodeReserved(str) {
       return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
@@ -20348,7 +19788,7 @@ var require_dist_node2 = __commonJS({
     }
     function expand(template, context2) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
-      template = template.replace(
+      return template.replace(
         /\{([^\{\}]+)\}|([^\{\}]+)/g,
         function(_, expression, literal) {
           if (expression) {
@@ -20378,11 +19818,6 @@ var require_dist_node2 = __commonJS({
           }
         }
       );
-      if (template === "/") {
-        return template;
-      } else {
-        return template.replace(/\/$/, "");
-      }
     }
     function parse(options) {
       let method = options.method.toUpperCase();
@@ -20676,27 +20111,17 @@ var require_dist_node5 = __commonJS({
     module2.exports = __toCommonJS(dist_src_exports);
     var import_endpoint = require_dist_node2();
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "8.4.0";
-    function isPlainObject(value) {
-      if (typeof value !== "object" || value === null)
-        return false;
-      if (Object.prototype.toString.call(value) !== "[object Object]")
-        return false;
-      const proto = Object.getPrototypeOf(value);
-      if (proto === null)
-        return true;
-      const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
-      return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
-    }
+    var VERSION = "8.1.4";
+    var import_is_plain_object = require_is_plain_object();
     var import_request_error = require_dist_node4();
     function getBufferResponse(response) {
       return response.arrayBuffer();
     }
     function fetchWrapper(requestOptions) {
-      var _a, _b, _c, _d;
+      var _a, _b, _c;
       const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
       const parseSuccessResponseBody = ((_a = requestOptions.request) == null ? void 0 : _a.parseSuccessResponseBody) !== false;
-      if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
+      if ((0, import_is_plain_object.isPlainObject)(requestOptions.body) || Array.isArray(requestOptions.body)) {
         requestOptions.body = JSON.stringify(requestOptions.body);
       }
       let headers = {};
@@ -20714,9 +20139,8 @@ var require_dist_node5 = __commonJS({
       return fetch(requestOptions.url, {
         method: requestOptions.method,
         body: requestOptions.body,
-        redirect: (_c = requestOptions.request) == null ? void 0 : _c.redirect,
         headers: requestOptions.headers,
-        signal: (_d = requestOptions.request) == null ? void 0 : _d.signal,
+        signal: (_c = requestOptions.request) == null ? void 0 : _c.signal,
         // duplex must be set if request.body is ReadableStream or Async Iterables.
         // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
         ...requestOptions.body && { duplex: "half" }
@@ -20803,7 +20227,7 @@ var require_dist_node5 = __commonJS({
     async function getResponseData(response) {
       const contentType = response.headers.get("content-type");
       if (/application\/json/.test(contentType)) {
-        return response.json().catch(() => response.text()).catch(() => "");
+        return response.json();
       }
       if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
         return response.text();
@@ -20813,17 +20237,11 @@ var require_dist_node5 = __commonJS({
     function toErrorMessage(data) {
       if (typeof data === "string")
         return data;
-      let suffix;
-      if ("documentation_url" in data) {
-        suffix = ` - ${data.documentation_url}`;
-      } else {
-        suffix = "";
-      }
       if ("message" in data) {
         if (Array.isArray(data.errors)) {
-          return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}${suffix}`;
+          return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}`;
         }
-        return `${data.message}${suffix}`;
+        return data.message;
       }
       return `Unknown error: ${JSON.stringify(data)}`;
     }
@@ -20888,7 +20306,7 @@ var require_dist_node6 = __commonJS({
     module2.exports = __toCommonJS(dist_src_exports);
     var import_request3 = require_dist_node5();
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "7.1.0";
+    var VERSION = "7.0.2";
     var import_request2 = require_dist_node5();
     var import_request = require_dist_node5();
     function _buildMessageForResponseErrors(data) {
@@ -21098,12 +20516,7 @@ var require_dist_node8 = __commonJS({
     var import_request = require_dist_node5();
     var import_graphql = require_dist_node6();
     var import_auth_token = require_dist_node7();
-    var VERSION = "5.2.0";
-    var noop = () => {
-    };
-    var consoleWarn = console.warn.bind(console);
-    var consoleError = console.error.bind(console);
-    var userAgentTrail = `octokit-core.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`;
+    var VERSION = "5.0.1";
     var Octokit = class {
       static {
         this.VERSION = VERSION;
@@ -21164,7 +20577,10 @@ var require_dist_node8 = __commonJS({
             format: ""
           }
         };
-        requestDefaults.headers["user-agent"] = options.userAgent ? `${options.userAgent} ${userAgentTrail}` : userAgentTrail;
+        requestDefaults.headers["user-agent"] = [
+          options.userAgent,
+          `octokit-core.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`
+        ].filter(Boolean).join(" ");
         if (options.baseUrl) {
           requestDefaults.baseUrl = options.baseUrl;
         }
@@ -21178,10 +20594,12 @@ var require_dist_node8 = __commonJS({
         this.graphql = (0, import_graphql.withCustomRequest)(this.request).defaults(requestDefaults);
         this.log = Object.assign(
           {
-            debug: noop,
-            info: noop,
-            warn: consoleWarn,
-            error: consoleError
+            debug: () => {
+            },
+            info: () => {
+            },
+            warn: console.warn.bind(console),
+            error: console.error.bind(console)
           },
           options.log
         );
@@ -21218,9 +20636,9 @@ var require_dist_node8 = __commonJS({
           this.auth = auth;
         }
         const classConstructor = this.constructor;
-        for (let i = 0; i < classConstructor.plugins.length; ++i) {
-          Object.assign(this, classConstructor.plugins[i](this, options));
-        }
+        classConstructor.plugins.forEach((plugin) => {
+          Object.assign(this, plugin(this, options));
+        });
       }
     };
   }
@@ -21253,7 +20671,7 @@ var require_dist_node9 = __commonJS({
       restEndpointMethods: () => restEndpointMethods
     });
     module2.exports = __toCommonJS(dist_src_exports);
-    var VERSION = "10.4.1";
+    var VERSION = "10.0.1";
     var Endpoints = {
       actions: {
         addCustomLabelsToSelfHostedRunnerForOrg: [
@@ -21356,9 +20774,6 @@ var require_dist_node9 = __commonJS({
         enableWorkflow: [
           "PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable"
         ],
-        forceCancelWorkflowRun: [
-          "POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel"
-        ],
         generateRunnerJitconfigForOrg: [
           "POST /orgs/{org}/actions/runners/generate-jitconfig"
         ],
@@ -21378,9 +20793,6 @@ var require_dist_node9 = __commonJS({
           "GET /repos/{owner}/{repo}/actions/permissions/selected-actions"
         ],
         getArtifact: ["GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}"],
-        getCustomOidcSubClaimForRepo: [
-          "GET /repos/{owner}/{repo}/actions/oidc/customization/sub"
-        ],
         getEnvironmentPublicKey: [
           "GET /repositories/{repository_id}/environments/{environment_name}/secrets/public-key"
         ],
@@ -21533,9 +20945,6 @@ var require_dist_node9 = __commonJS({
         setCustomLabelsForSelfHostedRunnerForRepo: [
           "PUT /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
         ],
-        setCustomOidcSubClaimForRepo: [
-          "PUT /repos/{owner}/{repo}/actions/oidc/customization/sub"
-        ],
         setGithubActionsDefaultWorkflowPermissionsOrganization: [
           "PUT /orgs/{org}/actions/permissions/workflow"
         ],
@@ -21605,7 +21014,6 @@ var require_dist_node9 = __commonJS({
         listWatchersForRepo: ["GET /repos/{owner}/{repo}/subscribers"],
         markNotificationsAsRead: ["PUT /notifications"],
         markRepoNotificationsAsRead: ["PUT /repos/{owner}/{repo}/notifications"],
-        markThreadAsDone: ["DELETE /notifications/threads/{thread_id}"],
         markThreadAsRead: ["PATCH /notifications/threads/{thread_id}"],
         setRepoSubscription: ["PUT /repos/{owner}/{repo}/subscription"],
         setThreadSubscription: [
@@ -21775,9 +21183,6 @@ var require_dist_node9 = __commonJS({
         addSelectedRepoToOrgSecret: [
           "PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}"
         ],
-        checkPermissionsForDevcontainer: [
-          "GET /repos/{owner}/{repo}/codespaces/permissions_check"
-        ],
         codespaceMachinesForAuthenticatedUser: [
           "GET /user/codespaces/{codespace_name}/machines"
         ],
@@ -21882,10 +21287,10 @@ var require_dist_node9 = __commonJS({
         updateForAuthenticatedUser: ["PATCH /user/codespaces/{codespace_name}"]
       },
       copilot: {
-        addCopilotSeatsForTeams: [
+        addCopilotForBusinessSeatsForTeams: [
           "POST /orgs/{org}/copilot/billing/selected_teams"
         ],
-        addCopilotSeatsForUsers: [
+        addCopilotForBusinessSeatsForUsers: [
           "POST /orgs/{org}/copilot/billing/selected_users"
         ],
         cancelCopilotSeatAssignmentForTeams: [
@@ -21895,7 +21300,7 @@ var require_dist_node9 = __commonJS({
           "DELETE /orgs/{org}/copilot/billing/selected_users"
         ],
         getCopilotOrganizationDetails: ["GET /orgs/{org}/copilot/billing"],
-        getCopilotSeatDetailsForUser: [
+        getCopilotSeatAssignmentDetailsForUser: [
           "GET /orgs/{org}/members/{username}/copilot"
         ],
         listCopilotSeats: ["GET /orgs/{org}/copilot/billing/seats"]
@@ -22108,13 +21513,7 @@ var require_dist_node9 = __commonJS({
         root: ["GET /"]
       },
       migrations: {
-        cancelImport: [
-          "DELETE /repos/{owner}/{repo}/import",
-          {},
-          {
-            deprecated: "octokit.rest.migrations.cancelImport() is deprecated, see https://docs.github.com/rest/migrations/source-imports#cancel-an-import"
-          }
-        ],
+        cancelImport: ["DELETE /repos/{owner}/{repo}/import"],
         deleteArchiveForAuthenticatedUser: [
           "DELETE /user/migrations/{migration_id}/archive"
         ],
@@ -22127,27 +21526,9 @@ var require_dist_node9 = __commonJS({
         getArchiveForAuthenticatedUser: [
           "GET /user/migrations/{migration_id}/archive"
         ],
-        getCommitAuthors: [
-          "GET /repos/{owner}/{repo}/import/authors",
-          {},
-          {
-            deprecated: "octokit.rest.migrations.getCommitAuthors() is deprecated, see https://docs.github.com/rest/migrations/source-imports#get-commit-authors"
-          }
-        ],
-        getImportStatus: [
-          "GET /repos/{owner}/{repo}/import",
-          {},
-          {
-            deprecated: "octokit.rest.migrations.getImportStatus() is deprecated, see https://docs.github.com/rest/migrations/source-imports#get-an-import-status"
-          }
-        ],
-        getLargeFiles: [
-          "GET /repos/{owner}/{repo}/import/large_files",
-          {},
-          {
-            deprecated: "octokit.rest.migrations.getLargeFiles() is deprecated, see https://docs.github.com/rest/migrations/source-imports#get-large-files"
-          }
-        ],
+        getCommitAuthors: ["GET /repos/{owner}/{repo}/import/authors"],
+        getImportStatus: ["GET /repos/{owner}/{repo}/import"],
+        getLargeFiles: ["GET /repos/{owner}/{repo}/import/large_files"],
         getStatusForAuthenticatedUser: ["GET /user/migrations/{migration_id}"],
         getStatusForOrg: ["GET /orgs/{org}/migrations/{migration_id}"],
         listForAuthenticatedUser: ["GET /user/migrations"],
@@ -22161,60 +21542,22 @@ var require_dist_node9 = __commonJS({
           {},
           { renamed: ["migrations", "listReposForAuthenticatedUser"] }
         ],
-        mapCommitAuthor: [
-          "PATCH /repos/{owner}/{repo}/import/authors/{author_id}",
-          {},
-          {
-            deprecated: "octokit.rest.migrations.mapCommitAuthor() is deprecated, see https://docs.github.com/rest/migrations/source-imports#map-a-commit-author"
-          }
-        ],
-        setLfsPreference: [
-          "PATCH /repos/{owner}/{repo}/import/lfs",
-          {},
-          {
-            deprecated: "octokit.rest.migrations.setLfsPreference() is deprecated, see https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference"
-          }
-        ],
+        mapCommitAuthor: ["PATCH /repos/{owner}/{repo}/import/authors/{author_id}"],
+        setLfsPreference: ["PATCH /repos/{owner}/{repo}/import/lfs"],
         startForAuthenticatedUser: ["POST /user/migrations"],
         startForOrg: ["POST /orgs/{org}/migrations"],
-        startImport: [
-          "PUT /repos/{owner}/{repo}/import",
-          {},
-          {
-            deprecated: "octokit.rest.migrations.startImport() is deprecated, see https://docs.github.com/rest/migrations/source-imports#start-an-import"
-          }
-        ],
+        startImport: ["PUT /repos/{owner}/{repo}/import"],
         unlockRepoForAuthenticatedUser: [
           "DELETE /user/migrations/{migration_id}/repos/{repo_name}/lock"
         ],
         unlockRepoForOrg: [
           "DELETE /orgs/{org}/migrations/{migration_id}/repos/{repo_name}/lock"
         ],
-        updateImport: [
-          "PATCH /repos/{owner}/{repo}/import",
-          {},
-          {
-            deprecated: "octokit.rest.migrations.updateImport() is deprecated, see https://docs.github.com/rest/migrations/source-imports#update-an-import"
-          }
-        ]
-      },
-      oidc: {
-        getOidcCustomSubTemplateForOrg: [
-          "GET /orgs/{org}/actions/oidc/customization/sub"
-        ],
-        updateOidcCustomSubTemplateForOrg: [
-          "PUT /orgs/{org}/actions/oidc/customization/sub"
-        ]
+        updateImport: ["PATCH /repos/{owner}/{repo}/import"]
       },
       orgs: {
         addSecurityManagerTeam: [
           "PUT /orgs/{org}/security-managers/teams/{team_slug}"
-        ],
-        assignTeamToOrgRole: [
-          "PUT /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}"
-        ],
-        assignUserToOrgRole: [
-          "PUT /orgs/{org}/organization-roles/users/{username}/{role_id}"
         ],
         blockUser: ["PUT /orgs/{org}/blocks/{username}"],
         cancelInvitation: ["DELETE /orgs/{org}/invitations/{invitation_id}"],
@@ -22224,32 +21567,16 @@ var require_dist_node9 = __commonJS({
         convertMemberToOutsideCollaborator: [
           "PUT /orgs/{org}/outside_collaborators/{username}"
         ],
-        createCustomOrganizationRole: ["POST /orgs/{org}/organization-roles"],
         createInvitation: ["POST /orgs/{org}/invitations"],
-        createOrUpdateCustomProperties: ["PATCH /orgs/{org}/properties/schema"],
-        createOrUpdateCustomPropertiesValuesForRepos: [
-          "PATCH /orgs/{org}/properties/values"
-        ],
-        createOrUpdateCustomProperty: [
-          "PUT /orgs/{org}/properties/schema/{custom_property_name}"
-        ],
         createWebhook: ["POST /orgs/{org}/hooks"],
         delete: ["DELETE /orgs/{org}"],
-        deleteCustomOrganizationRole: [
-          "DELETE /orgs/{org}/organization-roles/{role_id}"
-        ],
         deleteWebhook: ["DELETE /orgs/{org}/hooks/{hook_id}"],
         enableOrDisableSecurityProductOnAllOrgRepos: [
           "POST /orgs/{org}/{security_product}/{enablement}"
         ],
         get: ["GET /orgs/{org}"],
-        getAllCustomProperties: ["GET /orgs/{org}/properties/schema"],
-        getCustomProperty: [
-          "GET /orgs/{org}/properties/schema/{custom_property_name}"
-        ],
         getMembershipForAuthenticatedUser: ["GET /user/memberships/orgs/{org}"],
         getMembershipForUser: ["GET /orgs/{org}/memberships/{username}"],
-        getOrgRole: ["GET /orgs/{org}/organization-roles/{role_id}"],
         getWebhook: ["GET /orgs/{org}/hooks/{hook_id}"],
         getWebhookConfigForOrg: ["GET /orgs/{org}/hooks/{hook_id}/config"],
         getWebhookDelivery: [
@@ -22258,19 +21585,12 @@ var require_dist_node9 = __commonJS({
         list: ["GET /organizations"],
         listAppInstallations: ["GET /orgs/{org}/installations"],
         listBlockedUsers: ["GET /orgs/{org}/blocks"],
-        listCustomPropertiesValuesForRepos: ["GET /orgs/{org}/properties/values"],
         listFailedInvitations: ["GET /orgs/{org}/failed_invitations"],
         listForAuthenticatedUser: ["GET /user/orgs"],
         listForUser: ["GET /users/{username}/orgs"],
         listInvitationTeams: ["GET /orgs/{org}/invitations/{invitation_id}/teams"],
         listMembers: ["GET /orgs/{org}/members"],
         listMembershipsForAuthenticatedUser: ["GET /user/memberships/orgs"],
-        listOrgRoleTeams: ["GET /orgs/{org}/organization-roles/{role_id}/teams"],
-        listOrgRoleUsers: ["GET /orgs/{org}/organization-roles/{role_id}/users"],
-        listOrgRoles: ["GET /orgs/{org}/organization-roles"],
-        listOrganizationFineGrainedPermissions: [
-          "GET /orgs/{org}/organization-fine-grained-permissions"
-        ],
         listOutsideCollaborators: ["GET /orgs/{org}/outside_collaborators"],
         listPatGrantRepositories: [
           "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories"
@@ -22285,15 +21605,9 @@ var require_dist_node9 = __commonJS({
         listSecurityManagerTeams: ["GET /orgs/{org}/security-managers"],
         listWebhookDeliveries: ["GET /orgs/{org}/hooks/{hook_id}/deliveries"],
         listWebhooks: ["GET /orgs/{org}/hooks"],
-        patchCustomOrganizationRole: [
-          "PATCH /orgs/{org}/organization-roles/{role_id}"
-        ],
         pingWebhook: ["POST /orgs/{org}/hooks/{hook_id}/pings"],
         redeliverWebhookDelivery: [
           "POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
-        ],
-        removeCustomProperty: [
-          "DELETE /orgs/{org}/properties/schema/{custom_property_name}"
         ],
         removeMember: ["DELETE /orgs/{org}/members/{username}"],
         removeMembershipForUser: ["DELETE /orgs/{org}/memberships/{username}"],
@@ -22311,18 +21625,6 @@ var require_dist_node9 = __commonJS({
         ],
         reviewPatGrantRequestsInBulk: [
           "POST /orgs/{org}/personal-access-token-requests"
-        ],
-        revokeAllOrgRolesTeam: [
-          "DELETE /orgs/{org}/organization-roles/teams/{team_slug}"
-        ],
-        revokeAllOrgRolesUser: [
-          "DELETE /orgs/{org}/organization-roles/users/{username}"
-        ],
-        revokeOrgRoleTeam: [
-          "DELETE /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}"
-        ],
-        revokeOrgRoleUser: [
-          "DELETE /orgs/{org}/organization-roles/users/{username}/{role_id}"
         ],
         setMembershipForUser: ["PUT /orgs/{org}/memberships/{username}"],
         setPublicMembershipForAuthenticatedUser: [
@@ -22614,9 +21916,6 @@ var require_dist_node9 = __commonJS({
           {},
           { mapToData: "users" }
         ],
-        cancelPagesDeployment: [
-          "POST /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}/cancel"
-        ],
         checkAutomatedSecurityFixes: [
           "GET /repos/{owner}/{repo}/automated-security-fixes"
         ],
@@ -22652,15 +21951,12 @@ var require_dist_node9 = __commonJS({
         createForAuthenticatedUser: ["POST /user/repos"],
         createFork: ["POST /repos/{owner}/{repo}/forks"],
         createInOrg: ["POST /orgs/{org}/repos"],
-        createOrUpdateCustomPropertiesValues: [
-          "PATCH /repos/{owner}/{repo}/properties/values"
-        ],
         createOrUpdateEnvironment: [
           "PUT /repos/{owner}/{repo}/environments/{environment_name}"
         ],
         createOrUpdateFileContents: ["PUT /repos/{owner}/{repo}/contents/{path}"],
         createOrgRuleset: ["POST /orgs/{org}/rulesets"],
-        createPagesDeployment: ["POST /repos/{owner}/{repo}/pages/deployments"],
+        createPagesDeployment: ["POST /repos/{owner}/{repo}/pages/deployment"],
         createPagesSite: ["POST /repos/{owner}/{repo}/pages"],
         createRelease: ["POST /repos/{owner}/{repo}/releases"],
         createRepoRuleset: ["POST /repos/{owner}/{repo}/rulesets"],
@@ -22793,7 +22089,6 @@ var require_dist_node9 = __commonJS({
         getCustomDeploymentProtectionRule: [
           "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}"
         ],
-        getCustomPropertiesValues: ["GET /repos/{owner}/{repo}/properties/values"],
         getDeployKey: ["GET /repos/{owner}/{repo}/keys/{key_id}"],
         getDeployment: ["GET /repos/{owner}/{repo}/deployments/{deployment_id}"],
         getDeploymentBranchPolicy: [
@@ -22807,15 +22102,10 @@ var require_dist_node9 = __commonJS({
         ],
         getLatestPagesBuild: ["GET /repos/{owner}/{repo}/pages/builds/latest"],
         getLatestRelease: ["GET /repos/{owner}/{repo}/releases/latest"],
-        getOrgRuleSuite: ["GET /orgs/{org}/rulesets/rule-suites/{rule_suite_id}"],
-        getOrgRuleSuites: ["GET /orgs/{org}/rulesets/rule-suites"],
         getOrgRuleset: ["GET /orgs/{org}/rulesets/{ruleset_id}"],
         getOrgRulesets: ["GET /orgs/{org}/rulesets"],
         getPages: ["GET /repos/{owner}/{repo}/pages"],
         getPagesBuild: ["GET /repos/{owner}/{repo}/pages/builds/{build_id}"],
-        getPagesDeployment: [
-          "GET /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}"
-        ],
         getPagesHealthCheck: ["GET /repos/{owner}/{repo}/pages/health"],
         getParticipationStats: ["GET /repos/{owner}/{repo}/stats/participation"],
         getPullRequestReviewProtection: [
@@ -22827,10 +22117,6 @@ var require_dist_node9 = __commonJS({
         getRelease: ["GET /repos/{owner}/{repo}/releases/{release_id}"],
         getReleaseAsset: ["GET /repos/{owner}/{repo}/releases/assets/{asset_id}"],
         getReleaseByTag: ["GET /repos/{owner}/{repo}/releases/tags/{tag}"],
-        getRepoRuleSuite: [
-          "GET /repos/{owner}/{repo}/rulesets/rule-suites/{rule_suite_id}"
-        ],
-        getRepoRuleSuites: ["GET /repos/{owner}/{repo}/rulesets/rule-suites"],
         getRepoRuleset: ["GET /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
         getRepoRulesets: ["GET /repos/{owner}/{repo}/rulesets"],
         getStatusChecksProtection: [
@@ -23026,9 +22312,6 @@ var require_dist_node9 = __commonJS({
         ]
       },
       securityAdvisories: {
-        createFork: [
-          "POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/forks"
-        ],
         createPrivateVulnerabilityReport: [
           "POST /repos/{owner}/{repo}/security-advisories/reports"
         ],
@@ -23411,7 +22694,7 @@ var require_dist_node10 = __commonJS({
       paginatingEndpoints: () => paginatingEndpoints
     });
     module2.exports = __toCommonJS(dist_src_exports);
-    var VERSION = "9.2.1";
+    var VERSION = "9.0.0";
     function normalizePaginatedListResponse(response) {
       if (!response.data) {
         return {
@@ -23562,8 +22845,6 @@ var require_dist_node10 = __commonJS({
       "GET /orgs/{org}/members/{username}/codespaces",
       "GET /orgs/{org}/migrations",
       "GET /orgs/{org}/migrations/{migration_id}/repositories",
-      "GET /orgs/{org}/organization-roles/{role_id}/teams",
-      "GET /orgs/{org}/organization-roles/{role_id}/users",
       "GET /orgs/{org}/outside_collaborators",
       "GET /orgs/{org}/packages",
       "GET /orgs/{org}/packages/{package_type}/{package_name}/versions",
@@ -23572,11 +22853,9 @@ var require_dist_node10 = __commonJS({
       "GET /orgs/{org}/personal-access-tokens",
       "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories",
       "GET /orgs/{org}/projects",
-      "GET /orgs/{org}/properties/values",
       "GET /orgs/{org}/public_members",
       "GET /orgs/{org}/repos",
       "GET /orgs/{org}/rulesets",
-      "GET /orgs/{org}/rulesets/rule-suites",
       "GET /orgs/{org}/secret-scanning/alerts",
       "GET /orgs/{org}/security-advisories",
       "GET /orgs/{org}/teams",
@@ -23668,7 +22947,6 @@ var require_dist_node10 = __commonJS({
       "GET /repos/{owner}/{repo}/releases/{release_id}/reactions",
       "GET /repos/{owner}/{repo}/rules/branches/{branch}",
       "GET /repos/{owner}/{repo}/rulesets",
-      "GET /repos/{owner}/{repo}/rulesets/rule-suites",
       "GET /repos/{owner}/{repo}/secret-scanning/alerts",
       "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations",
       "GET /repos/{owner}/{repo}/security-advisories",
@@ -23979,4 +23257,12 @@ undici/lib/fetch/body.js:
 
 undici/lib/websocket/frame.js:
   (*! ws. MIT License. Einar Otto Stangvik <einaros@gmail.com> *)
+
+is-plain-object/dist/is-plain-object.js:
+  (*!
+   * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
+   *
+   * Copyright (c) 2014-2017, Jon Schlinkert.
+   * Released under the MIT License.
+   *)
 */
