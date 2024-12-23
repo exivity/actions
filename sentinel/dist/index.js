@@ -185,7 +185,7 @@ var require_file_command = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.prepareKeyValueMessage = exports2.issueFileCommand = void 0;
     var crypto = __importStar2(require("crypto"));
-    var fs5 = __importStar2(require("fs"));
+    var fs6 = __importStar2(require("fs"));
     var os = __importStar2(require("os"));
     var utils_1 = require_utils();
     function issueFileCommand(command, message) {
@@ -193,10 +193,10 @@ var require_file_command = __commonJS({
       if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
       }
-      if (!fs5.existsSync(filePath)) {
+      if (!fs6.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
       }
-      fs5.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os.EOL}`, {
+      fs6.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os.EOL}`, {
         encoding: "utf8"
       });
     }
@@ -946,7 +946,7 @@ var require_util = __commonJS({
     var { InvalidArgumentError } = require_errors();
     var { Blob: Blob2 } = require("buffer");
     var nodeUtil = require("util");
-    var { stringify } = require("querystring");
+    var { stringify: stringify2 } = require("querystring");
     var { headerNameLowerCasedRecord } = require_constants();
     var [nodeMajor, nodeMinor] = process.versions.node.split(".").map((v) => Number(v));
     function nop() {
@@ -961,7 +961,7 @@ var require_util = __commonJS({
       if (url.includes("?") || url.includes("#")) {
         throw new Error('Query params cannot be passed when url already contains "?" or "#".');
       }
-      const stringified = stringify(queryParams);
+      const stringified = stringify2(queryParams);
       if (stringified) {
         url += "?" + stringified;
       }
@@ -1751,7 +1751,7 @@ var require_Dicer = __commonJS({
       if (this._headerFirst && this._isPreamble) {
         if (!this._part) {
           this._part = new PartStream(this._partOpts);
-          if (this._events.preamble) {
+          if (this.listenerCount("preamble") !== 0) {
             this.emit("preamble", this._part);
           } else {
             this._ignore();
@@ -1814,7 +1814,7 @@ var require_Dicer = __commonJS({
           }
         }
         if (this._dashes === 2) {
-          if (start + i < end && this._events.trailer) {
+          if (start + i < end && this.listenerCount("trailer") !== 0) {
             this.emit("trailer", data.slice(start + i, end));
           }
           this.reset();
@@ -1837,9 +1837,9 @@ var require_Dicer = __commonJS({
         this._part._read = function(n) {
           self2._unpause();
         };
-        if (this._isPreamble && this._events.preamble) {
+        if (this._isPreamble && this.listenerCount("preamble") !== 0) {
           this.emit("preamble", this._part);
-        } else if (this._isPreamble !== true && this._events.part) {
+        } else if (this._isPreamble !== true && this.listenerCount("part") !== 0) {
           this.emit("part", this._part);
         } else {
           this._ignore();
@@ -1918,20 +1918,99 @@ var require_decodeText = __commonJS({
       ["utf-8", utf8Decoder],
       ["utf8", utf8Decoder]
     ]);
-    function decodeText(text, textEncoding, destEncoding) {
-      if (text) {
-        if (textDecoders.has(destEncoding)) {
+    function getDecoder(charset) {
+      let lc;
+      while (true) {
+        switch (charset) {
+          case "utf-8":
+          case "utf8":
+            return decoders.utf8;
+          case "latin1":
+          case "ascii":
+          // TODO: Make these a separate, strict decoder?
+          case "us-ascii":
+          case "iso-8859-1":
+          case "iso8859-1":
+          case "iso88591":
+          case "iso_8859-1":
+          case "windows-1252":
+          case "iso_8859-1:1987":
+          case "cp1252":
+          case "x-cp1252":
+            return decoders.latin1;
+          case "utf16le":
+          case "utf-16le":
+          case "ucs2":
+          case "ucs-2":
+            return decoders.utf16le;
+          case "base64":
+            return decoders.base64;
+          default:
+            if (lc === void 0) {
+              lc = true;
+              charset = charset.toLowerCase();
+              continue;
+            }
+            return decoders.other.bind(charset);
+        }
+      }
+    }
+    var decoders = {
+      utf8: (data, sourceEncoding) => {
+        if (data.length === 0) {
+          return "";
+        }
+        if (typeof data === "string") {
+          data = Buffer.from(data, sourceEncoding);
+        }
+        return data.utf8Slice(0, data.length);
+      },
+      latin1: (data, sourceEncoding) => {
+        if (data.length === 0) {
+          return "";
+        }
+        if (typeof data === "string") {
+          return data;
+        }
+        return data.latin1Slice(0, data.length);
+      },
+      utf16le: (data, sourceEncoding) => {
+        if (data.length === 0) {
+          return "";
+        }
+        if (typeof data === "string") {
+          data = Buffer.from(data, sourceEncoding);
+        }
+        return data.ucs2Slice(0, data.length);
+      },
+      base64: (data, sourceEncoding) => {
+        if (data.length === 0) {
+          return "";
+        }
+        if (typeof data === "string") {
+          data = Buffer.from(data, sourceEncoding);
+        }
+        return data.base64Slice(0, data.length);
+      },
+      other: (data, sourceEncoding) => {
+        if (data.length === 0) {
+          return "";
+        }
+        if (typeof data === "string") {
+          data = Buffer.from(data, sourceEncoding);
+        }
+        if (textDecoders.has(exports2.toString())) {
           try {
-            return textDecoders.get(destEncoding).decode(Buffer.from(text, textEncoding));
-          } catch (e) {
-          }
-        } else {
-          try {
-            textDecoders.set(destEncoding, new TextDecoder(destEncoding));
-            return textDecoders.get(destEncoding).decode(Buffer.from(text, textEncoding));
-          } catch (e) {
+            return textDecoders.get(exports2).decode(data);
+          } catch {
           }
         }
+        return typeof data === "string" ? data : data.toString();
+      }
+    };
+    function decodeText(text, sourceEncoding, destEncoding) {
+      if (text) {
+        return getDecoder(destEncoding)(text, sourceEncoding);
       }
       return text;
     }
@@ -1944,19 +2023,510 @@ var require_parseParams = __commonJS({
   "node_modules/@fastify/busboy/lib/utils/parseParams.js"(exports2, module2) {
     "use strict";
     var decodeText = require_decodeText();
-    var RE_ENCODED = /%([a-fA-F0-9]{2})/g;
-    function encodedReplacer(match, byte) {
-      return String.fromCharCode(parseInt(byte, 16));
+    var RE_ENCODED = /%[a-fA-F0-9][a-fA-F0-9]/g;
+    var EncodedLookup = {
+      "%00": "\0",
+      "%01": "",
+      "%02": "",
+      "%03": "",
+      "%04": "",
+      "%05": "",
+      "%06": "",
+      "%07": "\x07",
+      "%08": "\b",
+      "%09": "	",
+      "%0a": "\n",
+      "%0A": "\n",
+      "%0b": "\v",
+      "%0B": "\v",
+      "%0c": "\f",
+      "%0C": "\f",
+      "%0d": "\r",
+      "%0D": "\r",
+      "%0e": "",
+      "%0E": "",
+      "%0f": "",
+      "%0F": "",
+      "%10": "",
+      "%11": "",
+      "%12": "",
+      "%13": "",
+      "%14": "",
+      "%15": "",
+      "%16": "",
+      "%17": "",
+      "%18": "",
+      "%19": "",
+      "%1a": "",
+      "%1A": "",
+      "%1b": "\x1B",
+      "%1B": "\x1B",
+      "%1c": "",
+      "%1C": "",
+      "%1d": "",
+      "%1D": "",
+      "%1e": "",
+      "%1E": "",
+      "%1f": "",
+      "%1F": "",
+      "%20": " ",
+      "%21": "!",
+      "%22": '"',
+      "%23": "#",
+      "%24": "$",
+      "%25": "%",
+      "%26": "&",
+      "%27": "'",
+      "%28": "(",
+      "%29": ")",
+      "%2a": "*",
+      "%2A": "*",
+      "%2b": "+",
+      "%2B": "+",
+      "%2c": ",",
+      "%2C": ",",
+      "%2d": "-",
+      "%2D": "-",
+      "%2e": ".",
+      "%2E": ".",
+      "%2f": "/",
+      "%2F": "/",
+      "%30": "0",
+      "%31": "1",
+      "%32": "2",
+      "%33": "3",
+      "%34": "4",
+      "%35": "5",
+      "%36": "6",
+      "%37": "7",
+      "%38": "8",
+      "%39": "9",
+      "%3a": ":",
+      "%3A": ":",
+      "%3b": ";",
+      "%3B": ";",
+      "%3c": "<",
+      "%3C": "<",
+      "%3d": "=",
+      "%3D": "=",
+      "%3e": ">",
+      "%3E": ">",
+      "%3f": "?",
+      "%3F": "?",
+      "%40": "@",
+      "%41": "A",
+      "%42": "B",
+      "%43": "C",
+      "%44": "D",
+      "%45": "E",
+      "%46": "F",
+      "%47": "G",
+      "%48": "H",
+      "%49": "I",
+      "%4a": "J",
+      "%4A": "J",
+      "%4b": "K",
+      "%4B": "K",
+      "%4c": "L",
+      "%4C": "L",
+      "%4d": "M",
+      "%4D": "M",
+      "%4e": "N",
+      "%4E": "N",
+      "%4f": "O",
+      "%4F": "O",
+      "%50": "P",
+      "%51": "Q",
+      "%52": "R",
+      "%53": "S",
+      "%54": "T",
+      "%55": "U",
+      "%56": "V",
+      "%57": "W",
+      "%58": "X",
+      "%59": "Y",
+      "%5a": "Z",
+      "%5A": "Z",
+      "%5b": "[",
+      "%5B": "[",
+      "%5c": "\\",
+      "%5C": "\\",
+      "%5d": "]",
+      "%5D": "]",
+      "%5e": "^",
+      "%5E": "^",
+      "%5f": "_",
+      "%5F": "_",
+      "%60": "`",
+      "%61": "a",
+      "%62": "b",
+      "%63": "c",
+      "%64": "d",
+      "%65": "e",
+      "%66": "f",
+      "%67": "g",
+      "%68": "h",
+      "%69": "i",
+      "%6a": "j",
+      "%6A": "j",
+      "%6b": "k",
+      "%6B": "k",
+      "%6c": "l",
+      "%6C": "l",
+      "%6d": "m",
+      "%6D": "m",
+      "%6e": "n",
+      "%6E": "n",
+      "%6f": "o",
+      "%6F": "o",
+      "%70": "p",
+      "%71": "q",
+      "%72": "r",
+      "%73": "s",
+      "%74": "t",
+      "%75": "u",
+      "%76": "v",
+      "%77": "w",
+      "%78": "x",
+      "%79": "y",
+      "%7a": "z",
+      "%7A": "z",
+      "%7b": "{",
+      "%7B": "{",
+      "%7c": "|",
+      "%7C": "|",
+      "%7d": "}",
+      "%7D": "}",
+      "%7e": "~",
+      "%7E": "~",
+      "%7f": "\x7F",
+      "%7F": "\x7F",
+      "%80": "\x80",
+      "%81": "\x81",
+      "%82": "\x82",
+      "%83": "\x83",
+      "%84": "\x84",
+      "%85": "\x85",
+      "%86": "\x86",
+      "%87": "\x87",
+      "%88": "\x88",
+      "%89": "\x89",
+      "%8a": "\x8A",
+      "%8A": "\x8A",
+      "%8b": "\x8B",
+      "%8B": "\x8B",
+      "%8c": "\x8C",
+      "%8C": "\x8C",
+      "%8d": "\x8D",
+      "%8D": "\x8D",
+      "%8e": "\x8E",
+      "%8E": "\x8E",
+      "%8f": "\x8F",
+      "%8F": "\x8F",
+      "%90": "\x90",
+      "%91": "\x91",
+      "%92": "\x92",
+      "%93": "\x93",
+      "%94": "\x94",
+      "%95": "\x95",
+      "%96": "\x96",
+      "%97": "\x97",
+      "%98": "\x98",
+      "%99": "\x99",
+      "%9a": "\x9A",
+      "%9A": "\x9A",
+      "%9b": "\x9B",
+      "%9B": "\x9B",
+      "%9c": "\x9C",
+      "%9C": "\x9C",
+      "%9d": "\x9D",
+      "%9D": "\x9D",
+      "%9e": "\x9E",
+      "%9E": "\x9E",
+      "%9f": "\x9F",
+      "%9F": "\x9F",
+      "%a0": "\xA0",
+      "%A0": "\xA0",
+      "%a1": "\xA1",
+      "%A1": "\xA1",
+      "%a2": "\xA2",
+      "%A2": "\xA2",
+      "%a3": "\xA3",
+      "%A3": "\xA3",
+      "%a4": "\xA4",
+      "%A4": "\xA4",
+      "%a5": "\xA5",
+      "%A5": "\xA5",
+      "%a6": "\xA6",
+      "%A6": "\xA6",
+      "%a7": "\xA7",
+      "%A7": "\xA7",
+      "%a8": "\xA8",
+      "%A8": "\xA8",
+      "%a9": "\xA9",
+      "%A9": "\xA9",
+      "%aa": "\xAA",
+      "%Aa": "\xAA",
+      "%aA": "\xAA",
+      "%AA": "\xAA",
+      "%ab": "\xAB",
+      "%Ab": "\xAB",
+      "%aB": "\xAB",
+      "%AB": "\xAB",
+      "%ac": "\xAC",
+      "%Ac": "\xAC",
+      "%aC": "\xAC",
+      "%AC": "\xAC",
+      "%ad": "\xAD",
+      "%Ad": "\xAD",
+      "%aD": "\xAD",
+      "%AD": "\xAD",
+      "%ae": "\xAE",
+      "%Ae": "\xAE",
+      "%aE": "\xAE",
+      "%AE": "\xAE",
+      "%af": "\xAF",
+      "%Af": "\xAF",
+      "%aF": "\xAF",
+      "%AF": "\xAF",
+      "%b0": "\xB0",
+      "%B0": "\xB0",
+      "%b1": "\xB1",
+      "%B1": "\xB1",
+      "%b2": "\xB2",
+      "%B2": "\xB2",
+      "%b3": "\xB3",
+      "%B3": "\xB3",
+      "%b4": "\xB4",
+      "%B4": "\xB4",
+      "%b5": "\xB5",
+      "%B5": "\xB5",
+      "%b6": "\xB6",
+      "%B6": "\xB6",
+      "%b7": "\xB7",
+      "%B7": "\xB7",
+      "%b8": "\xB8",
+      "%B8": "\xB8",
+      "%b9": "\xB9",
+      "%B9": "\xB9",
+      "%ba": "\xBA",
+      "%Ba": "\xBA",
+      "%bA": "\xBA",
+      "%BA": "\xBA",
+      "%bb": "\xBB",
+      "%Bb": "\xBB",
+      "%bB": "\xBB",
+      "%BB": "\xBB",
+      "%bc": "\xBC",
+      "%Bc": "\xBC",
+      "%bC": "\xBC",
+      "%BC": "\xBC",
+      "%bd": "\xBD",
+      "%Bd": "\xBD",
+      "%bD": "\xBD",
+      "%BD": "\xBD",
+      "%be": "\xBE",
+      "%Be": "\xBE",
+      "%bE": "\xBE",
+      "%BE": "\xBE",
+      "%bf": "\xBF",
+      "%Bf": "\xBF",
+      "%bF": "\xBF",
+      "%BF": "\xBF",
+      "%c0": "\xC0",
+      "%C0": "\xC0",
+      "%c1": "\xC1",
+      "%C1": "\xC1",
+      "%c2": "\xC2",
+      "%C2": "\xC2",
+      "%c3": "\xC3",
+      "%C3": "\xC3",
+      "%c4": "\xC4",
+      "%C4": "\xC4",
+      "%c5": "\xC5",
+      "%C5": "\xC5",
+      "%c6": "\xC6",
+      "%C6": "\xC6",
+      "%c7": "\xC7",
+      "%C7": "\xC7",
+      "%c8": "\xC8",
+      "%C8": "\xC8",
+      "%c9": "\xC9",
+      "%C9": "\xC9",
+      "%ca": "\xCA",
+      "%Ca": "\xCA",
+      "%cA": "\xCA",
+      "%CA": "\xCA",
+      "%cb": "\xCB",
+      "%Cb": "\xCB",
+      "%cB": "\xCB",
+      "%CB": "\xCB",
+      "%cc": "\xCC",
+      "%Cc": "\xCC",
+      "%cC": "\xCC",
+      "%CC": "\xCC",
+      "%cd": "\xCD",
+      "%Cd": "\xCD",
+      "%cD": "\xCD",
+      "%CD": "\xCD",
+      "%ce": "\xCE",
+      "%Ce": "\xCE",
+      "%cE": "\xCE",
+      "%CE": "\xCE",
+      "%cf": "\xCF",
+      "%Cf": "\xCF",
+      "%cF": "\xCF",
+      "%CF": "\xCF",
+      "%d0": "\xD0",
+      "%D0": "\xD0",
+      "%d1": "\xD1",
+      "%D1": "\xD1",
+      "%d2": "\xD2",
+      "%D2": "\xD2",
+      "%d3": "\xD3",
+      "%D3": "\xD3",
+      "%d4": "\xD4",
+      "%D4": "\xD4",
+      "%d5": "\xD5",
+      "%D5": "\xD5",
+      "%d6": "\xD6",
+      "%D6": "\xD6",
+      "%d7": "\xD7",
+      "%D7": "\xD7",
+      "%d8": "\xD8",
+      "%D8": "\xD8",
+      "%d9": "\xD9",
+      "%D9": "\xD9",
+      "%da": "\xDA",
+      "%Da": "\xDA",
+      "%dA": "\xDA",
+      "%DA": "\xDA",
+      "%db": "\xDB",
+      "%Db": "\xDB",
+      "%dB": "\xDB",
+      "%DB": "\xDB",
+      "%dc": "\xDC",
+      "%Dc": "\xDC",
+      "%dC": "\xDC",
+      "%DC": "\xDC",
+      "%dd": "\xDD",
+      "%Dd": "\xDD",
+      "%dD": "\xDD",
+      "%DD": "\xDD",
+      "%de": "\xDE",
+      "%De": "\xDE",
+      "%dE": "\xDE",
+      "%DE": "\xDE",
+      "%df": "\xDF",
+      "%Df": "\xDF",
+      "%dF": "\xDF",
+      "%DF": "\xDF",
+      "%e0": "\xE0",
+      "%E0": "\xE0",
+      "%e1": "\xE1",
+      "%E1": "\xE1",
+      "%e2": "\xE2",
+      "%E2": "\xE2",
+      "%e3": "\xE3",
+      "%E3": "\xE3",
+      "%e4": "\xE4",
+      "%E4": "\xE4",
+      "%e5": "\xE5",
+      "%E5": "\xE5",
+      "%e6": "\xE6",
+      "%E6": "\xE6",
+      "%e7": "\xE7",
+      "%E7": "\xE7",
+      "%e8": "\xE8",
+      "%E8": "\xE8",
+      "%e9": "\xE9",
+      "%E9": "\xE9",
+      "%ea": "\xEA",
+      "%Ea": "\xEA",
+      "%eA": "\xEA",
+      "%EA": "\xEA",
+      "%eb": "\xEB",
+      "%Eb": "\xEB",
+      "%eB": "\xEB",
+      "%EB": "\xEB",
+      "%ec": "\xEC",
+      "%Ec": "\xEC",
+      "%eC": "\xEC",
+      "%EC": "\xEC",
+      "%ed": "\xED",
+      "%Ed": "\xED",
+      "%eD": "\xED",
+      "%ED": "\xED",
+      "%ee": "\xEE",
+      "%Ee": "\xEE",
+      "%eE": "\xEE",
+      "%EE": "\xEE",
+      "%ef": "\xEF",
+      "%Ef": "\xEF",
+      "%eF": "\xEF",
+      "%EF": "\xEF",
+      "%f0": "\xF0",
+      "%F0": "\xF0",
+      "%f1": "\xF1",
+      "%F1": "\xF1",
+      "%f2": "\xF2",
+      "%F2": "\xF2",
+      "%f3": "\xF3",
+      "%F3": "\xF3",
+      "%f4": "\xF4",
+      "%F4": "\xF4",
+      "%f5": "\xF5",
+      "%F5": "\xF5",
+      "%f6": "\xF6",
+      "%F6": "\xF6",
+      "%f7": "\xF7",
+      "%F7": "\xF7",
+      "%f8": "\xF8",
+      "%F8": "\xF8",
+      "%f9": "\xF9",
+      "%F9": "\xF9",
+      "%fa": "\xFA",
+      "%Fa": "\xFA",
+      "%fA": "\xFA",
+      "%FA": "\xFA",
+      "%fb": "\xFB",
+      "%Fb": "\xFB",
+      "%fB": "\xFB",
+      "%FB": "\xFB",
+      "%fc": "\xFC",
+      "%Fc": "\xFC",
+      "%fC": "\xFC",
+      "%FC": "\xFC",
+      "%fd": "\xFD",
+      "%Fd": "\xFD",
+      "%fD": "\xFD",
+      "%FD": "\xFD",
+      "%fe": "\xFE",
+      "%Fe": "\xFE",
+      "%fE": "\xFE",
+      "%FE": "\xFE",
+      "%ff": "\xFF",
+      "%Ff": "\xFF",
+      "%fF": "\xFF",
+      "%FF": "\xFF"
+    };
+    function encodedReplacer(match) {
+      return EncodedLookup[match];
     }
+    var STATE_KEY = 0;
+    var STATE_VALUE = 1;
+    var STATE_CHARSET = 2;
+    var STATE_LANG = 3;
     function parseParams(str) {
       const res = [];
-      let state = "key";
+      let state = STATE_KEY;
       let charset = "";
       let inquote = false;
       let escaping = false;
       let p = 0;
       let tmp = "";
-      for (var i = 0, len = str.length; i < len; ++i) {
+      const len = str.length;
+      for (var i = 0; i < len; ++i) {
         const char = str[i];
         if (char === "\\" && inquote) {
           if (escaping) {
@@ -1969,7 +2539,7 @@ var require_parseParams = __commonJS({
           if (!escaping) {
             if (inquote) {
               inquote = false;
-              state = "key";
+              state = STATE_KEY;
             } else {
               inquote = true;
             }
@@ -1982,26 +2552,22 @@ var require_parseParams = __commonJS({
             tmp += "\\";
           }
           escaping = false;
-          if ((state === "charset" || state === "lang") && char === "'") {
-            if (state === "charset") {
-              state = "lang";
+          if ((state === STATE_CHARSET || state === STATE_LANG) && char === "'") {
+            if (state === STATE_CHARSET) {
+              state = STATE_LANG;
               charset = tmp.substring(1);
             } else {
-              state = "value";
+              state = STATE_VALUE;
             }
             tmp = "";
             continue;
-          } else if (state === "key" && (char === "*" || char === "=") && res.length) {
-            if (char === "*") {
-              state = "charset";
-            } else {
-              state = "value";
-            }
+          } else if (state === STATE_KEY && (char === "*" || char === "=") && res.length) {
+            state = char === "*" ? STATE_CHARSET : STATE_VALUE;
             res[p] = [tmp, void 0];
             tmp = "";
             continue;
           } else if (!inquote && char === ";") {
-            state = "key";
+            state = STATE_KEY;
             if (charset) {
               if (tmp.length) {
                 tmp = decodeText(
@@ -2220,7 +2786,7 @@ var require_multipart = __commonJS({
               return skipPart(part);
             }
             ++nfiles;
-            if (!boy._events.file) {
+            if (boy.listenerCount("file") === 0) {
               self2.parser._ignore();
               return;
             }
@@ -15003,7 +15569,7 @@ var require_util6 = __commonJS({
         throw new Error("Invalid cookie max-age");
       }
     }
-    function stringify(cookie) {
+    function stringify2(cookie) {
       if (cookie.name.length === 0) {
         return null;
       }
@@ -15068,7 +15634,7 @@ var require_util6 = __commonJS({
     }
     module2.exports = {
       isCTLExcludingHtab,
-      stringify,
+      stringify: stringify2,
       getHeadersList
     };
   }
@@ -15219,7 +15785,7 @@ var require_cookies = __commonJS({
   "node_modules/undici/lib/cookies/index.js"(exports2, module2) {
     "use strict";
     var { parseSetCookie } = require_parse();
-    var { stringify, getHeadersList } = require_util6();
+    var { stringify: stringify2, getHeadersList } = require_util6();
     var { webidl } = require_webidl();
     var { Headers } = require_headers();
     function getCookies(headers) {
@@ -15261,9 +15827,9 @@ var require_cookies = __commonJS({
       webidl.argumentLengthCheck(arguments, 2, { header: "setCookie" });
       webidl.brandCheck(headers, Headers, { strict: false });
       cookie = webidl.converters.Cookie(cookie);
-      const str = stringify(cookie);
+      const str = stringify2(cookie);
       if (str) {
-        headers.append("Set-Cookie", stringify(cookie));
+        headers.append("Set-Cookie", stringify2(cookie));
       }
     }
     webidl.converters.DeleteCookieAttributes = webidl.dictionaryConverter([
@@ -17942,12 +18508,12 @@ var require_io_util = __commonJS({
     var _a;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCmdPath = exports2.tryGetExecutablePath = exports2.isRooted = exports2.isDirectory = exports2.exists = exports2.READONLY = exports2.UV_FS_O_EXLOCK = exports2.IS_WINDOWS = exports2.unlink = exports2.symlink = exports2.stat = exports2.rmdir = exports2.rm = exports2.rename = exports2.readlink = exports2.readdir = exports2.open = exports2.mkdir = exports2.lstat = exports2.copyFile = exports2.chmod = void 0;
-    var fs5 = __importStar2(require("fs"));
+    var fs6 = __importStar2(require("fs"));
     var path2 = __importStar2(require("path"));
-    _a = fs5.promises, exports2.chmod = _a.chmod, exports2.copyFile = _a.copyFile, exports2.lstat = _a.lstat, exports2.mkdir = _a.mkdir, exports2.open = _a.open, exports2.readdir = _a.readdir, exports2.readlink = _a.readlink, exports2.rename = _a.rename, exports2.rm = _a.rm, exports2.rmdir = _a.rmdir, exports2.stat = _a.stat, exports2.symlink = _a.symlink, exports2.unlink = _a.unlink;
+    _a = fs6.promises, exports2.chmod = _a.chmod, exports2.copyFile = _a.copyFile, exports2.lstat = _a.lstat, exports2.mkdir = _a.mkdir, exports2.open = _a.open, exports2.readdir = _a.readdir, exports2.readlink = _a.readlink, exports2.rename = _a.rename, exports2.rm = _a.rm, exports2.rmdir = _a.rmdir, exports2.stat = _a.stat, exports2.symlink = _a.symlink, exports2.unlink = _a.unlink;
     exports2.IS_WINDOWS = process.platform === "win32";
     exports2.UV_FS_O_EXLOCK = 268435456;
-    exports2.READONLY = fs5.constants.O_RDONLY;
+    exports2.READONLY = fs6.constants.O_RDONLY;
     function exists(fsPath) {
       return __awaiter2(this, void 0, void 0, function* () {
         try {
@@ -19570,7 +20136,7 @@ var require_dist_node = __commonJS({
       if (typeof navigator === "object" && "userAgent" in navigator) {
         return navigator.userAgent;
       }
-      if (typeof process === "object" && "version" in process) {
+      if (typeof process === "object" && process.version !== void 0) {
         return `Node.js/${process.version.substr(1)} (${process.platform}; ${process.arch})`;
       }
       return "<environment undetectable>";
@@ -19675,7 +20241,10 @@ var require_before_after_hook = __commonJS({
     var bind = Function.bind;
     var bindable = bind.bind(bind);
     function bindApi(hook, state, name) {
-      var removeHookRef = bindable(removeHook, null).apply(null, name ? [state, name] : [state]);
+      var removeHookRef = bindable(removeHook, null).apply(
+        null,
+        name ? [state, name] : [state]
+      );
       hook.api = { remove: removeHookRef };
       hook.remove = removeHookRef;
       ["before", "error", "after", "wrap"].forEach(function(kind) {
@@ -19703,7 +20272,9 @@ var require_before_after_hook = __commonJS({
     var collectionHookDeprecationMessageDisplayed = false;
     function Hook() {
       if (!collectionHookDeprecationMessageDisplayed) {
-        console.warn('[before-after-hook]: "Hook()" repurposing warning, use "Hook.Collection()". Read more: https://git.io/upgrade-before-after-hook-to-1.4');
+        console.warn(
+          '[before-after-hook]: "Hook()" repurposing warning, use "Hook.Collection()". Read more: https://git.io/upgrade-before-after-hook-to-1.4'
+        );
         collectionHookDeprecationMessageDisplayed = true;
       }
       return HookCollection();
@@ -19714,30 +20285,6 @@ var require_before_after_hook = __commonJS({
     module2.exports.Hook = Hook;
     module2.exports.Singular = Hook.Singular;
     module2.exports.Collection = Hook.Collection;
-  }
-});
-
-// node_modules/is-plain-object/dist/is-plain-object.js
-var require_is_plain_object = __commonJS({
-  "node_modules/is-plain-object/dist/is-plain-object.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    function isObject(o) {
-      return Object.prototype.toString.call(o) === "[object Object]";
-    }
-    function isPlainObject(o) {
-      var ctor, prot;
-      if (isObject(o) === false) return false;
-      ctor = o.constructor;
-      if (ctor === void 0) return true;
-      prot = ctor.prototype;
-      if (isObject(prot) === false) return false;
-      if (prot.hasOwnProperty("isPrototypeOf") === false) {
-        return false;
-      }
-      return true;
-    }
-    exports2.isPlainObject = isPlainObject;
   }
 });
 
@@ -19768,7 +20315,7 @@ var require_dist_node2 = __commonJS({
     });
     module2.exports = __toCommonJS2(dist_src_exports);
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "9.0.1";
+    var VERSION = "9.0.5";
     var userAgent = `octokit-endpoint.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`;
     var DEFAULTS = {
       method: "GET",
@@ -19790,11 +20337,21 @@ var require_dist_node2 = __commonJS({
         return newObj;
       }, {});
     }
-    var import_is_plain_object = require_is_plain_object();
+    function isPlainObject(value) {
+      if (typeof value !== "object" || value === null)
+        return false;
+      if (Object.prototype.toString.call(value) !== "[object Object]")
+        return false;
+      const proto = Object.getPrototypeOf(value);
+      if (proto === null)
+        return true;
+      const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+      return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
+    }
     function mergeDeep(defaults, options) {
       const result = Object.assign({}, defaults);
       Object.keys(options).forEach((key) => {
-        if ((0, import_is_plain_object.isPlainObject)(options[key])) {
+        if (isPlainObject(options[key])) {
           if (!(key in defaults))
             Object.assign(result, { [key]: options[key] });
           else
@@ -19859,10 +20416,13 @@ var require_dist_node2 = __commonJS({
       return matches.map(removeNonChars).reduce((a, b) => a.concat(b), []);
     }
     function omit(object, keysToOmit) {
-      return Object.keys(object).filter((option) => !keysToOmit.includes(option)).reduce((obj, key) => {
-        obj[key] = object[key];
-        return obj;
-      }, {});
+      const result = { __proto__: null };
+      for (const key of Object.keys(object)) {
+        if (keysToOmit.indexOf(key) === -1) {
+          result[key] = object[key];
+        }
+      }
+      return result;
     }
     function encodeReserved(str) {
       return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
@@ -19958,7 +20518,7 @@ var require_dist_node2 = __commonJS({
     }
     function expand(template, context2) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
-      return template.replace(
+      template = template.replace(
         /\{([^\{\}]+)\}|([^\{\}]+)/g,
         function(_, expression, literal) {
           if (expression) {
@@ -19988,8 +20548,13 @@ var require_dist_node2 = __commonJS({
           }
         }
       );
+      if (template === "/") {
+        return template;
+      } else {
+        return template.replace(/\/$/, "");
+      }
     }
-    function parse4(options) {
+    function parse5(options) {
       let method = options.method.toUpperCase();
       let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
       let headers = Object.assign({}, options.headers);
@@ -20053,7 +20618,7 @@ var require_dist_node2 = __commonJS({
       );
     }
     function endpointWithDefaults(defaults, route, options) {
-      return parse4(merge(defaults, route, options));
+      return parse5(merge(defaults, route, options));
     }
     function withDefaults(oldDefaults, newDefaults) {
       const DEFAULTS2 = merge(oldDefaults, newDefaults);
@@ -20062,7 +20627,7 @@ var require_dist_node2 = __commonJS({
         DEFAULTS: DEFAULTS2,
         defaults: withDefaults.bind(null, DEFAULTS2),
         merge: merge.bind(null, DEFAULTS2),
-        parse: parse4
+        parse: parse5
       });
     }
     var endpoint = withDefaults(null, DEFAULTS);
@@ -20281,17 +20846,27 @@ var require_dist_node5 = __commonJS({
     module2.exports = __toCommonJS2(dist_src_exports);
     var import_endpoint = require_dist_node2();
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "8.1.4";
-    var import_is_plain_object = require_is_plain_object();
+    var VERSION = "8.4.0";
+    function isPlainObject(value) {
+      if (typeof value !== "object" || value === null)
+        return false;
+      if (Object.prototype.toString.call(value) !== "[object Object]")
+        return false;
+      const proto = Object.getPrototypeOf(value);
+      if (proto === null)
+        return true;
+      const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+      return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
+    }
     var import_request_error = require_dist_node4();
     function getBufferResponse(response) {
       return response.arrayBuffer();
     }
     function fetchWrapper(requestOptions) {
-      var _a, _b, _c;
+      var _a, _b, _c, _d;
       const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
       const parseSuccessResponseBody = ((_a = requestOptions.request) == null ? void 0 : _a.parseSuccessResponseBody) !== false;
-      if ((0, import_is_plain_object.isPlainObject)(requestOptions.body) || Array.isArray(requestOptions.body)) {
+      if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
         requestOptions.body = JSON.stringify(requestOptions.body);
       }
       let headers = {};
@@ -20309,8 +20884,9 @@ var require_dist_node5 = __commonJS({
       return fetch2(requestOptions.url, {
         method: requestOptions.method,
         body: requestOptions.body,
+        redirect: (_c = requestOptions.request) == null ? void 0 : _c.redirect,
         headers: requestOptions.headers,
-        signal: (_c = requestOptions.request) == null ? void 0 : _c.signal,
+        signal: (_d = requestOptions.request) == null ? void 0 : _d.signal,
         // duplex must be set if request.body is ReadableStream or Async Iterables.
         // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
         ...requestOptions.body && { duplex: "half" }
@@ -20397,7 +20973,7 @@ var require_dist_node5 = __commonJS({
     async function getResponseData(response) {
       const contentType = response.headers.get("content-type");
       if (/application\/json/.test(contentType)) {
-        return response.json();
+        return response.json().catch(() => response.text()).catch(() => "");
       }
       if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
         return response.text();
@@ -20407,11 +20983,17 @@ var require_dist_node5 = __commonJS({
     function toErrorMessage(data) {
       if (typeof data === "string")
         return data;
+      let suffix;
+      if ("documentation_url" in data) {
+        suffix = ` - ${data.documentation_url}`;
+      } else {
+        suffix = "";
+      }
       if ("message" in data) {
         if (Array.isArray(data.errors)) {
-          return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}`;
+          return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}${suffix}`;
         }
-        return data.message;
+        return `${data.message}${suffix}`;
       }
       return `Unknown error: ${JSON.stringify(data)}`;
     }
@@ -20476,7 +21058,7 @@ var require_dist_node6 = __commonJS({
     module2.exports = __toCommonJS2(dist_src_exports);
     var import_request3 = require_dist_node5();
     var import_universal_user_agent = require_dist_node();
-    var VERSION = "7.0.2";
+    var VERSION = "7.1.0";
     var import_request2 = require_dist_node5();
     var import_request = require_dist_node5();
     function _buildMessageForResponseErrors(data) {
@@ -20686,7 +21268,12 @@ var require_dist_node8 = __commonJS({
     var import_request = require_dist_node5();
     var import_graphql = require_dist_node6();
     var import_auth_token = require_dist_node7();
-    var VERSION = "5.0.1";
+    var VERSION = "5.2.0";
+    var noop = () => {
+    };
+    var consoleWarn = console.warn.bind(console);
+    var consoleError = console.error.bind(console);
+    var userAgentTrail = `octokit-core.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`;
     var Octokit = class {
       static {
         this.VERSION = VERSION;
@@ -20747,10 +21334,7 @@ var require_dist_node8 = __commonJS({
             format: ""
           }
         };
-        requestDefaults.headers["user-agent"] = [
-          options.userAgent,
-          `octokit-core.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`
-        ].filter(Boolean).join(" ");
+        requestDefaults.headers["user-agent"] = options.userAgent ? `${options.userAgent} ${userAgentTrail}` : userAgentTrail;
         if (options.baseUrl) {
           requestDefaults.baseUrl = options.baseUrl;
         }
@@ -20764,12 +21348,10 @@ var require_dist_node8 = __commonJS({
         this.graphql = (0, import_graphql.withCustomRequest)(this.request).defaults(requestDefaults);
         this.log = Object.assign(
           {
-            debug: () => {
-            },
-            info: () => {
-            },
-            warn: console.warn.bind(console),
-            error: console.error.bind(console)
+            debug: noop,
+            info: noop,
+            warn: consoleWarn,
+            error: consoleError
           },
           options.log
         );
@@ -20806,9 +21388,9 @@ var require_dist_node8 = __commonJS({
           this.auth = auth;
         }
         const classConstructor = this.constructor;
-        classConstructor.plugins.forEach((plugin) => {
-          Object.assign(this, plugin(this, options));
-        });
+        for (let i = 0; i < classConstructor.plugins.length; ++i) {
+          Object.assign(this, classConstructor.plugins[i](this, options));
+        }
       }
     };
   }
@@ -20841,7 +21423,7 @@ var require_dist_node9 = __commonJS({
       restEndpointMethods: () => restEndpointMethods
     });
     module2.exports = __toCommonJS2(dist_src_exports);
-    var VERSION = "10.0.1";
+    var VERSION = "10.4.1";
     var Endpoints = {
       actions: {
         addCustomLabelsToSelfHostedRunnerForOrg: [
@@ -20944,6 +21526,9 @@ var require_dist_node9 = __commonJS({
         enableWorkflow: [
           "PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable"
         ],
+        forceCancelWorkflowRun: [
+          "POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel"
+        ],
         generateRunnerJitconfigForOrg: [
           "POST /orgs/{org}/actions/runners/generate-jitconfig"
         ],
@@ -20963,6 +21548,9 @@ var require_dist_node9 = __commonJS({
           "GET /repos/{owner}/{repo}/actions/permissions/selected-actions"
         ],
         getArtifact: ["GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}"],
+        getCustomOidcSubClaimForRepo: [
+          "GET /repos/{owner}/{repo}/actions/oidc/customization/sub"
+        ],
         getEnvironmentPublicKey: [
           "GET /repositories/{repository_id}/environments/{environment_name}/secrets/public-key"
         ],
@@ -21115,6 +21703,9 @@ var require_dist_node9 = __commonJS({
         setCustomLabelsForSelfHostedRunnerForRepo: [
           "PUT /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
         ],
+        setCustomOidcSubClaimForRepo: [
+          "PUT /repos/{owner}/{repo}/actions/oidc/customization/sub"
+        ],
         setGithubActionsDefaultWorkflowPermissionsOrganization: [
           "PUT /orgs/{org}/actions/permissions/workflow"
         ],
@@ -21184,6 +21775,7 @@ var require_dist_node9 = __commonJS({
         listWatchersForRepo: ["GET /repos/{owner}/{repo}/subscribers"],
         markNotificationsAsRead: ["PUT /notifications"],
         markRepoNotificationsAsRead: ["PUT /repos/{owner}/{repo}/notifications"],
+        markThreadAsDone: ["DELETE /notifications/threads/{thread_id}"],
         markThreadAsRead: ["PATCH /notifications/threads/{thread_id}"],
         setRepoSubscription: ["PUT /repos/{owner}/{repo}/subscription"],
         setThreadSubscription: [
@@ -21353,6 +21945,9 @@ var require_dist_node9 = __commonJS({
         addSelectedRepoToOrgSecret: [
           "PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}"
         ],
+        checkPermissionsForDevcontainer: [
+          "GET /repos/{owner}/{repo}/codespaces/permissions_check"
+        ],
         codespaceMachinesForAuthenticatedUser: [
           "GET /user/codespaces/{codespace_name}/machines"
         ],
@@ -21457,10 +22052,10 @@ var require_dist_node9 = __commonJS({
         updateForAuthenticatedUser: ["PATCH /user/codespaces/{codespace_name}"]
       },
       copilot: {
-        addCopilotForBusinessSeatsForTeams: [
+        addCopilotSeatsForTeams: [
           "POST /orgs/{org}/copilot/billing/selected_teams"
         ],
-        addCopilotForBusinessSeatsForUsers: [
+        addCopilotSeatsForUsers: [
           "POST /orgs/{org}/copilot/billing/selected_users"
         ],
         cancelCopilotSeatAssignmentForTeams: [
@@ -21470,7 +22065,7 @@ var require_dist_node9 = __commonJS({
           "DELETE /orgs/{org}/copilot/billing/selected_users"
         ],
         getCopilotOrganizationDetails: ["GET /orgs/{org}/copilot/billing"],
-        getCopilotSeatAssignmentDetailsForUser: [
+        getCopilotSeatDetailsForUser: [
           "GET /orgs/{org}/members/{username}/copilot"
         ],
         listCopilotSeats: ["GET /orgs/{org}/copilot/billing/seats"]
@@ -21683,7 +22278,13 @@ var require_dist_node9 = __commonJS({
         root: ["GET /"]
       },
       migrations: {
-        cancelImport: ["DELETE /repos/{owner}/{repo}/import"],
+        cancelImport: [
+          "DELETE /repos/{owner}/{repo}/import",
+          {},
+          {
+            deprecated: "octokit.rest.migrations.cancelImport() is deprecated, see https://docs.github.com/rest/migrations/source-imports#cancel-an-import"
+          }
+        ],
         deleteArchiveForAuthenticatedUser: [
           "DELETE /user/migrations/{migration_id}/archive"
         ],
@@ -21696,9 +22297,27 @@ var require_dist_node9 = __commonJS({
         getArchiveForAuthenticatedUser: [
           "GET /user/migrations/{migration_id}/archive"
         ],
-        getCommitAuthors: ["GET /repos/{owner}/{repo}/import/authors"],
-        getImportStatus: ["GET /repos/{owner}/{repo}/import"],
-        getLargeFiles: ["GET /repos/{owner}/{repo}/import/large_files"],
+        getCommitAuthors: [
+          "GET /repos/{owner}/{repo}/import/authors",
+          {},
+          {
+            deprecated: "octokit.rest.migrations.getCommitAuthors() is deprecated, see https://docs.github.com/rest/migrations/source-imports#get-commit-authors"
+          }
+        ],
+        getImportStatus: [
+          "GET /repos/{owner}/{repo}/import",
+          {},
+          {
+            deprecated: "octokit.rest.migrations.getImportStatus() is deprecated, see https://docs.github.com/rest/migrations/source-imports#get-an-import-status"
+          }
+        ],
+        getLargeFiles: [
+          "GET /repos/{owner}/{repo}/import/large_files",
+          {},
+          {
+            deprecated: "octokit.rest.migrations.getLargeFiles() is deprecated, see https://docs.github.com/rest/migrations/source-imports#get-large-files"
+          }
+        ],
         getStatusForAuthenticatedUser: ["GET /user/migrations/{migration_id}"],
         getStatusForOrg: ["GET /orgs/{org}/migrations/{migration_id}"],
         listForAuthenticatedUser: ["GET /user/migrations"],
@@ -21712,22 +22331,60 @@ var require_dist_node9 = __commonJS({
           {},
           { renamed: ["migrations", "listReposForAuthenticatedUser"] }
         ],
-        mapCommitAuthor: ["PATCH /repos/{owner}/{repo}/import/authors/{author_id}"],
-        setLfsPreference: ["PATCH /repos/{owner}/{repo}/import/lfs"],
+        mapCommitAuthor: [
+          "PATCH /repos/{owner}/{repo}/import/authors/{author_id}",
+          {},
+          {
+            deprecated: "octokit.rest.migrations.mapCommitAuthor() is deprecated, see https://docs.github.com/rest/migrations/source-imports#map-a-commit-author"
+          }
+        ],
+        setLfsPreference: [
+          "PATCH /repos/{owner}/{repo}/import/lfs",
+          {},
+          {
+            deprecated: "octokit.rest.migrations.setLfsPreference() is deprecated, see https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference"
+          }
+        ],
         startForAuthenticatedUser: ["POST /user/migrations"],
         startForOrg: ["POST /orgs/{org}/migrations"],
-        startImport: ["PUT /repos/{owner}/{repo}/import"],
+        startImport: [
+          "PUT /repos/{owner}/{repo}/import",
+          {},
+          {
+            deprecated: "octokit.rest.migrations.startImport() is deprecated, see https://docs.github.com/rest/migrations/source-imports#start-an-import"
+          }
+        ],
         unlockRepoForAuthenticatedUser: [
           "DELETE /user/migrations/{migration_id}/repos/{repo_name}/lock"
         ],
         unlockRepoForOrg: [
           "DELETE /orgs/{org}/migrations/{migration_id}/repos/{repo_name}/lock"
         ],
-        updateImport: ["PATCH /repos/{owner}/{repo}/import"]
+        updateImport: [
+          "PATCH /repos/{owner}/{repo}/import",
+          {},
+          {
+            deprecated: "octokit.rest.migrations.updateImport() is deprecated, see https://docs.github.com/rest/migrations/source-imports#update-an-import"
+          }
+        ]
+      },
+      oidc: {
+        getOidcCustomSubTemplateForOrg: [
+          "GET /orgs/{org}/actions/oidc/customization/sub"
+        ],
+        updateOidcCustomSubTemplateForOrg: [
+          "PUT /orgs/{org}/actions/oidc/customization/sub"
+        ]
       },
       orgs: {
         addSecurityManagerTeam: [
           "PUT /orgs/{org}/security-managers/teams/{team_slug}"
+        ],
+        assignTeamToOrgRole: [
+          "PUT /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}"
+        ],
+        assignUserToOrgRole: [
+          "PUT /orgs/{org}/organization-roles/users/{username}/{role_id}"
         ],
         blockUser: ["PUT /orgs/{org}/blocks/{username}"],
         cancelInvitation: ["DELETE /orgs/{org}/invitations/{invitation_id}"],
@@ -21737,16 +22394,32 @@ var require_dist_node9 = __commonJS({
         convertMemberToOutsideCollaborator: [
           "PUT /orgs/{org}/outside_collaborators/{username}"
         ],
+        createCustomOrganizationRole: ["POST /orgs/{org}/organization-roles"],
         createInvitation: ["POST /orgs/{org}/invitations"],
+        createOrUpdateCustomProperties: ["PATCH /orgs/{org}/properties/schema"],
+        createOrUpdateCustomPropertiesValuesForRepos: [
+          "PATCH /orgs/{org}/properties/values"
+        ],
+        createOrUpdateCustomProperty: [
+          "PUT /orgs/{org}/properties/schema/{custom_property_name}"
+        ],
         createWebhook: ["POST /orgs/{org}/hooks"],
         delete: ["DELETE /orgs/{org}"],
+        deleteCustomOrganizationRole: [
+          "DELETE /orgs/{org}/organization-roles/{role_id}"
+        ],
         deleteWebhook: ["DELETE /orgs/{org}/hooks/{hook_id}"],
         enableOrDisableSecurityProductOnAllOrgRepos: [
           "POST /orgs/{org}/{security_product}/{enablement}"
         ],
         get: ["GET /orgs/{org}"],
+        getAllCustomProperties: ["GET /orgs/{org}/properties/schema"],
+        getCustomProperty: [
+          "GET /orgs/{org}/properties/schema/{custom_property_name}"
+        ],
         getMembershipForAuthenticatedUser: ["GET /user/memberships/orgs/{org}"],
         getMembershipForUser: ["GET /orgs/{org}/memberships/{username}"],
+        getOrgRole: ["GET /orgs/{org}/organization-roles/{role_id}"],
         getWebhook: ["GET /orgs/{org}/hooks/{hook_id}"],
         getWebhookConfigForOrg: ["GET /orgs/{org}/hooks/{hook_id}/config"],
         getWebhookDelivery: [
@@ -21755,12 +22428,19 @@ var require_dist_node9 = __commonJS({
         list: ["GET /organizations"],
         listAppInstallations: ["GET /orgs/{org}/installations"],
         listBlockedUsers: ["GET /orgs/{org}/blocks"],
+        listCustomPropertiesValuesForRepos: ["GET /orgs/{org}/properties/values"],
         listFailedInvitations: ["GET /orgs/{org}/failed_invitations"],
         listForAuthenticatedUser: ["GET /user/orgs"],
         listForUser: ["GET /users/{username}/orgs"],
         listInvitationTeams: ["GET /orgs/{org}/invitations/{invitation_id}/teams"],
         listMembers: ["GET /orgs/{org}/members"],
         listMembershipsForAuthenticatedUser: ["GET /user/memberships/orgs"],
+        listOrgRoleTeams: ["GET /orgs/{org}/organization-roles/{role_id}/teams"],
+        listOrgRoleUsers: ["GET /orgs/{org}/organization-roles/{role_id}/users"],
+        listOrgRoles: ["GET /orgs/{org}/organization-roles"],
+        listOrganizationFineGrainedPermissions: [
+          "GET /orgs/{org}/organization-fine-grained-permissions"
+        ],
         listOutsideCollaborators: ["GET /orgs/{org}/outside_collaborators"],
         listPatGrantRepositories: [
           "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories"
@@ -21775,9 +22455,15 @@ var require_dist_node9 = __commonJS({
         listSecurityManagerTeams: ["GET /orgs/{org}/security-managers"],
         listWebhookDeliveries: ["GET /orgs/{org}/hooks/{hook_id}/deliveries"],
         listWebhooks: ["GET /orgs/{org}/hooks"],
+        patchCustomOrganizationRole: [
+          "PATCH /orgs/{org}/organization-roles/{role_id}"
+        ],
         pingWebhook: ["POST /orgs/{org}/hooks/{hook_id}/pings"],
         redeliverWebhookDelivery: [
           "POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
+        ],
+        removeCustomProperty: [
+          "DELETE /orgs/{org}/properties/schema/{custom_property_name}"
         ],
         removeMember: ["DELETE /orgs/{org}/members/{username}"],
         removeMembershipForUser: ["DELETE /orgs/{org}/memberships/{username}"],
@@ -21795,6 +22481,18 @@ var require_dist_node9 = __commonJS({
         ],
         reviewPatGrantRequestsInBulk: [
           "POST /orgs/{org}/personal-access-token-requests"
+        ],
+        revokeAllOrgRolesTeam: [
+          "DELETE /orgs/{org}/organization-roles/teams/{team_slug}"
+        ],
+        revokeAllOrgRolesUser: [
+          "DELETE /orgs/{org}/organization-roles/users/{username}"
+        ],
+        revokeOrgRoleTeam: [
+          "DELETE /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}"
+        ],
+        revokeOrgRoleUser: [
+          "DELETE /orgs/{org}/organization-roles/users/{username}/{role_id}"
         ],
         setMembershipForUser: ["PUT /orgs/{org}/memberships/{username}"],
         setPublicMembershipForAuthenticatedUser: [
@@ -22086,6 +22784,9 @@ var require_dist_node9 = __commonJS({
           {},
           { mapToData: "users" }
         ],
+        cancelPagesDeployment: [
+          "POST /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}/cancel"
+        ],
         checkAutomatedSecurityFixes: [
           "GET /repos/{owner}/{repo}/automated-security-fixes"
         ],
@@ -22121,12 +22822,15 @@ var require_dist_node9 = __commonJS({
         createForAuthenticatedUser: ["POST /user/repos"],
         createFork: ["POST /repos/{owner}/{repo}/forks"],
         createInOrg: ["POST /orgs/{org}/repos"],
+        createOrUpdateCustomPropertiesValues: [
+          "PATCH /repos/{owner}/{repo}/properties/values"
+        ],
         createOrUpdateEnvironment: [
           "PUT /repos/{owner}/{repo}/environments/{environment_name}"
         ],
         createOrUpdateFileContents: ["PUT /repos/{owner}/{repo}/contents/{path}"],
         createOrgRuleset: ["POST /orgs/{org}/rulesets"],
-        createPagesDeployment: ["POST /repos/{owner}/{repo}/pages/deployment"],
+        createPagesDeployment: ["POST /repos/{owner}/{repo}/pages/deployments"],
         createPagesSite: ["POST /repos/{owner}/{repo}/pages"],
         createRelease: ["POST /repos/{owner}/{repo}/releases"],
         createRepoRuleset: ["POST /repos/{owner}/{repo}/rulesets"],
@@ -22259,6 +22963,7 @@ var require_dist_node9 = __commonJS({
         getCustomDeploymentProtectionRule: [
           "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}"
         ],
+        getCustomPropertiesValues: ["GET /repos/{owner}/{repo}/properties/values"],
         getDeployKey: ["GET /repos/{owner}/{repo}/keys/{key_id}"],
         getDeployment: ["GET /repos/{owner}/{repo}/deployments/{deployment_id}"],
         getDeploymentBranchPolicy: [
@@ -22272,10 +22977,15 @@ var require_dist_node9 = __commonJS({
         ],
         getLatestPagesBuild: ["GET /repos/{owner}/{repo}/pages/builds/latest"],
         getLatestRelease: ["GET /repos/{owner}/{repo}/releases/latest"],
+        getOrgRuleSuite: ["GET /orgs/{org}/rulesets/rule-suites/{rule_suite_id}"],
+        getOrgRuleSuites: ["GET /orgs/{org}/rulesets/rule-suites"],
         getOrgRuleset: ["GET /orgs/{org}/rulesets/{ruleset_id}"],
         getOrgRulesets: ["GET /orgs/{org}/rulesets"],
         getPages: ["GET /repos/{owner}/{repo}/pages"],
         getPagesBuild: ["GET /repos/{owner}/{repo}/pages/builds/{build_id}"],
+        getPagesDeployment: [
+          "GET /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}"
+        ],
         getPagesHealthCheck: ["GET /repos/{owner}/{repo}/pages/health"],
         getParticipationStats: ["GET /repos/{owner}/{repo}/stats/participation"],
         getPullRequestReviewProtection: [
@@ -22287,6 +22997,10 @@ var require_dist_node9 = __commonJS({
         getRelease: ["GET /repos/{owner}/{repo}/releases/{release_id}"],
         getReleaseAsset: ["GET /repos/{owner}/{repo}/releases/assets/{asset_id}"],
         getReleaseByTag: ["GET /repos/{owner}/{repo}/releases/tags/{tag}"],
+        getRepoRuleSuite: [
+          "GET /repos/{owner}/{repo}/rulesets/rule-suites/{rule_suite_id}"
+        ],
+        getRepoRuleSuites: ["GET /repos/{owner}/{repo}/rulesets/rule-suites"],
         getRepoRuleset: ["GET /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
         getRepoRulesets: ["GET /repos/{owner}/{repo}/rulesets"],
         getStatusChecksProtection: [
@@ -22482,6 +23196,9 @@ var require_dist_node9 = __commonJS({
         ]
       },
       securityAdvisories: {
+        createFork: [
+          "POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/forks"
+        ],
         createPrivateVulnerabilityReport: [
           "POST /repos/{owner}/{repo}/security-advisories/reports"
         ],
@@ -22864,7 +23581,7 @@ var require_dist_node10 = __commonJS({
       paginatingEndpoints: () => paginatingEndpoints
     });
     module2.exports = __toCommonJS2(dist_src_exports);
-    var VERSION = "9.0.0";
+    var VERSION = "9.2.1";
     function normalizePaginatedListResponse(response) {
       if (!response.data) {
         return {
@@ -23015,6 +23732,8 @@ var require_dist_node10 = __commonJS({
       "GET /orgs/{org}/members/{username}/codespaces",
       "GET /orgs/{org}/migrations",
       "GET /orgs/{org}/migrations/{migration_id}/repositories",
+      "GET /orgs/{org}/organization-roles/{role_id}/teams",
+      "GET /orgs/{org}/organization-roles/{role_id}/users",
       "GET /orgs/{org}/outside_collaborators",
       "GET /orgs/{org}/packages",
       "GET /orgs/{org}/packages/{package_type}/{package_name}/versions",
@@ -23023,9 +23742,11 @@ var require_dist_node10 = __commonJS({
       "GET /orgs/{org}/personal-access-tokens",
       "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories",
       "GET /orgs/{org}/projects",
+      "GET /orgs/{org}/properties/values",
       "GET /orgs/{org}/public_members",
       "GET /orgs/{org}/repos",
       "GET /orgs/{org}/rulesets",
+      "GET /orgs/{org}/rulesets/rule-suites",
       "GET /orgs/{org}/secret-scanning/alerts",
       "GET /orgs/{org}/security-advisories",
       "GET /orgs/{org}/teams",
@@ -23117,6 +23838,7 @@ var require_dist_node10 = __commonJS({
       "GET /repos/{owner}/{repo}/releases/{release_id}/reactions",
       "GET /repos/{owner}/{repo}/rules/branches/{branch}",
       "GET /repos/{owner}/{repo}/rulesets",
+      "GET /repos/{owner}/{repo}/rulesets/rule-suites",
       "GET /repos/{owner}/{repo}/secret-scanning/alerts",
       "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations",
       "GET /repos/{owner}/{repo}/security-advisories",
@@ -23341,6 +24063,7 @@ __export(tslib_es6_exports, {
   __propKey: () => __propKey,
   __read: () => __read,
   __rest: () => __rest,
+  __rewriteRelativeImportExtension: () => __rewriteRelativeImportExtension,
   __runInitializers: () => __runInitializers,
   __setFunctionName: () => __setFunctionName,
   __spread: () => __spread,
@@ -23665,7 +24388,7 @@ function __importStar(mod) {
   if (mod && mod.__esModule) return mod;
   var result = {};
   if (mod != null) {
-    for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
   }
   __setModuleDefault(result, mod);
   return result;
@@ -23741,7 +24464,15 @@ function __disposeResources(env) {
   }
   return next();
 }
-var extendStatics, __assign, __createBinding, __setModuleDefault, _SuppressedError, tslib_es6_default;
+function __rewriteRelativeImportExtension(path2, preserveJsx) {
+  if (typeof path2 === "string" && /^\.\.?\//.test(path2)) {
+    return path2.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
+      return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
+    });
+  }
+  return path2;
+}
+var extendStatics, __assign, __createBinding, __setModuleDefault, ownKeys, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
   "node_modules/tslib/tslib.es6.mjs"() {
     extendStatics = function(d, b) {
@@ -23780,6 +24511,14 @@ var init_tslib_es6 = __esm({
     } : function(o, v) {
       o["default"] = v;
     };
+    ownKeys = function(o) {
+      ownKeys = Object.getOwnPropertyNames || function(o2) {
+        var ar = [];
+        for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+        return ar;
+      };
+      return ownKeys(o);
+    };
     _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
       var e = new Error(message);
       return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
@@ -23790,6 +24529,10 @@ var init_tslib_es6 = __esm({
       __rest,
       __decorate,
       __param,
+      __esDecorate,
+      __runInitializers,
+      __propKey,
+      __setFunctionName,
       __metadata,
       __awaiter,
       __generator,
@@ -23811,7 +24554,8 @@ var init_tslib_es6 = __esm({
       __classPrivateFieldSet,
       __classPrivateFieldIn,
       __addDisposableResource,
-      __disposeResources
+      __disposeResources,
+      __rewriteRelativeImportExtension
     };
   }
 });
@@ -35685,7 +36429,7 @@ var require_form_data = __commonJS({
     var http = require("http");
     var https = require("https");
     var parseUrl = require("url").parse;
-    var fs5 = require("fs");
+    var fs6 = require("fs");
     var Stream = require("stream").Stream;
     var mime = require_mime_types();
     var asynckit = require_asynckit();
@@ -35750,7 +36494,7 @@ var require_form_data = __commonJS({
         if (value.end != void 0 && value.end != Infinity && value.start != void 0) {
           callback(null, value.end + 1 - (value.start ? value.start : 0));
         } else {
-          fs5.stat(value.path, function(err, stat) {
+          fs6.stat(value.path, function(err, stat) {
             var fileSize;
             if (err) {
               callback(err);
@@ -36090,9 +36834,17 @@ var require_follow_redirects = __commonJS({
     var Writable = require("stream").Writable;
     var assert = require("assert");
     var debug = require_debug();
+    (function detectUnsupportedEnvironment() {
+      var looksLikeNode = typeof process !== "undefined";
+      var looksLikeBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+      var looksLikeV8 = isFunction(Error.captureStackTrace);
+      if (!looksLikeNode && (looksLikeBrowser || !looksLikeV8)) {
+        console.warn("The follow-redirects package should be excluded from browser builds.");
+      }
+    })();
     var useNativeURL = false;
     try {
-      assert(new URL2());
+      assert(new URL2(""));
     } catch (error) {
       useNativeURL = error.code === "ERR_INVALID_URL";
     }
@@ -36519,7 +37271,9 @@ var require_follow_redirects = __commonJS({
     }
     function createErrorType(code, message, baseClass) {
       function CustomError(properties) {
-        Error.captureStackTrace(this, this.constructor);
+        if (isFunction(Error.captureStackTrace)) {
+          Error.captureStackTrace(this, this.constructor);
+        }
         Object.assign(this, properties || {});
         this.code = code;
         this.message = this.cause ? message + ": " + this.cause.message : message;
@@ -36585,6 +37339,7 @@ var require_axios = __commonJS({
     }
     var FormData__default = /* @__PURE__ */ _interopDefaultLegacy(FormData$1);
     var url__default = /* @__PURE__ */ _interopDefaultLegacy(url);
+    var proxyFromEnv__default = /* @__PURE__ */ _interopDefaultLegacy(proxyFromEnv);
     var http__default = /* @__PURE__ */ _interopDefaultLegacy(http);
     var https__default = /* @__PURE__ */ _interopDefaultLegacy(https);
     var util__default = /* @__PURE__ */ _interopDefaultLegacy(util);
@@ -37192,6 +37947,11 @@ var require_axios = __commonJS({
         return url2;
       }
       const _encode = options && options.encode || encode;
+      if (utils$1.isFunction(options)) {
+        options = {
+          serialize: options
+        };
+      }
       const serializeFn = options && options.serialize;
       let serializedParams;
       if (serializeFn) {
@@ -37782,7 +38542,7 @@ var require_axios = __commonJS({
       }
       return requestedURL;
     }
-    var VERSION = "1.7.7";
+    var VERSION = "1.7.8";
     function parseProtocol(url2) {
       const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url2);
       return match && match[1] || "";
@@ -37940,7 +38700,7 @@ var require_axios = __commonJS({
     };
     var readBlob$1 = readBlob;
     var BOUNDARY_ALPHABET = utils$1.ALPHABET.ALPHA_DIGIT + "-_";
-    var textEncoder = new util.TextEncoder();
+    var textEncoder = typeof TextEncoder === "function" ? new TextEncoder() : new util__default["default"].TextEncoder();
     var CRLF = "\r\n";
     var CRLF_BYTES = textEncoder.encode(CRLF);
     var CRLF_BYTES_COUNT = 2;
@@ -38175,7 +38935,7 @@ var require_axios = __commonJS({
     function setProxy(options, configProxy, location) {
       let proxy = configProxy;
       if (!proxy && proxy !== false) {
-        const proxyUrl = proxyFromEnv.getProxyForUrl(location);
+        const proxyUrl = proxyFromEnv__default["default"].getProxyForUrl(location);
         if (proxyUrl) {
           proxy = new URL(proxyUrl);
         }
@@ -38349,7 +39109,7 @@ var require_axios = __commonJS({
             } catch (e) {
             }
           }
-        } else if (utils$1.isBlob(data)) {
+        } else if (utils$1.isBlob(data) || utils$1.isFile(data)) {
           data.size && headers.setContentType(data.type || "application/octet-stream");
           headers.setContentLength(data.size || 0);
           data = stream__default["default"].Readable.from(readBlob$1(data));
@@ -38552,7 +39312,7 @@ var require_axios = __commonJS({
                 return;
               }
               const err = new AxiosError(
-                "maxContentLength size of " + config.maxContentLength + " exceeded",
+                "stream has been aborted",
                 AxiosError.ERR_BAD_RESPONSE,
                 config,
                 lastRequest
@@ -38645,45 +39405,13 @@ var require_axios = __commonJS({
         }
       });
     };
-    var isURLSameOrigin = platform.hasStandardBrowserEnv ? (
-      // Standard browser envs have full support of the APIs needed to test
-      // whether the request URL is of the same origin as current location.
-      function standardBrowserEnv() {
-        const msie = platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent);
-        const urlParsingNode = document.createElement("a");
-        let originURL;
-        function resolveURL(url2) {
-          let href = url2;
-          if (msie) {
-            urlParsingNode.setAttribute("href", href);
-            href = urlParsingNode.href;
-          }
-          urlParsingNode.setAttribute("href", href);
-          return {
-            href: urlParsingNode.href,
-            protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, "") : "",
-            host: urlParsingNode.host,
-            search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, "") : "",
-            hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, "") : "",
-            hostname: urlParsingNode.hostname,
-            port: urlParsingNode.port,
-            pathname: urlParsingNode.pathname.charAt(0) === "/" ? urlParsingNode.pathname : "/" + urlParsingNode.pathname
-          };
-        }
-        originURL = resolveURL(window.location.href);
-        return function isURLSameOrigin2(requestURL) {
-          const parsed = utils$1.isString(requestURL) ? resolveURL(requestURL) : requestURL;
-          return parsed.protocol === originURL.protocol && parsed.host === originURL.host;
-        };
-      }()
-    ) : (
-      // Non standard browser envs (web workers, react-native) lack needed support.
-      /* @__PURE__ */ function nonStandardBrowserEnv() {
-        return function isURLSameOrigin2() {
-          return true;
-        };
-      }()
-    );
+    var isURLSameOrigin = platform.hasStandardBrowserEnv ? /* @__PURE__ */ ((origin2, isMSIE) => (url2) => {
+      url2 = new URL(url2, platform.origin);
+      return origin2.protocol === url2.protocol && origin2.host === url2.host && (isMSIE || origin2.port === url2.port);
+    })(
+      new URL(platform.origin),
+      platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent)
+    ) : () => true;
     var cookies = platform.hasStandardBrowserEnv ? (
       // Standard browser envs support document.cookie
       {
@@ -38719,7 +39447,7 @@ var require_axios = __commonJS({
     function mergeConfig(config1, config2) {
       config2 = config2 || {};
       const config = {};
-      function getMergedValue(target, source, caseless) {
+      function getMergedValue(target, source, prop, caseless) {
         if (utils$1.isPlainObject(target) && utils$1.isPlainObject(source)) {
           return utils$1.merge.call({ caseless }, target, source);
         } else if (utils$1.isPlainObject(source)) {
@@ -38729,11 +39457,11 @@ var require_axios = __commonJS({
         }
         return source;
       }
-      function mergeDeepProperties(a, b, caseless) {
+      function mergeDeepProperties(a, b, prop, caseless) {
         if (!utils$1.isUndefined(b)) {
-          return getMergedValue(a, b, caseless);
+          return getMergedValue(a, b, prop, caseless);
         } else if (!utils$1.isUndefined(a)) {
-          return getMergedValue(void 0, a, caseless);
+          return getMergedValue(void 0, a, prop, caseless);
         }
       }
       function valueFromConfig2(a, b) {
@@ -38784,7 +39512,7 @@ var require_axios = __commonJS({
         socketPath: defaultToConfig2,
         responseEncoding: defaultToConfig2,
         validateStatus: mergeDirectKeys,
-        headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
+        headers: (a, b, prop) => mergeDeepProperties(headersToObject(a), headersToObject(b), prop, true)
       };
       utils$1.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop) {
         const merge2 = mergeMap[prop] || mergeDeepProperties;
@@ -39345,6 +40073,12 @@ var require_axios = __commonJS({
         return validator2 ? validator2(value, opt, opts) : true;
       };
     };
+    validators$1.spelling = function spelling(correctSpelling) {
+      return (value, opt) => {
+        console.warn(`${opt} is likely a misspelling of ${correctSpelling}`);
+        return true;
+      };
+    };
     function assertOptions(options, schema, allowUnknown) {
       if (typeof options !== "object") {
         throw new AxiosError("options must be an object", AxiosError.ERR_BAD_OPTION_VALUE);
@@ -39393,8 +40127,8 @@ var require_axios = __commonJS({
           return await this._request(configOrUrl, config);
         } catch (err) {
           if (err instanceof Error) {
-            let dummy;
-            Error.captureStackTrace ? Error.captureStackTrace(dummy = {}) : dummy = new Error();
+            let dummy = {};
+            Error.captureStackTrace ? Error.captureStackTrace(dummy) : dummy = new Error();
             const stack = dummy.stack ? dummy.stack.replace(/^.+\n/, "") : "";
             try {
               if (!err.stack) {
@@ -39436,6 +40170,10 @@ var require_axios = __commonJS({
             }, true);
           }
         }
+        validator.assertOptions(config, {
+          baseUrl: validators.spelling("baseURL"),
+          withXsrfToken: validators.spelling("withXSRFToken")
+        }, true);
         config.method = (config.method || this.defaults.method || "get").toLowerCase();
         let contextHeaders = headers && utils$1.merge(
           headers.common,
@@ -39724,8 +40462,8 @@ var require_axios = __commonJS({
     axios.toFormData = toFormData;
     axios.AxiosError = AxiosError;
     axios.Cancel = axios.CanceledError;
-    axios.all = function all(promises5) {
-      return Promise.all(promises5);
+    axios.all = function all(promises6) {
+      return Promise.all(promises6);
     };
     axios.spread = spread;
     axios.isAxiosError = isAxiosError;
@@ -77020,10 +77758,10 @@ var require_directives = __commonJS({
     };
     var escapeTagName = (tn) => tn.replace(/[!,[\]{}]/g, (ch) => escapeChars[ch]);
     var Directives = class _Directives {
-      constructor(yaml4, tags) {
+      constructor(yaml5, tags) {
         this.docStart = null;
         this.docEnd = false;
-        this.yaml = Object.assign({}, _Directives.defaultYaml, yaml4);
+        this.yaml = Object.assign({}, _Directives.defaultYaml, yaml5);
         this.tags = Object.assign({}, _Directives.defaultTags, tags);
       }
       clone() {
@@ -78244,7 +78982,7 @@ var require_stringify = __commonJS({
         props.push(doc.directives.tagString(tag));
       return props.join(" ");
     }
-    function stringify(item, ctx, onComment, onChompKeep) {
+    function stringify2(item, ctx, onComment, onChompKeep) {
       if (identity.isPair(item))
         return item.toString(ctx, onComment, onChompKeep);
       if (identity.isAlias(item)) {
@@ -78274,7 +79012,7 @@ var require_stringify = __commonJS({
 ${ctx.indent}${str}`;
     }
     exports2.createStringifyContext = createStringifyContext;
-    exports2.stringify = stringify;
+    exports2.stringify = stringify2;
   }
 });
 
@@ -78284,7 +79022,7 @@ var require_stringifyPair = __commonJS({
     "use strict";
     var identity = require_identity();
     var Scalar = require_Scalar();
-    var stringify = require_stringify();
+    var stringify2 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyPair({ key, value }, ctx, onComment, onChompKeep) {
       const { allNullValues, doc, indent, indentStep, options: { commentString, indentSeq, simpleKeys } } = ctx;
@@ -78306,7 +79044,7 @@ var require_stringifyPair = __commonJS({
       });
       let keyCommentDone = false;
       let chompKeep = false;
-      let str = stringify.stringify(key, ctx, () => keyCommentDone = true, () => chompKeep = true);
+      let str = stringify2.stringify(key, ctx, () => keyCommentDone = true, () => chompKeep = true);
       if (!explicitKey && !ctx.inFlow && str.length > 1024) {
         if (simpleKeys)
           throw new Error("With simple keys, single line scalar must not span more than 1024 characters");
@@ -78358,7 +79096,7 @@ ${indent}:`;
         ctx.indent = ctx.indent.substring(2);
       }
       let valueCommentDone = false;
-      const valueStr = stringify.stringify(value, ctx, () => valueCommentDone = true, () => chompKeep = true);
+      const valueStr = stringify2.stringify(value, ctx, () => valueCommentDone = true, () => chompKeep = true);
       let ws = " ";
       if (keyComment || vsb || vcb) {
         ws = vsb ? "\n" : "";
@@ -78495,7 +79233,7 @@ var require_addPairToJSMap = __commonJS({
     "use strict";
     var log = require_log();
     var merge = require_merge();
-    var stringify = require_stringify();
+    var stringify2 = require_stringify();
     var identity = require_identity();
     var toJS = require_toJS();
     function addPairToJSMap(ctx, map, { key, value }) {
@@ -78531,7 +79269,7 @@ var require_addPairToJSMap = __commonJS({
       if (typeof jsKey !== "object")
         return String(jsKey);
       if (identity.isNode(key) && ctx?.doc) {
-        const strCtx = stringify.createStringifyContext(ctx.doc, {});
+        const strCtx = stringify2.createStringifyContext(ctx.doc, {});
         strCtx.anchors = /* @__PURE__ */ new Set();
         for (const node of ctx.anchors.keys())
           strCtx.anchors.add(node.anchor);
@@ -78598,12 +79336,12 @@ var require_stringifyCollection = __commonJS({
   "node_modules/yaml/dist/stringify/stringifyCollection.js"(exports2) {
     "use strict";
     var identity = require_identity();
-    var stringify = require_stringify();
+    var stringify2 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyCollection(collection, ctx, options) {
       const flow = ctx.inFlow ?? collection.flow;
-      const stringify2 = flow ? stringifyFlowCollection : stringifyBlockCollection;
-      return stringify2(collection, ctx, options);
+      const stringify3 = flow ? stringifyFlowCollection : stringifyBlockCollection;
+      return stringify3(collection, ctx, options);
     }
     function stringifyBlockCollection({ comment, items }, ctx, { blockItemPrefix, flowChars, itemIndent, onChompKeep, onComment }) {
       const { indent, options: { commentString } } = ctx;
@@ -78628,7 +79366,7 @@ var require_stringifyCollection = __commonJS({
           }
         }
         chompKeep = false;
-        let str2 = stringify.stringify(item, itemCtx, () => comment2 = null, () => chompKeep = true);
+        let str2 = stringify2.stringify(item, itemCtx, () => comment2 = null, () => chompKeep = true);
         if (comment2)
           str2 += stringifyComment.lineComment(str2, itemIndent, commentString(comment2));
         if (chompKeep && comment2)
@@ -78695,7 +79433,7 @@ ${indent}${line}` : "\n";
         }
         if (comment)
           reqNewline = true;
-        let str = stringify.stringify(item, itemCtx, () => comment = null);
+        let str = stringify2.stringify(item, itemCtx, () => comment = null);
         if (i < items.length - 1)
           str += ",";
         if (comment)
@@ -80047,7 +80785,7 @@ var require_stringifyDocument = __commonJS({
   "node_modules/yaml/dist/stringify/stringifyDocument.js"(exports2) {
     "use strict";
     var identity = require_identity();
-    var stringify = require_stringify();
+    var stringify2 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyDocument(doc, options) {
       const lines = [];
@@ -80062,7 +80800,7 @@ var require_stringifyDocument = __commonJS({
       }
       if (hasDirectives)
         lines.push("---");
-      const ctx = stringify.createStringifyContext(doc, options);
+      const ctx = stringify2.createStringifyContext(doc, options);
       const { commentString } = ctx.options;
       if (doc.commentBefore) {
         if (lines.length !== 1)
@@ -80084,7 +80822,7 @@ var require_stringifyDocument = __commonJS({
           contentComment = doc.contents.comment;
         }
         const onChompKeep = contentComment ? void 0 : () => chompKeep = true;
-        let body = stringify.stringify(doc.contents, ctx, () => contentComment = null, onChompKeep);
+        let body = stringify2.stringify(doc.contents, ctx, () => contentComment = null, onChompKeep);
         if (contentComment)
           body += stringifyComment.lineComment(body, "", commentString(contentComment));
         if ((body[0] === "|" || body[0] === ">") && lines[lines.length - 1] === "---") {
@@ -80092,7 +80830,7 @@ var require_stringifyDocument = __commonJS({
         } else
           lines.push(body);
       } else {
-        lines.push(stringify.stringify(doc.contents, ctx));
+        lines.push(stringify2.stringify(doc.contents, ctx));
       }
       if (doc.directives?.docEnd) {
         if (doc.comment) {
@@ -82221,7 +82959,7 @@ var require_cst_scalar = __commonJS({
 var require_cst_stringify = __commonJS({
   "node_modules/yaml/dist/parse/cst-stringify.js"(exports2) {
     "use strict";
-    var stringify = (cst) => "type" in cst ? stringifyToken(cst) : stringifyItem(cst);
+    var stringify2 = (cst) => "type" in cst ? stringifyToken(cst) : stringifyItem(cst);
     function stringifyToken(token) {
       switch (token.type) {
         case "block-scalar": {
@@ -82274,7 +83012,7 @@ var require_cst_stringify = __commonJS({
         res += stringifyToken(value);
       return res;
     }
-    exports2.stringify = stringify;
+    exports2.stringify = stringify2;
   }
 });
 
@@ -83618,14 +84356,14 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs5 = this.flowScalar(this.type);
+              const fs6 = this.flowScalar(this.type);
               if (atNextItem || it.value) {
-                map.items.push({ start, key: fs5, sep: [] });
+                map.items.push({ start, key: fs6, sep: [] });
                 this.onKeyLine = true;
               } else if (it.sep) {
-                this.stack.push(fs5);
+                this.stack.push(fs6);
               } else {
-                Object.assign(it, { key: fs5, sep: [] });
+                Object.assign(it, { key: fs6, sep: [] });
                 this.onKeyLine = true;
               }
               return;
@@ -83743,13 +84481,13 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs5 = this.flowScalar(this.type);
+              const fs6 = this.flowScalar(this.type);
               if (!it || it.value)
-                fc.items.push({ start: [], key: fs5, sep: [] });
+                fc.items.push({ start: [], key: fs6, sep: [] });
               else if (it.sep)
-                this.stack.push(fs5);
+                this.stack.push(fs6);
               else
-                Object.assign(it, { key: fs5, sep: [] });
+                Object.assign(it, { key: fs6, sep: [] });
               return;
             }
             case "flow-map-end":
@@ -83957,7 +84695,7 @@ var require_public_api = __commonJS({
       }
       return doc;
     }
-    function parse4(src, reviver, options) {
+    function parse5(src, reviver, options) {
       let _reviver = void 0;
       if (typeof reviver === "function") {
         _reviver = reviver;
@@ -83976,7 +84714,7 @@ var require_public_api = __commonJS({
       }
       return doc.toJS(Object.assign({ reviver: _reviver }, options));
     }
-    function stringify(value, replacer, options) {
+    function stringify2(value, replacer, options) {
       let _replacer = null;
       if (typeof replacer === "function" || Array.isArray(replacer)) {
         _replacer = replacer;
@@ -83998,10 +84736,10 @@ var require_public_api = __commonJS({
         return value.toString(options);
       return new Document.Document(value, _replacer, options).toString(options);
     }
-    exports2.parse = parse4;
+    exports2.parse = parse5;
     exports2.parseAllDocuments = parseAllDocuments;
     exports2.parseDocument = parseDocument;
-    exports2.stringify = stringify;
+    exports2.stringify = stringify2;
   }
 });
 
@@ -84603,7 +85341,7 @@ async function getFileContent(owner, repo, filePath) {
   }
   return null;
 }
-async function createOrUpdateFileContents(repo, path2, content, message, sha, branch) {
+async function createOrUpdateFileContents(repo, path2, content, message, branch, sha) {
   const octokit = getOctoKitClient();
   await contentQueue.add(
     () => octokit.rest.repos.createOrUpdateFileContents({
@@ -84678,11 +85416,40 @@ async function createPR(repo, title, head, base, body) {
   return prData;
 }
 
+// sentinel/src/repo-data.ts
+async function retrieveWorkflowFiles(repo) {
+  const files = await getFiles(repo.name, ".github/workflows");
+  repo.workflowFiles = await Promise.all(
+    files.map((file) => setFileDataContent(repo.name, file))
+  );
+}
+async function retrieveRootFiles(repo) {
+  repo.rootFiles = await getFiles(repo.name, "");
+}
+async function retrieveGithubFiles(repo) {
+  repo.githubFiles = await getFiles(repo.name, ".github");
+}
+async function setFileDataContent(repo, file) {
+  if (!file.content) {
+    try {
+      const content = await getFileContent("exivity", repo, file.path);
+      if (content) {
+        file.content = content;
+      }
+    } catch (error) {
+      console.error(`Error analyzing ${repo}/${file.path}: ${error}`);
+      file.content = "";
+    }
+  }
+  return file;
+}
+
 // sentinel/src/analysis/actions.ts
 var yaml = __toESM(require_dist());
 var fs = __toESM(require("fs"));
 
 // sentinel/src/utils.ts
+var import_core5 = __toESM(require_core());
 function formatRepoList(title, repos, subTitle) {
   let result = "";
   if (subTitle) {
@@ -84717,6 +85484,19 @@ function formatRepoList(title, repos, subTitle) {
 `;
   }
   return result;
+}
+async function createBranch(repoData, branchName) {
+  if (!repoData.default_branch) {
+    (0, import_core5.info)(
+      `Error processing repository ${repoData.name}: repository does not have a default branch`
+    );
+    return null;
+  }
+  const refData = await getRef(
+    repoData.name,
+    `heads/${repoData.default_branch}`
+  );
+  await createRef(repoData.name, `refs/heads/${branchName}`, refData.object.sha);
 }
 
 // sentinel/src/analysis/actions.ts
@@ -85043,38 +85823,6 @@ async function analyseRepositories(isTest) {
   await standardsAdherenceReport(repos);
   console.log("Analysis complete.");
 }
-async function setFileDataContent(repo, file) {
-  if (!file.content) {
-    try {
-      const content = await getFileContent("exivity", repo, file.path);
-      if (content) {
-        file.content = content;
-      }
-    } catch (error) {
-      console.error(`Error analyzing ${repo}/${file.path}: ${error}`);
-      file.content = "";
-    }
-  }
-  return file;
-}
-async function retrieveWorkflowFiles(repo) {
-  const files = (await getFiles(repo.name, ".github/workflows")).map(
-    (file) => ({ name: file.name, path: file.path })
-  );
-  repo.workflowFiles = await Promise.all(
-    files.map((file) => setFileDataContent(repo.name, file))
-  );
-}
-async function retrieveRootFiles(repo) {
-  repo.rootFiles = (await getFiles(repo.name, "")).map(
-    (file) => ({ name: file.name, path: file.path })
-  );
-}
-async function retrieveGithubFiles(repo) {
-  repo.githubFiles = (await getFiles(repo.name, ".github")).map(
-    (file) => ({ name: file.name, path: file.path })
-  );
-}
 
 // sentinel/src/update/index.ts
 var import_core6 = __toESM(require_core());
@@ -85146,24 +85894,14 @@ async function updatePROverview() {
 }
 
 // sentinel/src/update/workflows.ts
-var import_core5 = __toESM(require_core());
-async function updateRepoWorkflows(repoData, workflowFiles, searchPattern, replacePattern) {
+async function updateRepoWorkflows(repoData, searchPattern, replacePattern) {
   const branchName = "chore/dev-ops-maintenance";
   const commitMessage = "chore(devOps): automated maintenance";
-  const defaultBranch = repoData.default_branch;
-  const repoName = repoData.name;
-  if (!defaultBranch) {
-    (0, import_core5.info)(
-      `Error processing repository ${repoData.name}: repository does not have a default branch`
-    );
-    return null;
-  }
-  const refData = await getRef(repoName, `heads/${defaultBranch}`);
-  await createRef(repoName, `refs/heads/${branchName}`, refData.object.sha);
+  await createBranch(repoData, branchName);
   let filesChanged = 0;
   await Promise.all(
-    workflowFiles.map(async (file) => {
-      const content = await getFileContent("exivity", repoName, file.path);
+    (repoData.workflowFiles ?? []).map(async (file) => {
+      const content = await getFileContent("exivity", repoData.name, file.path);
       if (content && content.includes(searchPattern)) {
         const updatedContent = content.replace(
           new RegExp(searchPattern, "g"),
@@ -85172,12 +85910,12 @@ async function updateRepoWorkflows(repoData, workflowFiles, searchPattern, repla
         if (updatedContent !== content) {
           const encodedContent = Buffer.from(updatedContent).toString("base64");
           await createOrUpdateFileContents(
-            repoName,
+            repoData.name,
             file.path,
             encodedContent,
             commitMessage,
-            file.sha,
-            branchName
+            branchName,
+            file.sha
           );
           filesChanged++;
         }
@@ -85186,21 +85924,79 @@ async function updateRepoWorkflows(repoData, workflowFiles, searchPattern, repla
   );
   if (filesChanged > 0) {
     const prData = await createPR(
-      repoName,
+      repoData.name,
       "chore(devOps): automated maintenance",
       branchName,
-      defaultBranch,
+      repoData.default_branch,
       `This PR replaces occurrences of "${searchPattern}" with "${replacePattern}" in workflow files.`
     );
     return prData.html_url;
   } else {
-    await deleteRef(repoName, branchName);
+    await deleteRef(repoData.name, branchName);
     return null;
   }
 }
 
+// sentinel/src/update/dependabot.ts
+var yaml4 = __toESM(require_dist());
+var fs5 = __toESM(require("fs"));
+async function getDependabotFile() {
+  const file = await fs5.promises.readFile("dependabot-blocks.yaml", "utf8");
+  try {
+    return yaml4.parse(file);
+  } catch {
+    throw `Error parsing dependabot-blocks as yaml`;
+  }
+}
+async function makeDependabot(repo) {
+  const blocks = await getDependabotFile();
+  const dependabot = {
+    version: 2,
+    updates: []
+  };
+  if (repo.workflowFiles?.length ?? 0 > 0) {
+    dependabot.updates.push(blocks["githubactions"]);
+  }
+  if (repo.rootFiles?.find((file) => file.name === "Dockerfile")) {
+    dependabot.updates.push(blocks["docker"]);
+  }
+  for (let topic of repo.topics ?? []) {
+    topic = topic.toLowerCase().replace(/-/g, "");
+    if (topic in blocks) {
+      dependabot.updates.push(blocks[topic]);
+    }
+  }
+  return yaml4.stringify(dependabot);
+}
+async function addDependabot(repo) {
+  if (repo.githubFiles?.find((file) => file.name == "dependabot.yml") || !repo.topics) {
+    return;
+  }
+  console.log(`Creating dependabot.yml for ${repo.name}`);
+  const dependabot = await makeDependabot(repo);
+  const branchName = "chore/dev-ops-maintenance";
+  const commitMessage = "chore(devOps): automated adding dependabot.yml";
+  await createBranch(repo, branchName);
+  const encodedContent = Buffer.from(dependabot).toString("base64");
+  await createOrUpdateFileContents(
+    repo.name,
+    ".github/dependabot.yml",
+    encodedContent,
+    commitMessage,
+    branchName
+  );
+  const prData = await createPR(
+    repo.name,
+    "chore(devOps): automated adding dependabot.yml",
+    branchName,
+    repo.default_branch,
+    `This PR adds a default dependabot.yml file to ${repo.name}, please check if anything was missed.`
+  );
+  return prData.html_url;
+}
+
 // sentinel/src/update/index.ts
-async function updateRepositories(isTest) {
+async function updateRepositories(isTest, type) {
   const searchPattern = (0, import_core6.getInput)("search-pattern");
   const replacePattern = (0, import_core6.getInput)("replace-pattern");
   const fileRegexInput = (0, import_core6.getInput)("file-regex");
@@ -85231,20 +86027,28 @@ async function updateRepositories(isTest) {
       try {
         const repoName = repo.name;
         (0, import_core6.info)(`Processing repository: ${repoName}`);
-        let workflowFiles = await getFiles(repoName, ".github/workflows");
-        if (fileRegex) {
-          workflowFiles = workflowFiles.filter(
-            (file) => fileRegex.test(file.name)
+        if (type === "update") {
+          await retrieveWorkflowFiles(repo);
+          if (fileRegex) {
+            repo.workflowFiles = repo.workflowFiles.filter(
+              (file) => fileRegex.test(file.name)
+            );
+          }
+          const prLink = await updateRepoWorkflows(
+            repo,
+            searchPattern,
+            replacePattern
           );
-        }
-        const prLink = await updateRepoWorkflows(
-          repo,
-          workflowFiles,
-          searchPattern,
-          replacePattern
-        );
-        if (prLink) {
-          prLinks.push(`- [${repoName}](${prLink})`);
+          if (prLink) {
+            prLinks.push(`- [${repoName}](${prLink})`);
+          }
+        } else if (type === "dependabot") {
+          await retrieveGithubFiles(repo);
+          await retrieveWorkflowFiles(repo);
+          const prLink = await addDependabot(repo);
+          if (prLink) {
+            prLinks.push(`- [${repoName}](${prLink})`);
+          }
         }
       } catch (error) {
         (0, import_core6.info)(`Error processing repository ${repo.name}: ${error}`);
@@ -85261,7 +86065,10 @@ async function run() {
     const isTest = (0, import_core7.getInput)("is-test") === "true";
     if (mode === "update") {
       (0, import_core7.info)("Running in update mode");
-      await updateRepositories(isTest);
+      await updateRepositories(isTest, "update");
+    } else if (mode === "dependabot") {
+      (0, import_core7.info)("Running in dependabot mode");
+      await updateRepositories(isTest, "dependabot");
     } else {
       (0, import_core7.info)("Running in analyse mode");
       await analyseRepositories(isTest);
@@ -85279,14 +86086,6 @@ undici/lib/fetch/body.js:
 
 undici/lib/websocket/frame.js:
   (*! ws. MIT License. Einar Otto Stangvik <einaros@gmail.com> *)
-
-is-plain-object/dist/is-plain-object.js:
-  (*!
-   * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
-   *
-   * Copyright (c) 2014-2017, Jon Schlinkert.
-   * Released under the MIT License.
-   *)
 
 mime-db/index.js:
   (*!

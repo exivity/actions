@@ -1,23 +1,7 @@
 import PQueue from 'p-queue'
 
 import { getOctoKitClient } from '../../release/src/common/inputs'
-
-export interface FileData {
-  name: string
-  path: string
-  content?: string
-}
-
-export interface RepoData {
-  name: string
-  html_url: string
-  default_branch?: string
-  topics?: string[]
-  workflowFiles?: FileData[]
-  rootFiles?: FileData[]
-  githubFiles?: FileData[]
-  codeownersFile?: FileData
-}
+import { RepoData, FileData } from './repo-data'
 
 const contentQueue = new PQueue({ concurrency: 90 })
 const vulnerabilityAlertsQueue = new PQueue({ concurrency: 90 })
@@ -79,7 +63,10 @@ export async function getRepo(repoName: string): Promise<RepoData> {
   }
 }
 
-export async function getFiles(repoName: string, path: string) {
+export async function getFiles(
+  repoName: string,
+  path: string,
+): Promise<FileData[]> {
   const octokit = getOctoKitClient()
   try {
     const response = await contentQueue.add(() =>
@@ -125,8 +112,8 @@ export async function createOrUpdateFileContents(
   path: string,
   content: string,
   message: string,
-  sha: string,
   branch: string,
+  sha?: string,
 ) {
   const octokit = getOctoKitClient()
 
