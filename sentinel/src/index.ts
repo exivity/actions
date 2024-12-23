@@ -10,7 +10,10 @@ async function run() {
 
     if (mode === 'update') {
       info('Running in update mode')
-      await updateRepositories(isTest)
+      await updateRepositories(isTest, 'update')
+    } else if (mode === 'dependabot') {
+      info('Running in dependabot mode')
+      await updateRepositories(isTest, 'dependabot')
     } else {
       info('Running in analyse mode')
       await analyseRepositories(isTest)

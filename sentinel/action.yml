@@ -6,7 +6,7 @@ inputs:
     required: false
     default: ${{ github.token }}
   mode:
-    description: 'Mode of operation: analyse or update'
+    description: 'Mode of operation: analyse, update or dependabot'
     required: false
     default: 'analyse'
   search-pattern:
@@ -27,8 +27,8 @@ inputs:
     default: ''
   repo-list:
     description:
-      'A comma-separated list of repositories to update, if none are given, all
-      repositories will be updated'
+      'A comma-separated list of repositories to update or add dependabot to, if
+      none are given, all repositories will be updated'
     required: false
     default: ''
   is-test:

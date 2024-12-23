@@ -2,7 +2,7 @@ import * as yaml from 'yaml'
 import * as fs from 'fs'
 
 import { formatRepoList } from '../utils'
-import { FileData, RepoData } from '../github-api'
+import { RepoData, FileData } from '../repo-data'
 
 function getOSUsed(file: FileData): string[] {
   if (!file.content) {
