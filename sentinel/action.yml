@@ -19,6 +19,18 @@ inputs:
       'The pattern to replace the search pattern with (e.g., ubuntu-22.04)'
     required: false
     default: ''
+  file-regex:
+    description:
+      'The regex pattern to search for in file names (e.g.,
+      (kubernetes|deploy)\.yml)'
+    required: false
+    default: ''
+  repo-list:
+    description:
+      'A comma-separated list of repositories to update, if none are given, all
+      repositories will be updated'
+    required: false
+    default: ''
   is-test:
     description: 'Set to true to run in test mode'
     required: false

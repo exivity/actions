@@ -84558,6 +84558,20 @@ async function getRepos(isTest) {
   }
   return repos;
 }
+async function getRepo(repoName) {
+  const octokit = getOctoKitClient();
+  try {
+    const repoData = await contentQueue.add(
+      () => octokit.rest.repos.get({
+        owner: "exivity",
+        repo: repoName
+      })
+    );
+    return repoData.data;
+  } catch (e) {
+    throw new Error(`Error getting repo ${repoName}: ${e}`);
+  }
+}
 async function getFiles(repoName, path2) {
   const octokit = getOctoKitClient();
   try {
@@ -84940,7 +84954,7 @@ async function checkCodeowners(repos, reportContent, adheringRepos) {
 async function checkDependabot(repos, reportContent, adheringRepos) {
   const withoutDependabot = [];
   for (const repo of repos) {
-    if (repo.topics.includes("no-language")) continue;
+    if ((repo.topics ?? []).includes("no-language")) continue;
     if (!await hasDependabotAlerts("exivity", repo.name) || !repo.githubFiles?.some((file) => file.name === "dependabot.yml")) {
       withoutDependabot.push(repo);
     }
@@ -84969,7 +84983,7 @@ async function checkTopics(repos, reportContent, adheringRepos) {
     "no-language"
   ];
   const withoutLanguageTopics = repos.filter(
-    (repo) => !repo.topics.some((topic) => languageTopics.includes(topic))
+    (repo) => !(repo.topics ?? []).some((topic) => languageTopics.includes(topic))
   );
   reportContent += formatRepoList(
     "Has No Language Topics",
@@ -85189,20 +85203,40 @@ async function updateRepoWorkflows(repoData, workflowFiles, searchPattern, repla
 async function updateRepositories(isTest) {
   const searchPattern = (0, import_core6.getInput)("search-pattern");
   const replacePattern = (0, import_core6.getInput)("replace-pattern");
+  const fileRegexInput = (0, import_core6.getInput)("file-regex");
+  const repoList = (0, import_core6.getInput)("repo-list").split(",");
   if (!searchPattern || !replacePattern) {
     throw new Error(
       "Both search-pattern and replace-pattern inputs must be provided in update mode"
     );
   }
+  let fileRegex;
+  if (fileRegexInput) {
+    try {
+      fileRegex = new RegExp(fileRegexInput);
+    } catch (error) {
+      throw new Error(`Invalid file-regex input: ${error}`);
+    }
+  }
   (0, import_core6.info)(`Replacing "${searchPattern}" with "${replacePattern}" in workflows`);
-  const repos = await getRepos(isTest);
+  let repos;
+  if (repoList.length > 0) {
+    repos = await Promise.all(repoList.map(getRepo));
+  } else {
+    repos = await getRepos(isTest);
+  }
   const prLinks = await getUpdatedPrLinks();
   await Promise.all(
     repos.map(async (repo) => {
       try {
         const repoName = repo.name;
         (0, import_core6.info)(`Processing repository: ${repoName}`);
-        const workflowFiles = await getFiles(repoName, ".github/workflows");
+        let workflowFiles = await getFiles(repoName, ".github/workflows");
+        if (fileRegex) {
+          workflowFiles = workflowFiles.filter(
+            (file) => fileRegex.test(file.name)
+          );
+        }
         const prLink = await updateRepoWorkflows(
           repo,
           workflowFiles,

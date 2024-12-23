@@ -1,10 +1,7 @@
 import { info } from '@actions/core'
-import { getOctoKitClient } from '../../../release/src/common/inputs'
 
 import {
   getFileContent,
-  getRepos,
-  getFiles,
   RepoData,
   deleteRef,
   getRef,
