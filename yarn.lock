@@ -667,7 +667,7 @@ foreground-child@^3.1.0:
     cross-spawn "^7.0.0"
     signal-exit "^4.0.1"
 
-form-data@4.0.1, form-data@^4.0.0, form-data@^4.0.1:
+form-data@4.0.1, form-data@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.1.tgz#ba1076daaaa5bfd7e99c1a6cb02aa0a5cff90d48"
   integrity sha512-tzN8e4TX8+kkxGPK8D5u0FNmjPUjw3lwC9lSLxxoB/+GtsJG91CO8bSWy73APlgAZzZbXEYZJuxjkHH2w+Ezhw==
@@ -675,6 +675,11 @@ form-data@4.0.1, form-data@^4.0.0, form-data@^4.0.1:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
+
+formdata-node@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/formdata-node/-/formdata-node-6.0.3.tgz#48f8e2206ae2befded82af621ef015f08168dc6d"
+  integrity sha512-8e1++BCiTzUno9v5IZ2J6bv4RU+3UKDmqWUQD0MIMVCd9AdhWkO1gw57oo1mNEX1dMq2EGI+FbWz4B92pscSQg==
 
 function-bind@^1.1.1:
   version "1.1.1"
@@ -906,13 +911,14 @@ jackspeak@^4.0.1:
   dependencies:
     "@isaacs/cliui" "^8.0.2"
 
-jira.js@4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-4.0.3.tgz#aec5dd595998c73a0f2b700470439b2e361dfe93"
-  integrity sha512-K0rjG7RxNsw9GzXTy2KaEvv6IVsnsv1BJugOX6qR3q1A9lWTygNNN1zvC+aFNZCXyTZhPe/f/KhjBM5l+FOJ+w==
+jira.js@4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-4.0.5.tgz#3e50a60b700da528ba9188ba84aaaf85950fd108"
+  integrity sha512-fd19tmyCmO7Dcplk+Z2J32k4z4LuN8r5Pr1Z8keOAVATF5PQQQOKh3XVh3takQD7aDp5MaT0TS4sVauzg2dVpg==
   dependencies:
     axios "^1.7.9"
-    form-data "^4.0.1"
+    formdata-node "^6.0.3"
+    mime "^4.0.6"
     tslib "^2.8.1"
 
 js-yaml@4.1.0:
@@ -963,6 +969,11 @@ mime@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-3.0.0.tgz#b374550dca3a0c18443b0c950a6a58f1931cf7a7"
   integrity sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==
+
+mime@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-4.0.6.tgz#ca83bec0bcf2a02353d0e02da99be05603d04839"
+  integrity sha512-4rGt7rvQHBbaSOF9POGkk1ocRP16Md1x36Xma8sz8h8/vfCUI2OtEIeCqe4Ofes853x4xDoPiFLIT47J5fI/7A==
 
 minimatch@8.0.3:
   version "8.0.3"
