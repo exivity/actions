@@ -923,10 +923,10 @@ jackspeak@^4.0.1:
   dependencies:
     "@isaacs/cliui" "^8.0.2"
 
-jira.js@4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-4.0.5.tgz#3e50a60b700da528ba9188ba84aaaf85950fd108"
-  integrity sha512-fd19tmyCmO7Dcplk+Z2J32k4z4LuN8r5Pr1Z8keOAVATF5PQQQOKh3XVh3takQD7aDp5MaT0TS4sVauzg2dVpg==
+jira.js@4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-4.0.6.tgz#08d4f954340e3f891a2b5106729b9324063e63b9"
+  integrity sha512-mSNAw3y97APJvvY1q4Ua018rBd0kC2uwMdfV/yGcHEV8I7tvl/DS/kPXVMwp6hq8LrwTAjqiBPLw3YiO2kMRnw==
   dependencies:
     axios "^1.7.9"
     formdata-node "^6.0.3"
