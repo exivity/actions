@@ -56,7 +56,7 @@
     "semver": "7.6.3",
     "yaml": "^2.7.0",
     "zod": "3.24.1",
-    "p-queue": "8.0.1"
+    "p-queue": "8.1.0"
   },
   "devDependencies": {
     "@octokit/webhooks": "13.4.2",
