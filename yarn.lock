@@ -324,10 +324,10 @@
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-methods/-/webhooks-methods-5.0.0.tgz#04115f44127967ca2e522bd67191c2436883a59d"
   integrity sha512-bMypz/oiU4DqaujqZH7IOwMyrHfr2MBZbXqrttyR/kawne7t8CIv1k+xALazo6VCuE7DJZbgBG1RFdk5OH8lnw==
 
-"@octokit/webhooks@13.4.3":
-  version "13.4.3"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.4.3.tgz#4ccb00c9efd2eff5181c1d3e7b9089655b2b8a7c"
-  integrity sha512-Brjp2TJiTvLV8unrGWC46QgsnH641fTvH32Vp88L6Y5GkMcKMp+YLdRz/EP722GxKM0S4vbeNqAc6QeEUr8oWA==
+"@octokit/webhooks@13.5.0":
+  version "13.5.0"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.5.0.tgz#9eb3c534aa25d02f60e3aaaa7c75b2d89cc54229"
+  integrity sha512-uSO/TCCfi9vaZHOBsGWsRNBXYYKtLnSDbHI+std0M80AaEd7AnVfLqvk+9V3GP1faPcOx06ADx+h8UWwvemIGw==
   dependencies:
     "@octokit/openapi-webhooks-types" "8.5.1"
     "@octokit/request-error" "^6.1.6"
