@@ -4703,6 +4703,13 @@ var require_body = __commonJS({
     var { isUint8Array, isArrayBuffer } = require("util/types");
     var { File: UndiciFile } = require_file();
     var { parseMIMEType, serializeAMimeType } = require_dataURL();
+    var random;
+    try {
+      const crypto = require("node:crypto");
+      random = (max) => crypto.randomInt(0, max);
+    } catch {
+      random = (max) => Math.floor(Math.random(max));
+    }
     var ReadableStream = globalThis.ReadableStream;
     var File = NativeFile ?? UndiciFile;
     var textEncoder = new TextEncoder();
@@ -4745,7 +4752,7 @@ var require_body = __commonJS({
       } else if (ArrayBuffer.isView(object)) {
         source = new Uint8Array(object.buffer.slice(object.byteOffset, object.byteOffset + object.byteLength));
       } else if (util.isFormDataLike(object)) {
-        const boundary = `----formdata-undici-0${`${Math.floor(Math.random() * 1e11)}`.padStart(11, "0")}`;
+        const boundary = `----formdata-undici-0${`${random(1e11)}`.padStart(11, "0")}`;
         const prefix = `--${boundary}\r
 Content-Disposition: form-data`;
         const escape2 = (str) => str.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
@@ -19739,8 +19746,8 @@ var require_escape = __commonJS({
     }
     function escapeArgument(arg, doubleEscapeMetaChars) {
       arg = `${arg}`;
-      arg = arg.replace(/(\\*)"/g, '$1$1\\"');
-      arg = arg.replace(/(\\*)$/, "$1$1");
+      arg = arg.replace(/(?=(\\+?)?)\1"/g, '$1$1\\"');
+      arg = arg.replace(/(?=(\\+?)?)\1$/, "$1$1");
       arg = `"${arg}"`;
       arg = arg.replace(metaCharsRegExp, "^$1");
       if (doubleEscapeMetaChars) {
@@ -19886,7 +19893,7 @@ var require_enoent = __commonJS({
       const originalEmit = cp.emit;
       cp.emit = function(name, arg1) {
         if (name === "exit") {
-          const err = verifyENOENT(arg1, parsed, "spawn");
+          const err = verifyENOENT(arg1, parsed);
           if (err) {
             return originalEmit.call(cp, "error", err);
           }
@@ -25316,10 +25323,11 @@ var Minimatch = class {
     for (let i = 0; i < globParts.length - 1; i++) {
       for (let j = i + 1; j < globParts.length; j++) {
         const matched = this.partsMatch(globParts[i], globParts[j], !this.preserveMultipleSlashes);
-        if (!matched)
-          continue;
-        globParts[i] = matched;
-        globParts[j] = [];
+        if (matched) {
+          globParts[i] = [];
+          globParts[j] = matched;
+          break;
+        }
       }
     }
     return globParts.filter((gs) => gs.length);
@@ -25697,14 +25705,13 @@ var Stack = class _Stack {
   }
 };
 var LRUCache = class _LRUCache {
-  // properties coming in from the options of these, only max and maxSize
-  // really *need* to be protected. The rest can be modified, as they just
-  // set defaults for various methods.
+  // options that cannot be changed without disaster
   #max;
   #maxSize;
   #dispose;
   #disposeAfter;
   #fetchMethod;
+  #memoMethod;
   /**
    * {@link LRUCache.OptionsBase.ttl}
    */
@@ -25850,6 +25857,9 @@ var LRUCache = class _LRUCache {
   get fetchMethod() {
     return this.#fetchMethod;
   }
+  get memoMethod() {
+    return this.#memoMethod;
+  }
   /**
    * {@link LRUCache.OptionsBase.dispose} (read-only)
    */
@@ -25863,7 +25873,7 @@ var LRUCache = class _LRUCache {
     return this.#disposeAfter;
   }
   constructor(options) {
-    const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort } = options;
+    const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, memoMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort } = options;
     if (max !== 0 && !isPosInt(max)) {
       throw new TypeError("max option must be a nonnegative integer");
     }
@@ -25883,6 +25893,10 @@ var LRUCache = class _LRUCache {
         throw new TypeError("sizeCalculation set to non-function");
       }
     }
+    if (memoMethod !== void 0 && typeof memoMethod !== "function") {
+      throw new TypeError("memoMethod must be a function if defined");
+    }
+    this.#memoMethod = memoMethod;
     if (fetchMethod !== void 0 && typeof fetchMethod !== "function") {
       throw new TypeError("fetchMethod must be a function if specified");
     }
@@ -25953,7 +25967,8 @@ var LRUCache = class _LRUCache {
     }
   }
   /**
-   * Return the remaining TTL time for a given entry key
+   * Return the number of ms left in the item's TTL. If item is not in cache,
+   * returns `0`. Returns `Infinity` if item is in cache without a defined TTL.
    */
   getRemainingTTL(key) {
     return this.#keyMap.has(key) ? Infinity : 0;
@@ -25969,7 +25984,7 @@ var LRUCache = class _LRUCache {
       if (ttl !== 0 && this.ttlAutopurge) {
         const t = setTimeout(() => {
           if (this.#isStale(index)) {
-            this.delete(this.#keyList[index]);
+            this.#delete(this.#keyList[index], "expire");
           }
         }, ttl + 1);
         if (t.unref) {
@@ -26206,13 +26221,14 @@ var LRUCache = class _LRUCache {
     return this.entries();
   }
   /**
-   * A String value that is used in the creation of the default string description of an object.
-   * Called by the built-in method Object.prototype.toString.
+   * A String value that is used in the creation of the default string
+   * description of an object. Called by the built-in method
+   * `Object.prototype.toString`.
    */
   [Symbol.toStringTag] = "LRUCache";
   /**
    * Find a value for which the supplied fn method returns a truthy value,
-   * similar to Array.find().  fn is called as fn(value, key, cache).
+   * similar to `Array.find()`. fn is called as `fn(value, key, cache)`.
    */
   find(fn, getOptions = {}) {
     for (const i of this.#indexes()) {
@@ -26226,10 +26242,15 @@ var LRUCache = class _LRUCache {
     }
   }
   /**
-   * Call the supplied function on each item in the cache, in order from
-   * most recently used to least recently used.  fn is called as
-   * fn(value, key, cache).  Does not update age or recenty of use.
-   * Does not iterate over stale values.
+   * Call the supplied function on each item in the cache, in order from most
+   * recently used to least recently used.
+   *
+   * `fn` is called as `fn(value, key, cache)`.
+   *
+   * If `thisp` is provided, function will be called in the `this`-context of
+   * the provided object, or the cache if no `thisp` object is provided.
+   *
+   * Does not update age or recenty of use, or iterate over stale values.
    */
   forEach(fn, thisp = this) {
     for (const i of this.#indexes()) {
@@ -26261,7 +26282,7 @@ var LRUCache = class _LRUCache {
     let deleted = false;
     for (const i of this.#rindexes({ allowStale: true })) {
       if (this.#isStale(i)) {
-        this.delete(this.#keyList[i]);
+        this.#delete(this.#keyList[i], "expire");
         deleted = true;
       }
     }
@@ -26269,9 +26290,15 @@ var LRUCache = class _LRUCache {
   }
   /**
    * Get the extended info about a given entry, to get its value, size, and
-   * TTL info simultaneously. Like {@link LRUCache#dump}, but just for a
-   * single key. Always returns stale values, if their info is found in the
-   * cache, so be sure to check for expired TTLs if relevant.
+   * TTL info simultaneously. Returns `undefined` if the key is not present.
+   *
+   * Unlike {@link LRUCache#dump}, which is designed to be portable and survive
+   * serialization, the `start` value is always the current timestamp, and the
+   * `ttl` is a calculated remaining time to live (negative if expired).
+   *
+   * Always returns stale values, if their info is found in the cache, so be
+   * sure to check for expirations (ie, a negative {@link LRUCache.Entry#ttl})
+   * if relevant.
    */
   info(key) {
     const i = this.#keyMap.get(key);
@@ -26298,7 +26325,16 @@ var LRUCache = class _LRUCache {
   }
   /**
    * Return an array of [key, {@link LRUCache.Entry}] tuples which can be
-   * passed to cache.load()
+   * passed to {@link LRUCache#load}.
+   *
+   * The `start` fields are calculated relative to a portable `Date.now()`
+   * timestamp, even if `performance.now()` is available.
+   *
+   * Stale entries are always included in the `dump`, even if
+   * {@link LRUCache.OptionsBase.allowStale} is false.
+   *
+   * Note: this returns an actual array, not a generator, so it can be more
+   * easily passed around.
    */
   dump() {
     const arr = [];
@@ -26323,8 +26359,12 @@ var LRUCache = class _LRUCache {
   }
   /**
    * Reset the cache and load in the items in entries in the order listed.
-   * Note that the shape of the resulting cache may be different if the
-   * same options are not used in both caches.
+   *
+   * The shape of the resulting cache may be different if the same options are
+   * not used in both caches.
+   *
+   * The `start` fields are assumed to be calculated relative to a portable
+   * `Date.now()` timestamp, even if `performance.now()` is available.
    */
   load(arr) {
     this.clear();
@@ -26341,6 +26381,30 @@ var LRUCache = class _LRUCache {
    *
    * Note: if `undefined` is specified as a value, this is an alias for
    * {@link LRUCache#delete}
+   *
+   * Fields on the {@link LRUCache.SetOptions} options param will override
+   * their corresponding values in the constructor options for the scope
+   * of this single `set()` operation.
+   *
+   * If `start` is provided, then that will set the effective start
+   * time for the TTL calculation. Note that this must be a previous
+   * value of `performance.now()` if supported, or a previous value of
+   * `Date.now()` if not.
+   *
+   * Options object may also include `size`, which will prevent
+   * calling the `sizeCalculation` function and just use the specified
+   * number if it is a positive integer, and `noDisposeOnSet` which
+   * will prevent calling a `dispose` function in the case of
+   * overwrites.
+   *
+   * If the `size` (or return value of `sizeCalculation`) for a given
+   * entry is greater than `maxEntrySize`, then the item will not be
+   * added to the cache.
+   *
+   * Will update the recency of the entry.
+   *
+   * If the value is `undefined`, then this is an alias for
+   * `cache.delete(key)`. `undefined` is never stored in the cache.
    */
   set(k, v, setOptions = {}) {
     if (v === void 0) {
@@ -26355,7 +26419,7 @@ var LRUCache = class _LRUCache {
         status.set = "miss";
         status.maxEntrySizeExceeded = true;
       }
-      this.delete(k);
+      this.#delete(k, "set");
       return this;
     }
     let index = this.#size === 0 ? void 0 : this.#keyMap.get(k);
@@ -26489,6 +26553,14 @@ var LRUCache = class _LRUCache {
    * Will return false if the item is stale, even though it is technically
    * in the cache.
    *
+   * Check if a key is in the cache, without updating the recency of
+   * use. Age is updated if {@link LRUCache.OptionsBase.updateAgeOnHas} is set
+   * to `true` in either the options or the constructor.
+   *
+   * Will return `false` if the item is stale, even though it is technically in
+   * the cache. The difference can be determined (if it matters) by using a
+   * `status` argument, and inspecting the `has` field.
+   *
    * Will not update item age unless
    * {@link LRUCache.OptionsBase.updateAgeOnHas} is set.
    */
@@ -26571,7 +26643,7 @@ var LRUCache = class _LRUCache {
           if (bf2.__staleWhileFetching) {
             this.#valList[index] = bf2.__staleWhileFetching;
           } else {
-            this.delete(k);
+            this.#delete(k, "fetch");
           }
         } else {
           if (options.status)
@@ -26597,7 +26669,7 @@ var LRUCache = class _LRUCache {
       if (this.#valList[index] === p) {
         const del = !noDelete || bf2.__staleWhileFetching === void 0;
         if (del) {
-          this.delete(k);
+          this.#delete(k, "fetch");
         } else if (!allowStaleAborted) {
           this.#valList[index] = bf2.__staleWhileFetching;
         }
@@ -26735,6 +26807,28 @@ var LRUCache = class _LRUCache {
       return staleVal ? p.__staleWhileFetching : p.__returned = p;
     }
   }
+  async forceFetch(k, fetchOptions = {}) {
+    const v = await this.fetch(k, fetchOptions);
+    if (v === void 0)
+      throw new Error("fetch() returned undefined");
+    return v;
+  }
+  memo(k, memoOptions = {}) {
+    const memoMethod = this.#memoMethod;
+    if (!memoMethod) {
+      throw new Error("no memoMethod provided to constructor");
+    }
+    const { context: context2, forceRefresh, ...options } = memoOptions;
+    const v = this.get(k, options);
+    if (!forceRefresh && v !== void 0)
+      return v;
+    const vv = memoMethod(k, v, {
+      options,
+      context: context2
+    });
+    this.set(k, vv, options);
+    return vv;
+  }
   /**
    * Return a value from the cache. Will update the recency of the cache
    * entry found.
@@ -26754,7 +26848,7 @@ var LRUCache = class _LRUCache {
           status.get = "stale";
         if (!fetching) {
           if (!noDeleteOnStaleGet) {
-            this.delete(k);
+            this.#delete(k, "expire");
           }
           if (status && allowStale)
             status.returnedStale = true;
@@ -26798,16 +26892,20 @@ var LRUCache = class _LRUCache {
   }
   /**
    * Deletes a key out of the cache.
+   *
    * Returns true if the key was deleted, false otherwise.
    */
   delete(k) {
+    return this.#delete(k, "delete");
+  }
+  #delete(k, reason) {
     let deleted = false;
     if (this.#size !== 0) {
       const index = this.#keyMap.get(k);
       if (index !== void 0) {
         deleted = true;
         if (this.#size === 1) {
-          this.clear();
+          this.#clear(reason);
         } else {
           this.#removeItemSize(index);
           const v = this.#valList[index];
@@ -26815,10 +26913,10 @@ var LRUCache = class _LRUCache {
             v.__abortController.abort(new Error("deleted"));
           } else if (this.#hasDispose || this.#hasDisposeAfter) {
             if (this.#hasDispose) {
-              this.#dispose?.(v, k, "delete");
+              this.#dispose?.(v, k, reason);
             }
             if (this.#hasDisposeAfter) {
-              this.#disposed?.push([v, k, "delete"]);
+              this.#disposed?.push([v, k, reason]);
             }
           }
           this.#keyMap.delete(k);
@@ -26852,6 +26950,9 @@ var LRUCache = class _LRUCache {
    * Clear the cache entirely, throwing away all values.
    */
   clear() {
+    return this.#clear("delete");
+  }
+  #clear(reason) {
     for (const index of this.#rindexes({ allowStale: true })) {
       const v = this.#valList[index];
       if (this.#isBackgroundFetch(v)) {
@@ -26859,10 +26960,10 @@ var LRUCache = class _LRUCache {
       } else {
         const k = this.#keyList[index];
         if (this.#hasDispose) {
-          this.#dispose?.(v, k, "delete");
+          this.#dispose?.(v, k, reason);
         }
         if (this.#hasDisposeAfter) {
-          this.#disposed?.push([v, k, "delete"]);
+          this.#disposed?.push([v, k, reason]);
         }
       }
     }
@@ -27990,6 +28091,8 @@ var PathBase = class {
   /**
    * Deprecated alias for Dirent['parentPath'] Somewhat counterintuitively,
    * this property refers to the *parent* path, not the path object itself.
+   *
+   * @deprecated
    */
   get path() {
     return this.parentPath;
