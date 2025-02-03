@@ -27018,46 +27018,20 @@ function getFetchUrl(settings) {
   return `${serviceUrl.origin}/${encodedOwner}/${encodedName}`;
 }
 function getServerUrl(url) {
-  let resolvedUrl = process.env["GITHUB_SERVER_URL"] || "https://github.com";
-  if (hasContent(url, 0 /* Trim */)) {
-    resolvedUrl = url;
-  }
-  return new import_url.URL(resolvedUrl);
+  let urlValue = url && url.trim().length > 0 ? url : process.env["GITHUB_SERVER_URL"] || "https://github.com";
+  return new import_url.URL(urlValue);
 }
 function getServerApiUrl(url) {
-  if (hasContent(url, 0 /* Trim */)) {
-    let serverUrl = getServerUrl(url);
-    if (isGhes(url)) {
-      serverUrl.pathname = "api/v3";
-    } else {
-      serverUrl.hostname = "api." + serverUrl.hostname;
-    }
-    return pruneSuffix(serverUrl.toString(), "/");
+  let apiUrl = "https://api.github.com";
+  if (isGhes(url)) {
+    const serverUrl = getServerUrl(url);
+    apiUrl = new import_url.URL(`${serverUrl.origin}/api/v3`).toString();
   }
-  return process.env["GITHUB_API_URL"] || "https://api.github.com";
+  return apiUrl;
 }
 function isGhes(url) {
-  const ghUrl = new import_url.URL(
-    url || process.env["GITHUB_SERVER_URL"] || "https://github.com"
-  );
-  const hostname = ghUrl.hostname.trimEnd().toUpperCase();
-  const isGitHubHost = hostname === "GITHUB.COM";
-  const isGitHubEnterpriseCloudHost = hostname.endsWith(".GHE.COM");
-  const isLocalHost = hostname.endsWith(".LOCALHOST");
-  return !isGitHubHost && !isGitHubEnterpriseCloudHost && !isLocalHost;
-}
-function pruneSuffix(text, suffix) {
-  if (hasContent(suffix, 1 /* Preserve */) && text?.endsWith(suffix)) {
-    return text.substring(0, text.length - suffix.length);
-  }
-  return text;
-}
-function hasContent(text, whitespaceMode) {
-  let refinedText = text ?? "";
-  if (whitespaceMode == 0 /* Trim */) {
-    refinedText = refinedText.trim();
-  }
-  return refinedText.length > 0;
+  const ghUrl = getServerUrl(url);
+  return ghUrl.hostname.toUpperCase() !== "GITHUB.COM";
 }
 
 // node_modules/uuid/dist/esm-node/rng.js
@@ -30318,7 +30292,7 @@ function readAlias(state) {
   return true;
 }
 function composeNode(state, parentIndent, nodeContext, allowToSeek, allowCompact) {
-  var allowBlockStyles, allowBlockScalars, allowBlockCollections, indentStatus = 1, atNewLine = false, hasContent2 = false, typeIndex, typeQuantity, typeList, type2, flowIndent, blockIndent;
+  var allowBlockStyles, allowBlockScalars, allowBlockCollections, indentStatus = 1, atNewLine = false, hasContent = false, typeIndex, typeQuantity, typeList, type2, flowIndent, blockIndent;
   if (state.listener !== null) {
     state.listener("open", state);
   }
@@ -30368,17 +30342,17 @@ function composeNode(state, parentIndent, nodeContext, allowToSeek, allowCompact
     blockIndent = state.position - state.lineStart;
     if (indentStatus === 1) {
       if (allowBlockCollections && (readBlockSequence(state, blockIndent) || readBlockMapping(state, blockIndent, flowIndent)) || readFlowCollection(state, flowIndent)) {
-        hasContent2 = true;
+        hasContent = true;
       } else {
         if (allowBlockScalars && readBlockScalar(state, flowIndent) || readSingleQuotedScalar(state, flowIndent) || readDoubleQuotedScalar(state, flowIndent)) {
-          hasContent2 = true;
+          hasContent = true;
         } else if (readAlias(state)) {
-          hasContent2 = true;
+          hasContent = true;
           if (state.tag !== null || state.anchor !== null) {
             throwError(state, "alias node should not have any properties");
           }
         } else if (readPlainScalar(state, flowIndent, CONTEXT_FLOW_IN === nodeContext)) {
-          hasContent2 = true;
+          hasContent = true;
           if (state.tag === null) {
             state.tag = "?";
           }
@@ -30388,7 +30362,7 @@ function composeNode(state, parentIndent, nodeContext, allowToSeek, allowCompact
         }
       }
     } else if (indentStatus === 0) {
-      hasContent2 = allowBlockCollections && readBlockSequence(state, blockIndent);
+      hasContent = allowBlockCollections && readBlockSequence(state, blockIndent);
     }
   }
   if (state.tag === null) {
@@ -30441,7 +30415,7 @@ function composeNode(state, parentIndent, nodeContext, allowToSeek, allowCompact
   if (state.listener !== null) {
     state.listener("close", state);
   }
-  return state.tag !== null || state.anchor !== null || hasContent2;
+  return state.tag !== null || state.anchor !== null || hasContent;
 }
 function readDocument(state) {
   var documentStart = state.position, _position, directiveName, directiveArgs, hasDirectives = false, ch;
