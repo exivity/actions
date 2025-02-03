@@ -1,4 +1,6 @@
-import { RepoData } from './github-api'
+import { info } from '@actions/core'
+import { createRef, getRef } from './github-api'
+import { RepoData } from './repo-data'
 
 export function formatRepoList(
   title: string,
@@ -29,4 +31,21 @@ export function formatRepoList(
   }
 
   return result
+}
+
+export async function createBranch(repoData: RepoData, branchName: string) {
+  if (!repoData.default_branch) {
+    info(
+      `Error processing repository ${repoData.name}: repository does not have a default branch`,
+    )
+    return null
+  }
+
+  // Create a new branch from default branch
+  const refData = await getRef(
+    repoData.name,
+    `heads/${repoData.default_branch}`,
+  )
+
+  await createRef(repoData.name, `refs/heads/${branchName}`, refData.object.sha)
 }

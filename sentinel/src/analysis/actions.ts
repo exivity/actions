@@ -2,7 +2,7 @@ import * as yaml from 'yaml'
 import * as fs from 'fs'
 
 import { formatRepoList } from '../utils'
-import { FileData, RepoData } from '../github-api'
+import { FileData, RepoData } from '../repo-data'
 
 function getActionFile(repo: string, file: FileData): any {
   if (!file.content) {
