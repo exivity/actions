@@ -3694,7 +3694,7 @@ var require_symbols2 = __commonJS({
 var require_webidl = __commonJS({
   "node_modules/undici/lib/fetch/webidl.js"(exports2, module2) {
     "use strict";
-    var { types } = require("util");
+    var { types: types3 } = require("util");
     var { hasOwn, toUSVString } = require_util2();
     var webidl = {};
     webidl.converters = {};
@@ -3859,7 +3859,7 @@ var require_webidl = __commonJS({
           });
         }
         const result = {};
-        if (!types.isProxy(O)) {
+        if (!types3.isProxy(O)) {
           const keys2 = Object.keys(O);
           for (const key of keys2) {
             const typedKey = keyConverter(key);
@@ -3985,14 +3985,14 @@ var require_webidl = __commonJS({
       return x;
     };
     webidl.converters.ArrayBuffer = function(V, opts = {}) {
-      if (webidl.util.Type(V) !== "Object" || !types.isAnyArrayBuffer(V)) {
+      if (webidl.util.Type(V) !== "Object" || !types3.isAnyArrayBuffer(V)) {
         throw webidl.errors.conversionFailed({
           prefix: `${V}`,
           argument: `${V}`,
           types: ["ArrayBuffer"]
         });
       }
-      if (opts.allowShared === false && types.isSharedArrayBuffer(V)) {
+      if (opts.allowShared === false && types3.isSharedArrayBuffer(V)) {
         throw webidl.errors.exception({
           header: "ArrayBuffer",
           message: "SharedArrayBuffer is not allowed."
@@ -4001,14 +4001,14 @@ var require_webidl = __commonJS({
       return V;
     };
     webidl.converters.TypedArray = function(V, T, opts = {}) {
-      if (webidl.util.Type(V) !== "Object" || !types.isTypedArray(V) || V.constructor.name !== T.name) {
+      if (webidl.util.Type(V) !== "Object" || !types3.isTypedArray(V) || V.constructor.name !== T.name) {
         throw webidl.errors.conversionFailed({
           prefix: `${T.name}`,
           argument: `${V}`,
           types: [T.name]
         });
       }
-      if (opts.allowShared === false && types.isSharedArrayBuffer(V.buffer)) {
+      if (opts.allowShared === false && types3.isSharedArrayBuffer(V.buffer)) {
         throw webidl.errors.exception({
           header: "ArrayBuffer",
           message: "SharedArrayBuffer is not allowed."
@@ -4017,13 +4017,13 @@ var require_webidl = __commonJS({
       return V;
     };
     webidl.converters.DataView = function(V, opts = {}) {
-      if (webidl.util.Type(V) !== "Object" || !types.isDataView(V)) {
+      if (webidl.util.Type(V) !== "Object" || !types3.isDataView(V)) {
         throw webidl.errors.exception({
           header: "DataView",
           message: "Object is not a DataView."
         });
       }
-      if (opts.allowShared === false && types.isSharedArrayBuffer(V.buffer)) {
+      if (opts.allowShared === false && types3.isSharedArrayBuffer(V.buffer)) {
         throw webidl.errors.exception({
           header: "ArrayBuffer",
           message: "SharedArrayBuffer is not allowed."
@@ -4032,13 +4032,13 @@ var require_webidl = __commonJS({
       return V;
     };
     webidl.converters.BufferSource = function(V, opts = {}) {
-      if (types.isAnyArrayBuffer(V)) {
+      if (types3.isAnyArrayBuffer(V)) {
         return webidl.converters.ArrayBuffer(V, opts);
       }
-      if (types.isTypedArray(V)) {
+      if (types3.isTypedArray(V)) {
         return webidl.converters.TypedArray(V, V.constructor);
       }
-      if (types.isDataView(V)) {
+      if (types3.isDataView(V)) {
         return webidl.converters.DataView(V, opts);
       }
       throw new TypeError(`Could not convert ${V} to a BufferSource.`);
@@ -4349,7 +4349,7 @@ var require_file = __commonJS({
   "node_modules/undici/lib/fetch/file.js"(exports2, module2) {
     "use strict";
     var { Blob: Blob2, File: NativeFile } = require("buffer");
-    var { types } = require("util");
+    var { types: types3 } = require("util");
     var { kState } = require_symbols2();
     var { isBlobLike } = require_util2();
     var { webidl } = require_webidl();
@@ -4458,7 +4458,7 @@ var require_file = __commonJS({
         if (isBlobLike(V)) {
           return webidl.converters.Blob(V, { strict: false });
         }
-        if (ArrayBuffer.isView(V) || types.isAnyArrayBuffer(V)) {
+        if (ArrayBuffer.isView(V) || types3.isAnyArrayBuffer(V)) {
           return webidl.converters.BufferSource(V, opts);
         }
       }
@@ -4502,7 +4502,7 @@ var require_file = __commonJS({
             s = convertLineEndingsNative(s);
           }
           bytes.push(encoder.encode(s));
-        } else if (types.isAnyArrayBuffer(element) || types.isTypedArray(element)) {
+        } else if (types3.isAnyArrayBuffer(element) || types3.isTypedArray(element)) {
           if (!element.buffer) {
             bytes.push(new Uint8Array(element));
           } else {
@@ -4711,6 +4711,13 @@ var require_body = __commonJS({
     var { isUint8Array, isArrayBuffer } = require("util/types");
     var { File: UndiciFile } = require_file();
     var { parseMIMEType, serializeAMimeType } = require_dataURL();
+    var random;
+    try {
+      const crypto = require("node:crypto");
+      random = (max) => crypto.randomInt(0, max);
+    } catch {
+      random = (max) => Math.floor(Math.random(max));
+    }
     var ReadableStream2 = globalThis.ReadableStream;
     var File = NativeFile ?? UndiciFile;
     var textEncoder = new TextEncoder();
@@ -4753,7 +4760,7 @@ var require_body = __commonJS({
       } else if (ArrayBuffer.isView(object)) {
         source = new Uint8Array(object.buffer.slice(object.byteOffset, object.byteOffset + object.byteLength));
       } else if (util.isFormDataLike(object)) {
-        const boundary = `----formdata-undici-0${`${Math.floor(Math.random() * 1e11)}`.padStart(11, "0")}`;
+        const boundary = `----formdata-undici-0${`${random(1e11)}`.padStart(11, "0")}`;
         const prefix = `--${boundary}\r
 Content-Disposition: form-data`;
         const escape = (str) => str.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
@@ -11382,7 +11389,7 @@ var require_response = __commonJS({
     var { URLSerializer } = require_dataURL();
     var { kHeadersList, kConstruct } = require_symbols();
     var assert = require("assert");
-    var { types } = require("util");
+    var { types: types3 } = require("util");
     var ReadableStream2 = globalThis.ReadableStream || require("stream/web").ReadableStream;
     var textEncoder = new TextEncoder("utf-8");
     var Response2 = class _Response {
@@ -11685,7 +11692,7 @@ var require_response = __commonJS({
       if (isBlobLike(V)) {
         return webidl.converters.Blob(V, { strict: false });
       }
-      if (types.isArrayBuffer(V) || types.isTypedArray(V) || types.isDataView(V)) {
+      if (types3.isArrayBuffer(V) || types3.isTypedArray(V) || types3.isDataView(V)) {
         return webidl.converters.BufferSource(V);
       }
       if (util.isFormDataLike(V)) {
@@ -13791,7 +13798,7 @@ var require_util4 = __commonJS({
     var { getEncoding } = require_encoding();
     var { DOMException: DOMException2 } = require_constants2();
     var { serializeAMimeType, parseMIMEType } = require_dataURL();
-    var { types } = require("util");
+    var { types: types3 } = require("util");
     var { StringDecoder } = require("string_decoder");
     var { btoa: btoa2 } = require("buffer");
     var staticPropertyDescriptors = {
@@ -13821,7 +13828,7 @@ var require_util4 = __commonJS({
               });
             }
             isFirstChunk = false;
-            if (!done && types.isUint8Array(value)) {
+            if (!done && types3.isUint8Array(value)) {
               bytes.push(value);
               if ((fr[kLastProgressEventFired] === void 0 || Date.now() - fr[kLastProgressEventFired] >= 50) && !fr[kAborted]) {
                 fr[kLastProgressEventFired] = Date.now();
@@ -16201,7 +16208,7 @@ var require_websocket = __commonJS({
     var { ByteParser } = require_receiver();
     var { kEnumerableProperty, isBlobLike } = require_util();
     var { getGlobalDispatcher } = require_global2();
-    var { types } = require("util");
+    var { types: types3 } = require("util");
     var experimentalWarned = false;
     var WebSocket = class _WebSocket extends EventTarget {
       #events = {
@@ -16348,7 +16355,7 @@ var require_websocket = __commonJS({
           socket.write(buffer, () => {
             this.#bufferedAmount -= value.byteLength;
           });
-        } else if (types.isArrayBuffer(data)) {
+        } else if (types3.isArrayBuffer(data)) {
           const value = Buffer.from(data);
           const frame = new WebsocketFrameSend(value);
           const buffer = frame.createFrame(opcodes.BINARY);
@@ -16570,7 +16577,7 @@ var require_websocket = __commonJS({
         if (isBlobLike(V)) {
           return webidl.converters.Blob(V, { strict: false });
         }
-        if (ArrayBuffer.isView(V) || types.isAnyArrayBuffer(V)) {
+        if (ArrayBuffer.isView(V) || types3.isAnyArrayBuffer(V)) {
           return webidl.converters.BufferSource(V);
         }
       }
@@ -23341,6 +23348,7 @@ __export(tslib_es6_exports, {
   __propKey: () => __propKey,
   __read: () => __read,
   __rest: () => __rest,
+  __rewriteRelativeImportExtension: () => __rewriteRelativeImportExtension,
   __runInitializers: () => __runInitializers,
   __setFunctionName: () => __setFunctionName,
   __spread: () => __spread,
@@ -23665,7 +23673,7 @@ function __importStar(mod) {
   if (mod && mod.__esModule) return mod;
   var result = {};
   if (mod != null) {
-    for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
   }
   __setModuleDefault(result, mod);
   return result;
@@ -23741,7 +23749,15 @@ function __disposeResources(env) {
   }
   return next();
 }
-var extendStatics, __assign, __createBinding, __setModuleDefault, _SuppressedError, tslib_es6_default;
+function __rewriteRelativeImportExtension(path2, preserveJsx) {
+  if (typeof path2 === "string" && /^\.\.?\//.test(path2)) {
+    return path2.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
+      return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
+    });
+  }
+  return path2;
+}
+var extendStatics, __assign, __createBinding, __setModuleDefault, ownKeys, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
   "node_modules/tslib/tslib.es6.mjs"() {
     extendStatics = function(d, b) {
@@ -23780,6 +23796,14 @@ var init_tslib_es6 = __esm({
     } : function(o, v) {
       o["default"] = v;
     };
+    ownKeys = function(o) {
+      ownKeys = Object.getOwnPropertyNames || function(o2) {
+        var ar = [];
+        for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+        return ar;
+      };
+      return ownKeys(o);
+    };
     _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
       var e = new Error(message);
       return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
@@ -23790,6 +23814,10 @@ var init_tslib_es6 = __esm({
       __rest,
       __decorate,
       __param,
+      __esDecorate,
+      __runInitializers,
+      __propKey,
+      __setFunctionName,
       __metadata,
       __awaiter,
       __generator,
@@ -23811,7 +23839,8 @@ var init_tslib_es6 = __esm({
       __classPrivateFieldSet,
       __classPrivateFieldIn,
       __addDisposableResource,
-      __disposeResources
+      __disposeResources,
+      __rewriteRelativeImportExtension
     };
   }
 });
@@ -35430,7 +35459,7 @@ var require_mime_types = __commonJS({
       }
       return exports2.types[extension2] || false;
     }
-    function populateMaps(extensions, types) {
+    function populateMaps(extensions, types3) {
       var preference = ["nginx", "apache", void 0, "iana"];
       Object.keys(db).forEach(function forEachMimeType(type) {
         var mime = db[type];
@@ -35441,14 +35470,14 @@ var require_mime_types = __commonJS({
         extensions[type] = exts;
         for (var i = 0; i < exts.length; i++) {
           var extension2 = exts[i];
-          if (types[extension2]) {
-            var from = preference.indexOf(db[types[extension2]].source);
+          if (types3[extension2]) {
+            var from = preference.indexOf(db[types3[extension2]].source);
             var to = preference.indexOf(mime.source);
-            if (types[extension2] !== "application/octet-stream" && (from > to || from === to && types[extension2].substr(0, 12) === "application/")) {
+            if (types3[extension2] !== "application/octet-stream" && (from > to || from === to && types3[extension2].substr(0, 12) === "application/")) {
               continue;
             }
           }
-          types[extension2] = type;
+          types3[extension2] = type;
         }
       });
     }
@@ -36585,6 +36614,7 @@ var require_axios = __commonJS({
     }
     var FormData__default = /* @__PURE__ */ _interopDefaultLegacy(FormData$1);
     var url__default = /* @__PURE__ */ _interopDefaultLegacy(url);
+    var proxyFromEnv__default = /* @__PURE__ */ _interopDefaultLegacy(proxyFromEnv);
     var http__default = /* @__PURE__ */ _interopDefaultLegacy(http);
     var https__default = /* @__PURE__ */ _interopDefaultLegacy(https);
     var util__default = /* @__PURE__ */ _interopDefaultLegacy(util);
@@ -37192,6 +37222,11 @@ var require_axios = __commonJS({
         return url2;
       }
       const _encode = options && options.encode || encode;
+      if (utils$1.isFunction(options)) {
+        options = {
+          serialize: options
+        };
+      }
       const serializeFn = options && options.serialize;
       let serializedParams;
       if (serializeFn) {
@@ -37782,7 +37817,7 @@ var require_axios = __commonJS({
       }
       return requestedURL;
     }
-    var VERSION = "1.7.7";
+    var VERSION = "1.7.9";
     function parseProtocol(url2) {
       const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url2);
       return match && match[1] || "";
@@ -37940,7 +37975,7 @@ var require_axios = __commonJS({
     };
     var readBlob$1 = readBlob;
     var BOUNDARY_ALPHABET = utils$1.ALPHABET.ALPHA_DIGIT + "-_";
-    var textEncoder = new util.TextEncoder();
+    var textEncoder = typeof TextEncoder === "function" ? new TextEncoder() : new util__default["default"].TextEncoder();
     var CRLF = "\r\n";
     var CRLF_BYTES = textEncoder.encode(CRLF);
     var CRLF_BYTES_COUNT = 2;
@@ -38175,7 +38210,7 @@ var require_axios = __commonJS({
     function setProxy(options, configProxy, location) {
       let proxy = configProxy;
       if (!proxy && proxy !== false) {
-        const proxyUrl = proxyFromEnv.getProxyForUrl(location);
+        const proxyUrl = proxyFromEnv__default["default"].getProxyForUrl(location);
         if (proxyUrl) {
           proxy = new URL(proxyUrl);
         }
@@ -38349,7 +38384,7 @@ var require_axios = __commonJS({
             } catch (e) {
             }
           }
-        } else if (utils$1.isBlob(data)) {
+        } else if (utils$1.isBlob(data) || utils$1.isFile(data)) {
           data.size && headers.setContentType(data.type || "application/octet-stream");
           headers.setContentLength(data.size || 0);
           data = stream__default["default"].Readable.from(readBlob$1(data));
@@ -38552,7 +38587,7 @@ var require_axios = __commonJS({
                 return;
               }
               const err = new AxiosError(
-                "maxContentLength size of " + config.maxContentLength + " exceeded",
+                "stream has been aborted",
                 AxiosError.ERR_BAD_RESPONSE,
                 config,
                 lastRequest
@@ -38645,45 +38680,13 @@ var require_axios = __commonJS({
         }
       });
     };
-    var isURLSameOrigin = platform.hasStandardBrowserEnv ? (
-      // Standard browser envs have full support of the APIs needed to test
-      // whether the request URL is of the same origin as current location.
-      function standardBrowserEnv() {
-        const msie = platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent);
-        const urlParsingNode = document.createElement("a");
-        let originURL;
-        function resolveURL(url2) {
-          let href = url2;
-          if (msie) {
-            urlParsingNode.setAttribute("href", href);
-            href = urlParsingNode.href;
-          }
-          urlParsingNode.setAttribute("href", href);
-          return {
-            href: urlParsingNode.href,
-            protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, "") : "",
-            host: urlParsingNode.host,
-            search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, "") : "",
-            hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, "") : "",
-            hostname: urlParsingNode.hostname,
-            port: urlParsingNode.port,
-            pathname: urlParsingNode.pathname.charAt(0) === "/" ? urlParsingNode.pathname : "/" + urlParsingNode.pathname
-          };
-        }
-        originURL = resolveURL(window.location.href);
-        return function isURLSameOrigin2(requestURL) {
-          const parsed = utils$1.isString(requestURL) ? resolveURL(requestURL) : requestURL;
-          return parsed.protocol === originURL.protocol && parsed.host === originURL.host;
-        };
-      }()
-    ) : (
-      // Non standard browser envs (web workers, react-native) lack needed support.
-      /* @__PURE__ */ function nonStandardBrowserEnv() {
-        return function isURLSameOrigin2() {
-          return true;
-        };
-      }()
-    );
+    var isURLSameOrigin = platform.hasStandardBrowserEnv ? /* @__PURE__ */ ((origin2, isMSIE) => (url2) => {
+      url2 = new URL(url2, platform.origin);
+      return origin2.protocol === url2.protocol && origin2.host === url2.host && (isMSIE || origin2.port === url2.port);
+    })(
+      new URL(platform.origin),
+      platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent)
+    ) : () => true;
     var cookies = platform.hasStandardBrowserEnv ? (
       // Standard browser envs support document.cookie
       {
@@ -38719,7 +38722,7 @@ var require_axios = __commonJS({
     function mergeConfig(config1, config2) {
       config2 = config2 || {};
       const config = {};
-      function getMergedValue(target, source, caseless) {
+      function getMergedValue(target, source, prop, caseless) {
         if (utils$1.isPlainObject(target) && utils$1.isPlainObject(source)) {
           return utils$1.merge.call({ caseless }, target, source);
         } else if (utils$1.isPlainObject(source)) {
@@ -38729,11 +38732,11 @@ var require_axios = __commonJS({
         }
         return source;
       }
-      function mergeDeepProperties(a, b, caseless) {
+      function mergeDeepProperties(a, b, prop, caseless) {
         if (!utils$1.isUndefined(b)) {
-          return getMergedValue(a, b, caseless);
+          return getMergedValue(a, b, prop, caseless);
         } else if (!utils$1.isUndefined(a)) {
-          return getMergedValue(void 0, a, caseless);
+          return getMergedValue(void 0, a, prop, caseless);
         }
       }
       function valueFromConfig2(a, b) {
@@ -38784,7 +38787,7 @@ var require_axios = __commonJS({
         socketPath: defaultToConfig2,
         responseEncoding: defaultToConfig2,
         validateStatus: mergeDirectKeys,
-        headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
+        headers: (a, b, prop) => mergeDeepProperties(headersToObject(a), headersToObject(b), prop, true)
       };
       utils$1.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop) {
         const merge2 = mergeMap[prop] || mergeDeepProperties;
@@ -39345,6 +39348,12 @@ var require_axios = __commonJS({
         return validator2 ? validator2(value, opt, opts) : true;
       };
     };
+    validators$1.spelling = function spelling(correctSpelling) {
+      return (value, opt) => {
+        console.warn(`${opt} is likely a misspelling of ${correctSpelling}`);
+        return true;
+      };
+    };
     function assertOptions(options, schema, allowUnknown) {
       if (typeof options !== "object") {
         throw new AxiosError("options must be an object", AxiosError.ERR_BAD_OPTION_VALUE);
@@ -39393,8 +39402,8 @@ var require_axios = __commonJS({
           return await this._request(configOrUrl, config);
         } catch (err) {
           if (err instanceof Error) {
-            let dummy;
-            Error.captureStackTrace ? Error.captureStackTrace(dummy = {}) : dummy = new Error();
+            let dummy = {};
+            Error.captureStackTrace ? Error.captureStackTrace(dummy) : dummy = new Error();
             const stack = dummy.stack ? dummy.stack.replace(/^.+\n/, "") : "";
             try {
               if (!err.stack) {
@@ -39436,6 +39445,10 @@ var require_axios = __commonJS({
             }, true);
           }
         }
+        validator.assertOptions(config, {
+          baseUrl: validators.spelling("baseURL"),
+          withXsrfToken: validators.spelling("withXSRFToken")
+        }, true);
         config.method = (config.method || this.defaults.method || "get").toLowerCase();
         let contextHeaders = headers && utils$1.merge(
           headers.common,
@@ -40017,7 +40030,7 @@ var require_baseClient = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.BaseClient = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var axios_1 = require_axios();
+    var axios_1 = tslib_1.__importDefault(require_axios());
     var authenticationService_1 = require_authenticationService();
     var httpException_1 = require_httpException();
     var STRICT_GDPR_FLAG = "x-atlassian-force-account-id";
@@ -40123,8 +40136,86 @@ var require_baseClient = __commonJS({
   }
 });
 
-// node_modules/jira.js/out/clients/client.js
+// node_modules/jira.js/out/agile/client/agileClient.js
+var require_agileClient = __commonJS({
+  "node_modules/jira.js/out/agile/client/agileClient.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.AgileClient = void 0;
+    var baseClient_1 = require_baseClient();
+    var backlog_1 = require_backlog();
+    var board_1 = require_board();
+    var builds_1 = require_builds();
+    var deployments_1 = require_deployments();
+    var developmentInformation_1 = require_developmentInformation();
+    var devopsComponents_1 = require_devopsComponents();
+    var epic_1 = require_epic();
+    var featureFlags_1 = require_featureFlags();
+    var issue_1 = require_issue();
+    var operations_1 = require_operations();
+    var remoteLinks_1 = require_remoteLinks();
+    var securityInformation_1 = require_securityInformation();
+    var sprint_1 = require_sprint();
+    var AgileClient = class extends baseClient_1.BaseClient {
+      constructor() {
+        super(...arguments);
+        this.backlog = new backlog_1.Backlog(this);
+        this.board = new board_1.Board(this);
+        this.builds = new builds_1.Builds(this);
+        this.deployments = new deployments_1.Deployments(this);
+        this.developmentInformation = new developmentInformation_1.DevelopmentInformation(this);
+        this.devopsComponents = new devopsComponents_1.DevopsComponents(this);
+        this.epic = new epic_1.Epic(this);
+        this.featureFlags = new featureFlags_1.FeatureFlags(this);
+        this.issue = new issue_1.Issue(this);
+        this.operations = new operations_1.Operations(this);
+        this.remoteLinks = new remoteLinks_1.RemoteLinks(this);
+        this.securityInformation = new securityInformation_1.SecurityInformation(this);
+        this.sprint = new sprint_1.Sprint(this);
+      }
+    };
+    exports2.AgileClient = AgileClient;
+  }
+});
+
+// node_modules/jira.js/out/agile/client/index.js
 var require_client2 = __commonJS({
+  "node_modules/jira.js/out/agile/client/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_agileClient(), exports2);
+  }
+});
+
+// node_modules/jira.js/out/agile/index.js
+var require_agile = __commonJS({
+  "node_modules/jira.js/out/agile/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.AgileParameters = exports2.AgileModels = void 0;
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_backlog(), exports2);
+    tslib_1.__exportStar(require_board(), exports2);
+    tslib_1.__exportStar(require_builds(), exports2);
+    tslib_1.__exportStar(require_deployments(), exports2);
+    tslib_1.__exportStar(require_developmentInformation(), exports2);
+    tslib_1.__exportStar(require_devopsComponents(), exports2);
+    tslib_1.__exportStar(require_epic(), exports2);
+    tslib_1.__exportStar(require_featureFlags(), exports2);
+    tslib_1.__exportStar(require_issue(), exports2);
+    tslib_1.__exportStar(require_operations(), exports2);
+    tslib_1.__exportStar(require_remoteLinks(), exports2);
+    tslib_1.__exportStar(require_securityInformation(), exports2);
+    tslib_1.__exportStar(require_sprint(), exports2);
+    exports2.AgileModels = tslib_1.__importStar(require_models());
+    exports2.AgileParameters = tslib_1.__importStar(require_parameters());
+    tslib_1.__exportStar(require_client2(), exports2);
+  }
+});
+
+// node_modules/jira.js/out/clients/client.js
+var require_client3 = __commonJS({
   "node_modules/jira.js/out/clients/client.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -41231,6 +41322,1719 @@ var require_groups = __commonJS({
   }
 });
 
+// node_modules/formdata-node/lib/form-data.cjs
+var require_form_data2 = __commonJS({
+  "node_modules/formdata-node/lib/form-data.cjs"(exports2, module2) {
+    "use strict";
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var __accessCheck = (obj, member, msg) => {
+      if (!member.has(obj))
+        throw TypeError("Cannot " + msg);
+    };
+    var __privateGet = (obj, member, getter) => {
+      __accessCheck(obj, member, "read from private field");
+      return getter ? getter.call(obj) : member.get(obj);
+    };
+    var __privateAdd = (obj, member, value) => {
+      if (member.has(obj))
+        throw TypeError("Cannot add the same private member more than once");
+      member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+    };
+    var __privateSet = (obj, member, value, setter) => {
+      __accessCheck(obj, member, "write to private field");
+      setter ? setter.call(obj, value) : member.set(obj, value);
+      return value;
+    };
+    var __privateMethod = (obj, member, method) => {
+      __accessCheck(obj, member, "access private method");
+      return method;
+    };
+    var src_exports2 = {};
+    __export2(src_exports2, {
+      Blob: () => Blob2,
+      File: () => File,
+      FormData: () => FormData2
+    });
+    module2.exports = __toCommonJS2(src_exports2);
+    var isFunction = (value) => typeof value === "function";
+    var isObject = (value) => typeof value === "object" && value != null && !Array.isArray(value);
+    var isAsyncIterable = (value) => isObject(value) && isFunction(value[Symbol.asyncIterator]);
+    var MAX_CHUNK_SIZE = 65536;
+    async function* clonePart(value) {
+      if (value.byteLength <= MAX_CHUNK_SIZE) {
+        yield value;
+        return;
+      }
+      let offset = 0;
+      while (offset < value.byteLength) {
+        const size = Math.min(value.byteLength - offset, MAX_CHUNK_SIZE);
+        const buffer = value.buffer.slice(offset, offset + size);
+        offset += buffer.byteLength;
+        yield new Uint8Array(buffer);
+      }
+    }
+    async function* readStream(readable) {
+      const reader = readable.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        yield value;
+      }
+    }
+    async function* chunkStream(stream) {
+      for await (const value of stream) {
+        yield* clonePart(value);
+      }
+    }
+    var getStreamIterator = (source) => {
+      if (isAsyncIterable(source)) {
+        return chunkStream(source);
+      }
+      if (isFunction(source.getReader)) {
+        return chunkStream(readStream(source));
+      }
+      throw new TypeError(
+        "Unsupported data source: Expected either ReadableStream or async iterable."
+      );
+    };
+    async function* consumeNodeBlob(blob) {
+      let position = 0;
+      while (position !== blob.size) {
+        const chunk = blob.slice(
+          position,
+          Math.min(blob.size, position + MAX_CHUNK_SIZE)
+        );
+        const buffer = await chunk.arrayBuffer();
+        position += buffer.byteLength;
+        yield new Uint8Array(buffer);
+      }
+    }
+    async function* consumeBlobParts(parts, clone = false) {
+      for (const part of parts) {
+        if (ArrayBuffer.isView(part)) {
+          if (clone) {
+            yield* clonePart(part);
+          } else {
+            yield part;
+          }
+        } else if (isFunction(part.stream)) {
+          yield* getStreamIterator(part.stream());
+        } else {
+          yield* consumeNodeBlob(part);
+        }
+      }
+    }
+    function* sliceBlob(blobParts, blobSize, start = 0, end) {
+      end ??= blobSize;
+      let relativeStart = start < 0 ? Math.max(blobSize + start, 0) : Math.min(start, blobSize);
+      let relativeEnd = end < 0 ? Math.max(blobSize + end, 0) : Math.min(end, blobSize);
+      const span = Math.max(relativeEnd - relativeStart, 0);
+      let added = 0;
+      for (const part of blobParts) {
+        if (added >= span) {
+          break;
+        }
+        const partSize = ArrayBuffer.isView(part) ? part.byteLength : part.size;
+        if (relativeStart && partSize <= relativeStart) {
+          relativeStart -= partSize;
+          relativeEnd -= partSize;
+        } else {
+          let chunk;
+          if (ArrayBuffer.isView(part)) {
+            chunk = part.subarray(relativeStart, Math.min(partSize, relativeEnd));
+            added += chunk.byteLength;
+          } else {
+            chunk = part.slice(relativeStart, Math.min(partSize, relativeEnd));
+            added += chunk.size;
+          }
+          relativeEnd -= partSize;
+          relativeStart = 0;
+          yield chunk;
+        }
+      }
+    }
+    var _parts;
+    var _type;
+    var _size;
+    var _Blob = class _Blob2 {
+      /**
+       * Returns a new [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) object.
+       * The content of the blob consists of the concatenation of the values given in the parameter array.
+       *
+       * @param blobParts An `Array` strings, or [`ArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer), [`ArrayBufferView`](https://developer.mozilla.org/en-US/docs/Web/API/ArrayBufferView), [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) objects, or a mix of any of such objects, that will be put inside the [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob).
+       * @param options An optional object of type `BlobPropertyBag`.
+       */
+      constructor(blobParts = [], options = {}) {
+        __privateAdd(this, _parts, []);
+        __privateAdd(this, _type, "");
+        __privateAdd(this, _size, 0);
+        options ??= {};
+        if (typeof blobParts !== "object" || blobParts === null) {
+          throw new TypeError(
+            "Failed to construct 'Blob': The provided value cannot be converted to a sequence."
+          );
+        }
+        if (!isFunction(blobParts[Symbol.iterator])) {
+          throw new TypeError(
+            "Failed to construct 'Blob': The object must have a callable @@iterator property."
+          );
+        }
+        if (typeof options !== "object" && !isFunction(options)) {
+          throw new TypeError(
+            "Failed to construct 'Blob': parameter 2 cannot convert to dictionary."
+          );
+        }
+        const encoder = new TextEncoder();
+        for (const raw of blobParts) {
+          let part;
+          if (ArrayBuffer.isView(raw)) {
+            part = new Uint8Array(raw.buffer.slice(
+              raw.byteOffset,
+              raw.byteOffset + raw.byteLength
+            ));
+          } else if (raw instanceof ArrayBuffer) {
+            part = new Uint8Array(raw.slice(0));
+          } else if (raw instanceof _Blob2) {
+            part = raw;
+          } else {
+            part = encoder.encode(String(raw));
+          }
+          __privateSet(this, _size, __privateGet(this, _size) + (ArrayBuffer.isView(part) ? part.byteLength : part.size));
+          __privateGet(this, _parts).push(part);
+        }
+        const type = options.type === void 0 ? "" : String(options.type);
+        __privateSet(this, _type, /^[\x20-\x7E]*$/.test(type) ? type : "");
+      }
+      static [Symbol.hasInstance](value) {
+        return Boolean(
+          value && typeof value === "object" && isFunction(value.constructor) && (isFunction(value.stream) || isFunction(value.arrayBuffer)) && /^(Blob|File)$/.test(value[Symbol.toStringTag])
+        );
+      }
+      /**
+       * Returns the [`MIME type`](https://developer.mozilla.org/en-US/docs/Glossary/MIME_type) of the [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) or [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File).
+       */
+      get type() {
+        return __privateGet(this, _type);
+      }
+      /**
+       * Returns the size of the [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) or [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File) in bytes.
+       */
+      get size() {
+        return __privateGet(this, _size);
+      }
+      /**
+       * Creates and returns a new [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) object which contains data from a subset of the blob on which it's called.
+       *
+       * @param start An index into the Blob indicating the first byte to include in the new Blob. If you specify a negative value, it's treated as an offset from the end of the Blob toward the beginning. For example, -10 would be the 10th from last byte in the Blob. The default value is 0. If you specify a value for start that is larger than the size of the source Blob, the returned Blob has size 0 and contains no data.
+       * @param end An index into the Blob indicating the first byte that will *not* be included in the new Blob (i.e. the byte exactly at this index is not included). If you specify a negative value, it's treated as an offset from the end of the Blob toward the beginning. For example, -10 would be the 10th from last byte in the Blob. The default value is size.
+       * @param contentType The content type to assign to the new Blob; this will be the value of its type property. The default value is an empty string.
+       */
+      slice(start, end, contentType) {
+        return new _Blob2(sliceBlob(__privateGet(this, _parts), this.size, start, end), {
+          type: contentType
+        });
+      }
+      /**
+       * Returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves with a string containing the contents of the blob, interpreted as UTF-8.
+       */
+      async text() {
+        const decoder = new TextDecoder();
+        let result = "";
+        for await (const chunk of consumeBlobParts(__privateGet(this, _parts))) {
+          result += decoder.decode(chunk, { stream: true });
+        }
+        result += decoder.decode();
+        return result;
+      }
+      /**
+       * Returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves with the contents of the blob as binary data contained in an [`ArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer).
+       */
+      async arrayBuffer() {
+        const view = new Uint8Array(this.size);
+        let offset = 0;
+        for await (const chunk of consumeBlobParts(__privateGet(this, _parts))) {
+          view.set(chunk, offset);
+          offset += chunk.length;
+        }
+        return view.buffer;
+      }
+      /**
+       * Returns a [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream) which upon reading returns the data contained within the [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob).
+       */
+      stream() {
+        const iterator = consumeBlobParts(__privateGet(this, _parts), true);
+        return new ReadableStream({
+          async pull(controller) {
+            const { value, done } = await iterator.next();
+            if (done) {
+              return queueMicrotask(() => controller.close());
+            }
+            controller.enqueue(value);
+          },
+          async cancel() {
+            await iterator.return();
+          }
+        });
+      }
+      get [Symbol.toStringTag]() {
+        return "Blob";
+      }
+    };
+    _parts = /* @__PURE__ */ new WeakMap();
+    _type = /* @__PURE__ */ new WeakMap();
+    _size = /* @__PURE__ */ new WeakMap();
+    var Blob2 = _Blob;
+    Object.defineProperties(Blob2.prototype, {
+      type: { enumerable: true },
+      size: { enumerable: true },
+      slice: { enumerable: true },
+      stream: { enumerable: true },
+      text: { enumerable: true },
+      arrayBuffer: { enumerable: true }
+    });
+    var isBlob = (value) => value instanceof Blob2;
+    var _name;
+    var _lastModified;
+    var File = class extends Blob2 {
+      /**
+       * Creates a new File instance.
+       *
+       * @param fileBits An `Array` strings, or [`ArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer), [`ArrayBufferView`](https://developer.mozilla.org/en-US/docs/Web/API/ArrayBufferView), [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) objects, or a mix of any of such objects, that will be put inside the [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File).
+       * @param name The name of the file.
+       * @param options An options object containing optional attributes for the file.
+       */
+      constructor(fileBits, name, options = {}) {
+        super(fileBits, options);
+        __privateAdd(this, _name, void 0);
+        __privateAdd(this, _lastModified, 0);
+        if (arguments.length < 2) {
+          throw new TypeError(
+            `Failed to construct 'File': 2 arguments required, but only ${arguments.length} present.`
+          );
+        }
+        __privateSet(this, _name, String(name));
+        const lastModified = options.lastModified === void 0 ? Date.now() : Number(options.lastModified);
+        if (!Number.isNaN(lastModified)) {
+          __privateSet(this, _lastModified, lastModified);
+        }
+      }
+      static [Symbol.hasInstance](value) {
+        return value instanceof Blob2 && value[Symbol.toStringTag] === "File" && typeof value.name === "string";
+      }
+      /**
+       * Name of the file referenced by the File object.
+       */
+      get name() {
+        return __privateGet(this, _name);
+      }
+      /* c8 ignore next 3 */
+      get webkitRelativePath() {
+        return "";
+      }
+      /**
+       * The last modified date of the file as the number of milliseconds since the Unix epoch (January 1, 1970 at midnight). Files without a known last modified date return the current date.
+       */
+      get lastModified() {
+        return __privateGet(this, _lastModified);
+      }
+      get [Symbol.toStringTag]() {
+        return "File";
+      }
+    };
+    _name = /* @__PURE__ */ new WeakMap();
+    _lastModified = /* @__PURE__ */ new WeakMap();
+    var isFile = (value) => value instanceof File;
+    var _entries;
+    var _setEntry;
+    var setEntry_fn;
+    var FormData2 = class {
+      constructor() {
+        __privateAdd(this, _setEntry);
+        __privateAdd(this, _entries, /* @__PURE__ */ new Map());
+      }
+      static [Symbol.hasInstance](value) {
+        if (!value) {
+          return false;
+        }
+        const val = value;
+        return Boolean(
+          isFunction(val.constructor) && val[Symbol.toStringTag] === "FormData" && isFunction(val.append) && isFunction(val.set) && isFunction(val.get) && isFunction(val.getAll) && isFunction(val.has) && isFunction(val.delete) && isFunction(val.entries) && isFunction(val.values) && isFunction(val.keys) && isFunction(val[Symbol.iterator]) && isFunction(val.forEach)
+        );
+      }
+      /**
+       * Appends a new value onto an existing key inside a FormData object,
+       * or adds the key if it does not already exist.
+       *
+       * The difference between `set()` and `append()` is that if the specified key already exists, `set()` will overwrite all existing values with the new one, whereas `append()` will append the new value onto the end of the existing set of values.
+       *
+       * @param name The name of the field whose data is contained in `value`.
+       * @param value The field's value. This can be [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
+        or [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File). If none of these are specified the value is converted to a string.
+       * @param fileName The filename reported to the server, when a Blob or File is passed as the second parameter. The default filename for Blob objects is "blob". The default filename for File objects is the file's filename.
+       */
+      append(name, value, fileName) {
+        __privateMethod(this, _setEntry, setEntry_fn).call(this, {
+          name,
+          fileName,
+          append: true,
+          rawValue: value,
+          argsLength: arguments.length
+        });
+      }
+      /**
+       * Set a new value for an existing key inside FormData,
+       * or add the new field if it does not already exist.
+       *
+       * @param name The name of the field whose data is contained in `value`.
+       * @param value The field's value. This can be [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
+        or [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File). If none of these are specified the value is converted to a string.
+       * @param fileName The filename reported to the server, when a Blob or File is passed as the second parameter. The default filename for Blob objects is "blob". The default filename for File objects is the file's filename.
+       *
+       */
+      set(name, value, fileName) {
+        __privateMethod(this, _setEntry, setEntry_fn).call(this, {
+          name,
+          fileName,
+          append: false,
+          rawValue: value,
+          argsLength: arguments.length
+        });
+      }
+      /**
+       * Returns the first value associated with a given key from within a `FormData` object.
+       * If you expect multiple values and want all of them, use the `getAll()` method instead.
+       *
+       * @param {string} name A name of the value you want to retrieve.
+       *
+       * @returns A `FormDataEntryValue` containing the value. If the key doesn't exist, the method returns null.
+       */
+      get(name) {
+        const field = __privateGet(this, _entries).get(String(name));
+        if (!field) {
+          return null;
+        }
+        return field[0];
+      }
+      /**
+       * Returns all the values associated with a given key from within a `FormData` object.
+       *
+       * @param {string} name A name of the value you want to retrieve.
+       *
+       * @returns An array of `FormDataEntryValue` whose key matches the value passed in the `name` parameter. If the key doesn't exist, the method returns an empty list.
+       */
+      getAll(name) {
+        const field = __privateGet(this, _entries).get(String(name));
+        if (!field) {
+          return [];
+        }
+        return field.slice();
+      }
+      /**
+       * Returns a boolean stating whether a `FormData` object contains a certain key.
+       *
+       * @param name A string representing the name of the key you want to test for.
+       *
+       * @return A boolean value.
+       */
+      has(name) {
+        return __privateGet(this, _entries).has(String(name));
+      }
+      /**
+       * Deletes a key and its value(s) from a `FormData` object.
+       *
+       * @param name The name of the key you want to delete.
+       */
+      delete(name) {
+        __privateGet(this, _entries).delete(String(name));
+      }
+      /**
+       * Returns an [`iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) allowing to go through all keys contained in this `FormData` object.
+       * Each key is a `string`.
+       */
+      *keys() {
+        for (const key of __privateGet(this, _entries).keys()) {
+          yield key;
+        }
+      }
+      /**
+       * Returns an [`iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) allowing to go through the `FormData` key/value pairs.
+       * The key of each pair is a string; the value is a [`FormDataValue`](https://developer.mozilla.org/en-US/docs/Web/API/FormDataEntryValue).
+       */
+      *entries() {
+        for (const name of this.keys()) {
+          const values = this.getAll(name);
+          for (const value of values) {
+            yield [name, value];
+          }
+        }
+      }
+      /**
+       * Returns an [`iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) allowing to go through all values contained in this object `FormData` object.
+       * Each value is a [`FormDataValue`](https://developer.mozilla.org/en-US/docs/Web/API/FormDataEntryValue).
+       */
+      *values() {
+        for (const [, value] of this) {
+          yield value;
+        }
+      }
+      /**
+       * An alias for FormData#entries()
+       */
+      [Symbol.iterator]() {
+        return this.entries();
+      }
+      /**
+       * Executes given callback function for each field of the FormData instance
+       */
+      forEach(callback, thisArg) {
+        for (const [name, value] of this) {
+          callback.call(thisArg, value, name, this);
+        }
+      }
+      get [Symbol.toStringTag]() {
+        return "FormData";
+      }
+    };
+    _entries = /* @__PURE__ */ new WeakMap();
+    _setEntry = /* @__PURE__ */ new WeakSet();
+    setEntry_fn = function({
+      name,
+      rawValue,
+      append,
+      fileName,
+      argsLength
+    }) {
+      const methodName = append ? "append" : "set";
+      if (argsLength < 2) {
+        throw new TypeError(
+          `Failed to execute '${methodName}' on 'FormData': 2 arguments required, but only ${argsLength} present.`
+        );
+      }
+      name = String(name);
+      let value;
+      if (isFile(rawValue)) {
+        value = fileName === void 0 ? rawValue : new File([rawValue], fileName, {
+          // otherwise, create new File with given fileName
+          type: rawValue.type,
+          lastModified: rawValue.lastModified
+        });
+      } else if (isBlob(rawValue)) {
+        value = new File([rawValue], fileName === void 0 ? "blob" : fileName, {
+          type: rawValue.type
+        });
+      } else if (fileName) {
+        throw new TypeError(
+          `Failed to execute '${methodName}' on 'FormData': parameter 2 is not of type 'Blob'.`
+        );
+      } else {
+        value = String(rawValue);
+      }
+      const values = __privateGet(this, _entries).get(name);
+      if (!values) {
+        return void __privateGet(this, _entries).set(name, [value]);
+      }
+      if (!append) {
+        return void __privateGet(this, _entries).set(name, [value]);
+      }
+      values.push(value);
+    };
+  }
+});
+
+// node_modules/jira.js/node_modules/mime/dist/types/other.js
+var types, other_default;
+var init_other = __esm({
+  "node_modules/jira.js/node_modules/mime/dist/types/other.js"() {
+    types = {
+      "application/prs.cww": ["cww"],
+      "application/prs.xsf+xml": ["xsf"],
+      "application/vnd.1000minds.decision-model+xml": ["1km"],
+      "application/vnd.3gpp.pic-bw-large": ["plb"],
+      "application/vnd.3gpp.pic-bw-small": ["psb"],
+      "application/vnd.3gpp.pic-bw-var": ["pvb"],
+      "application/vnd.3gpp2.tcap": ["tcap"],
+      "application/vnd.3m.post-it-notes": ["pwn"],
+      "application/vnd.accpac.simply.aso": ["aso"],
+      "application/vnd.accpac.simply.imp": ["imp"],
+      "application/vnd.acucobol": ["acu"],
+      "application/vnd.acucorp": ["atc", "acutc"],
+      "application/vnd.adobe.air-application-installer-package+zip": ["air"],
+      "application/vnd.adobe.formscentral.fcdt": ["fcdt"],
+      "application/vnd.adobe.fxp": ["fxp", "fxpl"],
+      "application/vnd.adobe.xdp+xml": ["xdp"],
+      "application/vnd.adobe.xfdf": ["*xfdf"],
+      "application/vnd.age": ["age"],
+      "application/vnd.ahead.space": ["ahead"],
+      "application/vnd.airzip.filesecure.azf": ["azf"],
+      "application/vnd.airzip.filesecure.azs": ["azs"],
+      "application/vnd.amazon.ebook": ["azw"],
+      "application/vnd.americandynamics.acc": ["acc"],
+      "application/vnd.amiga.ami": ["ami"],
+      "application/vnd.android.package-archive": ["apk"],
+      "application/vnd.anser-web-certificate-issue-initiation": ["cii"],
+      "application/vnd.anser-web-funds-transfer-initiation": ["fti"],
+      "application/vnd.antix.game-component": ["atx"],
+      "application/vnd.apple.installer+xml": ["mpkg"],
+      "application/vnd.apple.keynote": ["key"],
+      "application/vnd.apple.mpegurl": ["m3u8"],
+      "application/vnd.apple.numbers": ["numbers"],
+      "application/vnd.apple.pages": ["pages"],
+      "application/vnd.apple.pkpass": ["pkpass"],
+      "application/vnd.aristanetworks.swi": ["swi"],
+      "application/vnd.astraea-software.iota": ["iota"],
+      "application/vnd.audiograph": ["aep"],
+      "application/vnd.balsamiq.bmml+xml": ["bmml"],
+      "application/vnd.blueice.multipass": ["mpm"],
+      "application/vnd.bmi": ["bmi"],
+      "application/vnd.businessobjects": ["rep"],
+      "application/vnd.chemdraw+xml": ["cdxml"],
+      "application/vnd.chipnuts.karaoke-mmd": ["mmd"],
+      "application/vnd.cinderella": ["cdy"],
+      "application/vnd.citationstyles.style+xml": ["csl"],
+      "application/vnd.claymore": ["cla"],
+      "application/vnd.cloanto.rp9": ["rp9"],
+      "application/vnd.clonk.c4group": ["c4g", "c4d", "c4f", "c4p", "c4u"],
+      "application/vnd.cluetrust.cartomobile-config": ["c11amc"],
+      "application/vnd.cluetrust.cartomobile-config-pkg": ["c11amz"],
+      "application/vnd.commonspace": ["csp"],
+      "application/vnd.contact.cmsg": ["cdbcmsg"],
+      "application/vnd.cosmocaller": ["cmc"],
+      "application/vnd.crick.clicker": ["clkx"],
+      "application/vnd.crick.clicker.keyboard": ["clkk"],
+      "application/vnd.crick.clicker.palette": ["clkp"],
+      "application/vnd.crick.clicker.template": ["clkt"],
+      "application/vnd.crick.clicker.wordbank": ["clkw"],
+      "application/vnd.criticaltools.wbs+xml": ["wbs"],
+      "application/vnd.ctc-posml": ["pml"],
+      "application/vnd.cups-ppd": ["ppd"],
+      "application/vnd.curl.car": ["car"],
+      "application/vnd.curl.pcurl": ["pcurl"],
+      "application/vnd.dart": ["dart"],
+      "application/vnd.data-vision.rdz": ["rdz"],
+      "application/vnd.dbf": ["dbf"],
+      "application/vnd.dece.data": ["uvf", "uvvf", "uvd", "uvvd"],
+      "application/vnd.dece.ttml+xml": ["uvt", "uvvt"],
+      "application/vnd.dece.unspecified": ["uvx", "uvvx"],
+      "application/vnd.dece.zip": ["uvz", "uvvz"],
+      "application/vnd.denovo.fcselayout-link": ["fe_launch"],
+      "application/vnd.dna": ["dna"],
+      "application/vnd.dolby.mlp": ["mlp"],
+      "application/vnd.dpgraph": ["dpg"],
+      "application/vnd.dreamfactory": ["dfac"],
+      "application/vnd.ds-keypoint": ["kpxx"],
+      "application/vnd.dvb.ait": ["ait"],
+      "application/vnd.dvb.service": ["svc"],
+      "application/vnd.dynageo": ["geo"],
+      "application/vnd.ecowin.chart": ["mag"],
+      "application/vnd.enliven": ["nml"],
+      "application/vnd.epson.esf": ["esf"],
+      "application/vnd.epson.msf": ["msf"],
+      "application/vnd.epson.quickanime": ["qam"],
+      "application/vnd.epson.salt": ["slt"],
+      "application/vnd.epson.ssf": ["ssf"],
+      "application/vnd.eszigno3+xml": ["es3", "et3"],
+      "application/vnd.ezpix-album": ["ez2"],
+      "application/vnd.ezpix-package": ["ez3"],
+      "application/vnd.fdf": ["*fdf"],
+      "application/vnd.fdsn.mseed": ["mseed"],
+      "application/vnd.fdsn.seed": ["seed", "dataless"],
+      "application/vnd.flographit": ["gph"],
+      "application/vnd.fluxtime.clip": ["ftc"],
+      "application/vnd.framemaker": ["fm", "frame", "maker", "book"],
+      "application/vnd.frogans.fnc": ["fnc"],
+      "application/vnd.frogans.ltf": ["ltf"],
+      "application/vnd.fsc.weblaunch": ["fsc"],
+      "application/vnd.fujitsu.oasys": ["oas"],
+      "application/vnd.fujitsu.oasys2": ["oa2"],
+      "application/vnd.fujitsu.oasys3": ["oa3"],
+      "application/vnd.fujitsu.oasysgp": ["fg5"],
+      "application/vnd.fujitsu.oasysprs": ["bh2"],
+      "application/vnd.fujixerox.ddd": ["ddd"],
+      "application/vnd.fujixerox.docuworks": ["xdw"],
+      "application/vnd.fujixerox.docuworks.binder": ["xbd"],
+      "application/vnd.fuzzysheet": ["fzs"],
+      "application/vnd.genomatix.tuxedo": ["txd"],
+      "application/vnd.geogebra.file": ["ggb"],
+      "application/vnd.geogebra.slides": ["ggs"],
+      "application/vnd.geogebra.tool": ["ggt"],
+      "application/vnd.geometry-explorer": ["gex", "gre"],
+      "application/vnd.geonext": ["gxt"],
+      "application/vnd.geoplan": ["g2w"],
+      "application/vnd.geospace": ["g3w"],
+      "application/vnd.gmx": ["gmx"],
+      "application/vnd.google-apps.document": ["gdoc"],
+      "application/vnd.google-apps.presentation": ["gslides"],
+      "application/vnd.google-apps.spreadsheet": ["gsheet"],
+      "application/vnd.google-earth.kml+xml": ["kml"],
+      "application/vnd.google-earth.kmz": ["kmz"],
+      "application/vnd.gov.sk.xmldatacontainer+xml": ["xdcf"],
+      "application/vnd.grafeq": ["gqf", "gqs"],
+      "application/vnd.groove-account": ["gac"],
+      "application/vnd.groove-help": ["ghf"],
+      "application/vnd.groove-identity-message": ["gim"],
+      "application/vnd.groove-injector": ["grv"],
+      "application/vnd.groove-tool-message": ["gtm"],
+      "application/vnd.groove-tool-template": ["tpl"],
+      "application/vnd.groove-vcard": ["vcg"],
+      "application/vnd.hal+xml": ["hal"],
+      "application/vnd.handheld-entertainment+xml": ["zmm"],
+      "application/vnd.hbci": ["hbci"],
+      "application/vnd.hhe.lesson-player": ["les"],
+      "application/vnd.hp-hpgl": ["hpgl"],
+      "application/vnd.hp-hpid": ["hpid"],
+      "application/vnd.hp-hps": ["hps"],
+      "application/vnd.hp-jlyt": ["jlt"],
+      "application/vnd.hp-pcl": ["pcl"],
+      "application/vnd.hp-pclxl": ["pclxl"],
+      "application/vnd.hydrostatix.sof-data": ["sfd-hdstx"],
+      "application/vnd.ibm.minipay": ["mpy"],
+      "application/vnd.ibm.modcap": ["afp", "listafp", "list3820"],
+      "application/vnd.ibm.rights-management": ["irm"],
+      "application/vnd.ibm.secure-container": ["sc"],
+      "application/vnd.iccprofile": ["icc", "icm"],
+      "application/vnd.igloader": ["igl"],
+      "application/vnd.immervision-ivp": ["ivp"],
+      "application/vnd.immervision-ivu": ["ivu"],
+      "application/vnd.insors.igm": ["igm"],
+      "application/vnd.intercon.formnet": ["xpw", "xpx"],
+      "application/vnd.intergeo": ["i2g"],
+      "application/vnd.intu.qbo": ["qbo"],
+      "application/vnd.intu.qfx": ["qfx"],
+      "application/vnd.ipunplugged.rcprofile": ["rcprofile"],
+      "application/vnd.irepository.package+xml": ["irp"],
+      "application/vnd.is-xpr": ["xpr"],
+      "application/vnd.isac.fcs": ["fcs"],
+      "application/vnd.jam": ["jam"],
+      "application/vnd.jcp.javame.midlet-rms": ["rms"],
+      "application/vnd.jisp": ["jisp"],
+      "application/vnd.joost.joda-archive": ["joda"],
+      "application/vnd.kahootz": ["ktz", "ktr"],
+      "application/vnd.kde.karbon": ["karbon"],
+      "application/vnd.kde.kchart": ["chrt"],
+      "application/vnd.kde.kformula": ["kfo"],
+      "application/vnd.kde.kivio": ["flw"],
+      "application/vnd.kde.kontour": ["kon"],
+      "application/vnd.kde.kpresenter": ["kpr", "kpt"],
+      "application/vnd.kde.kspread": ["ksp"],
+      "application/vnd.kde.kword": ["kwd", "kwt"],
+      "application/vnd.kenameaapp": ["htke"],
+      "application/vnd.kidspiration": ["kia"],
+      "application/vnd.kinar": ["kne", "knp"],
+      "application/vnd.koan": ["skp", "skd", "skt", "skm"],
+      "application/vnd.kodak-descriptor": ["sse"],
+      "application/vnd.las.las+xml": ["lasxml"],
+      "application/vnd.llamagraphics.life-balance.desktop": ["lbd"],
+      "application/vnd.llamagraphics.life-balance.exchange+xml": ["lbe"],
+      "application/vnd.lotus-1-2-3": ["123"],
+      "application/vnd.lotus-approach": ["apr"],
+      "application/vnd.lotus-freelance": ["pre"],
+      "application/vnd.lotus-notes": ["nsf"],
+      "application/vnd.lotus-organizer": ["org"],
+      "application/vnd.lotus-screencam": ["scm"],
+      "application/vnd.lotus-wordpro": ["lwp"],
+      "application/vnd.macports.portpkg": ["portpkg"],
+      "application/vnd.mapbox-vector-tile": ["mvt"],
+      "application/vnd.mcd": ["mcd"],
+      "application/vnd.medcalcdata": ["mc1"],
+      "application/vnd.mediastation.cdkey": ["cdkey"],
+      "application/vnd.mfer": ["mwf"],
+      "application/vnd.mfmp": ["mfm"],
+      "application/vnd.micrografx.flo": ["flo"],
+      "application/vnd.micrografx.igx": ["igx"],
+      "application/vnd.mif": ["mif"],
+      "application/vnd.mobius.daf": ["daf"],
+      "application/vnd.mobius.dis": ["dis"],
+      "application/vnd.mobius.mbk": ["mbk"],
+      "application/vnd.mobius.mqy": ["mqy"],
+      "application/vnd.mobius.msl": ["msl"],
+      "application/vnd.mobius.plc": ["plc"],
+      "application/vnd.mobius.txf": ["txf"],
+      "application/vnd.mophun.application": ["mpn"],
+      "application/vnd.mophun.certificate": ["mpc"],
+      "application/vnd.mozilla.xul+xml": ["xul"],
+      "application/vnd.ms-artgalry": ["cil"],
+      "application/vnd.ms-cab-compressed": ["cab"],
+      "application/vnd.ms-excel": ["xls", "xlm", "xla", "xlc", "xlt", "xlw"],
+      "application/vnd.ms-excel.addin.macroenabled.12": ["xlam"],
+      "application/vnd.ms-excel.sheet.binary.macroenabled.12": ["xlsb"],
+      "application/vnd.ms-excel.sheet.macroenabled.12": ["xlsm"],
+      "application/vnd.ms-excel.template.macroenabled.12": ["xltm"],
+      "application/vnd.ms-fontobject": ["eot"],
+      "application/vnd.ms-htmlhelp": ["chm"],
+      "application/vnd.ms-ims": ["ims"],
+      "application/vnd.ms-lrm": ["lrm"],
+      "application/vnd.ms-officetheme": ["thmx"],
+      "application/vnd.ms-outlook": ["msg"],
+      "application/vnd.ms-pki.seccat": ["cat"],
+      "application/vnd.ms-pki.stl": ["*stl"],
+      "application/vnd.ms-powerpoint": ["ppt", "pps", "pot"],
+      "application/vnd.ms-powerpoint.addin.macroenabled.12": ["ppam"],
+      "application/vnd.ms-powerpoint.presentation.macroenabled.12": ["pptm"],
+      "application/vnd.ms-powerpoint.slide.macroenabled.12": ["sldm"],
+      "application/vnd.ms-powerpoint.slideshow.macroenabled.12": ["ppsm"],
+      "application/vnd.ms-powerpoint.template.macroenabled.12": ["potm"],
+      "application/vnd.ms-project": ["*mpp", "mpt"],
+      "application/vnd.ms-word.document.macroenabled.12": ["docm"],
+      "application/vnd.ms-word.template.macroenabled.12": ["dotm"],
+      "application/vnd.ms-works": ["wps", "wks", "wcm", "wdb"],
+      "application/vnd.ms-wpl": ["wpl"],
+      "application/vnd.ms-xpsdocument": ["xps"],
+      "application/vnd.mseq": ["mseq"],
+      "application/vnd.musician": ["mus"],
+      "application/vnd.muvee.style": ["msty"],
+      "application/vnd.mynfc": ["taglet"],
+      "application/vnd.nato.bindingdataobject+xml": ["bdo"],
+      "application/vnd.neurolanguage.nlu": ["nlu"],
+      "application/vnd.nitf": ["ntf", "nitf"],
+      "application/vnd.noblenet-directory": ["nnd"],
+      "application/vnd.noblenet-sealer": ["nns"],
+      "application/vnd.noblenet-web": ["nnw"],
+      "application/vnd.nokia.n-gage.ac+xml": ["*ac"],
+      "application/vnd.nokia.n-gage.data": ["ngdat"],
+      "application/vnd.nokia.n-gage.symbian.install": ["n-gage"],
+      "application/vnd.nokia.radio-preset": ["rpst"],
+      "application/vnd.nokia.radio-presets": ["rpss"],
+      "application/vnd.novadigm.edm": ["edm"],
+      "application/vnd.novadigm.edx": ["edx"],
+      "application/vnd.novadigm.ext": ["ext"],
+      "application/vnd.oasis.opendocument.chart": ["odc"],
+      "application/vnd.oasis.opendocument.chart-template": ["otc"],
+      "application/vnd.oasis.opendocument.database": ["odb"],
+      "application/vnd.oasis.opendocument.formula": ["odf"],
+      "application/vnd.oasis.opendocument.formula-template": ["odft"],
+      "application/vnd.oasis.opendocument.graphics": ["odg"],
+      "application/vnd.oasis.opendocument.graphics-template": ["otg"],
+      "application/vnd.oasis.opendocument.image": ["odi"],
+      "application/vnd.oasis.opendocument.image-template": ["oti"],
+      "application/vnd.oasis.opendocument.presentation": ["odp"],
+      "application/vnd.oasis.opendocument.presentation-template": ["otp"],
+      "application/vnd.oasis.opendocument.spreadsheet": ["ods"],
+      "application/vnd.oasis.opendocument.spreadsheet-template": ["ots"],
+      "application/vnd.oasis.opendocument.text": ["odt"],
+      "application/vnd.oasis.opendocument.text-master": ["odm"],
+      "application/vnd.oasis.opendocument.text-template": ["ott"],
+      "application/vnd.oasis.opendocument.text-web": ["oth"],
+      "application/vnd.olpc-sugar": ["xo"],
+      "application/vnd.oma.dd2+xml": ["dd2"],
+      "application/vnd.openblox.game+xml": ["obgx"],
+      "application/vnd.openofficeorg.extension": ["oxt"],
+      "application/vnd.openstreetmap.data+xml": ["osm"],
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation": [
+        "pptx"
+      ],
+      "application/vnd.openxmlformats-officedocument.presentationml.slide": [
+        "sldx"
+      ],
+      "application/vnd.openxmlformats-officedocument.presentationml.slideshow": [
+        "ppsx"
+      ],
+      "application/vnd.openxmlformats-officedocument.presentationml.template": [
+        "potx"
+      ],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ["xlsx"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.template": [
+        "xltx"
+      ],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+        "docx"
+      ],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.template": [
+        "dotx"
+      ],
+      "application/vnd.osgeo.mapguide.package": ["mgp"],
+      "application/vnd.osgi.dp": ["dp"],
+      "application/vnd.osgi.subsystem": ["esa"],
+      "application/vnd.palm": ["pdb", "pqa", "oprc"],
+      "application/vnd.pawaafile": ["paw"],
+      "application/vnd.pg.format": ["str"],
+      "application/vnd.pg.osasli": ["ei6"],
+      "application/vnd.picsel": ["efif"],
+      "application/vnd.pmi.widget": ["wg"],
+      "application/vnd.pocketlearn": ["plf"],
+      "application/vnd.powerbuilder6": ["pbd"],
+      "application/vnd.previewsystems.box": ["box"],
+      "application/vnd.proteus.magazine": ["mgz"],
+      "application/vnd.publishare-delta-tree": ["qps"],
+      "application/vnd.pvi.ptid1": ["ptid"],
+      "application/vnd.pwg-xhtml-print+xml": ["xhtm"],
+      "application/vnd.quark.quarkxpress": [
+        "qxd",
+        "qxt",
+        "qwd",
+        "qwt",
+        "qxl",
+        "qxb"
+      ],
+      "application/vnd.rar": ["rar"],
+      "application/vnd.realvnc.bed": ["bed"],
+      "application/vnd.recordare.musicxml": ["mxl"],
+      "application/vnd.recordare.musicxml+xml": ["musicxml"],
+      "application/vnd.rig.cryptonote": ["cryptonote"],
+      "application/vnd.rim.cod": ["cod"],
+      "application/vnd.rn-realmedia": ["rm"],
+      "application/vnd.rn-realmedia-vbr": ["rmvb"],
+      "application/vnd.route66.link66+xml": ["link66"],
+      "application/vnd.sailingtracker.track": ["st"],
+      "application/vnd.seemail": ["see"],
+      "application/vnd.sema": ["sema"],
+      "application/vnd.semd": ["semd"],
+      "application/vnd.semf": ["semf"],
+      "application/vnd.shana.informed.formdata": ["ifm"],
+      "application/vnd.shana.informed.formtemplate": ["itp"],
+      "application/vnd.shana.informed.interchange": ["iif"],
+      "application/vnd.shana.informed.package": ["ipk"],
+      "application/vnd.simtech-mindmapper": ["twd", "twds"],
+      "application/vnd.smaf": ["mmf"],
+      "application/vnd.smart.teacher": ["teacher"],
+      "application/vnd.software602.filler.form+xml": ["fo"],
+      "application/vnd.solent.sdkm+xml": ["sdkm", "sdkd"],
+      "application/vnd.spotfire.dxp": ["dxp"],
+      "application/vnd.spotfire.sfs": ["sfs"],
+      "application/vnd.stardivision.calc": ["sdc"],
+      "application/vnd.stardivision.draw": ["sda"],
+      "application/vnd.stardivision.impress": ["sdd"],
+      "application/vnd.stardivision.math": ["smf"],
+      "application/vnd.stardivision.writer": ["sdw", "vor"],
+      "application/vnd.stardivision.writer-global": ["sgl"],
+      "application/vnd.stepmania.package": ["smzip"],
+      "application/vnd.stepmania.stepchart": ["sm"],
+      "application/vnd.sun.wadl+xml": ["wadl"],
+      "application/vnd.sun.xml.calc": ["sxc"],
+      "application/vnd.sun.xml.calc.template": ["stc"],
+      "application/vnd.sun.xml.draw": ["sxd"],
+      "application/vnd.sun.xml.draw.template": ["std"],
+      "application/vnd.sun.xml.impress": ["sxi"],
+      "application/vnd.sun.xml.impress.template": ["sti"],
+      "application/vnd.sun.xml.math": ["sxm"],
+      "application/vnd.sun.xml.writer": ["sxw"],
+      "application/vnd.sun.xml.writer.global": ["sxg"],
+      "application/vnd.sun.xml.writer.template": ["stw"],
+      "application/vnd.sus-calendar": ["sus", "susp"],
+      "application/vnd.svd": ["svd"],
+      "application/vnd.symbian.install": ["sis", "sisx"],
+      "application/vnd.syncml+xml": ["xsm"],
+      "application/vnd.syncml.dm+wbxml": ["bdm"],
+      "application/vnd.syncml.dm+xml": ["xdm"],
+      "application/vnd.syncml.dmddf+xml": ["ddf"],
+      "application/vnd.tao.intent-module-archive": ["tao"],
+      "application/vnd.tcpdump.pcap": ["pcap", "cap", "dmp"],
+      "application/vnd.tmobile-livetv": ["tmo"],
+      "application/vnd.trid.tpt": ["tpt"],
+      "application/vnd.triscape.mxs": ["mxs"],
+      "application/vnd.trueapp": ["tra"],
+      "application/vnd.ufdl": ["ufd", "ufdl"],
+      "application/vnd.uiq.theme": ["utz"],
+      "application/vnd.umajin": ["umj"],
+      "application/vnd.unity": ["unityweb"],
+      "application/vnd.uoml+xml": ["uoml", "uo"],
+      "application/vnd.vcx": ["vcx"],
+      "application/vnd.visio": ["vsd", "vst", "vss", "vsw"],
+      "application/vnd.visionary": ["vis"],
+      "application/vnd.vsf": ["vsf"],
+      "application/vnd.wap.wbxml": ["wbxml"],
+      "application/vnd.wap.wmlc": ["wmlc"],
+      "application/vnd.wap.wmlscriptc": ["wmlsc"],
+      "application/vnd.webturbo": ["wtb"],
+      "application/vnd.wolfram.player": ["nbp"],
+      "application/vnd.wordperfect": ["wpd"],
+      "application/vnd.wqd": ["wqd"],
+      "application/vnd.wt.stf": ["stf"],
+      "application/vnd.xara": ["xar"],
+      "application/vnd.xfdl": ["xfdl"],
+      "application/vnd.yamaha.hv-dic": ["hvd"],
+      "application/vnd.yamaha.hv-script": ["hvs"],
+      "application/vnd.yamaha.hv-voice": ["hvp"],
+      "application/vnd.yamaha.openscoreformat": ["osf"],
+      "application/vnd.yamaha.openscoreformat.osfpvg+xml": ["osfpvg"],
+      "application/vnd.yamaha.smaf-audio": ["saf"],
+      "application/vnd.yamaha.smaf-phrase": ["spf"],
+      "application/vnd.yellowriver-custom-menu": ["cmp"],
+      "application/vnd.zul": ["zir", "zirz"],
+      "application/vnd.zzazz.deck+xml": ["zaz"],
+      "application/x-7z-compressed": ["7z"],
+      "application/x-abiword": ["abw"],
+      "application/x-ace-compressed": ["ace"],
+      "application/x-apple-diskimage": ["*dmg"],
+      "application/x-arj": ["arj"],
+      "application/x-authorware-bin": ["aab", "x32", "u32", "vox"],
+      "application/x-authorware-map": ["aam"],
+      "application/x-authorware-seg": ["aas"],
+      "application/x-bcpio": ["bcpio"],
+      "application/x-bdoc": ["*bdoc"],
+      "application/x-bittorrent": ["torrent"],
+      "application/x-blorb": ["blb", "blorb"],
+      "application/x-bzip": ["bz"],
+      "application/x-bzip2": ["bz2", "boz"],
+      "application/x-cbr": ["cbr", "cba", "cbt", "cbz", "cb7"],
+      "application/x-cdlink": ["vcd"],
+      "application/x-cfs-compressed": ["cfs"],
+      "application/x-chat": ["chat"],
+      "application/x-chess-pgn": ["pgn"],
+      "application/x-chrome-extension": ["crx"],
+      "application/x-cocoa": ["cco"],
+      "application/x-conference": ["nsc"],
+      "application/x-cpio": ["cpio"],
+      "application/x-csh": ["csh"],
+      "application/x-debian-package": ["*deb", "udeb"],
+      "application/x-dgc-compressed": ["dgc"],
+      "application/x-director": [
+        "dir",
+        "dcr",
+        "dxr",
+        "cst",
+        "cct",
+        "cxt",
+        "w3d",
+        "fgd",
+        "swa"
+      ],
+      "application/x-doom": ["wad"],
+      "application/x-dtbncx+xml": ["ncx"],
+      "application/x-dtbook+xml": ["dtb"],
+      "application/x-dtbresource+xml": ["res"],
+      "application/x-dvi": ["dvi"],
+      "application/x-envoy": ["evy"],
+      "application/x-eva": ["eva"],
+      "application/x-font-bdf": ["bdf"],
+      "application/x-font-ghostscript": ["gsf"],
+      "application/x-font-linux-psf": ["psf"],
+      "application/x-font-pcf": ["pcf"],
+      "application/x-font-snf": ["snf"],
+      "application/x-font-type1": ["pfa", "pfb", "pfm", "afm"],
+      "application/x-freearc": ["arc"],
+      "application/x-futuresplash": ["spl"],
+      "application/x-gca-compressed": ["gca"],
+      "application/x-glulx": ["ulx"],
+      "application/x-gnumeric": ["gnumeric"],
+      "application/x-gramps-xml": ["gramps"],
+      "application/x-gtar": ["gtar"],
+      "application/x-hdf": ["hdf"],
+      "application/x-httpd-php": ["php"],
+      "application/x-install-instructions": ["install"],
+      "application/x-iso9660-image": ["*iso"],
+      "application/x-iwork-keynote-sffkey": ["*key"],
+      "application/x-iwork-numbers-sffnumbers": ["*numbers"],
+      "application/x-iwork-pages-sffpages": ["*pages"],
+      "application/x-java-archive-diff": ["jardiff"],
+      "application/x-java-jnlp-file": ["jnlp"],
+      "application/x-keepass2": ["kdbx"],
+      "application/x-latex": ["latex"],
+      "application/x-lua-bytecode": ["luac"],
+      "application/x-lzh-compressed": ["lzh", "lha"],
+      "application/x-makeself": ["run"],
+      "application/x-mie": ["mie"],
+      "application/x-mobipocket-ebook": ["*prc", "mobi"],
+      "application/x-ms-application": ["application"],
+      "application/x-ms-shortcut": ["lnk"],
+      "application/x-ms-wmd": ["wmd"],
+      "application/x-ms-wmz": ["wmz"],
+      "application/x-ms-xbap": ["xbap"],
+      "application/x-msaccess": ["mdb"],
+      "application/x-msbinder": ["obd"],
+      "application/x-mscardfile": ["crd"],
+      "application/x-msclip": ["clp"],
+      "application/x-msdos-program": ["*exe"],
+      "application/x-msdownload": ["*exe", "*dll", "com", "bat", "*msi"],
+      "application/x-msmediaview": ["mvb", "m13", "m14"],
+      "application/x-msmetafile": ["*wmf", "*wmz", "*emf", "emz"],
+      "application/x-msmoney": ["mny"],
+      "application/x-mspublisher": ["pub"],
+      "application/x-msschedule": ["scd"],
+      "application/x-msterminal": ["trm"],
+      "application/x-mswrite": ["wri"],
+      "application/x-netcdf": ["nc", "cdf"],
+      "application/x-ns-proxy-autoconfig": ["pac"],
+      "application/x-nzb": ["nzb"],
+      "application/x-perl": ["pl", "pm"],
+      "application/x-pilot": ["*prc", "*pdb"],
+      "application/x-pkcs12": ["p12", "pfx"],
+      "application/x-pkcs7-certificates": ["p7b", "spc"],
+      "application/x-pkcs7-certreqresp": ["p7r"],
+      "application/x-rar-compressed": ["*rar"],
+      "application/x-redhat-package-manager": ["rpm"],
+      "application/x-research-info-systems": ["ris"],
+      "application/x-sea": ["sea"],
+      "application/x-sh": ["sh"],
+      "application/x-shar": ["shar"],
+      "application/x-shockwave-flash": ["swf"],
+      "application/x-silverlight-app": ["xap"],
+      "application/x-sql": ["*sql"],
+      "application/x-stuffit": ["sit"],
+      "application/x-stuffitx": ["sitx"],
+      "application/x-subrip": ["srt"],
+      "application/x-sv4cpio": ["sv4cpio"],
+      "application/x-sv4crc": ["sv4crc"],
+      "application/x-t3vm-image": ["t3"],
+      "application/x-tads": ["gam"],
+      "application/x-tar": ["tar"],
+      "application/x-tcl": ["tcl", "tk"],
+      "application/x-tex": ["tex"],
+      "application/x-tex-tfm": ["tfm"],
+      "application/x-texinfo": ["texinfo", "texi"],
+      "application/x-tgif": ["*obj"],
+      "application/x-ustar": ["ustar"],
+      "application/x-virtualbox-hdd": ["hdd"],
+      "application/x-virtualbox-ova": ["ova"],
+      "application/x-virtualbox-ovf": ["ovf"],
+      "application/x-virtualbox-vbox": ["vbox"],
+      "application/x-virtualbox-vbox-extpack": ["vbox-extpack"],
+      "application/x-virtualbox-vdi": ["vdi"],
+      "application/x-virtualbox-vhd": ["vhd"],
+      "application/x-virtualbox-vmdk": ["vmdk"],
+      "application/x-wais-source": ["src"],
+      "application/x-web-app-manifest+json": ["webapp"],
+      "application/x-x509-ca-cert": ["der", "crt", "pem"],
+      "application/x-xfig": ["fig"],
+      "application/x-xliff+xml": ["*xlf"],
+      "application/x-xpinstall": ["xpi"],
+      "application/x-xz": ["xz"],
+      "application/x-zmachine": ["z1", "z2", "z3", "z4", "z5", "z6", "z7", "z8"],
+      "audio/vnd.dece.audio": ["uva", "uvva"],
+      "audio/vnd.digital-winds": ["eol"],
+      "audio/vnd.dra": ["dra"],
+      "audio/vnd.dts": ["dts"],
+      "audio/vnd.dts.hd": ["dtshd"],
+      "audio/vnd.lucent.voice": ["lvp"],
+      "audio/vnd.ms-playready.media.pya": ["pya"],
+      "audio/vnd.nuera.ecelp4800": ["ecelp4800"],
+      "audio/vnd.nuera.ecelp7470": ["ecelp7470"],
+      "audio/vnd.nuera.ecelp9600": ["ecelp9600"],
+      "audio/vnd.rip": ["rip"],
+      "audio/x-aac": ["*aac"],
+      "audio/x-aiff": ["aif", "aiff", "aifc"],
+      "audio/x-caf": ["caf"],
+      "audio/x-flac": ["flac"],
+      "audio/x-m4a": ["*m4a"],
+      "audio/x-matroska": ["mka"],
+      "audio/x-mpegurl": ["m3u"],
+      "audio/x-ms-wax": ["wax"],
+      "audio/x-ms-wma": ["wma"],
+      "audio/x-pn-realaudio": ["ram", "ra"],
+      "audio/x-pn-realaudio-plugin": ["rmp"],
+      "audio/x-realaudio": ["*ra"],
+      "audio/x-wav": ["*wav"],
+      "chemical/x-cdx": ["cdx"],
+      "chemical/x-cif": ["cif"],
+      "chemical/x-cmdf": ["cmdf"],
+      "chemical/x-cml": ["cml"],
+      "chemical/x-csml": ["csml"],
+      "chemical/x-xyz": ["xyz"],
+      "image/prs.btif": ["btif", "btf"],
+      "image/prs.pti": ["pti"],
+      "image/vnd.adobe.photoshop": ["psd"],
+      "image/vnd.airzip.accelerator.azv": ["azv"],
+      "image/vnd.dece.graphic": ["uvi", "uvvi", "uvg", "uvvg"],
+      "image/vnd.djvu": ["djvu", "djv"],
+      "image/vnd.dvb.subtitle": ["*sub"],
+      "image/vnd.dwg": ["dwg"],
+      "image/vnd.dxf": ["dxf"],
+      "image/vnd.fastbidsheet": ["fbs"],
+      "image/vnd.fpx": ["fpx"],
+      "image/vnd.fst": ["fst"],
+      "image/vnd.fujixerox.edmics-mmr": ["mmr"],
+      "image/vnd.fujixerox.edmics-rlc": ["rlc"],
+      "image/vnd.microsoft.icon": ["ico"],
+      "image/vnd.ms-dds": ["dds"],
+      "image/vnd.ms-modi": ["mdi"],
+      "image/vnd.ms-photo": ["wdp"],
+      "image/vnd.net-fpx": ["npx"],
+      "image/vnd.pco.b16": ["b16"],
+      "image/vnd.tencent.tap": ["tap"],
+      "image/vnd.valve.source.texture": ["vtf"],
+      "image/vnd.wap.wbmp": ["wbmp"],
+      "image/vnd.xiff": ["xif"],
+      "image/vnd.zbrush.pcx": ["pcx"],
+      "image/x-3ds": ["3ds"],
+      "image/x-cmu-raster": ["ras"],
+      "image/x-cmx": ["cmx"],
+      "image/x-freehand": ["fh", "fhc", "fh4", "fh5", "fh7"],
+      "image/x-icon": ["*ico"],
+      "image/x-jng": ["jng"],
+      "image/x-mrsid-image": ["sid"],
+      "image/x-ms-bmp": ["*bmp"],
+      "image/x-pcx": ["*pcx"],
+      "image/x-pict": ["pic", "pct"],
+      "image/x-portable-anymap": ["pnm"],
+      "image/x-portable-bitmap": ["pbm"],
+      "image/x-portable-graymap": ["pgm"],
+      "image/x-portable-pixmap": ["ppm"],
+      "image/x-rgb": ["rgb"],
+      "image/x-tga": ["tga"],
+      "image/x-xbitmap": ["xbm"],
+      "image/x-xpixmap": ["xpm"],
+      "image/x-xwindowdump": ["xwd"],
+      "message/vnd.wfa.wsc": ["wsc"],
+      "model/vnd.bary": ["bary"],
+      "model/vnd.cld": ["cld"],
+      "model/vnd.collada+xml": ["dae"],
+      "model/vnd.dwf": ["dwf"],
+      "model/vnd.gdl": ["gdl"],
+      "model/vnd.gtw": ["gtw"],
+      "model/vnd.mts": ["*mts"],
+      "model/vnd.opengex": ["ogex"],
+      "model/vnd.parasolid.transmit.binary": ["x_b"],
+      "model/vnd.parasolid.transmit.text": ["x_t"],
+      "model/vnd.pytha.pyox": ["pyo", "pyox"],
+      "model/vnd.sap.vds": ["vds"],
+      "model/vnd.usda": ["usda"],
+      "model/vnd.usdz+zip": ["usdz"],
+      "model/vnd.valve.source.compiled-map": ["bsp"],
+      "model/vnd.vtu": ["vtu"],
+      "text/prs.lines.tag": ["dsc"],
+      "text/vnd.curl": ["curl"],
+      "text/vnd.curl.dcurl": ["dcurl"],
+      "text/vnd.curl.mcurl": ["mcurl"],
+      "text/vnd.curl.scurl": ["scurl"],
+      "text/vnd.dvb.subtitle": ["sub"],
+      "text/vnd.familysearch.gedcom": ["ged"],
+      "text/vnd.fly": ["fly"],
+      "text/vnd.fmi.flexstor": ["flx"],
+      "text/vnd.graphviz": ["gv"],
+      "text/vnd.in3d.3dml": ["3dml"],
+      "text/vnd.in3d.spot": ["spot"],
+      "text/vnd.sun.j2me.app-descriptor": ["jad"],
+      "text/vnd.wap.wml": ["wml"],
+      "text/vnd.wap.wmlscript": ["wmls"],
+      "text/x-asm": ["s", "asm"],
+      "text/x-c": ["c", "cc", "cxx", "cpp", "h", "hh", "dic"],
+      "text/x-component": ["htc"],
+      "text/x-fortran": ["f", "for", "f77", "f90"],
+      "text/x-handlebars-template": ["hbs"],
+      "text/x-java-source": ["java"],
+      "text/x-lua": ["lua"],
+      "text/x-markdown": ["mkd"],
+      "text/x-nfo": ["nfo"],
+      "text/x-opml": ["opml"],
+      "text/x-org": ["*org"],
+      "text/x-pascal": ["p", "pas"],
+      "text/x-processing": ["pde"],
+      "text/x-sass": ["sass"],
+      "text/x-scss": ["scss"],
+      "text/x-setext": ["etx"],
+      "text/x-sfv": ["sfv"],
+      "text/x-suse-ymp": ["ymp"],
+      "text/x-uuencode": ["uu"],
+      "text/x-vcalendar": ["vcs"],
+      "text/x-vcard": ["vcf"],
+      "video/vnd.dece.hd": ["uvh", "uvvh"],
+      "video/vnd.dece.mobile": ["uvm", "uvvm"],
+      "video/vnd.dece.pd": ["uvp", "uvvp"],
+      "video/vnd.dece.sd": ["uvs", "uvvs"],
+      "video/vnd.dece.video": ["uvv", "uvvv"],
+      "video/vnd.dvb.file": ["dvb"],
+      "video/vnd.fvt": ["fvt"],
+      "video/vnd.mpegurl": ["mxu", "m4u"],
+      "video/vnd.ms-playready.media.pyv": ["pyv"],
+      "video/vnd.uvvu.mp4": ["uvu", "uvvu"],
+      "video/vnd.vivo": ["viv"],
+      "video/x-f4v": ["f4v"],
+      "video/x-fli": ["fli"],
+      "video/x-flv": ["flv"],
+      "video/x-m4v": ["m4v"],
+      "video/x-matroska": ["mkv", "mk3d", "mks"],
+      "video/x-mng": ["mng"],
+      "video/x-ms-asf": ["asf", "asx"],
+      "video/x-ms-vob": ["vob"],
+      "video/x-ms-wm": ["wm"],
+      "video/x-ms-wmv": ["wmv"],
+      "video/x-ms-wmx": ["wmx"],
+      "video/x-ms-wvx": ["wvx"],
+      "video/x-msvideo": ["avi"],
+      "video/x-sgi-movie": ["movie"],
+      "video/x-smv": ["smv"],
+      "x-conference/x-cooltalk": ["ice"]
+    };
+    Object.freeze(types);
+    other_default = types;
+  }
+});
+
+// node_modules/jira.js/node_modules/mime/dist/types/standard.js
+var types2, standard_default;
+var init_standard = __esm({
+  "node_modules/jira.js/node_modules/mime/dist/types/standard.js"() {
+    types2 = {
+      "application/andrew-inset": ["ez"],
+      "application/appinstaller": ["appinstaller"],
+      "application/applixware": ["aw"],
+      "application/appx": ["appx"],
+      "application/appxbundle": ["appxbundle"],
+      "application/atom+xml": ["atom"],
+      "application/atomcat+xml": ["atomcat"],
+      "application/atomdeleted+xml": ["atomdeleted"],
+      "application/atomsvc+xml": ["atomsvc"],
+      "application/atsc-dwd+xml": ["dwd"],
+      "application/atsc-held+xml": ["held"],
+      "application/atsc-rsat+xml": ["rsat"],
+      "application/automationml-aml+xml": ["aml"],
+      "application/automationml-amlx+zip": ["amlx"],
+      "application/bdoc": ["bdoc"],
+      "application/calendar+xml": ["xcs"],
+      "application/ccxml+xml": ["ccxml"],
+      "application/cdfx+xml": ["cdfx"],
+      "application/cdmi-capability": ["cdmia"],
+      "application/cdmi-container": ["cdmic"],
+      "application/cdmi-domain": ["cdmid"],
+      "application/cdmi-object": ["cdmio"],
+      "application/cdmi-queue": ["cdmiq"],
+      "application/cpl+xml": ["cpl"],
+      "application/cu-seeme": ["cu"],
+      "application/cwl": ["cwl"],
+      "application/dash+xml": ["mpd"],
+      "application/dash-patch+xml": ["mpp"],
+      "application/davmount+xml": ["davmount"],
+      "application/docbook+xml": ["dbk"],
+      "application/dssc+der": ["dssc"],
+      "application/dssc+xml": ["xdssc"],
+      "application/ecmascript": ["ecma"],
+      "application/emma+xml": ["emma"],
+      "application/emotionml+xml": ["emotionml"],
+      "application/epub+zip": ["epub"],
+      "application/exi": ["exi"],
+      "application/express": ["exp"],
+      "application/fdf": ["fdf"],
+      "application/fdt+xml": ["fdt"],
+      "application/font-tdpfr": ["pfr"],
+      "application/geo+json": ["geojson"],
+      "application/gml+xml": ["gml"],
+      "application/gpx+xml": ["gpx"],
+      "application/gxf": ["gxf"],
+      "application/gzip": ["gz"],
+      "application/hjson": ["hjson"],
+      "application/hyperstudio": ["stk"],
+      "application/inkml+xml": ["ink", "inkml"],
+      "application/ipfix": ["ipfix"],
+      "application/its+xml": ["its"],
+      "application/java-archive": ["jar", "war", "ear"],
+      "application/java-serialized-object": ["ser"],
+      "application/java-vm": ["class"],
+      "application/javascript": ["*js"],
+      "application/json": ["json", "map"],
+      "application/json5": ["json5"],
+      "application/jsonml+json": ["jsonml"],
+      "application/ld+json": ["jsonld"],
+      "application/lgr+xml": ["lgr"],
+      "application/lost+xml": ["lostxml"],
+      "application/mac-binhex40": ["hqx"],
+      "application/mac-compactpro": ["cpt"],
+      "application/mads+xml": ["mads"],
+      "application/manifest+json": ["webmanifest"],
+      "application/marc": ["mrc"],
+      "application/marcxml+xml": ["mrcx"],
+      "application/mathematica": ["ma", "nb", "mb"],
+      "application/mathml+xml": ["mathml"],
+      "application/mbox": ["mbox"],
+      "application/media-policy-dataset+xml": ["mpf"],
+      "application/mediaservercontrol+xml": ["mscml"],
+      "application/metalink+xml": ["metalink"],
+      "application/metalink4+xml": ["meta4"],
+      "application/mets+xml": ["mets"],
+      "application/mmt-aei+xml": ["maei"],
+      "application/mmt-usd+xml": ["musd"],
+      "application/mods+xml": ["mods"],
+      "application/mp21": ["m21", "mp21"],
+      "application/mp4": ["*mp4", "*mpg4", "mp4s", "m4p"],
+      "application/msix": ["msix"],
+      "application/msixbundle": ["msixbundle"],
+      "application/msword": ["doc", "dot"],
+      "application/mxf": ["mxf"],
+      "application/n-quads": ["nq"],
+      "application/n-triples": ["nt"],
+      "application/node": ["cjs"],
+      "application/octet-stream": [
+        "bin",
+        "dms",
+        "lrf",
+        "mar",
+        "so",
+        "dist",
+        "distz",
+        "pkg",
+        "bpk",
+        "dump",
+        "elc",
+        "deploy",
+        "exe",
+        "dll",
+        "deb",
+        "dmg",
+        "iso",
+        "img",
+        "msi",
+        "msp",
+        "msm",
+        "buffer"
+      ],
+      "application/oda": ["oda"],
+      "application/oebps-package+xml": ["opf"],
+      "application/ogg": ["ogx"],
+      "application/omdoc+xml": ["omdoc"],
+      "application/onenote": ["onetoc", "onetoc2", "onetmp", "onepkg"],
+      "application/oxps": ["oxps"],
+      "application/p2p-overlay+xml": ["relo"],
+      "application/patch-ops-error+xml": ["xer"],
+      "application/pdf": ["pdf"],
+      "application/pgp-encrypted": ["pgp"],
+      "application/pgp-keys": ["asc"],
+      "application/pgp-signature": ["sig", "*asc"],
+      "application/pics-rules": ["prf"],
+      "application/pkcs10": ["p10"],
+      "application/pkcs7-mime": ["p7m", "p7c"],
+      "application/pkcs7-signature": ["p7s"],
+      "application/pkcs8": ["p8"],
+      "application/pkix-attr-cert": ["ac"],
+      "application/pkix-cert": ["cer"],
+      "application/pkix-crl": ["crl"],
+      "application/pkix-pkipath": ["pkipath"],
+      "application/pkixcmp": ["pki"],
+      "application/pls+xml": ["pls"],
+      "application/postscript": ["ai", "eps", "ps"],
+      "application/provenance+xml": ["provx"],
+      "application/pskc+xml": ["pskcxml"],
+      "application/raml+yaml": ["raml"],
+      "application/rdf+xml": ["rdf", "owl"],
+      "application/reginfo+xml": ["rif"],
+      "application/relax-ng-compact-syntax": ["rnc"],
+      "application/resource-lists+xml": ["rl"],
+      "application/resource-lists-diff+xml": ["rld"],
+      "application/rls-services+xml": ["rs"],
+      "application/route-apd+xml": ["rapd"],
+      "application/route-s-tsid+xml": ["sls"],
+      "application/route-usd+xml": ["rusd"],
+      "application/rpki-ghostbusters": ["gbr"],
+      "application/rpki-manifest": ["mft"],
+      "application/rpki-roa": ["roa"],
+      "application/rsd+xml": ["rsd"],
+      "application/rss+xml": ["rss"],
+      "application/rtf": ["rtf"],
+      "application/sbml+xml": ["sbml"],
+      "application/scvp-cv-request": ["scq"],
+      "application/scvp-cv-response": ["scs"],
+      "application/scvp-vp-request": ["spq"],
+      "application/scvp-vp-response": ["spp"],
+      "application/sdp": ["sdp"],
+      "application/senml+xml": ["senmlx"],
+      "application/sensml+xml": ["sensmlx"],
+      "application/set-payment-initiation": ["setpay"],
+      "application/set-registration-initiation": ["setreg"],
+      "application/shf+xml": ["shf"],
+      "application/sieve": ["siv", "sieve"],
+      "application/smil+xml": ["smi", "smil"],
+      "application/sparql-query": ["rq"],
+      "application/sparql-results+xml": ["srx"],
+      "application/sql": ["sql"],
+      "application/srgs": ["gram"],
+      "application/srgs+xml": ["grxml"],
+      "application/sru+xml": ["sru"],
+      "application/ssdl+xml": ["ssdl"],
+      "application/ssml+xml": ["ssml"],
+      "application/swid+xml": ["swidtag"],
+      "application/tei+xml": ["tei", "teicorpus"],
+      "application/thraud+xml": ["tfi"],
+      "application/timestamped-data": ["tsd"],
+      "application/toml": ["toml"],
+      "application/trig": ["trig"],
+      "application/ttml+xml": ["ttml"],
+      "application/ubjson": ["ubj"],
+      "application/urc-ressheet+xml": ["rsheet"],
+      "application/urc-targetdesc+xml": ["td"],
+      "application/voicexml+xml": ["vxml"],
+      "application/wasm": ["wasm"],
+      "application/watcherinfo+xml": ["wif"],
+      "application/widget": ["wgt"],
+      "application/winhlp": ["hlp"],
+      "application/wsdl+xml": ["wsdl"],
+      "application/wspolicy+xml": ["wspolicy"],
+      "application/xaml+xml": ["xaml"],
+      "application/xcap-att+xml": ["xav"],
+      "application/xcap-caps+xml": ["xca"],
+      "application/xcap-diff+xml": ["xdf"],
+      "application/xcap-el+xml": ["xel"],
+      "application/xcap-ns+xml": ["xns"],
+      "application/xenc+xml": ["xenc"],
+      "application/xfdf": ["xfdf"],
+      "application/xhtml+xml": ["xhtml", "xht"],
+      "application/xliff+xml": ["xlf"],
+      "application/xml": ["xml", "xsl", "xsd", "rng"],
+      "application/xml-dtd": ["dtd"],
+      "application/xop+xml": ["xop"],
+      "application/xproc+xml": ["xpl"],
+      "application/xslt+xml": ["*xsl", "xslt"],
+      "application/xspf+xml": ["xspf"],
+      "application/xv+xml": ["mxml", "xhvml", "xvml", "xvm"],
+      "application/yang": ["yang"],
+      "application/yin+xml": ["yin"],
+      "application/zip": ["zip"],
+      "audio/3gpp": ["*3gpp"],
+      "audio/aac": ["adts", "aac"],
+      "audio/adpcm": ["adp"],
+      "audio/amr": ["amr"],
+      "audio/basic": ["au", "snd"],
+      "audio/midi": ["mid", "midi", "kar", "rmi"],
+      "audio/mobile-xmf": ["mxmf"],
+      "audio/mp3": ["*mp3"],
+      "audio/mp4": ["m4a", "mp4a"],
+      "audio/mpeg": ["mpga", "mp2", "mp2a", "mp3", "m2a", "m3a"],
+      "audio/ogg": ["oga", "ogg", "spx", "opus"],
+      "audio/s3m": ["s3m"],
+      "audio/silk": ["sil"],
+      "audio/wav": ["wav"],
+      "audio/wave": ["*wav"],
+      "audio/webm": ["weba"],
+      "audio/xm": ["xm"],
+      "font/collection": ["ttc"],
+      "font/otf": ["otf"],
+      "font/ttf": ["ttf"],
+      "font/woff": ["woff"],
+      "font/woff2": ["woff2"],
+      "image/aces": ["exr"],
+      "image/apng": ["apng"],
+      "image/avci": ["avci"],
+      "image/avcs": ["avcs"],
+      "image/avif": ["avif"],
+      "image/bmp": ["bmp", "dib"],
+      "image/cgm": ["cgm"],
+      "image/dicom-rle": ["drle"],
+      "image/dpx": ["dpx"],
+      "image/emf": ["emf"],
+      "image/fits": ["fits"],
+      "image/g3fax": ["g3"],
+      "image/gif": ["gif"],
+      "image/heic": ["heic"],
+      "image/heic-sequence": ["heics"],
+      "image/heif": ["heif"],
+      "image/heif-sequence": ["heifs"],
+      "image/hej2k": ["hej2"],
+      "image/hsj2": ["hsj2"],
+      "image/ief": ["ief"],
+      "image/jls": ["jls"],
+      "image/jp2": ["jp2", "jpg2"],
+      "image/jpeg": ["jpeg", "jpg", "jpe"],
+      "image/jph": ["jph"],
+      "image/jphc": ["jhc"],
+      "image/jpm": ["jpm", "jpgm"],
+      "image/jpx": ["jpx", "jpf"],
+      "image/jxl": ["jxl"],
+      "image/jxr": ["jxr"],
+      "image/jxra": ["jxra"],
+      "image/jxrs": ["jxrs"],
+      "image/jxs": ["jxs"],
+      "image/jxsc": ["jxsc"],
+      "image/jxsi": ["jxsi"],
+      "image/jxss": ["jxss"],
+      "image/ktx": ["ktx"],
+      "image/ktx2": ["ktx2"],
+      "image/png": ["png"],
+      "image/sgi": ["sgi"],
+      "image/svg+xml": ["svg", "svgz"],
+      "image/t38": ["t38"],
+      "image/tiff": ["tif", "tiff"],
+      "image/tiff-fx": ["tfx"],
+      "image/webp": ["webp"],
+      "image/wmf": ["wmf"],
+      "message/disposition-notification": ["disposition-notification"],
+      "message/global": ["u8msg"],
+      "message/global-delivery-status": ["u8dsn"],
+      "message/global-disposition-notification": ["u8mdn"],
+      "message/global-headers": ["u8hdr"],
+      "message/rfc822": ["eml", "mime"],
+      "model/3mf": ["3mf"],
+      "model/gltf+json": ["gltf"],
+      "model/gltf-binary": ["glb"],
+      "model/iges": ["igs", "iges"],
+      "model/jt": ["jt"],
+      "model/mesh": ["msh", "mesh", "silo"],
+      "model/mtl": ["mtl"],
+      "model/obj": ["obj"],
+      "model/prc": ["prc"],
+      "model/step+xml": ["stpx"],
+      "model/step+zip": ["stpz"],
+      "model/step-xml+zip": ["stpxz"],
+      "model/stl": ["stl"],
+      "model/u3d": ["u3d"],
+      "model/vrml": ["wrl", "vrml"],
+      "model/x3d+binary": ["*x3db", "x3dbz"],
+      "model/x3d+fastinfoset": ["x3db"],
+      "model/x3d+vrml": ["*x3dv", "x3dvz"],
+      "model/x3d+xml": ["x3d", "x3dz"],
+      "model/x3d-vrml": ["x3dv"],
+      "text/cache-manifest": ["appcache", "manifest"],
+      "text/calendar": ["ics", "ifb"],
+      "text/coffeescript": ["coffee", "litcoffee"],
+      "text/css": ["css"],
+      "text/csv": ["csv"],
+      "text/html": ["html", "htm", "shtml"],
+      "text/jade": ["jade"],
+      "text/javascript": ["js", "mjs"],
+      "text/jsx": ["jsx"],
+      "text/less": ["less"],
+      "text/markdown": ["md", "markdown"],
+      "text/mathml": ["mml"],
+      "text/mdx": ["mdx"],
+      "text/n3": ["n3"],
+      "text/plain": ["txt", "text", "conf", "def", "list", "log", "in", "ini"],
+      "text/richtext": ["rtx"],
+      "text/rtf": ["*rtf"],
+      "text/sgml": ["sgml", "sgm"],
+      "text/shex": ["shex"],
+      "text/slim": ["slim", "slm"],
+      "text/spdx": ["spdx"],
+      "text/stylus": ["stylus", "styl"],
+      "text/tab-separated-values": ["tsv"],
+      "text/troff": ["t", "tr", "roff", "man", "me", "ms"],
+      "text/turtle": ["ttl"],
+      "text/uri-list": ["uri", "uris", "urls"],
+      "text/vcard": ["vcard"],
+      "text/vtt": ["vtt"],
+      "text/wgsl": ["wgsl"],
+      "text/xml": ["*xml"],
+      "text/yaml": ["yaml", "yml"],
+      "video/3gpp": ["3gp", "3gpp"],
+      "video/3gpp2": ["3g2"],
+      "video/h261": ["h261"],
+      "video/h263": ["h263"],
+      "video/h264": ["h264"],
+      "video/iso.segment": ["m4s"],
+      "video/jpeg": ["jpgv"],
+      "video/jpm": ["*jpm", "*jpgm"],
+      "video/mj2": ["mj2", "mjp2"],
+      "video/mp2t": ["ts", "m2t", "m2ts", "mts"],
+      "video/mp4": ["mp4", "mp4v", "mpg4"],
+      "video/mpeg": ["mpeg", "mpg", "mpe", "m1v", "m2v"],
+      "video/ogg": ["ogv"],
+      "video/quicktime": ["qt", "mov"],
+      "video/webm": ["webm"]
+    };
+    Object.freeze(types2);
+    standard_default = types2;
+  }
+});
+
+// node_modules/jira.js/node_modules/mime/dist/src/Mime.js
+var __classPrivateFieldGet2, _Mime_extensionToType, _Mime_typeToExtension, _Mime_typeToExtensions, Mime, Mime_default;
+var init_Mime = __esm({
+  "node_modules/jira.js/node_modules/mime/dist/src/Mime.js"() {
+    __classPrivateFieldGet2 = function(receiver, state, kind, f) {
+      if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+      if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+      return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+    };
+    Mime = class {
+      constructor(...args) {
+        _Mime_extensionToType.set(this, /* @__PURE__ */ new Map());
+        _Mime_typeToExtension.set(this, /* @__PURE__ */ new Map());
+        _Mime_typeToExtensions.set(this, /* @__PURE__ */ new Map());
+        for (const arg of args) {
+          this.define(arg);
+        }
+      }
+      define(typeMap, force = false) {
+        for (let [type, extensions] of Object.entries(typeMap)) {
+          type = type.toLowerCase();
+          extensions = extensions.map((ext) => ext.toLowerCase());
+          if (!__classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").has(type)) {
+            __classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").set(type, /* @__PURE__ */ new Set());
+          }
+          const allExtensions = __classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").get(type);
+          let first = true;
+          for (let extension of extensions) {
+            const starred = extension.startsWith("*");
+            extension = starred ? extension.slice(1) : extension;
+            allExtensions?.add(extension);
+            if (first) {
+              __classPrivateFieldGet2(this, _Mime_typeToExtension, "f").set(type, extension);
+            }
+            first = false;
+            if (starred)
+              continue;
+            const currentType = __classPrivateFieldGet2(this, _Mime_extensionToType, "f").get(extension);
+            if (currentType && currentType != type && !force) {
+              throw new Error(`"${type} -> ${extension}" conflicts with "${currentType} -> ${extension}". Pass \`force=true\` to override this definition.`);
+            }
+            __classPrivateFieldGet2(this, _Mime_extensionToType, "f").set(extension, type);
+          }
+        }
+        return this;
+      }
+      getType(path2) {
+        if (typeof path2 !== "string")
+          return null;
+        const last = path2.replace(/^.*[/\\]/, "").toLowerCase();
+        const ext = last.replace(/^.*\./, "").toLowerCase();
+        const hasPath = last.length < path2.length;
+        const hasDot = ext.length < last.length - 1;
+        if (!hasDot && hasPath)
+          return null;
+        return __classPrivateFieldGet2(this, _Mime_extensionToType, "f").get(ext) ?? null;
+      }
+      getExtension(type) {
+        if (typeof type !== "string")
+          return null;
+        type = type?.split?.(";")[0];
+        return (type && __classPrivateFieldGet2(this, _Mime_typeToExtension, "f").get(type.trim().toLowerCase())) ?? null;
+      }
+      getAllExtensions(type) {
+        if (typeof type !== "string")
+          return null;
+        return __classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").get(type.toLowerCase()) ?? null;
+      }
+      _freeze() {
+        this.define = () => {
+          throw new Error("define() not allowed for built-in Mime objects. See https://github.com/broofa/mime/blob/main/README.md#custom-mime-instances");
+        };
+        Object.freeze(this);
+        for (const extensions of __classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").values()) {
+          Object.freeze(extensions);
+        }
+        return this;
+      }
+      _getTestState() {
+        return {
+          types: __classPrivateFieldGet2(this, _Mime_extensionToType, "f"),
+          extensions: __classPrivateFieldGet2(this, _Mime_typeToExtension, "f")
+        };
+      }
+    };
+    _Mime_extensionToType = /* @__PURE__ */ new WeakMap(), _Mime_typeToExtension = /* @__PURE__ */ new WeakMap(), _Mime_typeToExtensions = /* @__PURE__ */ new WeakMap();
+    Mime_default = Mime;
+  }
+});
+
+// node_modules/jira.js/node_modules/mime/dist/src/index.js
+var src_exports = {};
+__export(src_exports, {
+  Mime: () => Mime_default,
+  default: () => src_default
+});
+var src_default;
+var init_src = __esm({
+  "node_modules/jira.js/node_modules/mime/dist/src/index.js"() {
+    init_other();
+    init_standard();
+    init_Mime();
+    init_Mime();
+    src_default = new Mime_default(standard_default, other_default)._freeze();
+  }
+});
+
 // node_modules/jira.js/out/version2/issueAttachments.js
 var require_issueAttachments = __commonJS({
   "node_modules/jira.js/out/version2/issueAttachments.js"(exports2) {
@@ -41238,7 +43042,7 @@ var require_issueAttachments = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.IssueAttachments = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var form_data_1 = require_form_data();
+    var formdata_node_1 = require_form_data2();
     var IssueAttachments = class {
       constructor(client) {
         this.client = client;
@@ -41325,19 +43129,98 @@ var require_issueAttachments = __commonJS({
       }
       addAttachment(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          var _a;
-          const formData = new form_data_1.default();
+          var _a, e_1, _b, _c;
+          const formData = new formdata_node_1.FormData();
           const attachments = Array.isArray(parameters.attachment) ? parameters.attachment : [parameters.attachment];
-          attachments.forEach((attachment) => formData.append("file", attachment.file, attachment.filename));
+          const { default: mime } = yield Promise.resolve().then(() => (init_src(), src_exports));
+          let Readable;
+          if (typeof window === "undefined") {
+            const { Readable: NodeReadable } = yield import("stream");
+            Readable = NodeReadable;
+          }
+          try {
+            for (var _d = true, attachments_1 = tslib_1.__asyncValues(attachments), attachments_1_1; attachments_1_1 = yield attachments_1.next(), _a = attachments_1_1.done, !_a; _d = true) {
+              _c = attachments_1_1.value;
+              _d = false;
+              const attachment = _c;
+              const file = yield this._convertToFile(attachment, mime, Readable);
+              if (!(file instanceof formdata_node_1.File || file instanceof Blob)) {
+                throw new Error(`Unsupported file type for attachment: ${typeof file}`);
+              }
+              formData.append("file", file, attachment.filename);
+            }
+          } catch (e_1_1) {
+            e_1 = { error: e_1_1 };
+          } finally {
+            try {
+              if (!_d && !_a && (_b = attachments_1.return)) yield _b.call(attachments_1);
+            } finally {
+              if (e_1) throw e_1.error;
+            }
+          }
           const config = {
             url: `/rest/api/2/issue/${parameters.issueIdOrKey}/attachments`,
             method: "POST",
-            headers: Object.assign({ "X-Atlassian-Token": "no-check", "Content-Type": "multipart/form-data" }, (_a = formData.getHeaders) === null || _a === void 0 ? void 0 : _a.call(formData)),
+            headers: {
+              "X-Atlassian-Token": "no-check",
+              "Content-Type": "multipart/form-data"
+            },
             data: formData,
             maxBodyLength: Infinity,
             maxContentLength: Infinity
           };
           return this.client.sendRequest(config, callback);
+        });
+      }
+      _convertToFile(attachment, mime, Readable) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          var _a;
+          const mimeType = (_a = attachment.mimeType) !== null && _a !== void 0 ? _a : mime.getType(attachment.filename) || void 0;
+          if (attachment.file instanceof Blob || attachment.file instanceof formdata_node_1.File) {
+            return attachment.file;
+          }
+          if (typeof attachment.file === "string") {
+            return new formdata_node_1.File([attachment.file], attachment.filename, { type: mimeType });
+          }
+          if (Readable && attachment.file instanceof Readable) {
+            return this._streamToBlob(attachment.file, attachment.filename, mimeType);
+          }
+          if (attachment.file instanceof ReadableStream) {
+            return this._streamToBlob(attachment.file, attachment.filename, mimeType);
+          }
+          if (ArrayBuffer.isView(attachment.file) || attachment.file instanceof ArrayBuffer) {
+            return new formdata_node_1.File([attachment.file], attachment.filename, { type: mimeType });
+          }
+          throw new Error("Unsupported attachment file type.");
+        });
+      }
+      _streamToBlob(stream, filename, mimeType) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          if (typeof window === "undefined" && stream instanceof (yield import("stream")).Readable) {
+            return new Promise((resolve, reject) => {
+              const chunks = [];
+              stream.on("data", (chunk) => chunks.push(chunk));
+              stream.on("end", () => {
+                const blob = new Blob(chunks, { type: mimeType });
+                resolve(new formdata_node_1.File([blob], filename, { type: mimeType }));
+              });
+              stream.on("error", reject);
+            });
+          }
+          if (stream instanceof ReadableStream) {
+            const reader = stream.getReader();
+            const chunks = [];
+            let done = false;
+            while (!done) {
+              const { value, done: streamDone } = yield reader.read();
+              if (value)
+                chunks.push(value);
+              done = streamDone;
+            }
+            const blob = new Blob(chunks, { type: mimeType });
+            return new formdata_node_1.File([blob], filename, { type: mimeType });
+          }
+          throw new Error("Unsupported stream type.");
         });
       }
     };
@@ -57167,96 +59050,180 @@ var require_version2Client = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Version2Client = void 0;
-    var clients_1 = require_clients();
-    var __1 = require_version22();
-    var Version2Client2 = class extends clients_1.BaseClient {
+    var baseClient_1 = require_baseClient();
+    var announcementBanner_1 = require_announcementBanner();
+    var applicationRoles_1 = require_applicationRoles();
+    var appMigration_1 = require_appMigration();
+    var appProperties_1 = require_appProperties();
+    var auditRecords_1 = require_auditRecords();
+    var avatars_1 = require_avatars();
+    var dashboards_1 = require_dashboards();
+    var dynamicModules_1 = require_dynamicModules();
+    var filters_1 = require_filters();
+    var filterSharing_1 = require_filterSharing();
+    var groupAndUserPicker_1 = require_groupAndUserPicker();
+    var groups_1 = require_groups();
+    var issueAttachments_1 = require_issueAttachments();
+    var issueCommentProperties_1 = require_issueCommentProperties();
+    var issueComments_1 = require_issueComments();
+    var issueCustomFieldConfigurationApps_1 = require_issueCustomFieldConfigurationApps();
+    var issueCustomFieldContexts_1 = require_issueCustomFieldContexts();
+    var issueCustomFieldOptions_1 = require_issueCustomFieldOptions();
+    var issueCustomFieldOptionsApps_1 = require_issueCustomFieldOptionsApps();
+    var issueCustomFieldValuesApps_1 = require_issueCustomFieldValuesApps();
+    var issueFieldConfigurations_1 = require_issueFieldConfigurations();
+    var issueFields_1 = require_issueFields();
+    var issueLinks_1 = require_issueLinks();
+    var issueLinkTypes_1 = require_issueLinkTypes();
+    var issueNavigatorSettings_1 = require_issueNavigatorSettings();
+    var issueNotificationSchemes_1 = require_issueNotificationSchemes();
+    var issuePriorities_1 = require_issuePriorities();
+    var issueProperties_1 = require_issueProperties();
+    var issueRemoteLinks_1 = require_issueRemoteLinks();
+    var issueResolutions_1 = require_issueResolutions();
+    var issues_1 = require_issues();
+    var issueSearch_1 = require_issueSearch();
+    var issueSecurityLevel_1 = require_issueSecurityLevel();
+    var issueSecuritySchemes_1 = require_issueSecuritySchemes();
+    var issueTypeProperties_1 = require_issueTypeProperties();
+    var issueTypes_1 = require_issueTypes();
+    var issueTypeSchemes_1 = require_issueTypeSchemes();
+    var issueTypeScreenSchemes_1 = require_issueTypeScreenSchemes();
+    var issueVotes_1 = require_issueVotes();
+    var issueWatchers_1 = require_issueWatchers();
+    var issueWorklogProperties_1 = require_issueWorklogProperties();
+    var issueWorklogs_1 = require_issueWorklogs();
+    var jiraExpressions_1 = require_jiraExpressions();
+    var jiraSettings_1 = require_jiraSettings();
+    var jQL_1 = require_jQL();
+    var jqlFunctionsApps_1 = require_jqlFunctionsApps();
+    var labels_1 = require_labels();
+    var licenseMetrics_1 = require_licenseMetrics();
+    var myself_1 = require_myself();
+    var permissions_1 = require_permissions();
+    var permissionSchemes_1 = require_permissionSchemes();
+    var projectAvatars_1 = require_projectAvatars();
+    var projectCategories_1 = require_projectCategories();
+    var projectComponents_1 = require_projectComponents();
+    var projectEmail_1 = require_projectEmail();
+    var projectFeatures_1 = require_projectFeatures();
+    var projectKeyAndNameValidation_1 = require_projectKeyAndNameValidation();
+    var projectPermissionSchemes_1 = require_projectPermissionSchemes();
+    var projectProperties_1 = require_projectProperties();
+    var projectRoleActors_1 = require_projectRoleActors();
+    var projectRoles_1 = require_projectRoles();
+    var projects_1 = require_projects2();
+    var projectTypes_1 = require_projectTypes();
+    var projectVersions_1 = require_projectVersions();
+    var screens_1 = require_screens();
+    var screenSchemes_1 = require_screenSchemes();
+    var screenTabFields_1 = require_screenTabFields();
+    var screenTabs_1 = require_screenTabs();
+    var serverInfo_1 = require_serverInfo();
+    var status_1 = require_status2();
+    var tasks_1 = require_tasks();
+    var timeTracking_1 = require_timeTracking();
+    var uIModificationsApps_1 = require_uIModificationsApps();
+    var userProperties_1 = require_userProperties();
+    var users_1 = require_users();
+    var userSearch_1 = require_userSearch();
+    var webhooks_1 = require_webhooks();
+    var workflows_1 = require_workflows();
+    var workflowSchemeDrafts_1 = require_workflowSchemeDrafts();
+    var workflowSchemeProjectAssociations_1 = require_workflowSchemeProjectAssociations();
+    var workflowSchemes_1 = require_workflowSchemes();
+    var workflowStatusCategories_1 = require_workflowStatusCategories();
+    var workflowStatuses_1 = require_workflowStatuses();
+    var workflowTransitionProperties_1 = require_workflowTransitionProperties();
+    var workflowTransitionRules_1 = require_workflowTransitionRules();
+    var Version2Client2 = class extends baseClient_1.BaseClient {
       constructor() {
         super(...arguments);
-        this.announcementBanner = new __1.AnnouncementBanner(this);
-        this.applicationRoles = new __1.ApplicationRoles(this);
-        this.appMigration = new __1.AppMigration(this);
-        this.appProperties = new __1.AppProperties(this);
-        this.auditRecords = new __1.AuditRecords(this);
-        this.avatars = new __1.Avatars(this);
-        this.dashboards = new __1.Dashboards(this);
-        this.dynamicModules = new __1.DynamicModules(this);
-        this.filters = new __1.Filters(this);
-        this.filterSharing = new __1.FilterSharing(this);
-        this.groupAndUserPicker = new __1.GroupAndUserPicker(this);
-        this.groups = new __1.Groups(this);
-        this.issueAttachments = new __1.IssueAttachments(this);
-        this.issueCommentProperties = new __1.IssueCommentProperties(this);
-        this.issueComments = new __1.IssueComments(this);
-        this.issueCustomFieldConfigurationApps = new __1.IssueCustomFieldConfigurationApps(this);
-        this.issueCustomFieldContexts = new __1.IssueCustomFieldContexts(this);
-        this.issueCustomFieldOptions = new __1.IssueCustomFieldOptions(this);
-        this.issueCustomFieldOptionsApps = new __1.IssueCustomFieldOptionsApps(this);
-        this.issueCustomFieldValuesApps = new __1.IssueCustomFieldValuesApps(this);
-        this.issueFieldConfigurations = new __1.IssueFieldConfigurations(this);
-        this.issueFields = new __1.IssueFields(this);
-        this.issueLinks = new __1.IssueLinks(this);
-        this.issueLinkTypes = new __1.IssueLinkTypes(this);
-        this.issueNavigatorSettings = new __1.IssueNavigatorSettings(this);
-        this.issueNotificationSchemes = new __1.IssueNotificationSchemes(this);
-        this.issuePriorities = new __1.IssuePriorities(this);
-        this.issueProperties = new __1.IssueProperties(this);
-        this.issueRemoteLinks = new __1.IssueRemoteLinks(this);
-        this.issueResolutions = new __1.IssueResolutions(this);
-        this.issues = new __1.Issues(this);
-        this.issueSearch = new __1.IssueSearch(this);
-        this.issueSecurityLevel = new __1.IssueSecurityLevel(this);
-        this.issueSecuritySchemes = new __1.IssueSecuritySchemes(this);
-        this.issueTypeProperties = new __1.IssueTypeProperties(this);
-        this.issueTypes = new __1.IssueTypes(this);
-        this.issueTypeSchemes = new __1.IssueTypeSchemes(this);
-        this.issueTypeScreenSchemes = new __1.IssueTypeScreenSchemes(this);
-        this.issueVotes = new __1.IssueVotes(this);
-        this.issueWatchers = new __1.IssueWatchers(this);
-        this.issueWorklogProperties = new __1.IssueWorklogProperties(this);
-        this.issueWorklogs = new __1.IssueWorklogs(this);
-        this.jiraExpressions = new __1.JiraExpressions(this);
-        this.jiraSettings = new __1.JiraSettings(this);
-        this.jql = new __1.JQL(this);
-        this.jqlFunctionsApps = new __1.JqlFunctionsApps(this);
-        this.labels = new __1.Labels(this);
-        this.licenseMetrics = new __1.LicenseMetrics(this);
-        this.myself = new __1.Myself(this);
-        this.permissions = new __1.Permissions(this);
-        this.permissionSchemes = new __1.PermissionSchemes(this);
-        this.projectAvatars = new __1.ProjectAvatars(this);
-        this.projectCategories = new __1.ProjectCategories(this);
-        this.projectComponents = new __1.ProjectComponents(this);
-        this.projectEmail = new __1.ProjectEmail(this);
-        this.projectFeatures = new __1.ProjectFeatures(this);
-        this.projectKeyAndNameValidation = new __1.ProjectKeyAndNameValidation(this);
-        this.projectPermissionSchemes = new __1.ProjectPermissionSchemes(this);
-        this.projectProperties = new __1.ProjectProperties(this);
-        this.projectRoleActors = new __1.ProjectRoleActors(this);
-        this.projectRoles = new __1.ProjectRoles(this);
-        this.projects = new __1.Projects(this);
-        this.projectTypes = new __1.ProjectTypes(this);
-        this.projectVersions = new __1.ProjectVersions(this);
-        this.screens = new __1.Screens(this);
-        this.screenSchemes = new __1.ScreenSchemes(this);
-        this.screenTabFields = new __1.ScreenTabFields(this);
-        this.screenTabs = new __1.ScreenTabs(this);
-        this.serverInfo = new __1.ServerInfo(this);
-        this.status = new __1.Status(this);
-        this.tasks = new __1.Tasks(this);
-        this.timeTracking = new __1.TimeTracking(this);
-        this.uiModificationsApps = new __1.UIModificationsApps(this);
-        this.userProperties = new __1.UserProperties(this);
-        this.users = new __1.Users(this);
-        this.userSearch = new __1.UserSearch(this);
-        this.webhooks = new __1.Webhooks(this);
-        this.workflows = new __1.Workflows(this);
-        this.workflowSchemeDrafts = new __1.WorkflowSchemeDrafts(this);
-        this.workflowSchemeProjectAssociations = new __1.WorkflowSchemeProjectAssociations(this);
-        this.workflowSchemes = new __1.WorkflowSchemes(this);
-        this.workflowStatusCategories = new __1.WorkflowStatusCategories(this);
-        this.workflowStatuses = new __1.WorkflowStatuses(this);
-        this.workflowTransitionProperties = new __1.WorkflowTransitionProperties(this);
-        this.workflowTransitionRules = new __1.WorkflowTransitionRules(this);
+        this.announcementBanner = new announcementBanner_1.AnnouncementBanner(this);
+        this.applicationRoles = new applicationRoles_1.ApplicationRoles(this);
+        this.appMigration = new appMigration_1.AppMigration(this);
+        this.appProperties = new appProperties_1.AppProperties(this);
+        this.auditRecords = new auditRecords_1.AuditRecords(this);
+        this.avatars = new avatars_1.Avatars(this);
+        this.dashboards = new dashboards_1.Dashboards(this);
+        this.dynamicModules = new dynamicModules_1.DynamicModules(this);
+        this.filters = new filters_1.Filters(this);
+        this.filterSharing = new filterSharing_1.FilterSharing(this);
+        this.groupAndUserPicker = new groupAndUserPicker_1.GroupAndUserPicker(this);
+        this.groups = new groups_1.Groups(this);
+        this.issueAttachments = new issueAttachments_1.IssueAttachments(this);
+        this.issueCommentProperties = new issueCommentProperties_1.IssueCommentProperties(this);
+        this.issueComments = new issueComments_1.IssueComments(this);
+        this.issueCustomFieldConfigurationApps = new issueCustomFieldConfigurationApps_1.IssueCustomFieldConfigurationApps(this);
+        this.issueCustomFieldContexts = new issueCustomFieldContexts_1.IssueCustomFieldContexts(this);
+        this.issueCustomFieldOptions = new issueCustomFieldOptions_1.IssueCustomFieldOptions(this);
+        this.issueCustomFieldOptionsApps = new issueCustomFieldOptionsApps_1.IssueCustomFieldOptionsApps(this);
+        this.issueCustomFieldValuesApps = new issueCustomFieldValuesApps_1.IssueCustomFieldValuesApps(this);
+        this.issueFieldConfigurations = new issueFieldConfigurations_1.IssueFieldConfigurations(this);
+        this.issueFields = new issueFields_1.IssueFields(this);
+        this.issueLinks = new issueLinks_1.IssueLinks(this);
+        this.issueLinkTypes = new issueLinkTypes_1.IssueLinkTypes(this);
+        this.issueNavigatorSettings = new issueNavigatorSettings_1.IssueNavigatorSettings(this);
+        this.issueNotificationSchemes = new issueNotificationSchemes_1.IssueNotificationSchemes(this);
+        this.issuePriorities = new issuePriorities_1.IssuePriorities(this);
+        this.issueProperties = new issueProperties_1.IssueProperties(this);
+        this.issueRemoteLinks = new issueRemoteLinks_1.IssueRemoteLinks(this);
+        this.issueResolutions = new issueResolutions_1.IssueResolutions(this);
+        this.issues = new issues_1.Issues(this);
+        this.issueSearch = new issueSearch_1.IssueSearch(this);
+        this.issueSecurityLevel = new issueSecurityLevel_1.IssueSecurityLevel(this);
+        this.issueSecuritySchemes = new issueSecuritySchemes_1.IssueSecuritySchemes(this);
+        this.issueTypeProperties = new issueTypeProperties_1.IssueTypeProperties(this);
+        this.issueTypes = new issueTypes_1.IssueTypes(this);
+        this.issueTypeSchemes = new issueTypeSchemes_1.IssueTypeSchemes(this);
+        this.issueTypeScreenSchemes = new issueTypeScreenSchemes_1.IssueTypeScreenSchemes(this);
+        this.issueVotes = new issueVotes_1.IssueVotes(this);
+        this.issueWatchers = new issueWatchers_1.IssueWatchers(this);
+        this.issueWorklogProperties = new issueWorklogProperties_1.IssueWorklogProperties(this);
+        this.issueWorklogs = new issueWorklogs_1.IssueWorklogs(this);
+        this.jiraExpressions = new jiraExpressions_1.JiraExpressions(this);
+        this.jiraSettings = new jiraSettings_1.JiraSettings(this);
+        this.jql = new jQL_1.JQL(this);
+        this.jqlFunctionsApps = new jqlFunctionsApps_1.JqlFunctionsApps(this);
+        this.labels = new labels_1.Labels(this);
+        this.licenseMetrics = new licenseMetrics_1.LicenseMetrics(this);
+        this.myself = new myself_1.Myself(this);
+        this.permissions = new permissions_1.Permissions(this);
+        this.permissionSchemes = new permissionSchemes_1.PermissionSchemes(this);
+        this.projectAvatars = new projectAvatars_1.ProjectAvatars(this);
+        this.projectCategories = new projectCategories_1.ProjectCategories(this);
+        this.projectComponents = new projectComponents_1.ProjectComponents(this);
+        this.projectEmail = new projectEmail_1.ProjectEmail(this);
+        this.projectFeatures = new projectFeatures_1.ProjectFeatures(this);
+        this.projectKeyAndNameValidation = new projectKeyAndNameValidation_1.ProjectKeyAndNameValidation(this);
+        this.projectPermissionSchemes = new projectPermissionSchemes_1.ProjectPermissionSchemes(this);
+        this.projectProperties = new projectProperties_1.ProjectProperties(this);
+        this.projectRoleActors = new projectRoleActors_1.ProjectRoleActors(this);
+        this.projectRoles = new projectRoles_1.ProjectRoles(this);
+        this.projects = new projects_1.Projects(this);
+        this.projectTypes = new projectTypes_1.ProjectTypes(this);
+        this.projectVersions = new projectVersions_1.ProjectVersions(this);
+        this.screens = new screens_1.Screens(this);
+        this.screenSchemes = new screenSchemes_1.ScreenSchemes(this);
+        this.screenTabFields = new screenTabFields_1.ScreenTabFields(this);
+        this.screenTabs = new screenTabs_1.ScreenTabs(this);
+        this.serverInfo = new serverInfo_1.ServerInfo(this);
+        this.status = new status_1.Status(this);
+        this.tasks = new tasks_1.Tasks(this);
+        this.timeTracking = new timeTracking_1.TimeTracking(this);
+        this.uiModificationsApps = new uIModificationsApps_1.UIModificationsApps(this);
+        this.userProperties = new userProperties_1.UserProperties(this);
+        this.users = new users_1.Users(this);
+        this.userSearch = new userSearch_1.UserSearch(this);
+        this.webhooks = new webhooks_1.Webhooks(this);
+        this.workflows = new workflows_1.Workflows(this);
+        this.workflowSchemeDrafts = new workflowSchemeDrafts_1.WorkflowSchemeDrafts(this);
+        this.workflowSchemeProjectAssociations = new workflowSchemeProjectAssociations_1.WorkflowSchemeProjectAssociations(this);
+        this.workflowSchemes = new workflowSchemes_1.WorkflowSchemes(this);
+        this.workflowStatusCategories = new workflowStatusCategories_1.WorkflowStatusCategories(this);
+        this.workflowStatuses = new workflowStatuses_1.WorkflowStatuses(this);
+        this.workflowTransitionProperties = new workflowTransitionProperties_1.WorkflowTransitionProperties(this);
+        this.workflowTransitionRules = new workflowTransitionRules_1.WorkflowTransitionRules(this);
       }
     };
     exports2.Version2Client = Version2Client2;
@@ -57264,7 +59231,7 @@ var require_version2Client = __commonJS({
 });
 
 // node_modules/jira.js/out/version2/client/index.js
-var require_client3 = __commonJS({
+var require_client4 = __commonJS({
   "node_modules/jira.js/out/version2/client/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -57365,9 +59332,9 @@ var require_version22 = __commonJS({
     tslib_1.__exportStar(require_workflowStatuses(), exports2);
     tslib_1.__exportStar(require_workflowTransitionProperties(), exports2);
     tslib_1.__exportStar(require_workflowTransitionRules(), exports2);
-    exports2.Version2Models = require_models2();
-    exports2.Version2Parameters = require_parameters2();
-    tslib_1.__exportStar(require_client3(), exports2);
+    exports2.Version2Models = tslib_1.__importStar(require_models2());
+    exports2.Version2Parameters = tslib_1.__importStar(require_parameters2());
+    tslib_1.__exportStar(require_client4(), exports2);
   }
 });
 
@@ -58486,7 +60453,7 @@ var require_issueAttachments2 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.IssueAttachments = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var form_data_1 = require_form_data();
+    var formdata_node_1 = require_form_data2();
     var IssueAttachments = class {
       constructor(client) {
         this.client = client;
@@ -58573,19 +60540,98 @@ var require_issueAttachments2 = __commonJS({
       }
       addAttachment(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          var _a;
-          const formData = new form_data_1.default();
+          var _a, e_1, _b, _c;
+          const formData = new formdata_node_1.FormData();
           const attachments = Array.isArray(parameters.attachment) ? parameters.attachment : [parameters.attachment];
-          attachments.forEach((attachment) => formData.append("file", attachment.file, attachment.filename));
+          const { default: mime } = yield Promise.resolve().then(() => (init_src(), src_exports));
+          let Readable;
+          if (typeof window === "undefined") {
+            const { Readable: NodeReadable } = yield import("stream");
+            Readable = NodeReadable;
+          }
+          try {
+            for (var _d = true, attachments_1 = tslib_1.__asyncValues(attachments), attachments_1_1; attachments_1_1 = yield attachments_1.next(), _a = attachments_1_1.done, !_a; _d = true) {
+              _c = attachments_1_1.value;
+              _d = false;
+              const attachment = _c;
+              const file = yield this._convertToFile(attachment, mime, Readable);
+              if (!(file instanceof formdata_node_1.File || file instanceof Blob)) {
+                throw new Error(`Unsupported file type for attachment: ${typeof file}`);
+              }
+              formData.append("file", file, attachment.filename);
+            }
+          } catch (e_1_1) {
+            e_1 = { error: e_1_1 };
+          } finally {
+            try {
+              if (!_d && !_a && (_b = attachments_1.return)) yield _b.call(attachments_1);
+            } finally {
+              if (e_1) throw e_1.error;
+            }
+          }
           const config = {
             url: `/rest/api/3/issue/${parameters.issueIdOrKey}/attachments`,
             method: "POST",
-            headers: Object.assign({ "X-Atlassian-Token": "no-check", "Content-Type": "multipart/form-data" }, (_a = formData.getHeaders) === null || _a === void 0 ? void 0 : _a.call(formData)),
+            headers: {
+              "X-Atlassian-Token": "no-check",
+              "Content-Type": "multipart/form-data"
+            },
             data: formData,
             maxBodyLength: Infinity,
             maxContentLength: Infinity
           };
           return this.client.sendRequest(config, callback);
+        });
+      }
+      _convertToFile(attachment, mime, Readable) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          var _a;
+          const mimeType = (_a = attachment.mimeType) !== null && _a !== void 0 ? _a : mime.getType(attachment.filename) || void 0;
+          if (attachment.file instanceof Blob || attachment.file instanceof formdata_node_1.File) {
+            return attachment.file;
+          }
+          if (typeof attachment.file === "string") {
+            return new formdata_node_1.File([attachment.file], attachment.filename, { type: mimeType });
+          }
+          if (Readable && attachment.file instanceof Readable) {
+            return this._streamToBlob(attachment.file, attachment.filename, mimeType);
+          }
+          if (attachment.file instanceof ReadableStream) {
+            return this._streamToBlob(attachment.file, attachment.filename, mimeType);
+          }
+          if (ArrayBuffer.isView(attachment.file) || attachment.file instanceof ArrayBuffer) {
+            return new formdata_node_1.File([attachment.file], attachment.filename, { type: mimeType });
+          }
+          throw new Error("Unsupported attachment file type.");
+        });
+      }
+      _streamToBlob(stream, filename, mimeType) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          if (typeof window === "undefined" && stream instanceof (yield import("stream")).Readable) {
+            return new Promise((resolve, reject) => {
+              const chunks = [];
+              stream.on("data", (chunk) => chunks.push(chunk));
+              stream.on("end", () => {
+                const blob = new Blob(chunks, { type: mimeType });
+                resolve(new formdata_node_1.File([blob], filename, { type: mimeType }));
+              });
+              stream.on("error", reject);
+            });
+          }
+          if (stream instanceof ReadableStream) {
+            const reader = stream.getReader();
+            const chunks = [];
+            let done = false;
+            while (!done) {
+              const { value, done: streamDone } = yield reader.read();
+              if (value)
+                chunks.push(value);
+              done = streamDone;
+            }
+            const blob = new Blob(chunks, { type: mimeType });
+            return new formdata_node_1.File([blob], filename, { type: mimeType });
+          }
+          throw new Error("Unsupported stream type.");
         });
       }
     };
@@ -64154,6 +66200,7 @@ var require_users2 = __commonJS({
             method: "POST",
             data: {
               emailAddress: parameters.emailAddress,
+              products: parameters.products ? parameters.products : ["jira-core", "jira-servicedesk", "jira-product-discovery", "jira-software"],
               self: parameters.self
             }
           };
@@ -65246,97 +67293,182 @@ var require_version3Client = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Version3Client = void 0;
-    var clients_1 = require_clients();
-    var __1 = require_version32();
-    var Version3Client = class extends clients_1.BaseClient {
+    var baseClient_1 = require_baseClient();
+    var announcementBanner_1 = require_announcementBanner2();
+    var appMigration_1 = require_appMigration2();
+    var appProperties_1 = require_appProperties2();
+    var applicationRoles_1 = require_applicationRoles2();
+    var auditRecords_1 = require_auditRecords3();
+    var avatars_1 = require_avatars3();
+    var dashboards_1 = require_dashboards2();
+    var dynamicModules_1 = require_dynamicModules2();
+    var filterSharing_1 = require_filterSharing2();
+    var filters_1 = require_filters2();
+    var groupAndUserPicker_1 = require_groupAndUserPicker2();
+    var groups_1 = require_groups2();
+    var instanceInformation_1 = require_instanceInformation();
+    var issueAttachments_1 = require_issueAttachments2();
+    var issueCommentProperties_1 = require_issueCommentProperties2();
+    var issueComments_1 = require_issueComments2();
+    var issueCustomFieldConfigurationApps_1 = require_issueCustomFieldConfigurationApps2();
+    var issueCustomFieldContexts_1 = require_issueCustomFieldContexts2();
+    var issueCustomFieldOptions_1 = require_issueCustomFieldOptions2();
+    var issueCustomFieldOptionsApps_1 = require_issueCustomFieldOptionsApps2();
+    var issueCustomFieldValuesApps_1 = require_issueCustomFieldValuesApps2();
+    var issueFieldConfigurations_1 = require_issueFieldConfigurations2();
+    var issueFields_1 = require_issueFields2();
+    var issueLinkTypes_1 = require_issueLinkTypes3();
+    var issueLinks_1 = require_issueLinks2();
+    var issueNavigatorSettings_1 = require_issueNavigatorSettings2();
+    var issueNotificationSchemes_1 = require_issueNotificationSchemes2();
+    var issuePriorities_1 = require_issuePriorities2();
+    var issueProperties_1 = require_issueProperties2();
+    var issueRemoteLinks_1 = require_issueRemoteLinks2();
+    var issueResolutions_1 = require_issueResolutions2();
+    var issueSearch_1 = require_issueSearch2();
+    var issueSecurityLevel_1 = require_issueSecurityLevel2();
+    var issueSecuritySchemes_1 = require_issueSecuritySchemes2();
+    var issueTypeProperties_1 = require_issueTypeProperties2();
+    var issueTypeSchemes_1 = require_issueTypeSchemes2();
+    var issueTypeScreenSchemes_1 = require_issueTypeScreenSchemes2();
+    var issueTypes_1 = require_issueTypes2();
+    var issueVotes_1 = require_issueVotes2();
+    var issueWatchers_1 = require_issueWatchers2();
+    var issueWorklogProperties_1 = require_issueWorklogProperties2();
+    var issueWorklogs_1 = require_issueWorklogs2();
+    var issues_1 = require_issues2();
+    var jiraExpressions_1 = require_jiraExpressions2();
+    var jiraSettings_1 = require_jiraSettings2();
+    var jQL_1 = require_jQL2();
+    var jqlFunctionsApps_1 = require_jqlFunctionsApps2();
+    var labels_1 = require_labels2();
+    var licenseMetrics_1 = require_licenseMetrics2();
+    var myself_1 = require_myself2();
+    var permissionSchemes_1 = require_permissionSchemes3();
+    var permissions_1 = require_permissions3();
+    var projectAvatars_1 = require_projectAvatars3();
+    var projectCategories_1 = require_projectCategories2();
+    var projectComponents_1 = require_projectComponents2();
+    var projectEmail_1 = require_projectEmail2();
+    var projectFeatures_1 = require_projectFeatures2();
+    var projectKeyAndNameValidation_1 = require_projectKeyAndNameValidation2();
+    var projectPermissionSchemes_1 = require_projectPermissionSchemes2();
+    var projectProperties_1 = require_projectProperties2();
+    var projectRoleActors_1 = require_projectRoleActors2();
+    var projectRoles_1 = require_projectRoles2();
+    var projectTypes_1 = require_projectTypes2();
+    var projectVersions_1 = require_projectVersions2();
+    var projects_1 = require_projects3();
+    var screenSchemes_1 = require_screenSchemes2();
+    var screenTabFields_1 = require_screenTabFields2();
+    var screenTabs_1 = require_screenTabs2();
+    var screens_1 = require_screens2();
+    var serverInfo_1 = require_serverInfo2();
+    var status_1 = require_status4();
+    var tasks_1 = require_tasks2();
+    var timeTracking_1 = require_timeTracking2();
+    var uIModificationsApps_1 = require_uIModificationsApps2();
+    var userProperties_1 = require_userProperties2();
+    var userSearch_1 = require_userSearch2();
+    var users_1 = require_users2();
+    var webhooks_1 = require_webhooks2();
+    var workflows_1 = require_workflows2();
+    var workflowSchemeDrafts_1 = require_workflowSchemeDrafts2();
+    var workflowSchemeProjectAssociations_1 = require_workflowSchemeProjectAssociations2();
+    var workflowSchemes_1 = require_workflowSchemes2();
+    var workflowStatusCategories_1 = require_workflowStatusCategories2();
+    var workflowStatuses_1 = require_workflowStatuses2();
+    var workflowTransitionProperties_1 = require_workflowTransitionProperties2();
+    var workflowTransitionRules_1 = require_workflowTransitionRules3();
+    var Version3Client = class extends baseClient_1.BaseClient {
       constructor() {
         super(...arguments);
-        this.announcementBanner = new __1.AnnouncementBanner(this);
-        this.applicationRoles = new __1.ApplicationRoles(this);
-        this.appMigration = new __1.AppMigration(this);
-        this.appProperties = new __1.AppProperties(this);
-        this.auditRecords = new __1.AuditRecords(this);
-        this.avatars = new __1.Avatars(this);
-        this.dashboards = new __1.Dashboards(this);
-        this.dynamicModules = new __1.DynamicModules(this);
-        this.filters = new __1.Filters(this);
-        this.filterSharing = new __1.FilterSharing(this);
-        this.groupAndUserPicker = new __1.GroupAndUserPicker(this);
-        this.groups = new __1.Groups(this);
-        this.instanceInformation = new __1.InstanceInformation(this);
-        this.issueAttachments = new __1.IssueAttachments(this);
-        this.issueCommentProperties = new __1.IssueCommentProperties(this);
-        this.issueComments = new __1.IssueComments(this);
-        this.issueCustomFieldConfigurationApps = new __1.IssueCustomFieldConfigurationApps(this);
-        this.issueCustomFieldContexts = new __1.IssueCustomFieldContexts(this);
-        this.issueCustomFieldOptions = new __1.IssueCustomFieldOptions(this);
-        this.issueCustomFieldOptionsApps = new __1.IssueCustomFieldOptionsApps(this);
-        this.issueCustomFieldValuesApps = new __1.IssueCustomFieldValuesApps(this);
-        this.issueFieldConfigurations = new __1.IssueFieldConfigurations(this);
-        this.issueFields = new __1.IssueFields(this);
-        this.issueLinks = new __1.IssueLinks(this);
-        this.issueLinkTypes = new __1.IssueLinkTypes(this);
-        this.issueNavigatorSettings = new __1.IssueNavigatorSettings(this);
-        this.issueNotificationSchemes = new __1.IssueNotificationSchemes(this);
-        this.issuePriorities = new __1.IssuePriorities(this);
-        this.issueProperties = new __1.IssueProperties(this);
-        this.issueRemoteLinks = new __1.IssueRemoteLinks(this);
-        this.issueResolutions = new __1.IssueResolutions(this);
-        this.issues = new __1.Issues(this);
-        this.issueSearch = new __1.IssueSearch(this);
-        this.issueSecurityLevel = new __1.IssueSecurityLevel(this);
-        this.issueSecuritySchemes = new __1.IssueSecuritySchemes(this);
-        this.issueTypeProperties = new __1.IssueTypeProperties(this);
-        this.issueTypes = new __1.IssueTypes(this);
-        this.issueTypeSchemes = new __1.IssueTypeSchemes(this);
-        this.issueTypeScreenSchemes = new __1.IssueTypeScreenSchemes(this);
-        this.issueVotes = new __1.IssueVotes(this);
-        this.issueWatchers = new __1.IssueWatchers(this);
-        this.issueWorklogProperties = new __1.IssueWorklogProperties(this);
-        this.issueWorklogs = new __1.IssueWorklogs(this);
-        this.jiraExpressions = new __1.JiraExpressions(this);
-        this.jiraSettings = new __1.JiraSettings(this);
-        this.jql = new __1.JQL(this);
-        this.jqlFunctionsApps = new __1.JqlFunctionsApps(this);
-        this.labels = new __1.Labels(this);
-        this.licenseMetrics = new __1.LicenseMetrics(this);
-        this.myself = new __1.Myself(this);
-        this.permissions = new __1.Permissions(this);
-        this.permissionSchemes = new __1.PermissionSchemes(this);
-        this.projectAvatars = new __1.ProjectAvatars(this);
-        this.projectCategories = new __1.ProjectCategories(this);
-        this.projectComponents = new __1.ProjectComponents(this);
-        this.projectEmail = new __1.ProjectEmail(this);
-        this.projectFeatures = new __1.ProjectFeatures(this);
-        this.projectKeyAndNameValidation = new __1.ProjectKeyAndNameValidation(this);
-        this.projectPermissionSchemes = new __1.ProjectPermissionSchemes(this);
-        this.projectProperties = new __1.ProjectProperties(this);
-        this.projectRoleActors = new __1.ProjectRoleActors(this);
-        this.projectRoles = new __1.ProjectRoles(this);
-        this.projects = new __1.Projects(this);
-        this.projectTypes = new __1.ProjectTypes(this);
-        this.projectVersions = new __1.ProjectVersions(this);
-        this.screens = new __1.Screens(this);
-        this.screenSchemes = new __1.ScreenSchemes(this);
-        this.screenTabFields = new __1.ScreenTabFields(this);
-        this.screenTabs = new __1.ScreenTabs(this);
-        this.serverInfo = new __1.ServerInfo(this);
-        this.status = new __1.Status(this);
-        this.tasks = new __1.Tasks(this);
-        this.timeTracking = new __1.TimeTracking(this);
-        this.uiModificationsApps = new __1.UIModificationsApps(this);
-        this.userProperties = new __1.UserProperties(this);
-        this.users = new __1.Users(this);
-        this.userSearch = new __1.UserSearch(this);
-        this.webhooks = new __1.Webhooks(this);
-        this.workflows = new __1.Workflows(this);
-        this.workflowSchemeDrafts = new __1.WorkflowSchemeDrafts(this);
-        this.workflowSchemeProjectAssociations = new __1.WorkflowSchemeProjectAssociations(this);
-        this.workflowSchemes = new __1.WorkflowSchemes(this);
-        this.workflowStatusCategories = new __1.WorkflowStatusCategories(this);
-        this.workflowStatuses = new __1.WorkflowStatuses(this);
-        this.workflowTransitionProperties = new __1.WorkflowTransitionProperties(this);
-        this.workflowTransitionRules = new __1.WorkflowTransitionRules(this);
+        this.announcementBanner = new announcementBanner_1.AnnouncementBanner(this);
+        this.applicationRoles = new applicationRoles_1.ApplicationRoles(this);
+        this.appMigration = new appMigration_1.AppMigration(this);
+        this.appProperties = new appProperties_1.AppProperties(this);
+        this.auditRecords = new auditRecords_1.AuditRecords(this);
+        this.avatars = new avatars_1.Avatars(this);
+        this.dashboards = new dashboards_1.Dashboards(this);
+        this.dynamicModules = new dynamicModules_1.DynamicModules(this);
+        this.filters = new filters_1.Filters(this);
+        this.filterSharing = new filterSharing_1.FilterSharing(this);
+        this.groupAndUserPicker = new groupAndUserPicker_1.GroupAndUserPicker(this);
+        this.groups = new groups_1.Groups(this);
+        this.instanceInformation = new instanceInformation_1.InstanceInformation(this);
+        this.issueAttachments = new issueAttachments_1.IssueAttachments(this);
+        this.issueCommentProperties = new issueCommentProperties_1.IssueCommentProperties(this);
+        this.issueComments = new issueComments_1.IssueComments(this);
+        this.issueCustomFieldConfigurationApps = new issueCustomFieldConfigurationApps_1.IssueCustomFieldConfigurationApps(this);
+        this.issueCustomFieldContexts = new issueCustomFieldContexts_1.IssueCustomFieldContexts(this);
+        this.issueCustomFieldOptions = new issueCustomFieldOptions_1.IssueCustomFieldOptions(this);
+        this.issueCustomFieldOptionsApps = new issueCustomFieldOptionsApps_1.IssueCustomFieldOptionsApps(this);
+        this.issueCustomFieldValuesApps = new issueCustomFieldValuesApps_1.IssueCustomFieldValuesApps(this);
+        this.issueFieldConfigurations = new issueFieldConfigurations_1.IssueFieldConfigurations(this);
+        this.issueFields = new issueFields_1.IssueFields(this);
+        this.issueLinks = new issueLinks_1.IssueLinks(this);
+        this.issueLinkTypes = new issueLinkTypes_1.IssueLinkTypes(this);
+        this.issueNavigatorSettings = new issueNavigatorSettings_1.IssueNavigatorSettings(this);
+        this.issueNotificationSchemes = new issueNotificationSchemes_1.IssueNotificationSchemes(this);
+        this.issuePriorities = new issuePriorities_1.IssuePriorities(this);
+        this.issueProperties = new issueProperties_1.IssueProperties(this);
+        this.issueRemoteLinks = new issueRemoteLinks_1.IssueRemoteLinks(this);
+        this.issueResolutions = new issueResolutions_1.IssueResolutions(this);
+        this.issues = new issues_1.Issues(this);
+        this.issueSearch = new issueSearch_1.IssueSearch(this);
+        this.issueSecurityLevel = new issueSecurityLevel_1.IssueSecurityLevel(this);
+        this.issueSecuritySchemes = new issueSecuritySchemes_1.IssueSecuritySchemes(this);
+        this.issueTypeProperties = new issueTypeProperties_1.IssueTypeProperties(this);
+        this.issueTypes = new issueTypes_1.IssueTypes(this);
+        this.issueTypeSchemes = new issueTypeSchemes_1.IssueTypeSchemes(this);
+        this.issueTypeScreenSchemes = new issueTypeScreenSchemes_1.IssueTypeScreenSchemes(this);
+        this.issueVotes = new issueVotes_1.IssueVotes(this);
+        this.issueWatchers = new issueWatchers_1.IssueWatchers(this);
+        this.issueWorklogProperties = new issueWorklogProperties_1.IssueWorklogProperties(this);
+        this.issueWorklogs = new issueWorklogs_1.IssueWorklogs(this);
+        this.jiraExpressions = new jiraExpressions_1.JiraExpressions(this);
+        this.jiraSettings = new jiraSettings_1.JiraSettings(this);
+        this.jql = new jQL_1.JQL(this);
+        this.jqlFunctionsApps = new jqlFunctionsApps_1.JqlFunctionsApps(this);
+        this.labels = new labels_1.Labels(this);
+        this.licenseMetrics = new licenseMetrics_1.LicenseMetrics(this);
+        this.myself = new myself_1.Myself(this);
+        this.permissions = new permissions_1.Permissions(this);
+        this.permissionSchemes = new permissionSchemes_1.PermissionSchemes(this);
+        this.projectAvatars = new projectAvatars_1.ProjectAvatars(this);
+        this.projectCategories = new projectCategories_1.ProjectCategories(this);
+        this.projectComponents = new projectComponents_1.ProjectComponents(this);
+        this.projectEmail = new projectEmail_1.ProjectEmail(this);
+        this.projectFeatures = new projectFeatures_1.ProjectFeatures(this);
+        this.projectKeyAndNameValidation = new projectKeyAndNameValidation_1.ProjectKeyAndNameValidation(this);
+        this.projectPermissionSchemes = new projectPermissionSchemes_1.ProjectPermissionSchemes(this);
+        this.projectProperties = new projectProperties_1.ProjectProperties(this);
+        this.projectRoleActors = new projectRoleActors_1.ProjectRoleActors(this);
+        this.projectRoles = new projectRoles_1.ProjectRoles(this);
+        this.projects = new projects_1.Projects(this);
+        this.projectTypes = new projectTypes_1.ProjectTypes(this);
+        this.projectVersions = new projectVersions_1.ProjectVersions(this);
+        this.screens = new screens_1.Screens(this);
+        this.screenSchemes = new screenSchemes_1.ScreenSchemes(this);
+        this.screenTabFields = new screenTabFields_1.ScreenTabFields(this);
+        this.screenTabs = new screenTabs_1.ScreenTabs(this);
+        this.serverInfo = new serverInfo_1.ServerInfo(this);
+        this.status = new status_1.Status(this);
+        this.tasks = new tasks_1.Tasks(this);
+        this.timeTracking = new timeTracking_1.TimeTracking(this);
+        this.uiModificationsApps = new uIModificationsApps_1.UIModificationsApps(this);
+        this.userProperties = new userProperties_1.UserProperties(this);
+        this.users = new users_1.Users(this);
+        this.userSearch = new userSearch_1.UserSearch(this);
+        this.webhooks = new webhooks_1.Webhooks(this);
+        this.workflows = new workflows_1.Workflows(this);
+        this.workflowSchemeDrafts = new workflowSchemeDrafts_1.WorkflowSchemeDrafts(this);
+        this.workflowSchemeProjectAssociations = new workflowSchemeProjectAssociations_1.WorkflowSchemeProjectAssociations(this);
+        this.workflowSchemes = new workflowSchemes_1.WorkflowSchemes(this);
+        this.workflowStatusCategories = new workflowStatusCategories_1.WorkflowStatusCategories(this);
+        this.workflowStatuses = new workflowStatuses_1.WorkflowStatuses(this);
+        this.workflowTransitionProperties = new workflowTransitionProperties_1.WorkflowTransitionProperties(this);
+        this.workflowTransitionRules = new workflowTransitionRules_1.WorkflowTransitionRules(this);
       }
     };
     exports2.Version3Client = Version3Client;
@@ -65344,7 +67476,7 @@ var require_version3Client = __commonJS({
 });
 
 // node_modules/jira.js/out/version3/client/index.js
-var require_client4 = __commonJS({
+var require_client5 = __commonJS({
   "node_modules/jira.js/out/version3/client/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -69596,7 +71728,6 @@ var require_models3 = __commonJS({
     tslib_1.__exportStar(require_id2(), exports2);
     tslib_1.__exportStar(require_idOrKey2(), exports2);
     tslib_1.__exportStar(require_includedFields2(), exports2);
-    tslib_1.__exportStar(require_models3(), exports2);
     tslib_1.__exportStar(require_issue4(), exports2);
     tslib_1.__exportStar(require_issueArchivalSync2(), exports2);
     tslib_1.__exportStar(require_issueArchivalSyncRequest(), exports2);
@@ -74213,9 +76344,9 @@ var require_version32 = __commonJS({
     tslib_1.__exportStar(require_workflowStatuses2(), exports2);
     tslib_1.__exportStar(require_workflowTransitionProperties2(), exports2);
     tslib_1.__exportStar(require_workflowTransitionRules3(), exports2);
-    tslib_1.__exportStar(require_client4(), exports2);
-    exports2.Version3Models = require_models3();
-    exports2.Version3Parameters = require_parameters3();
+    tslib_1.__exportStar(require_client5(), exports2);
+    exports2.Version3Models = tslib_1.__importStar(require_models3());
+    exports2.Version3Parameters = tslib_1.__importStar(require_parameters3());
   }
 });
 
@@ -74918,7 +77049,7 @@ var require_serviceDesk = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ServiceDesk = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var FormData2 = require_form_data();
+    var formdata_node_1 = require_form_data2();
     var ServiceDesk = class {
       constructor(client) {
         this.client = client;
@@ -74947,14 +77078,42 @@ var require_serviceDesk = __commonJS({
       }
       attachTemporaryFile(parameters, callback) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-          var _a;
-          const formData = new FormData2();
+          var _a, e_1, _b, _c;
+          const formData = new formdata_node_1.FormData();
           const attachments = Array.isArray(parameters.attachment) ? parameters.attachment : [parameters.attachment];
-          attachments.forEach((attachment) => formData.append("file", attachment.file, attachment.filename));
+          const { default: mime } = yield Promise.resolve().then(() => (init_src(), src_exports));
+          let Readable;
+          if (typeof window === "undefined") {
+            const { Readable: NodeReadable } = yield import("stream");
+            Readable = NodeReadable;
+          }
+          try {
+            for (var _d = true, attachments_1 = tslib_1.__asyncValues(attachments), attachments_1_1; attachments_1_1 = yield attachments_1.next(), _a = attachments_1_1.done, !_a; _d = true) {
+              _c = attachments_1_1.value;
+              _d = false;
+              const attachment = _c;
+              const file = yield this._convertToFile(attachment, mime, Readable);
+              if (!(file instanceof formdata_node_1.File || file instanceof Blob)) {
+                throw new Error(`Unsupported file type for attachment: ${typeof file}`);
+              }
+              formData.append("file", file, attachment.filename);
+            }
+          } catch (e_1_1) {
+            e_1 = { error: e_1_1 };
+          } finally {
+            try {
+              if (!_d && !_a && (_b = attachments_1.return)) yield _b.call(attachments_1);
+            } finally {
+              if (e_1) throw e_1.error;
+            }
+          }
           const config = {
             url: `/rest/servicedeskapi/servicedesk/${parameters.serviceDeskId}/attachTemporaryFile`,
             method: "POST",
-            headers: Object.assign({ "X-Atlassian-Token": "no-check", "Content-Type": "multipart/form-data" }, (_a = formData.getHeaders) === null || _a === void 0 ? void 0 : _a.call(formData)),
+            headers: {
+              "X-Atlassian-Token": "no-check",
+              "Content-Type": "multipart/form-data"
+            },
             data: formData
           };
           return this.client.sendRequest(config, callback);
@@ -75192,6 +77351,57 @@ var require_serviceDesk = __commonJS({
             }
           };
           return this.client.sendRequest(config, callback);
+        });
+      }
+      _convertToFile(attachment, mime, Readable) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          var _a;
+          const mimeType = (_a = attachment.mimeType) !== null && _a !== void 0 ? _a : mime.getType(attachment.filename) || void 0;
+          if (attachment.file instanceof Blob || attachment.file instanceof formdata_node_1.File) {
+            return attachment.file;
+          }
+          if (typeof attachment.file === "string") {
+            return new formdata_node_1.File([attachment.file], attachment.filename, { type: mimeType });
+          }
+          if (Readable && attachment.file instanceof Readable) {
+            return this._streamToBlob(attachment.file, attachment.filename, mimeType);
+          }
+          if (attachment.file instanceof ReadableStream) {
+            return this._streamToBlob(attachment.file, attachment.filename, mimeType);
+          }
+          if (ArrayBuffer.isView(attachment.file) || attachment.file instanceof ArrayBuffer) {
+            return new formdata_node_1.File([attachment.file], attachment.filename, { type: mimeType });
+          }
+          throw new Error("Unsupported attachment file type.");
+        });
+      }
+      _streamToBlob(stream, filename, mimeType) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+          if (typeof window === "undefined" && stream instanceof (yield import("stream")).Readable) {
+            return new Promise((resolve, reject) => {
+              const chunks = [];
+              stream.on("data", (chunk) => chunks.push(chunk));
+              stream.on("end", () => {
+                const blob = new Blob(chunks, { type: mimeType });
+                resolve(new formdata_node_1.File([blob], filename, { type: mimeType }));
+              });
+              stream.on("error", reject);
+            });
+          }
+          if (stream instanceof ReadableStream) {
+            const reader = stream.getReader();
+            const chunks = [];
+            let done = false;
+            while (!done) {
+              const { value, done: streamDone } = yield reader.read();
+              if (value)
+                chunks.push(value);
+              done = streamDone;
+            }
+            const blob = new Blob(chunks, { type: mimeType });
+            return new formdata_node_1.File([blob], filename, { type: mimeType });
+          }
+          throw new Error("Unsupported stream type.");
         });
       }
     };
@@ -76516,7 +78726,7 @@ var require_serviceDeskClient = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ServiceDeskClient = void 0;
-    var clients_1 = require_clients();
+    var baseClient_1 = require_baseClient();
     var customer_1 = require_customer();
     var info_1 = require_info();
     var insight_1 = require_insight();
@@ -76525,7 +78735,7 @@ var require_serviceDeskClient = __commonJS({
     var request_1 = require_request3();
     var requestType_1 = require_requestType();
     var serviceDesk_1 = require_serviceDesk();
-    var ServiceDeskClient = class extends clients_1.BaseClient {
+    var ServiceDeskClient = class extends baseClient_1.BaseClient {
       constructor() {
         super(...arguments);
         this.customer = new customer_1.Customer(this);
@@ -76543,7 +78753,7 @@ var require_serviceDeskClient = __commonJS({
 });
 
 // node_modules/jira.js/out/serviceDesk/client/index.js
-var require_client5 = __commonJS({
+var require_client6 = __commonJS({
   "node_modules/jira.js/out/serviceDesk/client/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -76567,9 +78777,9 @@ var require_serviceDesk3 = __commonJS({
     tslib_1.__exportStar(require_request3(), exports2);
     tslib_1.__exportStar(require_requestType(), exports2);
     tslib_1.__exportStar(require_serviceDesk(), exports2);
-    exports2.ServiceDeskModels = require_models4();
-    exports2.ServiceDeskParameters = require_parameters4();
-    tslib_1.__exportStar(require_client5(), exports2);
+    exports2.ServiceDeskModels = tslib_1.__importStar(require_models4());
+    exports2.ServiceDeskParameters = tslib_1.__importStar(require_parameters4());
+    tslib_1.__exportStar(require_client6(), exports2);
   }
 });
 
@@ -76581,7 +78791,7 @@ var require_clients = __commonJS({
     exports2.ServiceDeskParameters = exports2.ServiceDeskModels = exports2.ServiceDeskClient = exports2.Version3Parameters = exports2.Version3Models = exports2.Version3Client = exports2.Version2Parameters = exports2.Version2Models = exports2.Version2Client = exports2.AgileParameters = exports2.AgileModels = exports2.AgileClient = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_baseClient(), exports2);
-    tslib_1.__exportStar(require_client2(), exports2);
+    tslib_1.__exportStar(require_client3(), exports2);
     tslib_1.__exportStar(require_httpException(), exports2);
     var agile_1 = require_agile();
     Object.defineProperty(exports2, "AgileClient", { enumerable: true, get: function() {
@@ -76623,72 +78833,6 @@ var require_clients = __commonJS({
     Object.defineProperty(exports2, "ServiceDeskParameters", { enumerable: true, get: function() {
       return serviceDesk_1.ServiceDeskParameters;
     } });
-  }
-});
-
-// node_modules/jira.js/out/agile/client/agileClient.js
-var require_agileClient = __commonJS({
-  "node_modules/jira.js/out/agile/client/agileClient.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AgileClient = void 0;
-    var clients_1 = require_clients();
-    var __1 = require_agile();
-    var AgileClient = class extends clients_1.BaseClient {
-      constructor() {
-        super(...arguments);
-        this.backlog = new __1.Backlog(this);
-        this.board = new __1.Board(this);
-        this.builds = new __1.Builds(this);
-        this.deployments = new __1.Deployments(this);
-        this.developmentInformation = new __1.DevelopmentInformation(this);
-        this.devopsComponents = new __1.DevopsComponents(this);
-        this.epic = new __1.Epic(this);
-        this.featureFlags = new __1.FeatureFlags(this);
-        this.issue = new __1.Issue(this);
-        this.operations = new __1.Operations(this);
-        this.remoteLinks = new __1.RemoteLinks(this);
-        this.securityInformation = new __1.SecurityInformation(this);
-        this.sprint = new __1.Sprint(this);
-      }
-    };
-    exports2.AgileClient = AgileClient;
-  }
-});
-
-// node_modules/jira.js/out/agile/client/index.js
-var require_client6 = __commonJS({
-  "node_modules/jira.js/out/agile/client/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_agileClient(), exports2);
-  }
-});
-
-// node_modules/jira.js/out/agile/index.js
-var require_agile = __commonJS({
-  "node_modules/jira.js/out/agile/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AgileParameters = exports2.AgileModels = void 0;
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_backlog(), exports2);
-    tslib_1.__exportStar(require_board(), exports2);
-    tslib_1.__exportStar(require_builds(), exports2);
-    tslib_1.__exportStar(require_deployments(), exports2);
-    tslib_1.__exportStar(require_developmentInformation(), exports2);
-    tslib_1.__exportStar(require_devopsComponents(), exports2);
-    tslib_1.__exportStar(require_epic(), exports2);
-    tslib_1.__exportStar(require_featureFlags(), exports2);
-    tslib_1.__exportStar(require_issue(), exports2);
-    tslib_1.__exportStar(require_operations(), exports2);
-    tslib_1.__exportStar(require_remoteLinks(), exports2);
-    tslib_1.__exportStar(require_securityInformation(), exports2);
-    tslib_1.__exportStar(require_sprint(), exports2);
-    exports2.AgileModels = require_models();
-    exports2.AgileParameters = require_parameters();
-    tslib_1.__exportStar(require_client6(), exports2);
   }
 });
 
@@ -76782,10 +78926,10 @@ var require_out = __commonJS({
     tslib_1.__exportStar(require_callback(), exports2);
     tslib_1.__exportStar(require_paginated(), exports2);
     tslib_1.__exportStar(require_requestConfig(), exports2);
-    exports2.Agile = require_agile();
-    exports2.Version2 = require_version22();
-    exports2.Version3 = require_version32();
-    exports2.ServiceDesk = require_serviceDesk3();
+    exports2.Agile = tslib_1.__importStar(require_agile());
+    exports2.Version2 = tslib_1.__importStar(require_version22());
+    exports2.Version3 = tslib_1.__importStar(require_version32());
+    exports2.ServiceDesk = tslib_1.__importStar(require_serviceDesk3());
   }
 });
 
@@ -78415,14 +80559,15 @@ ${ctx.indent}`;
 var require_log = __commonJS({
   "node_modules/yaml/dist/log.js"(exports2) {
     "use strict";
+    var node_process = require("node:process");
     function debug(logLevel, ...messages) {
       if (logLevel === "debug")
         console.log(...messages);
     }
     function warn(logLevel, warning3) {
       if (logLevel === "debug" || logLevel === "warn") {
-        if (typeof process !== "undefined" && process.emitWarning)
-          process.emitWarning(warning3);
+        if (typeof node_process.emitWarning === "function")
+          node_process.emitWarning(warning3);
         else
           console.warn(warning3);
       }
@@ -79319,6 +81464,7 @@ var require_schema2 = __commonJS({
 var require_binary = __commonJS({
   "node_modules/yaml/dist/schema/yaml-1.1/binary.js"(exports2) {
     "use strict";
+    var node_buffer = require("node:buffer");
     var Scalar = require_Scalar();
     var stringifyString = require_stringifyString();
     var binary = {
@@ -79335,8 +81481,8 @@ var require_binary = __commonJS({
        *   document.querySelector('#photo').src = URL.createObjectURL(blob)
        */
       resolve(src, onError) {
-        if (typeof Buffer === "function") {
-          return Buffer.from(src, "base64");
+        if (typeof node_buffer.Buffer === "function") {
+          return node_buffer.Buffer.from(src, "base64");
         } else if (typeof atob === "function") {
           const str = atob(src.replace(/[\n\r]/g, ""));
           const buffer = new Uint8Array(str.length);
@@ -79351,8 +81497,8 @@ var require_binary = __commonJS({
       stringify({ comment, type, value }, ctx, onComment, onChompKeep) {
         const buf = value;
         let str;
-        if (typeof Buffer === "function") {
-          str = buf instanceof Buffer ? buf.toString("base64") : Buffer.from(buf.buffer).toString("base64");
+        if (typeof node_buffer.Buffer === "function") {
+          str = buf instanceof node_buffer.Buffer ? buf.toString("base64") : node_buffer.Buffer.from(buf.buffer).toString("base64");
         } else if (typeof btoa === "function") {
           let s = "";
           for (let i = 0; i < buf.length; ++i)
@@ -80550,7 +82696,7 @@ var require_resolve_props = __commonJS({
             if (atNewline) {
               if (comment)
                 comment += token.source;
-              else
+              else if (!found || indicator !== "seq-item-ind")
                 spaceBefore = true;
             } else
               commentSep += token.source;
@@ -81831,6 +83977,7 @@ var require_compose_doc = __commonJS({
 var require_composer = __commonJS({
   "node_modules/yaml/dist/compose/composer.js"(exports2) {
     "use strict";
+    var node_process = require("node:process");
     var directives = require_directives();
     var Document = require_Document();
     var errors = require_errors4();
@@ -81946,7 +84093,7 @@ ${cb}` : comment;
       }
       /** Advance the composer by one CST token. */
       *next(token) {
-        if (process.env.LOG_STREAM)
+        if (node_process.env.LOG_STREAM)
           console.dir(token, { depth: null });
         switch (token.type) {
           case "directive":
@@ -83056,6 +85203,7 @@ var require_line_counter = __commonJS({
 var require_parser = __commonJS({
   "node_modules/yaml/dist/parse/parser.js"(exports2) {
     "use strict";
+    var node_process = require("node:process");
     var cst = require_cst();
     var lexer = require_lexer();
     function includesToken(list, type) {
@@ -83179,7 +85327,7 @@ var require_parser = __commonJS({
        */
       *next(source) {
         this.source = source;
-        if (process.env.LOG_TOKENS)
+        if (node_process.env.LOG_TOKENS)
           console.log("|", cst.prettyToken(source));
         if (this.atScalar) {
           this.atScalar = false;
@@ -84178,14 +86326,23 @@ var PriorityQueue = class {
     };
     const element = {
       priority: options.priority,
+      id: options.id,
       run: run2
     };
-    if (this.size && this.#queue[this.size - 1].priority >= options.priority) {
+    if (this.size === 0 || this.#queue[this.size - 1].priority >= options.priority) {
       this.#queue.push(element);
       return;
     }
     const index = lowerBound(this.#queue, element, (a, b) => b.priority - a.priority);
     this.#queue.splice(index, 0, element);
+  }
+  setPriority(id, priority) {
+    const index = this.#queue.findIndex((element) => element.id === id);
+    if (index === -1) {
+      throw new ReferenceError(`No promise function with the id "${id}" exists in the queue.`);
+    }
+    const [item] = this.#queue.splice(index, 1);
+    this.enqueue(item.run, { priority, id });
   }
   dequeue() {
     const item = this.#queue.shift();
@@ -84216,6 +86373,8 @@ var PQueue = class extends import_index.default {
   #concurrency;
   #isPaused;
   #throwOnTimeout;
+  // Use to assign a unique identifier to a promise function, if not explicitly specified
+  #idAssigner = 1n;
   /**
       Per-operation timeout in milliseconds. Operations fulfill once `timeout` elapses if they haven't already.
   
@@ -84354,7 +86513,47 @@ var PQueue = class extends import_index.default {
       }, { once: true });
     });
   }
+  /**
+      Updates the priority of a promise function by its id, affecting its execution order. Requires a defined concurrency limit to take effect.
+  
+      For example, this can be used to prioritize a promise function to run earlier.
+  
+      ```js
+      import PQueue from 'p-queue';
+  
+      const queue = new PQueue({concurrency: 1});
+  
+      queue.add(async () => '🦄', {priority: 1});
+      queue.add(async () => '🦀', {priority: 0, id: '🦀'});
+      queue.add(async () => '🦄', {priority: 1});
+      queue.add(async () => '🦄', {priority: 1});
+  
+      queue.setPriority('🦀', 2);
+      ```
+  
+      In this case, the promise function with `id: '🦀'` runs second.
+  
+      You can also deprioritize a promise function to delay its execution:
+  
+      ```js
+      import PQueue from 'p-queue';
+  
+      const queue = new PQueue({concurrency: 1});
+  
+      queue.add(async () => '🦄', {priority: 1});
+      queue.add(async () => '🦀', {priority: 1, id: '🦀'});
+      queue.add(async () => '🦄');
+      queue.add(async () => '🦄', {priority: 0});
+  
+      queue.setPriority('🦀', -1);
+      ```
+      Here, the promise function with `id: '🦀'` executes last.
+      */
+  setPriority(id, priority) {
+    this.#queue.setPriority(id, priority);
+  }
   async add(function_, options = {}) {
+    options.id ??= (this.#idAssigner++).toString();
     options = {
       timeout: this.timeout,
       throwOnTimeout: this.#throwOnTimeout,
@@ -85303,4 +87502,7 @@ mime-types/index.js:
    * Copyright(c) 2015 Douglas Christopher Wilson
    * MIT Licensed
    *)
+
+formdata-node/lib/form-data.cjs:
+  (*! Based on fetch-blob. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> & David Frank *)
 */
