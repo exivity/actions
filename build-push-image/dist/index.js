@@ -25171,13 +25171,11 @@ async function run() {
   table("Tag", tag);
   table("Labels", JSON.stringify(labels, void 0, 2));
   await writeMetadataFile(name);
-  if (!onlyBuild) {
-    await dockerLogin({
-      registry,
-      user,
-      password
-    });
-  }
+  await dockerLogin({
+    registry,
+    user,
+    password
+  });
   await dockerBuild({
     dockerfile,
     context: context2,

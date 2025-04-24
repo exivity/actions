@@ -35,13 +35,11 @@ async function run() {
   await writeMetadataFile(name)
 
   // Perform login only if we're also going to push
-  if (!onlyBuild) {
-    await dockerLogin({
-      registry,
-      user,
-      password,
-    })
-  }
+  await dockerLogin({
+    registry,
+    user,
+    password,
+  })
 
   await dockerBuild({
     dockerfile,
