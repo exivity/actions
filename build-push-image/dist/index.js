@@ -25163,6 +25163,7 @@ async function run() {
   const password = (0, import_core5.getInput)("password");
   const useSSH = (0, import_core5.getBooleanInput)("useSSH");
   const secrets = (0, import_core5.getInput)("secrets");
+  const onlyBuild = (0, import_core5.getBooleanInput)("only-build");
   const labels = getLabels(name);
   const tag = branchToTag();
   const image = { registry, namespace, name, tag };
@@ -25170,11 +25171,13 @@ async function run() {
   table("Tag", tag);
   table("Labels", JSON.stringify(labels, void 0, 2));
   await writeMetadataFile(name);
-  await dockerLogin({
-    registry,
-    user,
-    password
-  });
+  if (!onlyBuild) {
+    await dockerLogin({
+      registry,
+      user,
+      password
+    });
+  }
   await dockerBuild({
     dockerfile,
     context: context2,
@@ -25183,7 +25186,11 @@ async function run() {
     useSSH,
     secrets
   });
-  await dockerPush(image);
+  if (!onlyBuild) {
+    await dockerPush(image);
+  } else {
+    table("Info", "Skipping docker push (only-build mode)");
+  }
 }
 run().catch(import_core5.setFailed);
 /*! Bundled license information:

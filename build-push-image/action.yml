@@ -37,6 +37,10 @@ inputs:
   secrets:
     description: Secrets for Docker build
     required: false
+  only-build:
+    description: Skip pushing the image, so only build
+    required: false
+    default: 'false'
 runs:
   using: node20
   main: dist/index.js

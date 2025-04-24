@@ -21,6 +21,7 @@ async function run() {
   const password = getInput('password')
   const useSSH = getBooleanInput('useSSH')
   const secrets = getInput('secrets')
+  const onlyBuild = getBooleanInput('only-build') // New option to skip push
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -33,11 +34,14 @@ async function run() {
 
   await writeMetadataFile(name)
 
-  await dockerLogin({
-    registry,
-    user,
-    password,
-  })
+  // Perform login only if we're also going to push
+  if (!onlyBuild) {
+    await dockerLogin({
+      registry,
+      user,
+      password,
+    })
+  }
 
   await dockerBuild({
     dockerfile,
@@ -48,7 +52,12 @@ async function run() {
     secrets,
   })
 
-  await dockerPush(image)
+  // Push the image unless only-build is set
+  if (!onlyBuild) {
+    await dockerPush(image)
+  } else {
+    table('Info', 'Skipping docker push (only-build mode)')
+  }
 }
 
 run().catch(setFailed)
