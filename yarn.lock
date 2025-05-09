@@ -1019,14 +1019,14 @@ jackspeak@^4.0.1:
   dependencies:
     "@isaacs/cliui" "^8.0.2"
 
-jira.js@5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-5.1.0.tgz#189a9de5802dfcb7cbc598093cf06392362ae0c5"
-  integrity sha512-bEjPXibNJB9fFYyzkaiQM2HeUxBsrlq7Yf1FhBpTYSWN5rU7VllhNiebIVGo2njxMnX7gKnZw0KJTWuZ61u7Xg==
+jira.js@5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-5.1.1.tgz#6321ba1452382ce380cb4c7c0ad1a52d321a6802"
+  integrity sha512-19VVIuy/fft2T3xgZg+4giWz656AUn9RJtbF7c22r+3S/sMEunRAV9xEv6INdLknDtomr/lhFVMFd50OesbQSQ==
   dependencies:
     axios "^1.9.0"
     mime "^4.0.7"
-    zod "^3.24.3"
+    zod "^3.24.4"
 
 js-yaml@4.1.0:
   version "4.1.0"
@@ -1552,7 +1552,7 @@ yaml@^2.7.1:
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.7.1.tgz#44a247d1b88523855679ac7fa7cda6ed7e135cf6"
   integrity sha512-10ULxpnOCQXxJvBgxsn9ptjq6uviG/htZKk9veJGhlqn3w/DxQ631zFF+nlQXLwmImeS5amR2dl2U8sg6U9jsQ==
 
-zod@3.24.4, zod@^3.24.3:
+zod@3.24.4, zod@^3.24.4:
   version "3.24.4"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.4.tgz#e2e2cca5faaa012d76e527d0d36622e0a90c315f"
   integrity sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==
