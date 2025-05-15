@@ -1019,10 +1019,10 @@ jackspeak@^4.0.1:
   dependencies:
     "@isaacs/cliui" "^8.0.2"
 
-jira.js@5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-5.1.1.tgz#6321ba1452382ce380cb4c7c0ad1a52d321a6802"
-  integrity sha512-19VVIuy/fft2T3xgZg+4giWz656AUn9RJtbF7c22r+3S/sMEunRAV9xEv6INdLknDtomr/lhFVMFd50OesbQSQ==
+jira.js@5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-5.2.0.tgz#ff431b78eb4f988eb4297732e4b6ae330ed5c853"
+  integrity sha512-tvabx0MDWyS8iWMKLeOyiPN2U6iJJYsPpqcg/PNoM3JSpOsnxo0ADXDKlmGzy6vIHlM9VSf0mAM7PJleqWB0fg==
   dependencies:
     axios "^1.9.0"
     mime "^4.0.7"
