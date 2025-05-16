@@ -2,7 +2,7 @@ import { debug } from '@actions/core'
 import { HttpClient } from '@actions/http-client'
 import FormData from 'form-data'
 import { createReadStream, lstatSync } from 'fs'
-import { getType } from 'mime'
+import mime from 'mime'
 import { basename } from 'path'
 import { z } from 'zod'
 
@@ -181,5 +181,5 @@ export function asset(path: string) {
 }
 
 export function mimeOrDefault(path: string) {
-  return getType(path) || 'application/octet-stream'
+  return mime.getType(path) || 'application/octet-stream'
 }
