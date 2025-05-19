@@ -8,7 +8,7 @@ import {
   warning,
 } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import minimatch from 'minimatch'
+import { minimatch } from 'minimatch'
 import { getBooleanInput, table } from '../../lib/core'
 import {
   getCommit,
