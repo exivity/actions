@@ -37,6 +37,9 @@ inputs:
   secrets:
     description: Secrets for Docker build
     required: false
+  target:
+    description: Specify a stage to build from the Dockerfile
+    required: false
   only-build:
     description: Skip pushing the image, so only build
     required: false
