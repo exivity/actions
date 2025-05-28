@@ -75,6 +75,12 @@ export async function dockerBuild({
   let cmd = ''
 
   if (isMultiPlatform) {
+    // For multi-platform builds, we need to set up a builder with docker-container driver
+    info('Setting up multi-platform builder...')
+    await exec(
+      'docker buildx create --name multiplatform-builder --driver docker-container --use || true',
+    )
+
     // For multi-platform builds, we use docker buildx with --push
     cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} --push ${context}"`
   } else {

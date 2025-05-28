@@ -25214,6 +25214,10 @@ async function dockerBuild({
   const platformsOption = platforms ? `--platform ${platforms}` : "";
   let cmd = "";
   if (isMultiPlatform) {
+    (0, import_core2.info)("Setting up multi-platform builder...");
+    await (0, import_exec2.exec)(
+      "docker buildx create --name multiplatform-builder --driver docker-container --use || true"
+    );
     cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} --push ${context2}"`;
   } else {
     cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2}"`;
