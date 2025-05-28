@@ -34,6 +34,7 @@ type BuildOptions = {
   buildArgs?: string // Changed to a simple string
   target?: string // Add target for specifying build stage
   platforms?: string // Add platforms for multi-arch builds
+  secrets?: string // Add secrets for Docker build
 }
 
 export type Image = {
@@ -54,7 +55,7 @@ export async function dockerBuild({
   buildArgs,
   target,
   platforms,
-}: BuildOptions & { secrets?: string }) {
+}: BuildOptions) {
   info('Building image...')
 
   const labelOptions = Object.entries(labels)
