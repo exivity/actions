@@ -48,7 +48,13 @@ needed.
 ## Example
 
 ```yaml
+# Single architecture build (default - linux/amd64)
 - uses: exivity/actions/build-push-image@main
+
+# Multi-architecture build
+- uses: exivity/actions/build-push-image@main
+  with:
+    platforms: linux/amd64,linux/arm64
 ```
 
 ## Inputs
@@ -64,6 +70,7 @@ needed.
 | `useSSH`     | false    | `false`          | Whether to use SSH for Git operations                                         |
 | `secrets`    | false    |                  | Secrets for Docker build like `id=npmrc,src=$HOME/.npmrc`                     |
 | `target`     | false    |                  | Specify a stage to build from the Dockerfile                                  |
+| `platforms`  | false    | `linux/amd64`    | Comma-separated list of target platforms (e.g. linux/amd64,linux/arm64)       |
 
 # `commit-status`
 

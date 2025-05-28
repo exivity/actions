@@ -33,6 +33,7 @@ type BuildOptions = {
   useSSH: boolean
   buildArgs?: string // Changed to a simple string
   target?: string // Add target for specifying build stage
+  platforms?: string // Add platforms for multi-arch builds
 }
 
 export type Image = {
@@ -52,6 +53,7 @@ export async function dockerBuild({
   secrets,
   buildArgs,
   target,
+  platforms,
 }: BuildOptions & { secrets?: string }) {
   info('Building image...')
 
@@ -63,10 +65,22 @@ export async function dockerBuild({
   const secretArgs = secrets ? `--secret ${secrets}` : ''
   const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : ''
   const targetOption = target ? `--target ${target}` : ''
-
   const nameOfImage = imageName ? imageName : getImageFQN(image)
-  // Correct command structure with context at the end
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context}"`
+
+  // Check if multi-platform build is requested
+  const isMultiPlatform = platforms && platforms.includes(',')
+  const platformsOption = platforms ? `--platform ${platforms}` : ''
+
+  let cmd = ''
+
+  if (isMultiPlatform) {
+    // For multi-platform builds, we use docker buildx with --push
+    cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} --push ${context}"`
+  } else {
+    // For single platform builds, use the existing approach
+    cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context}"`
+  }
+
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd, undefined, {
@@ -75,6 +89,9 @@ export async function dockerBuild({
       DOCKER_BUILDKIT: '1',
     },
   })
+
+  // Return whether this was a multi-platform build that was already pushed
+  return { pushed: isMultiPlatform }
 }
 
 export async function dockerAddTag(off: Image, on: Image) {

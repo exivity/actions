@@ -23,6 +23,7 @@ async function run() {
   const secrets = getInput('secrets')
   const target = getInput('target')
   const onlyBuild = getBooleanInput('only-build') // New option to skip push
+  const platforms = getInput('platforms') // Get platforms input
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -42,7 +43,8 @@ async function run() {
     password,
   })
 
-  await dockerBuild({
+  // Build the Docker image
+  const { pushed } = await dockerBuild({
     dockerfile,
     context,
     labels,
@@ -51,13 +53,17 @@ async function run() {
     useSSH,
     secrets,
     target,
+    platforms,
   })
 
-  // Push the image unless only-build is set
-  if (!onlyBuild) {
+  // Push the image unless it was already pushed by buildx (multi-platform)
+  // or only-build is set
+  if (!pushed && !onlyBuild) {
     await dockerPush(image)
-  } else {
+  } else if (onlyBuild) {
     table('Info', 'Skipping docker push (only-build mode)')
+  } else if (pushed) {
+    table('Info', 'Image already pushed by buildx (multi-platform build)')
   }
 }
 

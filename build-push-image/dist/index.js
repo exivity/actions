@@ -25200,7 +25200,8 @@ async function dockerBuild({
   useSSH,
   secrets,
   buildArgs,
-  target
+  target,
+  platforms
 }) {
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
@@ -25209,7 +25210,14 @@ async function dockerBuild({
   const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : "";
   const targetOption = target ? `--target ${target}` : "";
   const nameOfImage = imageName ? imageName : getImageFQN(image);
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2}"`;
+  const isMultiPlatform = platforms && platforms.includes(",");
+  const platformsOption = platforms ? `--platform ${platforms}` : "";
+  let cmd = "";
+  if (isMultiPlatform) {
+    cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} --push ${context2}"`;
+  } else {
+    cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2}"`;
+  }
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
   await (0, import_exec2.exec)(cmd, void 0, {
@@ -25218,6 +25226,7 @@ ${cmd}`);
       DOCKER_BUILDKIT: "1"
     }
   });
+  return { pushed: isMultiPlatform };
 }
 async function dockerPush(image) {
   (0, import_core2.info)("Pushing image...");
@@ -25361,6 +25370,7 @@ async function run() {
   const secrets = (0, import_core5.getInput)("secrets");
   const target = (0, import_core5.getInput)("target");
   const onlyBuild = (0, import_core5.getBooleanInput)("only-build");
+  const platforms = (0, import_core5.getInput)("platforms");
   const labels = getLabels(name);
   const tag = branchToTag();
   const image = { registry, namespace, name, tag };
@@ -25373,7 +25383,7 @@ async function run() {
     user,
     password
   });
-  await dockerBuild({
+  const { pushed } = await dockerBuild({
     dockerfile,
     context: context2,
     labels,
@@ -25381,12 +25391,15 @@ async function run() {
     imageName: "",
     useSSH,
     secrets,
-    target
+    target,
+    platforms
   });
-  if (!onlyBuild) {
+  if (!pushed && !onlyBuild) {
     await dockerPush(image);
-  } else {
+  } else if (onlyBuild) {
     table("Info", "Skipping docker push (only-build mode)");
+  } else if (pushed) {
+    table("Info", "Image already pushed by buildx (multi-platform build)");
   }
 }
 run().catch(import_core5.setFailed);

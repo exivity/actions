@@ -44,6 +44,11 @@ inputs:
     description: Skip pushing the image, so only build
     required: false
     default: 'false'
+  platforms:
+    description:
+      'Comma-separated list of target platforms (e.g. linux/amd64,linux/arm64)'
+    required: false
+    default: 'linux/amd64'
 runs:
   using: node20
   main: dist/index.js
