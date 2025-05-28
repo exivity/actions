@@ -55,7 +55,7 @@
     "rcedit": "4.0.1",
     "semver": "7.7.2",
     "yaml": "^2.8.0",
-    "zod": "3.25.30",
+    "zod": "3.25.32",
     "p-queue": "8.1.0"
   },
   "devDependencies": {
@@ -65,7 +65,7 @@
     "@types/js-yaml": "4.0.9",
     "@types/mime": "3.0.4",
     "@types/minimatch": "5.1.2",
-    "@types/node": "22.15.21",
+    "@types/node": "22.15.23",
     "@types/ramda": "0.30.2",
     "@types/semver": "7.7.0",
     "@types/uuid": "10.0.0",
