@@ -655,7 +655,6 @@ release tag in the release repository, plus new tags in all released components.
 | `mode`                    |          | `"ping"`                       | One of `"ping"`, `"prepare"` or `"release"`                  |
 | `lockfile`                |          | `"exivity.lock"`               | Location of lockfile (json)                                  |
 | `changelog`               |          | `"CHANGELOG.md"`               | Location of changelog (markdown)                             |
-| `repositories`            |          | `"repositories.json"`          | Location of repositories manifest (json)                     |
 | `pr-template`             |          | `"NEW_RELEASE_PR_TEMPLATE.md"` | Location of new release PR template (markdown)               |
 | `upcoming-release-branch` |          | `"chore/upcoming-release"`     | Upcoming release branch name                                 |
 | `release-branch`          |          | `"main"`                       | Release branch name                                          |
@@ -663,19 +662,6 @@ release tag in the release repository, plus new tags in all released components.
 | `gh-token`                |          | `github.token`                 | A GitHub token with write access to all exivity repositories |
 | `jira-username`           | Maybe    |                                | The Jira username (required in prepare and release mode)     |
 | `jira-token`              | Maybe    |                                | The Jira token (required in prepare and release mode)        |
-
-The `repositories.json` file must contain an object with this type:
-
-```ts
-type Repositories = {
-  [repository: string]: {
-    releaseBranch?: string
-  }
-}
-```
-
-Where `repository` is the repository name (without `"exivity/"`). If
-`releaseBranch` is not set, `"main"` is used.
 
 The `NEW_RELEASE_PR_TEMPLATE.md` file will be used when opening a new pull
 request in the prepare step.
