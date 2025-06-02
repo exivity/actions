@@ -72,11 +72,11 @@ let jiraClient: Version2Client | null = null
 
 export const getJiraClient = () => {
   const username = getInput('jira-username')
-  const password = getInput('jira-token')
+  const apiToken = getInput('jira-token')
 
   if (jiraClient) return jiraClient
 
-  if (!username || !password) {
+  if (!username || !apiToken) {
     throw new Error('jira-username and jira-token inputs are required.')
   }
 
@@ -84,11 +84,10 @@ export const getJiraClient = () => {
     host: 'https://exivity.atlassian.net',
     authentication: {
       basic: {
-        username,
-        password,
+        email: username,
+        apiToken,
       },
     },
-    newErrorHandling: true,
   })
 
   if (!jiraClient) {

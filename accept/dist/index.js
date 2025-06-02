@@ -24799,9 +24799,9 @@ var require_manifest = __commonJS({
   }
 });
 
-// node_modules/@actions/tool-cache/node_modules/uuid/lib/rng.js
+// node_modules/uuid/lib/rng.js
 var require_rng = __commonJS({
-  "node_modules/@actions/tool-cache/node_modules/uuid/lib/rng.js"(exports2, module2) {
+  "node_modules/uuid/lib/rng.js"(exports2, module2) {
     var crypto3 = require("crypto");
     module2.exports = function nodeRNG() {
       return crypto3.randomBytes(16);
@@ -24809,9 +24809,9 @@ var require_rng = __commonJS({
   }
 });
 
-// node_modules/@actions/tool-cache/node_modules/uuid/lib/bytesToUuid.js
+// node_modules/uuid/lib/bytesToUuid.js
 var require_bytesToUuid = __commonJS({
-  "node_modules/@actions/tool-cache/node_modules/uuid/lib/bytesToUuid.js"(exports2, module2) {
+  "node_modules/uuid/lib/bytesToUuid.js"(exports2, module2) {
     var byteToHex2 = [];
     for (i = 0; i < 256; ++i) {
       byteToHex2[i] = (i + 256).toString(16).substr(1);
@@ -24847,9 +24847,9 @@ var require_bytesToUuid = __commonJS({
   }
 });
 
-// node_modules/@actions/tool-cache/node_modules/uuid/v4.js
+// node_modules/uuid/v4.js
 var require_v4 = __commonJS({
-  "node_modules/@actions/tool-cache/node_modules/uuid/v4.js"(exports2, module2) {
+  "node_modules/uuid/v4.js"(exports2, module2) {
     var rng2 = require_rng();
     var bytesToUuid = require_bytesToUuid();
     function v42(options, buf, offset) {
@@ -27230,7 +27230,7 @@ function hasContent(text, whitespaceMode) {
   return refinedText.length > 0;
 }
 
-// node_modules/uuid/dist/esm-node/rng.js
+// node_modules/checkout/node_modules/uuid/dist/esm-node/rng.js
 var import_crypto = __toESM(require("crypto"));
 var rnds8Pool = new Uint8Array(256);
 var poolPtr = rnds8Pool.length;
@@ -27242,7 +27242,7 @@ function rng() {
   return rnds8Pool.slice(poolPtr, poolPtr += 16);
 }
 
-// node_modules/uuid/dist/esm-node/stringify.js
+// node_modules/checkout/node_modules/uuid/dist/esm-node/stringify.js
 var byteToHex = [];
 for (let i = 0; i < 256; ++i) {
   byteToHex.push((i + 256).toString(16).slice(1));
@@ -27251,13 +27251,13 @@ function unsafeStringify(arr, offset = 0) {
   return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
 }
 
-// node_modules/uuid/dist/esm-node/native.js
+// node_modules/checkout/node_modules/uuid/dist/esm-node/native.js
 var import_crypto2 = __toESM(require("crypto"));
 var native_default = {
   randomUUID: import_crypto2.default.randomUUID
 };
 
-// node_modules/uuid/dist/esm-node/v4.js
+// node_modules/checkout/node_modules/uuid/dist/esm-node/v4.js
 function v4(options, buf, offset) {
   if (native_default.randomUUID && !buf && !options) {
     return native_default.randomUUID();

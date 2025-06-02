@@ -38846,7 +38846,7 @@ var {
   mergeConfig: mergeConfig2
 } = axios_default;
 
-// node_modules/zod/dist/esm/v3/external.js
+// node_modules/jira.js/node_modules/zod/dist/esm/v3/external.js
 var external_exports = {};
 __export(external_exports, {
   BRAND: () => BRAND,
@@ -38958,7 +38958,7 @@ __export(external_exports, {
   void: () => voidType
 });
 
-// node_modules/zod/dist/esm/v3/helpers/util.js
+// node_modules/jira.js/node_modules/zod/dist/esm/v3/helpers/util.js
 var util3;
 (function(util4) {
   util4.assertEqual = (_) => {
@@ -39092,7 +39092,7 @@ var getParsedType = (data) => {
   }
 };
 
-// node_modules/zod/dist/esm/v3/ZodError.js
+// node_modules/jira.js/node_modules/zod/dist/esm/v3/ZodError.js
 var ZodIssueCode = util3.arrayToEnum([
   "invalid_type",
   "invalid_literal",
@@ -39209,7 +39209,7 @@ ZodError.create = (issues) => {
   return error;
 };
 
-// node_modules/zod/dist/esm/v3/locales/en.js
+// node_modules/jira.js/node_modules/zod/dist/esm/v3/locales/en.js
 var errorMap = (issue, _ctx) => {
   let message;
   switch (issue.code) {
@@ -39310,7 +39310,7 @@ var errorMap = (issue, _ctx) => {
 };
 var en_default = errorMap;
 
-// node_modules/zod/dist/esm/v3/errors.js
+// node_modules/jira.js/node_modules/zod/dist/esm/v3/errors.js
 var overrideErrorMap = en_default;
 function setErrorMap(map3) {
   overrideErrorMap = map3;
@@ -39319,7 +39319,7 @@ function getErrorMap() {
   return overrideErrorMap;
 }
 
-// node_modules/zod/dist/esm/v3/helpers/parseUtil.js
+// node_modules/jira.js/node_modules/zod/dist/esm/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
   const { data, path, errorMaps, issueData } = params;
   const fullPath = [...path, ...issueData.path || []];
@@ -39429,27 +39429,14 @@ var isDirty = (x) => x.status === "dirty";
 var isValid = (x) => x.status === "valid";
 var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
 
-// node_modules/zod/dist/esm/v3/helpers/errorUtil.js
+// node_modules/jira.js/node_modules/zod/dist/esm/v3/helpers/errorUtil.js
 var errorUtil;
 (function(errorUtil2) {
   errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
   errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
 })(errorUtil || (errorUtil = {}));
 
-// node_modules/zod/dist/esm/v3/types.js
-var __classPrivateFieldGet = function(receiver, state, kind, f) {
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var __classPrivateFieldSet = function(receiver, state, value, kind, f) {
-  if (kind === "m") throw new TypeError("Private method is not writable");
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
-};
-var _ZodEnum_cache;
-var _ZodNativeEnum_cache;
+// node_modules/jira.js/node_modules/zod/dist/esm/v3/types.js
 var ParseInputLazyPath = class {
   constructor(parent, value, path, key) {
     this._cachedPath = [];
@@ -42274,10 +42261,6 @@ function createZodEnum(values, params) {
   });
 }
 var ZodEnum = class _ZodEnum extends ZodType {
-  constructor() {
-    super(...arguments);
-    _ZodEnum_cache.set(this, void 0);
-  }
   _parse(input) {
     if (typeof input.data !== "string") {
       const ctx = this._getOrReturnCtx(input);
@@ -42289,10 +42272,10 @@ var ZodEnum = class _ZodEnum extends ZodType {
       });
       return INVALID;
     }
-    if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f")) {
-      __classPrivateFieldSet(this, _ZodEnum_cache, new Set(this._def.values), "f");
+    if (!this._cache) {
+      this._cache = new Set(this._def.values);
     }
-    if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f").has(input.data)) {
+    if (!this._cache.has(input.data)) {
       const ctx = this._getOrReturnCtx(input);
       const expectedValues = this._def.values;
       addIssueToContext(ctx, {
@@ -42341,13 +42324,8 @@ var ZodEnum = class _ZodEnum extends ZodType {
     });
   }
 };
-_ZodEnum_cache = /* @__PURE__ */ new WeakMap();
 ZodEnum.create = createZodEnum;
 var ZodNativeEnum = class extends ZodType {
-  constructor() {
-    super(...arguments);
-    _ZodNativeEnum_cache.set(this, void 0);
-  }
   _parse(input) {
     const nativeEnumValues = util3.getValidEnumValues(this._def.values);
     const ctx = this._getOrReturnCtx(input);
@@ -42360,10 +42338,10 @@ var ZodNativeEnum = class extends ZodType {
       });
       return INVALID;
     }
-    if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f")) {
-      __classPrivateFieldSet(this, _ZodNativeEnum_cache, new Set(util3.getValidEnumValues(this._def.values)), "f");
+    if (!this._cache) {
+      this._cache = new Set(util3.getValidEnumValues(this._def.values));
     }
-    if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f").has(input.data)) {
+    if (!this._cache.has(input.data)) {
       const expectedValues = util3.objectValues(nativeEnumValues);
       addIssueToContext(ctx, {
         received: ctx.data,
@@ -42378,7 +42356,6 @@ var ZodNativeEnum = class extends ZodType {
     return this._def.values;
   }
 };
-_ZodNativeEnum_cache = /* @__PURE__ */ new WeakMap();
 ZodNativeEnum.create = (values, params) => {
   return new ZodNativeEnum({
     values,
@@ -42519,7 +42496,7 @@ var ZodEffects = class extends ZodType {
           parent: ctx
         });
         if (!isValid(base))
-          return base;
+          return INVALID;
         const result = effect.transform(base.value, checkCtx);
         if (result instanceof Promise) {
           throw new Error(`Asynchronous transform encountered during synchronous parse operation. Use .parseAsync instead.`);
@@ -42528,7 +42505,7 @@ var ZodEffects = class extends ZodType {
       } else {
         return this._def.schema._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx }).then((base) => {
           if (!isValid(base))
-            return base;
+            return INVALID;
           return Promise.resolve(effect.transform(base.value, checkCtx)).then((result) => ({
             status: status.value,
             value: result
@@ -44308,7 +44285,7 @@ Object.freeze(types3);
 var standard_default = types3;
 
 // node_modules/mime/dist/src/Mime.js
-var __classPrivateFieldGet2 = function(receiver, state, kind, f) {
+var __classPrivateFieldGet = function(receiver, state, kind, f) {
   if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
   if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
@@ -44329,26 +44306,26 @@ var Mime = class {
     for (let [type3, extensions] of Object.entries(typeMap)) {
       type3 = type3.toLowerCase();
       extensions = extensions.map((ext) => ext.toLowerCase());
-      if (!__classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").has(type3)) {
-        __classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").set(type3, /* @__PURE__ */ new Set());
+      if (!__classPrivateFieldGet(this, _Mime_typeToExtensions, "f").has(type3)) {
+        __classPrivateFieldGet(this, _Mime_typeToExtensions, "f").set(type3, /* @__PURE__ */ new Set());
       }
-      const allExtensions = __classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").get(type3);
+      const allExtensions = __classPrivateFieldGet(this, _Mime_typeToExtensions, "f").get(type3);
       let first = true;
       for (let extension of extensions) {
         const starred = extension.startsWith("*");
         extension = starred ? extension.slice(1) : extension;
         allExtensions?.add(extension);
         if (first) {
-          __classPrivateFieldGet2(this, _Mime_typeToExtension, "f").set(type3, extension);
+          __classPrivateFieldGet(this, _Mime_typeToExtension, "f").set(type3, extension);
         }
         first = false;
         if (starred)
           continue;
-        const currentType = __classPrivateFieldGet2(this, _Mime_extensionToType, "f").get(extension);
+        const currentType = __classPrivateFieldGet(this, _Mime_extensionToType, "f").get(extension);
         if (currentType && currentType != type3 && !force) {
           throw new Error(`"${type3} -> ${extension}" conflicts with "${currentType} -> ${extension}". Pass \`force=true\` to override this definition.`);
         }
-        __classPrivateFieldGet2(this, _Mime_extensionToType, "f").set(extension, type3);
+        __classPrivateFieldGet(this, _Mime_extensionToType, "f").set(extension, type3);
       }
     }
     return this;
@@ -44362,33 +44339,33 @@ var Mime = class {
     const hasDot = ext.length < last.length - 1;
     if (!hasDot && hasPath)
       return null;
-    return __classPrivateFieldGet2(this, _Mime_extensionToType, "f").get(ext) ?? null;
+    return __classPrivateFieldGet(this, _Mime_extensionToType, "f").get(ext) ?? null;
   }
   getExtension(type3) {
     if (typeof type3 !== "string")
       return null;
     type3 = type3?.split?.(";")[0];
-    return (type3 && __classPrivateFieldGet2(this, _Mime_typeToExtension, "f").get(type3.trim().toLowerCase())) ?? null;
+    return (type3 && __classPrivateFieldGet(this, _Mime_typeToExtension, "f").get(type3.trim().toLowerCase())) ?? null;
   }
   getAllExtensions(type3) {
     if (typeof type3 !== "string")
       return null;
-    return __classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").get(type3.toLowerCase()) ?? null;
+    return __classPrivateFieldGet(this, _Mime_typeToExtensions, "f").get(type3.toLowerCase()) ?? null;
   }
   _freeze() {
     this.define = () => {
       throw new Error("define() not allowed for built-in Mime objects. See https://github.com/broofa/mime/blob/main/README.md#custom-mime-instances");
     };
     Object.freeze(this);
-    for (const extensions of __classPrivateFieldGet2(this, _Mime_typeToExtensions, "f").values()) {
+    for (const extensions of __classPrivateFieldGet(this, _Mime_typeToExtensions, "f").values()) {
       Object.freeze(extensions);
     }
     return this;
   }
   _getTestState() {
     return {
-      types: __classPrivateFieldGet2(this, _Mime_extensionToType, "f"),
-      extensions: __classPrivateFieldGet2(this, _Mime_typeToExtension, "f")
+      types: __classPrivateFieldGet(this, _Mime_extensionToType, "f"),
+      extensions: __classPrivateFieldGet(this, _Mime_typeToExtension, "f")
     };
   }
 };
@@ -51754,20 +51731,19 @@ var import_exec = __toESM(require_exec());
 var jiraClient = null;
 var getJiraClient = () => {
   const username = (0, import_core4.getInput)("jira-username");
-  const password = (0, import_core4.getInput)("jira-token");
+  const apiToken = (0, import_core4.getInput)("jira-token");
   if (jiraClient) return jiraClient;
-  if (!username || !password) {
+  if (!username || !apiToken) {
     throw new Error("jira-username and jira-token inputs are required.");
   }
   jiraClient = new Version2Client({
     host: "https://exivity.atlassian.net",
     authentication: {
       basic: {
-        username,
-        password
+        email: username,
+        apiToken
       }
-    },
-    newErrorHandling: true
+    }
   });
   if (!jiraClient) {
     throw new Error("jira-username and jira-token inputs are required.");
