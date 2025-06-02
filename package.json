@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "postinstall": "husky install",
-    "build": "run-p --aggregate-output --max-parallel 4 build:**",
+    "build": "run-p --aggregate-output --max-parallel 4 'build:**'",
     "build:accept": "yarn esbuild:generic accept/src/index.ts --outfile=accept/dist/index.js",
     "build:build-image": "yarn esbuild:generic build-image/src/index.ts --outfile=build-image/dist/index.js",
     "build:build-push-image": "yarn esbuild:generic build-push-image/src/index.ts --outfile=build-push-image/dist/index.js",
@@ -51,12 +51,12 @@
     "js-yaml": "4.1.0",
     "mime": "4.0.7",
     "minimatch": "10.0.1",
+    "p-queue": "8.1.0",
     "ramda": "0.30.1",
     "rcedit": "4.0.1",
     "semver": "7.7.2",
     "yaml": "^2.8.0",
-    "zod": "3.25.42",
-    "p-queue": "8.1.0"
+    "zod": "3.25.48"
   },
   "devDependencies": {
     "@octokit/webhooks": "14.0.0",
