@@ -84,8 +84,8 @@ export const getJiraClient = () => {
     host: 'https://exivity.atlassian.net',
     authentication: {
       basic: {
-        username,
-        password,
+        email: username,
+        apiToken: password,
       },
     },
     newErrorHandling: true,
