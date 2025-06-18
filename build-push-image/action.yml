@@ -41,7 +41,10 @@ inputs:
     description: Specify a stage to build from the Dockerfile
     required: false
   platforms:
-    description: Platforms for multi-platform builds
+    description:
+      'Platforms for multi-platform builds (e.g. linux/amd64,linux/arm64).
+      Requires docker buildx to be installed and configured. See
+      https://github.com/exivity/setup-buildx-action'
     required: false
     default: 'linux/amd64'
   only-build:
