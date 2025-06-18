@@ -53,18 +53,18 @@ needed.
 
 ## Inputs
 
-| name         | required | default          | description                                                                   |
-| ------------ | -------- | ---------------- | ----------------------------------------------------------------------------- |
-| `namespace`  |          | Repository owner | The namespace of the image repository                                         |
-| `name`       |          | Repository name  | The name of the image repository                                              |
-| `dockerfile` |          | `"./Dockerfile"` | Path to the Dockerfile                                                        |
-| `registry`   |          | `"ghcr.io"`      | Registry to use, e.g. `"ghcr.io"` (default) or `"docker.io"` (for Docker Hub) |
-| `user`       |          | `github.actor`   | Username for the Docker registry                                              |
-| `password`   |          | `github.token`   | Password for the Docker registry                                              |
-| `useSSH`     | false    | `false`          | Whether to use SSH for Git operations                                         |
-| `secrets`    | false    |                  | Secrets for Docker build like `id=npmrc,src=$HOME/.npmrc`                     |
-| `target`     | false    |                  | Specify a stage to build from the Dockerfile                                  |
-| `platforms`  | false    | `linux/amd64`    | Platforms for multi-platform builds                                           |
+| name         | required | default          | description                                                                                                                                    |
+| ------------ | -------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `namespace`  |          | Repository owner | The namespace of the image repository                                                                                                          |
+| `name`       |          | Repository name  | The name of the image repository                                                                                                               |
+| `dockerfile` |          | `"./Dockerfile"` | Path to the Dockerfile                                                                                                                         |
+| `registry`   |          | `"ghcr.io"`      | Registry to use, e.g. `"ghcr.io"` (default) or `"docker.io"` (for Docker Hub)                                                                  |
+| `user`       |          | `github.actor`   | Username for the Docker registry                                                                                                               |
+| `password`   |          | `github.token`   | Password for the Docker registry                                                                                                               |
+| `useSSH`     | false    | `false`          | Whether to use SSH for Git operations                                                                                                          |
+| `secrets`    | false    |                  | Secrets for Docker build like `id=npmrc,src=$HOME/.npmrc`                                                                                      |
+| `target`     | false    |                  | Specify a stage to build from the Dockerfile                                                                                                   |
+| `platforms`  | false    | `linux/amd64`    | Platforms for multi-platform builds. Requires docker buildx to be installed and configured, see https://github.com/exivity/setup-buildx-action |
 
 # `commit-status`
 
