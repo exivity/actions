@@ -1,11 +1,8 @@
 name: build
 
 on:
-  push:
-    paths:
-      - '.github/workflows/build.yml'
-      - 'yarn.lock'
-      - '**/*.ts'
+  pull_request:
+    branches: ['main']
 
 jobs:
   build:

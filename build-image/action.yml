@@ -45,6 +45,13 @@ inputs:
   buildArgs:
     description: BuildArgs for Docker build
     required: false
+  platforms:
+    description:
+      'Platforms for multi-platform builds. Requires docker buildx to be
+      installed and configured, see
+      https://github.com/exivity/setup-buildx-action'
+    required: false
+    default: 'linux/amd64'
 runs:
   using: node20
   main: dist/index.js
