@@ -45,6 +45,10 @@ inputs:
   buildArgs:
     description: BuildArgs for Docker build
     required: false
+  platforms:
+    description: Platforms for multi-platform builds
+    required: false
+    default: 'linux/amd64'
 runs:
   using: node20
   main: dist/index.js

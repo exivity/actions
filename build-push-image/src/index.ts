@@ -22,6 +22,7 @@ async function run() {
   const useSSH = getBooleanInput('useSSH')
   const secrets = getInput('secrets')
   const target = getInput('target')
+  const platforms = getInput('platforms')
   const onlyBuild = getBooleanInput('only-build') // New option to skip push
 
   // Get all relevant metadata for the image
@@ -51,6 +52,7 @@ async function run() {
     useSSH,
     secrets,
     target,
+    platforms,
   })
 
   // Push the image unless only-build is set

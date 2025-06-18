@@ -33,6 +33,7 @@ type BuildOptions = {
   useSSH: boolean
   buildArgs?: string // Changed to a simple string
   target?: string // Add target for specifying build stage
+  platforms?: string
 }
 
 export type Image = {
@@ -52,6 +53,7 @@ export async function dockerBuild({
   secrets,
   buildArgs,
   target,
+  platforms,
 }: BuildOptions & { secrets?: string }) {
   info('Building image...')
 
@@ -63,10 +65,11 @@ export async function dockerBuild({
   const secretArgs = secrets ? `--secret ${secrets}` : ''
   const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : ''
   const targetOption = target ? `--target ${target}` : ''
+  const platformsOption = platforms ? `--platform ${platforms}` : ''
 
   const nameOfImage = imageName ? imageName : getImageFQN(image)
   // Correct command structure with context at the end
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context}"`
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context}"`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd, undefined, {

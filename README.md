@@ -64,6 +64,7 @@ needed.
 | `useSSH`     | false    | `false`          | Whether to use SSH for Git operations                                         |
 | `secrets`    | false    |                  | Secrets for Docker build like `id=npmrc,src=$HOME/.npmrc`                     |
 | `target`     | false    |                  | Specify a stage to build from the Dockerfile                                  |
+| `platforms`  | false    | `linux/amd64`    | Platforms for multi-platform builds                                           |
 
 # `commit-status`
 

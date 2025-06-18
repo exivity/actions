@@ -25200,7 +25200,8 @@ async function dockerBuild({
   useSSH,
   secrets,
   buildArgs,
-  target
+  target,
+  platforms
 }) {
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
@@ -25208,8 +25209,9 @@ async function dockerBuild({
   const secretArgs = secrets ? `--secret ${secrets}` : "";
   const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : "";
   const targetOption = target ? `--target ${target}` : "";
+  const platformsOption = platforms ? `--platform ${platforms}` : "";
   const nameOfImage = imageName ? imageName : getImageFQN(image);
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2}"`;
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2}"`;
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
   await (0, import_exec2.exec)(cmd, void 0, {
@@ -25360,6 +25362,7 @@ async function run() {
   const useSSH = (0, import_core5.getBooleanInput)("useSSH");
   const secrets = (0, import_core5.getInput)("secrets");
   const target = (0, import_core5.getInput)("target");
+  const platforms = (0, import_core5.getInput)("platforms");
   const onlyBuild = (0, import_core5.getBooleanInput)("only-build");
   const labels = getLabels(name);
   const tag = branchToTag();
@@ -25381,7 +25384,8 @@ async function run() {
     imageName: "",
     useSSH,
     secrets,
-    target
+    target,
+    platforms
   });
   if (!onlyBuild) {
     await dockerPush(image);

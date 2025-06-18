@@ -18,6 +18,7 @@ async function run() {
   const useSSH = getBooleanInput('useSSH')
   const secrets = getInput('secrets')
   const buildArgs = getInput('buildArgs')
+  const platforms = getInput('platforms')
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -44,6 +45,7 @@ async function run() {
     useSSH,
     secrets,
     buildArgs,
+    platforms,
   })
 }
 
