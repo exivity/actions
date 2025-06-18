@@ -25211,7 +25211,7 @@ async function dockerBuild({
   const targetOption = target ? `--target ${target}` : "";
   const platformsOption = platforms ? `--platform ${platforms}` : "";
   const nameOfImage = imageName ? imageName : getImageFQN(image);
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2}"`;
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2} --load"`;
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
   await (0, import_exec2.exec)(cmd, void 0, {

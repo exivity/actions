@@ -69,7 +69,7 @@ export async function dockerBuild({
 
   const nameOfImage = imageName ? imageName : getImageFQN(image)
   // Correct command structure with context at the end
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context}"`
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context} --load"`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd, undefined, {
