@@ -25201,7 +25201,8 @@ async function dockerBuild({
   secrets,
   buildArgs,
   target,
-  platforms
+  platforms,
+  push
 }) {
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
@@ -25210,8 +25211,10 @@ async function dockerBuild({
   const buildArgsOptions = buildArgs ? `--build-arg ${buildArgs}` : "";
   const targetOption = target ? `--target ${target}` : "";
   const platformsOption = platforms ? `--platform ${platforms}` : "";
+  const pushOption = push ? "--push" : "";
+  const loadOption = !push && (!platforms || platforms.split(",").length <= 1) ? "--load" : "";
   const nameOfImage = imageName ? imageName : getImageFQN(image);
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2} --load"`;
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2} ${pushOption} ${loadOption}"`;
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
   await (0, import_exec2.exec)(cmd, void 0, {

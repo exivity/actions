@@ -53,12 +53,13 @@ async function run() {
     secrets,
     target,
     platforms,
+    push: !onlyBuild && !!platforms,
   })
 
   // Push the image unless only-build is set
-  if (!onlyBuild) {
+  if (!onlyBuild && !platforms) {
     await dockerPush(image)
-  } else {
+  } else if (onlyBuild) {
     table('Info', 'Skipping docker push (only-build mode)')
   }
 }
