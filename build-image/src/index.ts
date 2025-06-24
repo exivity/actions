@@ -19,6 +19,7 @@ async function run() {
   const secrets = getInput('secrets')
   const buildArgs = getInput('buildArgs')
   const platforms = getInput('platforms')
+  const login = getBooleanInput('login')
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -30,11 +31,13 @@ async function run() {
   table('Labels', JSON.stringify(labels, undefined, 2))
 
   await writeMetadataFile(name)
-  await dockerLogin({
-    registry,
-    user,
-    password,
-  })
+  if (login) {
+    await dockerLogin({
+      registry,
+      user,
+      password,
+    })
+  }
 
   await dockerBuild({
     dockerfile,

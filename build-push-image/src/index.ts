@@ -24,6 +24,7 @@ async function run() {
   const target = getInput('target')
   const platforms = getInput('platforms')
   const onlyBuild = getBooleanInput('only-build') // New option to skip push
+  const login = getBooleanInput('login')
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -37,11 +38,13 @@ async function run() {
   await writeMetadataFile(name)
 
   // Perform login only if we're also going to push
-  await dockerLogin({
-    registry,
-    user,
-    password,
-  })
+  if (login) {
+    await dockerLogin({
+      registry,
+      user,
+      password,
+    })
+  }
 
   await dockerBuild({
     dockerfile,

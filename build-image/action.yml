@@ -38,7 +38,7 @@ inputs:
   useSSH:
     description: Pass the SSH agent to the build context
     required: false
-    default: 'false'
+    default: "false"
   secrets:
     description: Secrets for Docker build
     required: false
@@ -47,11 +47,15 @@ inputs:
     required: false
   platforms:
     description:
-      'Platforms for multi-platform builds. Requires docker buildx to be
+      "Platforms for multi-platform builds. Requires docker buildx to be
       installed and configured, see
-      https://github.com/exivity/setup-buildx-action'
+      https://github.com/exivity/setup-buildx-action"
     required: false
-    default: 'linux/amd64'
+    default: "linux/amd64"
+  login:
+    description: Whether to perform docker login. Defaults to true.
+    required: false
+    default: "true"
 runs:
   using: node20
   main: dist/index.js
