@@ -23350,6 +23350,10 @@ var types = {
   revert: {
     description: "Reverts a previous commit",
     title: "Reverts"
+  },
+  deps: {
+    description: "Changes to dependencies",
+    title: "Dependencies"
   }
 };
 var availableTypes = Object.keys(types);
