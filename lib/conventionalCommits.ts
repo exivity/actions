@@ -49,6 +49,10 @@ export const types = {
     description: 'Reverts a previous commit',
     title: 'Reverts',
   },
+  deps: {
+    description: 'Changes to dependencies',
+    title: 'Dependencies',
+  },
 }
 
 const availableTypes = Object.keys(types)
