@@ -19,6 +19,7 @@ async function run() {
   const secrets = getInput('secrets')
   const buildArgs = getInput('buildArgs')
   const platforms = getInput('platforms')
+  const sbom = getBooleanInput('sbom')
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -46,6 +47,7 @@ async function run() {
     secrets,
     buildArgs,
     platforms,
+    sbom,
   })
 }
 

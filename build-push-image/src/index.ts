@@ -24,6 +24,7 @@ async function run() {
   const target = getInput('target')
   const platforms = getInput('platforms')
   const onlyBuild = getBooleanInput('only-build') // New option to skip push
+  const sbom = getBooleanInput('sbom')
 
   // Get all relevant metadata for the image
   const labels = getLabels(name)
@@ -54,6 +55,7 @@ async function run() {
     target,
     platforms,
     push: !onlyBuild && !!platforms,
+    sbom,
   })
 
   // Push the image unless only-build is set

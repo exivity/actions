@@ -52,6 +52,10 @@ inputs:
       https://github.com/exivity/setup-buildx-action'
     required: false
     default: 'linux/amd64'
+  sbom:
+    description: Generate a Software Bill of Materials (SBOM) for the image
+    required: false
+    default: 'false'
 runs:
   using: node20
   main: dist/index.js

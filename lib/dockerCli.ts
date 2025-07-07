@@ -35,6 +35,7 @@ type BuildOptions = {
   target?: string // Add target for specifying build stage
   platforms?: string
   push?: boolean
+  sbom?: boolean // Add SBOM support
 }
 
 export type Image = {
@@ -56,6 +57,7 @@ export async function dockerBuild({
   target,
   platforms,
   push,
+  sbom,
 }: BuildOptions & { secrets?: string }) {
   info('Building image...')
 
@@ -71,10 +73,11 @@ export async function dockerBuild({
   const pushOption = push ? '--push' : ''
   const loadOption =
     !push && (!platforms || platforms.split(',').length <= 1) ? '--load' : ''
+  const sbomOption = sbom ? '--sbom=true' : ''
 
   const nameOfImage = imageName ? imageName : getImageFQN(image)
   // Correct command structure with context at the end
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context} ${pushOption} ${loadOption}"`
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} ${sbomOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context} ${pushOption} ${loadOption}"`
   debug(`Executing command:\n${cmd}`)
 
   await exec(cmd, undefined, {
