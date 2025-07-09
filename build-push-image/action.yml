@@ -55,6 +55,13 @@ inputs:
     description: Generate a Software Bill of Materials (SBOM) for the image
     required: false
     default: 'false'
+outputs:
+  digest:
+    description: 'Image digest (sha256:...)'
+  image:
+    description: 'Full image name with tag'
+  metadata:
+    description: 'Build metadata in JSON format'
 runs:
   using: node20
   main: dist/index.js

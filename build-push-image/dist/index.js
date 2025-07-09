@@ -19139,7 +19139,7 @@ var require_core = __commonJS({
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports2.getBooleanInput = getBooleanInput2;
-    function setOutput(name, value) {
+    function setOutput2(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
         return (0, file_command_1.issueFileCommand)("OUTPUT", (0, file_command_1.prepareKeyValueMessage)(name, value));
@@ -19147,7 +19147,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       process.stdout.write(os.EOL);
       (0, command_1.issueCommand)("set-output", { name }, (0, utils_1.toCommandValue)(value));
     }
-    exports2.setOutput = setOutput;
+    exports2.setOutput = setOutput2;
     function setCommandEcho(enabled) {
       (0, command_1.issue)("echo", enabled ? "on" : "off");
     }
@@ -25202,7 +25202,8 @@ async function dockerBuild({
   buildArgs,
   target,
   platforms,
-  push
+  push,
+  sbom
 }) {
   (0, import_core2.info)("Building image...");
   const labelOptions = Object.entries(labels).map(([key, value]) => `--label "${key}=${value}"`).join(" ");
@@ -25213,16 +25214,46 @@ async function dockerBuild({
   const platformsOption = platforms ? `--platform ${platforms}` : "";
   const pushOption = push ? "--push" : "";
   const loadOption = !push && (!platforms || platforms.split(",").length <= 1) ? "--load" : "";
+  const sbomOption = sbom ? "--sbom=true" : "";
   const nameOfImage = imageName ? imageName : getImageFQN(image);
-  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2} ${pushOption} ${loadOption}"`;
+  const metadataOption = "--metadata-file /tmp/docker-build-metadata.json";
+  const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} ${sbomOption} ${metadataOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context2} ${pushOption} ${loadOption}"`;
   (0, import_core2.debug)(`Executing command:
 ${cmd}`);
+  let buildOutput = "";
   await (0, import_exec2.exec)(cmd, void 0, {
     env: {
       ...process.env,
       DOCKER_BUILDKIT: "1"
+    },
+    listeners: {
+      stdout: (data) => {
+        buildOutput += data.toString();
+      }
     }
   });
+  const finalImageName = imageName || getImageFQN(image);
+  let metadata = {};
+  let digest;
+  try {
+    const fs2 = require("fs");
+    if (fs2.existsSync("/tmp/docker-build-metadata.json")) {
+      const metadataContent = fs2.readFileSync("/tmp/docker-build-metadata.json", "utf8");
+      metadata = JSON.parse(metadataContent);
+      if (metadata["containerimage.digest"]) {
+        digest = metadata["containerimage.digest"];
+      }
+    }
+  } catch (error) {
+    (0, import_core2.debug)(`Could not read build metadata: ${error}`);
+  }
+  if (!digest && buildOutput) {
+    const digestMatch = buildOutput.match(/digest:\s*(sha256:[a-f0-9]{64})/i);
+    if (digestMatch) {
+      digest = digestMatch[1];
+    }
+  }
+  return { digest, image: finalImageName, metadata };
 }
 async function dockerPush(image) {
   (0, import_core2.info)("Pushing image...");
@@ -25367,6 +25398,7 @@ async function run() {
   const target = (0, import_core5.getInput)("target");
   const platforms = (0, import_core5.getInput)("platforms");
   const onlyBuild = (0, import_core5.getBooleanInput)("only-build");
+  const sbom = (0, import_core5.getBooleanInput)("sbom");
   const labels = getLabels(name);
   const tag = branchToTag();
   const image = { registry, namespace, name, tag };
@@ -25379,7 +25411,7 @@ async function run() {
     user,
     password
   });
-  await dockerBuild({
+  const buildResult = await dockerBuild({
     dockerfile,
     context: context2,
     labels,
@@ -25387,10 +25419,20 @@ async function run() {
     imageName: "",
     useSSH,
     secrets,
+    buildArgs: void 0,
+    // Add missing buildArgs parameter
     target,
     platforms,
-    push: !onlyBuild && !!platforms
+    push: !onlyBuild && !!platforms,
+    sbom
   });
+  const imageFQN = getImageFQN(image);
+  (0, import_core5.setOutput)("image", imageFQN);
+  (0, import_core5.setOutput)("metadata", JSON.stringify(buildResult.metadata));
+  if (buildResult.digest) {
+    (0, import_core5.setOutput)("digest", buildResult.digest);
+    table("Image Digest", buildResult.digest);
+  }
   if (!onlyBuild && !platforms) {
     await dockerPush(image);
   } else if (onlyBuild) {

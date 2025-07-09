@@ -1,4 +1,4 @@
-import { getInput, setFailed, getBooleanInput } from '@actions/core'
+import { getInput, setFailed, getBooleanInput, setOutput } from '@actions/core'
 import { table } from '../../lib/core'
 import { dockerBuild, dockerLogin, getImageFQN } from '../../lib/dockerCli'
 import { getOwnerInput, getRepoInput } from '../../lib/github'
@@ -18,6 +18,7 @@ async function run() {
   const useSSH = getBooleanInput('useSSH')
   const secrets = getInput('secrets')
   const buildArgs = getInput('buildArgs')
+  const target = getInput('target')
   const platforms = getInput('platforms')
   const sbom = getBooleanInput('sbom')
 
@@ -37,7 +38,7 @@ async function run() {
     password,
   })
 
-  await dockerBuild({
+  const buildResult = await dockerBuild({
     dockerfile,
     context,
     labels,
@@ -46,9 +47,18 @@ async function run() {
     useSSH,
     secrets,
     buildArgs,
+    target,
     platforms,
+    push: false, // Add missing push parameter (build-image doesn't push)
     sbom,
   })
+
+  // Set outputs
+  if (buildResult) {
+    setOutput('digest', buildResult.digest)
+    setOutput('image', buildResult.image)
+    setOutput('metadata', JSON.stringify(buildResult.metadata))
+  }
 }
 
 run().catch(setFailed)

@@ -1,4 +1,4 @@
-import { getInput, setFailed, getBooleanInput } from '@actions/core'
+import { getInput, setFailed, getBooleanInput, setOutput } from '@actions/core'
 import { table } from '../../lib/core'
 import {
   dockerBuild,
@@ -44,7 +44,7 @@ async function run() {
     password,
   })
 
-  await dockerBuild({
+  const buildResult = await dockerBuild({
     dockerfile,
     context,
     labels,
@@ -52,11 +52,22 @@ async function run() {
     imageName: '',
     useSSH,
     secrets,
+    buildArgs: undefined, // Add missing buildArgs parameter
     target,
     platforms,
     push: !onlyBuild && !!platforms,
     sbom,
   })
+
+  // Set outputs
+  const imageFQN = getImageFQN(image)
+  setOutput('image', imageFQN)
+  setOutput('metadata', JSON.stringify(buildResult.metadata))
+  
+  if (buildResult.digest) {
+    setOutput('digest', buildResult.digest)
+    table('Image Digest', buildResult.digest)
+  }
 
   // Push the image unless only-build is set
   if (!onlyBuild && !platforms) {
