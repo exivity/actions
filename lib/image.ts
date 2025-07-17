@@ -36,11 +36,13 @@ function capitalizeFirstLetter(string: string) {
 export function getLabels(name: string) {
   const { owner, fqn } = getRepository()
 
+  // Generate default labels that can be overridden by Dockerfile
   return {
     'org.opencontainers.image.vendor': capitalizeFirstLetter(owner),
     'org.opencontainers.image.title': name,
-    'org.opencontainers.image.description': name,
-    'org.opencontainers.image.source': `https://github.com/${fqn}`,
+    // Don't override description and source - let Dockerfile take precedence
+    // 'org.opencontainers.image.description': name,
+    // 'org.opencontainers.image.source': `https://github.com/${fqn}`,
     'org.opencontainers.image.created': new Date().toISOString(),
     'org.opencontainers.image.revision': getSha(),
     ...(owner === 'exivity'
