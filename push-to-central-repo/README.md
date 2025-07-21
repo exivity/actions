@@ -24,33 +24,34 @@ The action creates the following structure in the central repository:
 
 ```
 /
-├── schemas/
-│   ├── repo-a/
-│   │   ├── foo.schema.json
-│   │   └── bar.schema.json
-│   └── repo-b/
-│       └── baz.schema.json
-│
-├── templates/
-│   ├── repo-a/
-│   │   ├── template1.html
-│   │   └── partials/
-│   │       └── component.hbs
-│   └── repo-b/
-│       └── widget/
-│           └── index.hbs
-│
-├── README_sources/
-│   ├── repo-a/
-│   │   └── README.md
-│   └── repo-b/
-│       └── README.md
-│
-└── files/
-    ├── repo-a/
-    │   └── config.json
-    └── repo-b/
-        └── settings.yaml
+└── external/
+    ├── schemas/
+    │   ├── repo-a/
+    │   │   ├── foo.schema.json
+    │   │   └── bar.schema.json
+    │   └── repo-b/
+    │       └── baz.schema.json
+    │
+    ├── templates/
+    │   ├── repo-a/
+    │   │   ├── template1.html
+    │   │   └── partials/
+    │   │       └── component.hbs
+    │   └── repo-b/
+    │       └── widget/
+    │           └── index.hbs
+    │
+    ├── README_sources/
+    │   ├── repo-a/
+    │   │   └── README.md
+    │   └── repo-b/
+    │       └── README.md
+    │
+    └── files/
+        ├── repo-a/
+        │   └── config.json
+        └── repo-b/
+            └── settings.yaml
 ```
 
 ## Usage
@@ -125,12 +126,14 @@ The action creates the following structure in the central repository:
 
 ## File Categorization
 
-The action automatically categorizes files based on their characteristics:
+The action automatically categorizes files based on their characteristics and organizes them under the `external/` folder to clearly distinguish content from external repositories:
 
-1. **README.md files** → `README_sources/{repo-name}/README.md`
-2. **Files ending with `.schema.json`** → `schemas/{repo-name}/{filename}`
-3. **Files in `templates/` folder** → `templates/{repo-name}/{path}`
-4. **Other files** → `files/{repo-name}/{filename}`
+1. **README.md files** → `external/README_sources/{repo-name}/README.md`
+2. **Files ending with `.schema.json`** → `external/schemas/{repo-name}/{filename}`
+3. **Files in `templates/` folder** → `external/templates/{repo-name}/{path}`
+4. **Other files** → `external/files/{repo-name}/{filename}`
+
+All commits follow conventional commit format: `chore: update files from {repo-owner}/{repo-name}`
 
 ## Custom Mappings
 
@@ -147,10 +150,10 @@ You can define custom mappings to organize files into specific categories:
 
 This maps:
 
-- Files in `docs/` folder → `documentation/{repo-name}/`
-- Files in `config/` folder → `configurations/{repo-name}/`
-- Files in `scripts/` folder → `automation/{repo-name}/`
-- Files in `styles/` folder → `assets/{repo-name}/`
+- Files in `docs/` folder → `external/documentation/{repo-name}/`
+- Files in `config/` folder → `external/configurations/{repo-name}/`
+- Files in `scripts/` folder → `external/automation/{repo-name}/`
+- Files in `styles/` folder → `external/assets/{repo-name}/`
 
 ## Security Considerations
 
@@ -210,8 +213,8 @@ jobs:
           files: 'README.md,LICENSE'
           folders: 'templates,docs'
           schema-patterns: '**/*.schema.json'
-          commit-message: 'chore: weekly sync from ${{ github.repository }}'
           gh-token: ${{ secrets.PAT_TOKEN }}
+          # Commits will use: "chore: update files from your-org/your-repo"
 ```
 
 ## Troubleshooting
