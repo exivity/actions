@@ -1,0 +1,31 @@
+name: 'Push to Central Repository'
+description:
+  'Pushes selected files and folders to a central repository with organized
+  structure'
+inputs:
+  central-repo-owner:
+    description: 'Owner of the central repository'
+    required: true
+  central-repo-name:
+    description: 'Name of the central repository'
+    required: true
+  central-repo-branch:
+    description: 'Branch in central repository to push to'
+    required: false
+    default: 'main'
+  files:
+    description: 'List of files/patterns to push (supports glob patterns like *.schema.json, multiline YAML list, or comma-separated)'
+    required: false
+  folders:
+    description: 'List of folders to push (supports multiline YAML list or comma-separated)'
+    required: false
+  gh-token:
+    description: 'GitHub token with write access to the central repository'
+    required: true
+  dry-run:
+    description: 'If true, only show what would be done without making changes'
+    required: false
+    default: 'false'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
