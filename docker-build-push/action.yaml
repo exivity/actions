@@ -14,10 +14,10 @@ inputs:
     default: "true"
     required: false
   image:
-    description: "Image name without registry (e.g., exivity/glass or just glass)"
+    description: "Image name"
     required: true
   owner:
-    description: "The namespace/owner of the image repository (for backward compatibility)"
+    description: "The namespace of the image repository"
     required: false
   registry:
     description: "Docker registry"
@@ -56,7 +56,7 @@ runs:
 
     - name: Extract metadata
       id: meta
-      uses: docker/metadata-action@v5
+      uses: exivity/metadata-action@v5
       with:
         images: ${{ inputs.registry }}/${{ inputs.image }}
         tags: |
@@ -73,7 +73,7 @@ runs:
           org.opencontainers.image.revision=${{ github.sha }}
 
     - name: Build and push
-      uses: docker/build-push-action@v6
+      uses: exivity/build-push-action@v6
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
