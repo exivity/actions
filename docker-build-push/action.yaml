@@ -16,7 +16,7 @@ inputs:
   image:
     description: "Image name"
     required: true
-  owner:
+  builder:
     description: "The namespace of the image repository"
     required: false
   registry:
@@ -25,11 +25,9 @@ inputs:
     required: false
   username:
     description: "Username for Docker registry"
-    default: ${{ github.actor }}
     required: false
   password:
     description: "Password for Docker registry"
-    default: ${{ github.token }}
     required: false
   platforms:
     description: "Target platforms for build (e.g., linux/amd64,linux/arm64)"
@@ -85,6 +83,5 @@ runs:
         ssh: ${{ inputs.ssh }}
         target: ${{ inputs.target }}
         sbom: true
-        provenance: true
-        attestations: type=provenance,mode=max
-        owner: ${{ inputs.owner }}
+        provenance: mode=max
+        builder: ${{ inputs.builder }}
