@@ -14,8 +14,11 @@ inputs:
     default: "true"
     required: false
   image:
-    description: "Docker image name (e.g., ghcr.io/exivity/glass)"
+    description: "Image name without registry (e.g., exivity/glass or just glass)"
     required: true
+  owner:
+    description: "The namespace/owner of the image repository (for backward compatibility)"
+    required: false
   registry:
     description: "Docker registry"
     default: "ghcr.io"
@@ -30,25 +33,32 @@ inputs:
     required: false
   platforms:
     description: "Target platforms for build (e.g., linux/amd64,linux/arm64)"
-    default: "linux/amd64"
+    default: "linux/amd64,linux/arm64"
+    required: false
+  secrets:
+    description: "List of secrets to expose to the build (e.g., id=mypassword,src=./secret.txt)"
+    required: false
+  ssh:
+    description: "SSH agent socket or keys to expose to the build"
+    required: false
+  target:
+    description: "Sets the target stage to build"
     required: false
 
 runs:
   using: "composite"
   steps:
-    - name: Login to Container Registry
-      if: ${{ inputs.push == 'true' }}
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ inputs.registry }}
-        username: ${{ inputs.username }}
-        password: ${{ inputs.password }}
+    - name: Set up QEMU
+      uses: exivity/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: exivity/setup-buildx-action@v3
 
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ${{ inputs.image }}
+        images: ${{ inputs.registry }}/${{ inputs.image }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -71,6 +81,10 @@ runs:
         push: ${{ inputs.push == 'true' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        secrets: ${{ inputs.secrets }}
+        ssh: ${{ inputs.ssh }}
+        target: ${{ inputs.target }}
         sbom: true
         provenance: true
         attestations: type=provenance,mode=max
+        owner: ${{ inputs.owner }}
