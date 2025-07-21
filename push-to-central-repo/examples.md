@@ -1,5 +1,17 @@
 # Example workflows for push-to-central-repo action
 
+## Overview
+
+All files pushed by this action are organized under the `external/` folder in the central repository to clearly distinguish content from external repositories. 
+
+The structure created will be:
+- `external/README_sources/{repo-name}/`
+- `external/schemas/{repo-name}/`
+- `external/templates/{repo-name}/`
+- `external/files/{repo-name}/`
+
+All commits use conventional commit format: `chore: update files from {owner}/{repo}`
+
 ## Basic Usage
 
 This workflow pushes README.md and files from templates folder to a central

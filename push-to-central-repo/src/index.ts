@@ -51,21 +51,21 @@ function getDestinationPath(
   const fileName = basename(sourcePath)
 
   if (fileName.toLowerCase() === 'readme.md') {
-    return `README_sources/${sourceRepoName}/README.md`
+    return `external/README_sources/${sourceRepoName}/README.md`
   }
 
   if (fileName.endsWith('.schema.json')) {
-    return `schemas/${sourceRepoName}/${fileName}`
+    return `external/schemas/${sourceRepoName}/${fileName}`
   }
 
   if (sourcePath.startsWith('templates/')) {
     // Preserve folder structure for templates
     const relativePath = sourcePath.replace(/^templates\//, '')
-    return `templates/${sourceRepoName}/${relativePath}`
+    return `external/templates/${sourceRepoName}/${relativePath}`
   }
 
   // Default: put in a general folder
-  return `files/${sourceRepoName}/${fileName}`
+  return `external/files/${sourceRepoName}/${fileName}`
 }
 
 async function collectFileMappings(config: PushConfig): Promise<FileMapping[]> {
@@ -238,7 +238,7 @@ async function run() {
       `Pushing files to ${config.centralRepoOwner}/${config.centralRepoName}:${config.centralRepoBranch}...`,
     )
 
-    const commitMessage = `Update files from ${sourceOwner}/${sourceRepo}`
+    const commitMessage = `chore: update files from ${sourceOwner}/${sourceRepo}`
 
     for (const mapping of mappings) {
       try {
