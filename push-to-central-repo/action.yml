@@ -14,10 +14,13 @@ inputs:
     required: false
     default: 'main'
   files:
-    description: 'List of files/patterns to push (supports glob patterns like *.schema.json, multiline YAML list, or comma-separated)'
+    description:
+      'List of files/patterns to push (supports glob patterns like
+      *.schema.json, multiline YAML list, or comma-separated)'
     required: false
   folders:
-    description: 'List of folders to push (supports multiline YAML list or comma-separated)'
+    description:
+      'List of folders to push (supports multiline YAML list or comma-separated)'
     required: false
   gh-token:
     description: 'GitHub token with write access to the central repository'

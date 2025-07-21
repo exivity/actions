@@ -113,15 +113,15 @@ The action creates the following structure in the central repository:
 
 ## Inputs
 
-| Name | Required | Default | Description |
-|------|----------|---------|-------------|
-| `central-repo-owner` | ✅ | | Owner of the central repository |
-| `central-repo-name` | ✅ | | Name of the central repository |
-| `central-repo-branch` | | `main` | Branch in central repository to push to |
-| `files` | | | List of files/patterns to push (supports glob patterns like `*.schema.json`, multiline YAML list, or comma-separated) |
-| `folders` | | | List of folders to push (supports multiline YAML list or comma-separated) |
-| `gh-token` | ✅ | | GitHub token with write access to the central repository |
-| `dry-run` | | `false` | Show what would be done without making changes |
+| Name                  | Required | Default | Description                                                                                                           |
+| --------------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| `central-repo-owner`  | ✅       |         | Owner of the central repository                                                                                       |
+| `central-repo-name`   | ✅       |         | Name of the central repository                                                                                        |
+| `central-repo-branch` |          | `main`  | Branch in central repository to push to                                                                               |
+| `files`               |          |         | List of files/patterns to push (supports glob patterns like `*.schema.json`, multiline YAML list, or comma-separated) |
+| `folders`             |          |         | List of folders to push (supports multiline YAML list or comma-separated)                                             |
+| `gh-token`            | ✅       |         | GitHub token with write access to the central repository                                                              |
+| `dry-run`             |          | `false` | Show what would be done without making changes                                                                        |
 
 ## File Categorization
 

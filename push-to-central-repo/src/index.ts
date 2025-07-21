@@ -1,4 +1,10 @@
-import { getInput, getMultilineInput, info, setFailed, warning } from '@actions/core'
+import {
+  getInput,
+  getMultilineInput,
+  info,
+  setFailed,
+  warning,
+} from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { glob } from 'glob'
 import { promises as fs } from 'fs'
@@ -26,13 +32,16 @@ function parseInput(inputName: string): string[] {
   // Try multiline input first
   const multilineInput = getMultilineInput(inputName)
   if (multilineInput.length > 0) {
-    return multilineInput.filter(item => item.trim().length > 0)
+    return multilineInput.filter((item) => item.trim().length > 0)
   }
-  
+
   // Fall back to comma-separated input
   const singleLineInput = getInput(inputName)
   if (!singleLineInput.trim()) return []
-  return singleLineInput.split(',').map(item => item.trim()).filter(item => item.length > 0)
+  return singleLineInput
+    .split(',')
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
 }
 
 function getDestinationPath(
@@ -66,11 +75,11 @@ async function collectFileMappings(config: PushConfig): Promise<FileMapping[]> {
   for (const filePattern of config.files) {
     try {
       // Use glob to find files matching the pattern
-      const matchedFiles = await glob(filePattern, { 
+      const matchedFiles = await glob(filePattern, {
         ignore: ['node_modules/**', '.git/**', 'dist/**', 'build/**'],
-        nodir: true 
+        nodir: true,
       })
-      
+
       if (matchedFiles.length === 0) {
         // If no glob matches, try as direct file
         try {
@@ -81,7 +90,7 @@ async function collectFileMappings(config: PushConfig): Promise<FileMapping[]> {
           continue
         }
       }
-      
+
       for (const file of matchedFiles) {
         mappings.push({
           sourcePath: file,
