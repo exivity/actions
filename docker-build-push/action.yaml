@@ -26,9 +26,11 @@ inputs:
   username:
     description: "Username for Docker registry"
     required: false
+    default: ${{ github.actor }}
   password:
     description: "Password for Docker registry"
     required: false
+    default: ${{ github.token }}
   platforms:
     description: "Target platforms for build (e.g., linux/amd64,linux/arm64)"
     default: "linux/amd64,linux/arm64"
@@ -51,7 +53,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ github.token }}
 
     - name: Set up QEMU
       uses: exivity/setup-qemu-action@v3
