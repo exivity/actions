@@ -13,6 +13,7 @@ applied outside of the context of the Exivity repositories.
 - [`postgres`](#postgres)
 - [`process-binary`](#process-binary)
 - [`purge-ghcr`](#purge-ghcr)
+- [`push-to-central-repo`](#push-to-central-repo)
 - [`rabbitmq`](#rabbitmq)
 - [`rcedit`](#rcedit)
 - [`retag-image`](#retag-image)
@@ -246,6 +247,68 @@ jobs:
 | `org`      |          | Repository owner | The org who owns the package                                                                                          |
 | `name`     |          | Repository name  | The package name                                                                                                      |
 | `gh-token` |          | `github.token`   | The GitHub token with admin permissions in the organization and admin permissions to the container you want to delete |
+
+# `push-to-central-repo`
+
+Pushes selected files and folders to a central repository with an organized
+structure. This action is designed to collect files like README.md, templates,
+schema files, and other assets from multiple repositories and organize them in a
+centralized location.
+
+## Example
+
+```yaml
+- uses: exivity/actions/push-to-central-repo@main
+  with:
+    central-repo-owner: 'your-org'
+    central-repo-name: 'central-assets'
+    files: 'README.md,package.json'
+    folders: 'templates,docs'
+    gh-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+## Directory Structure
+
+The action creates the following structure in the central repository:
+
+```
+/
+├── schemas/
+│   ├── repo-a/
+│   │   ├── foo.schema.json
+│   │   └── bar.schema.json
+│   └── repo-b/
+│       └── baz.schema.json
+├── templates/
+│   ├── repo-a/
+│   │   ├── template1.html
+│   │   └── partials/
+│   └── repo-b/
+│       └── widget/
+│           └── index.hbs
+└── README_sources/
+    ├── repo-a/
+    │   └── README.md
+    └── repo-b/
+        └── README.md
+└── files/
+    ├── repo-a/
+    │   └── config.json
+    └── repo-b/
+        └── settings.yaml
+```
+
+## Inputs
+
+| name                  | required | default | description                                              |
+| --------------------- | -------- | ------- | -------------------------------------------------------- |
+| `central-repo-owner`  | ✅       |         | Owner of the central repository                          |
+| `central-repo-name`   | ✅       |         | Name of the central repository                           |
+| `central-repo-branch` |          | `main`  | Branch in central repository to push to                  |
+| `files`               |          |         | Comma-separated list of files to push                    |
+| `folders`             |          |         | Comma-separated list of folders to push                  |
+| `gh-token`            | ✅       |         | GitHub token with write access to the central repository |
+| `dry-run`             |          | `false` | Show what would be done without making changes           |
 
 # `rabbitmq`
 
