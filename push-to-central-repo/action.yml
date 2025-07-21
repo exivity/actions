@@ -15,20 +15,12 @@ inputs:
     default: 'main'
   files:
     description:
-<<<<<<< HEAD
       'List of files/patterns to push (supports glob patterns like
       *.schema.json, multiline YAML list, or comma-separated)'
     required: false
   folders:
     description:
       'List of folders to push (supports multiline YAML list or comma-separated)'
-=======
-      'Comma-separated list of files to push (e.g., "README.md,package.json")'
-    required: false
-  folders:
-    description:
-      'Comma-separated list of folders to push (e.g., "templates,docs")'
->>>>>>> main
     required: false
   gh-token:
     description: 'GitHub token with write access to the central repository'
