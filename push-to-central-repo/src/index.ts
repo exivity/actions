@@ -1,4 +1,14 @@
+<<<<<<< HEAD
+import {
+  getInput,
+  getMultilineInput,
+  info,
+  setFailed,
+  warning,
+} from '@actions/core'
+=======
 import { getInput, info, setFailed, warning } from '@actions/core'
+>>>>>>> main
 import { getOctokit } from '@actions/github'
 import { glob } from 'glob'
 import { promises as fs } from 'fs'
@@ -22,9 +32,23 @@ interface PushConfig {
   dryRun: boolean
 }
 
+<<<<<<< HEAD
+function parseInput(inputName: string): string[] {
+  // Try multiline input first
+  const multilineInput = getMultilineInput(inputName)
+  if (multilineInput.length > 0) {
+    return multilineInput.filter((item) => item.trim().length > 0)
+  }
+
+  // Fall back to comma-separated input
+  const singleLineInput = getInput(inputName)
+  if (!singleLineInput.trim()) return []
+  return singleLineInput
+=======
 function parseCommaSeparatedInput(input: string): string[] {
   if (!input.trim()) return []
   return input
+>>>>>>> main
     .split(',')
     .map((item) => item.trim())
     .filter((item) => item.length > 0)
@@ -57,6 +81,36 @@ function getDestinationPath(
 async function collectFileMappings(config: PushConfig): Promise<FileMapping[]> {
   const mappings: FileMapping[] = []
 
+<<<<<<< HEAD
+  // Process individual files (including glob patterns)
+  for (const filePattern of config.files) {
+    try {
+      // Use glob to find files matching the pattern
+      const matchedFiles = await glob(filePattern, {
+        ignore: ['node_modules/**', '.git/**', 'dist/**', 'build/**'],
+        nodir: true,
+      })
+
+      if (matchedFiles.length === 0) {
+        // If no glob matches, try as direct file
+        try {
+          await fs.access(filePattern)
+          matchedFiles.push(filePattern)
+        } catch {
+          warning(`File or pattern "${filePattern}" not found, skipping`)
+          continue
+        }
+      }
+
+      for (const file of matchedFiles) {
+        mappings.push({
+          sourcePath: file,
+          destinationPath: getDestinationPath(file, config.sourceRepoName),
+        })
+      }
+    } catch (error) {
+      warning(`Error processing file pattern "${filePattern}": ${error}`)
+=======
   // Process individual files
   for (const file of config.files) {
     try {
@@ -68,6 +122,7 @@ async function collectFileMappings(config: PushConfig): Promise<FileMapping[]> {
       })
     } catch (error) {
       warning(`File "${file}" not found, skipping`)
+>>>>>>> main
     }
   }
 
@@ -169,8 +224,13 @@ async function run() {
       centralRepoName: getInput('central-repo-name', { required: true }),
       centralRepoBranch: getInput('central-repo-branch') || 'main',
       sourceRepoName: sourceRepo,
+<<<<<<< HEAD
+      files: parseInput('files'),
+      folders: parseInput('folders'),
+=======
       files: parseCommaSeparatedInput(getInput('files')),
       folders: parseCommaSeparatedInput(getInput('folders')),
+>>>>>>> main
       ghToken,
       dryRun: getBooleanInput('dry-run', false),
     }

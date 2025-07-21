@@ -28,8 +28,11 @@ jobs:
         with:
           central-repo-owner: 'your-org'
           central-repo-name: 'central-assets'
-          files: 'README.md'
-          folders: 'templates'
+          files: |
+            README.md
+            *.schema.json
+          folders: |
+            templates
           gh-token: ${{ secrets.PAT_TOKEN }}
 ```
 
@@ -59,8 +62,12 @@ jobs:
         with:
           central-repo-owner: 'your-org'
           central-repo-name: 'central-assets'
-          files: 'README.md,LICENSE'
-          folders: 'templates,docs'
+          files: |
+            README.md
+            LICENSE
+          folders: |
+            templates
+            docs
           dry-run: true
           gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -90,7 +97,12 @@ jobs:
           central-repo-owner: 'your-org'
           central-repo-name: 'central-assets'
           central-repo-branch: 'develop'
-          files: 'README.md,LICENSE,CHANGELOG.md'
-          folders: 'templates,docs'
+          files: |
+            README.md
+            LICENSE
+            CHANGELOG.md
+          folders: |
+            templates
+            docs
           gh-token: ${{ secrets.PAT_TOKEN }}
 ```
