@@ -55,6 +55,7 @@ The action creates the following structure in the central repository:
 
 ## Usage
 
+<<<<<<< HEAD
 ### Basic Example (Recommended: Multiline YAML)
 
 ```yaml
@@ -73,6 +74,9 @@ The action creates the following structure in the central repository:
 ```
 
 ### Alternative: Comma-separated format
+=======
+### Basic Example
+>>>>>>> main
 
 ```yaml
 - uses: exivity/actions/push-to-central-repo@main
@@ -113,6 +117,7 @@ The action creates the following structure in the central repository:
 
 ## Inputs
 
+<<<<<<< HEAD
 | Name                  | Required | Default | Description                                                                                                           |
 | --------------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
 | `central-repo-owner`  | ✅       |         | Owner of the central repository                                                                                       |
@@ -122,6 +127,17 @@ The action creates the following structure in the central repository:
 | `folders`             |          |         | List of folders to push (supports multiline YAML list or comma-separated)                                             |
 | `gh-token`            | ✅       |         | GitHub token with write access to the central repository                                                              |
 | `dry-run`             |          | `false` | Show what would be done without making changes                                                                        |
+=======
+| Name                  | Required | Default | Description                                              |
+| --------------------- | -------- | ------- | -------------------------------------------------------- |
+| `central-repo-owner`  | ✅       |         | Owner of the central repository                          |
+| `central-repo-name`   | ✅       |         | Name of the central repository                           |
+| `central-repo-branch` |          | `main`  | Branch in central repository to push to                  |
+| `files`               |          |         | Comma-separated list of files to push                    |
+| `folders`             |          |         | Comma-separated list of folders to push                  |
+| `gh-token`            | ✅       |         | GitHub token with write access to the central repository |
+| `dry-run`             |          | `false` | Show what would be done without making changes           |
+>>>>>>> main
 
 ## File Categorization
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   getInput,
   getMultilineInput,
@@ -5,6 +6,9 @@ import {
   setFailed,
   warning,
 } from '@actions/core'
+=======
+import { getInput, info, setFailed, warning } from '@actions/core'
+>>>>>>> main
 import { getOctokit } from '@actions/github'
 import { glob } from 'glob'
 import { promises as fs } from 'fs'
@@ -28,6 +32,7 @@ interface PushConfig {
   dryRun: boolean
 }
 
+<<<<<<< HEAD
 function parseInput(inputName: string): string[] {
   // Try multiline input first
   const multilineInput = getMultilineInput(inputName)
@@ -39,6 +44,11 @@ function parseInput(inputName: string): string[] {
   const singleLineInput = getInput(inputName)
   if (!singleLineInput.trim()) return []
   return singleLineInput
+=======
+function parseCommaSeparatedInput(input: string): string[] {
+  if (!input.trim()) return []
+  return input
+>>>>>>> main
     .split(',')
     .map((item) => item.trim())
     .filter((item) => item.length > 0)
@@ -71,6 +81,7 @@ function getDestinationPath(
 async function collectFileMappings(config: PushConfig): Promise<FileMapping[]> {
   const mappings: FileMapping[] = []
 
+<<<<<<< HEAD
   // Process individual files (including glob patterns)
   for (const filePattern of config.files) {
     try {
@@ -99,6 +110,19 @@ async function collectFileMappings(config: PushConfig): Promise<FileMapping[]> {
       }
     } catch (error) {
       warning(`Error processing file pattern "${filePattern}": ${error}`)
+=======
+  // Process individual files
+  for (const file of config.files) {
+    try {
+      await fs.access(file)
+
+      mappings.push({
+        sourcePath: file,
+        destinationPath: getDestinationPath(file, config.sourceRepoName),
+      })
+    } catch (error) {
+      warning(`File "${file}" not found, skipping`)
+>>>>>>> main
     }
   }
 
@@ -200,8 +224,13 @@ async function run() {
       centralRepoName: getInput('central-repo-name', { required: true }),
       centralRepoBranch: getInput('central-repo-branch') || 'main',
       sourceRepoName: sourceRepo,
+<<<<<<< HEAD
       files: parseInput('files'),
       folders: parseInput('folders'),
+=======
+      files: parseCommaSeparatedInput(getInput('files')),
+      folders: parseCommaSeparatedInput(getInput('folders')),
+>>>>>>> main
       ghToken,
       dryRun: getBooleanInput('dry-run', false),
     }
