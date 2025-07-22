@@ -51,8 +51,8 @@ runs:
       uses: exivity/docker/login-action@v3
       with:
         registry: ${{ inputs.registry }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: ${{ inputs.username || github.actor }}
+        password: ${{ inputs.password || github.token }}
 
     - name: Set up QEMU
       uses: exivity/setup-qemu-action@v3
