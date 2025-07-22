@@ -64,7 +64,7 @@ runs:
       id: meta
       uses: exivity/metadata-action@v5
       with:
-        images: ${{ inputs.registry }}/${{ inputs.image }}
+        images: ${{ inputs.registry }}/${{ contains(inputs.image, '/') && inputs.image || format('{0}/{1}', github.repository_owner, inputs.image) }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr
