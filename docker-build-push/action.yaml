@@ -48,7 +48,7 @@ runs:
   steps:
     - name: Login to GitHub Container Registry
       if: ${{ inputs.push == 'true' }}
-      uses: exivity/docker/login-action@v3
+      uses: exivity/login-action@v3
       with:
         registry: ${{ inputs.registry }}
         username: ${{ inputs.username || github.actor }}
