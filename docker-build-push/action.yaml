@@ -42,6 +42,10 @@ inputs:
   target:
     description: "Sets the target stage to build"
     required: false
+  qemu:
+    description: "Enable QEMU for cross-platform builds"
+    default: "false"
+    required: false
 
 runs:
   using: "composite"
@@ -55,6 +59,7 @@ runs:
         password: ${{ inputs.password || github.token }}
 
     - name: Set up QEMU
+      if: ${{ inputs.qemu == 'true' }}
       uses: exivity/setup-qemu-action@v3
 
     - name: Set up Docker Buildx
