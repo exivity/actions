@@ -1,5 +1,5 @@
 name: retag-image
-description: pulls, tags, and pushes a component image
+description: pulls, tags, and pushes a component image with multi-arch support
 inputs:
   # source inputs
   source-registry:
@@ -17,11 +17,11 @@ inputs:
     required: true
   source-user:
     description: Username for source registry
-    required: true
+    required: false
     default: ${{ github.actor }}
   source-password:
     description: Password for source registry
-    required: true
+    required: false
     default: ${{ github.token }}
   # target inputs
   target-registry:
@@ -39,10 +39,14 @@ inputs:
     required: true
   target-user:
     description: Username for target registry
-    required: true
+    required: false
   target-password:
     description: Password for target registry
-    required: true
+    required: false
+  multi-arch:
+    description: Enable multi-arch support using buildx imagetools
+    required: false
+    default: 'true'
 runs:
   using: node20
   main: dist/index.js

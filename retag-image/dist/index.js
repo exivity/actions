@@ -17015,12 +17015,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info3 = this._prepareRequest(verb, parsedUrl, headers);
+          let info4 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info3, data);
+            response = yield this.requestRaw(info4, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -17030,7 +17030,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info3, data);
+                return authenticationHandler.handleAuthentication(this, info4, data);
               } else {
                 return response;
               }
@@ -17053,8 +17053,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info3 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info3, data);
+              info4 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info4, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -17083,7 +17083,7 @@ var require_lib = __commonJS({
        * @param info
        * @param data
        */
-      requestRaw(info3, data) {
+      requestRaw(info4, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -17095,7 +17095,7 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info3, data, callbackForResult);
+            this.requestRawWithCallback(info4, data, callbackForResult);
           });
         });
       }
@@ -17105,12 +17105,12 @@ var require_lib = __commonJS({
        * @param data
        * @param onResult
        */
-      requestRawWithCallback(info3, data, onResult) {
+      requestRawWithCallback(info4, data, onResult) {
         if (typeof data === "string") {
-          if (!info3.options.headers) {
-            info3.options.headers = {};
+          if (!info4.options.headers) {
+            info4.options.headers = {};
           }
-          info3.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info4.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -17119,7 +17119,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info3.httpModule.request(info3.options, (msg) => {
+        const req = info4.httpModule.request(info4.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -17131,7 +17131,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info3.options.path}`));
+          handleResult(new Error(`Request timeout: ${info4.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -17167,27 +17167,27 @@ var require_lib = __commonJS({
         return this._getProxyAgentDispatcher(parsedUrl, proxyUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info3 = {};
-        info3.parsedUrl = requestUrl;
-        const usingSsl = info3.parsedUrl.protocol === "https:";
-        info3.httpModule = usingSsl ? https : http;
+        const info4 = {};
+        info4.parsedUrl = requestUrl;
+        const usingSsl = info4.parsedUrl.protocol === "https:";
+        info4.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info3.options = {};
-        info3.options.host = info3.parsedUrl.hostname;
-        info3.options.port = info3.parsedUrl.port ? parseInt(info3.parsedUrl.port) : defaultPort;
-        info3.options.path = (info3.parsedUrl.pathname || "") + (info3.parsedUrl.search || "");
-        info3.options.method = method;
-        info3.options.headers = this._mergeHeaders(headers);
+        info4.options = {};
+        info4.options.host = info4.parsedUrl.hostname;
+        info4.options.port = info4.parsedUrl.port ? parseInt(info4.parsedUrl.port) : defaultPort;
+        info4.options.path = (info4.parsedUrl.pathname || "") + (info4.parsedUrl.search || "");
+        info4.options.method = method;
+        info4.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info3.options.headers["user-agent"] = this.userAgent;
+          info4.options.headers["user-agent"] = this.userAgent;
         }
-        info3.options.agent = this._getAgent(info3.parsedUrl);
+        info4.options.agent = this._getAgent(info4.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info3.options);
+            handler.prepareRequest(info4.options);
           }
         }
-        return info3;
+        return info4;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -18858,7 +18858,7 @@ var require_exec = __commonJS({
       });
     }
     exports2.exec = exec2;
-    function getExecOutput(commandLine, args, options) {
+    function getExecOutput2(commandLine, args, options) {
       var _a, _b;
       return __awaiter(this, void 0, void 0, function* () {
         let stdout = "";
@@ -18890,7 +18890,7 @@ var require_exec = __commonJS({
         };
       });
     }
-    exports2.getExecOutput = getExecOutput;
+    exports2.getExecOutput = getExecOutput2;
   }
 });
 
@@ -19108,7 +19108,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
     exports2.addPath = addPath;
-    function getInput3(name, options) {
+    function getInput4(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -19118,19 +19118,19 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports2.getInput = getInput3;
+    exports2.getInput = getInput4;
     function getMultilineInput(name, options) {
-      const inputs = getInput3(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput4(name, options).split("\n").filter((x) => x !== "");
       if (options && options.trimWhitespace === false) {
         return inputs;
       }
       return inputs.map((input) => input.trim());
     }
     exports2.getMultilineInput = getMultilineInput;
-    function getBooleanInput(name, options) {
+    function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput3(name, options);
+      const val = getInput4(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -19138,7 +19138,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports2.getBooleanInput = getBooleanInput;
+    exports2.getBooleanInput = getBooleanInput2;
     function setOutput(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
@@ -19169,18 +19169,18 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       (0, command_1.issueCommand)("error", (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
     }
     exports2.error = error;
-    function warning2(message, properties = {}) {
+    function warning3(message, properties = {}) {
       (0, command_1.issueCommand)("warning", (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
     }
-    exports2.warning = warning2;
+    exports2.warning = warning3;
     function notice(message, properties = {}) {
       (0, command_1.issueCommand)("notice", (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
     }
     exports2.notice = notice;
-    function info3(message) {
+    function info4(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports2.info = info3;
+    exports2.info = info4;
     function startGroup(name) {
       (0, command_1.issue)("group", name);
     }
@@ -23257,17 +23257,24 @@ var require_utils4 = __commonJS({
 });
 
 // retag-image/src/index.ts
-var import_core3 = __toESM(require_core());
+var import_core4 = __toESM(require_core());
 
-// lib/dockerCli.ts
+// lib/core.ts
 var import_core = __toESM(require_core());
 var import_exec = __toESM(require_exec());
+function table(key, value) {
+  (0, import_core.info)(`${key.padEnd(15)}: ${value}`);
+}
+
+// lib/dockerCli.ts
+var import_core2 = __toESM(require_core());
+var import_exec2 = __toESM(require_exec());
 async function dockerLogin({ registry, user, password }) {
-  (0, import_core.info)(`Logging in to Docker registry "${registry}"...`);
+  (0, import_core2.info)(`Logging in to Docker registry "${registry}"...`);
   const cmd = 'bash -c "echo $REGISTRY_PASSWORD | docker login $REGISTRY -u $REGISTRY_USER --password-stdin"';
-  (0, import_core.debug)(`Executing command:
+  (0, import_core2.debug)(`Executing command:
 ${cmd}`);
-  await (0, import_exec.exec)(cmd, void 0, {
+  await (0, import_exec2.exec)(cmd, void 0, {
     env: {
       ...process.env,
       REGISTRY: registry,
@@ -23277,34 +23284,51 @@ ${cmd}`);
   });
 }
 async function dockerAddTag(off, on) {
-  (0, import_core.info)("Retagging image...");
+  (0, import_core2.info)("Retagging image...");
   const offFQN = getImageFQN(off);
   const onFQN = getImageFQN(on);
   const setTag = `docker tag ${offFQN} "${onFQN}"`;
-  (0, import_core.debug)(`Executing command:
+  (0, import_core2.debug)(`Executing command:
 ${setTag}`);
-  await (0, import_exec.exec)(setTag);
+  await (0, import_exec2.exec)(setTag);
 }
 async function dockerPush(image) {
-  (0, import_core.info)("Pushing image...");
+  (0, import_core2.info)("Pushing image...");
   const cmd = `docker push ${getImageFQN(image)}`;
-  (0, import_core.debug)(`Executing command:
+  (0, import_core2.debug)(`Executing command:
 ${cmd}`);
-  await (0, import_exec.exec)(cmd);
+  await (0, import_exec2.exec)(cmd);
 }
 async function dockerPull(image) {
-  (0, import_core.info)("Pulling image...");
+  (0, import_core2.info)("Pulling image...");
   const cmd = `docker pull ${getImageFQN(image)}`;
-  (0, import_core.debug)(`Executing command:
+  (0, import_core2.debug)(`Executing command:
 ${cmd}`);
-  await (0, import_exec.exec)(cmd);
+  await (0, import_exec2.exec)(cmd);
+}
+async function dockerCopyMultiArch(sourceImage, targetImage) {
+  (0, import_core2.info)("Copying multi-arch image...");
+  const sourceFQN = getImageFQN(sourceImage);
+  const targetFQN = getImageFQN(targetImage);
+  const cmd = `docker buildx imagetools create --tag ${targetFQN} ${sourceFQN}`;
+  (0, import_core2.debug)(`Executing command:
+${cmd}`);
+  await (0, import_exec2.exec)(cmd);
+}
+async function dockerInspectManifest(image) {
+  (0, import_core2.info)("Inspecting image manifest...");
+  const imageFQN = getImageFQN(image);
+  const cmd = `docker buildx imagetools inspect ${imageFQN}`;
+  (0, import_core2.debug)(`Executing command:
+${cmd}`);
+  await (0, import_exec2.exec)(cmd);
 }
 function getImageFQN(image) {
   return `${image.registry}/${image.namespace}/${image.name}:${image.tag}`;
 }
 
 // lib/github.ts
-var import_core2 = __toESM(require_core());
+var import_core3 = __toESM(require_core());
 var import_utils = __toESM(require_utils4());
 function getRepository() {
   const { owner, repo } = import_utils.context.repo;
@@ -23314,36 +23338,27 @@ function getRepository() {
   return { owner, repo, fqn: `${owner}/${repo}` };
 }
 function getOwnerInput(inputName = "owner") {
-  return (0, import_core2.getInput)(inputName) || getRepository().owner;
+  return (0, import_core3.getInput)(inputName) || getRepository().owner;
 }
 function getRepoInput(inputName = "repo", fallbackInputName = "component") {
-  return fallbackInputName ? (0, import_core2.getInput)(inputName) || (0, import_core2.getInput)(fallbackInputName) || getRepository().repo : (0, import_core2.getInput)(inputName) || getRepository().repo;
+  return fallbackInputName ? (0, import_core3.getInput)(inputName) || (0, import_core3.getInput)(fallbackInputName) || getRepository().repo : (0, import_core3.getInput)(inputName) || getRepository().repo;
 }
 
 // retag-image/src/index.ts
 async function run() {
-  const sourceRegistry = (0, import_core3.getInput)("source-registry");
+  const sourceRegistry = (0, import_core4.getInput)("source-registry");
   const sourceNamespace = getOwnerInput("source-namespace");
   const sourceName = getRepoInput("source-name");
-  const sourceTag = (0, import_core3.getInput)("source-tag");
-  const sourceUser = (0, import_core3.getInput)("source-user");
-  const sourcePassword = (0, import_core3.getInput)("source-password");
-  const targetRegistry = (0, import_core3.getInput)("target-registry");
+  const sourceTag = (0, import_core4.getInput)("source-tag");
+  const sourceUser = (0, import_core4.getInput)("source-user");
+  const sourcePassword = (0, import_core4.getInput)("source-password");
+  const targetRegistry = (0, import_core4.getInput)("target-registry");
   const targetNamespace = getOwnerInput("target-namespace");
   const targetName = getRepoInput("target-name");
-  const targetTag = (0, import_core3.getInput)("target-tag");
-  const targetUser = (0, import_core3.getInput)("target-user");
-  const targetPassword = (0, import_core3.getInput)("target-password");
-  await dockerLogin({
-    registry: sourceRegistry,
-    user: sourceUser,
-    password: sourcePassword
-  });
-  await dockerLogin({
-    registry: targetRegistry,
-    user: targetUser,
-    password: targetPassword
-  });
+  const targetTag = (0, import_core4.getInput)("target-tag");
+  const targetUser = (0, import_core4.getInput)("target-user");
+  const targetPassword = (0, import_core4.getInput)("target-password");
+  const useMultiArch = (0, import_core4.getBooleanInput)("multi-arch") || true;
   const sourceImage = {
     registry: sourceRegistry,
     namespace: sourceNamespace,
@@ -23356,11 +23371,43 @@ async function run() {
     name: targetName,
     tag: targetTag
   };
-  await dockerPull(sourceImage);
-  await dockerAddTag(sourceImage, targetImage);
-  await dockerPush(targetImage);
+  table("Source Image", getImageFQN(sourceImage));
+  table("Target Image", getImageFQN(targetImage));
+  table("Multi-arch Mode", useMultiArch.toString());
+  if (sourceUser && sourcePassword) {
+    await dockerLogin({
+      registry: sourceRegistry,
+      user: sourceUser,
+      password: sourcePassword
+    });
+  }
+  if (targetUser && targetPassword) {
+    await dockerLogin({
+      registry: targetRegistry,
+      user: targetUser,
+      password: targetPassword
+    });
+  }
+  try {
+    await dockerInspectManifest(sourceImage);
+  } catch (error) {
+    throw new Error(
+      `Failed to inspect source image ${getImageFQN(sourceImage)}: ${error}`
+    );
+  }
+  if (useMultiArch) {
+    await dockerCopyMultiArch(sourceImage, targetImage);
+  } else {
+    await dockerPull(sourceImage);
+    await dockerAddTag(sourceImage, targetImage);
+    await dockerPush(targetImage);
+  }
+  table(
+    "Success",
+    `Image copied from ${getImageFQN(sourceImage)} to ${getImageFQN(targetImage)}`
+  );
 }
-run().catch(import_core3.setFailed);
+run().catch(import_core4.setFailed);
 /*! Bundled license information:
 
 undici/lib/fetch/body.js:

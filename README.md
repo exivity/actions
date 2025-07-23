@@ -362,7 +362,9 @@ Edit resources of a Windows executable
 
 # `retag-image`
 
-Pulls, tags, then pushes an image.
+Pulls, tags, then pushes an image with multi-arch support. Uses
+`docker buildx imagetools` for proper multi-architecture image copying,
+preserving all architectures in the manifest list.
 
 ## Example
 
@@ -377,20 +379,21 @@ Pulls, tags, then pushes an image.
 
 ## Params
 
-| name               | required | default             | description                   |
-| ------------------ | -------- | ------------------- | ----------------------------- |
-| `source-registry`  |          | `ghcr.io`           | Source docker registry to use |
-| `source-namespace` |          | <repo-owner>        | Source image namespace        |
-| `source-name`      |          | <repo-name>         | Source image name             |
-| `source-tag`       | ✅       |                     | Source image tag              |
-| `source-user`      |          | ${{ github.actor }} | Username for source registry  |
-| `source-password`  |          | ${{ github.token }} | Password for source registry  |
-| `target-registry`  |          | `docker.io`         | Target docker registry to use |
-| `target-namespace` |          | <repo-owner>        | Target image namespace        |
-| `target-name`      |          | <repo-name>         | Target image name             |
-| `target-tag`       | ✅       |                     | Target image tag              |
-| `target-user`      | ✅       |                     | Username for target registry  |
-| `target-password`  | ✅       |                     | Password for target registry  |
+| name               | required | default             | description                                       |
+| ------------------ | -------- | ------------------- | ------------------------------------------------- |
+| `source-registry`  |          | `ghcr.io`           | Source docker registry to use                     |
+| `source-namespace` |          | <repo-owner>        | Source image namespace                            |
+| `source-name`      |          | <repo-name>         | Source image name                                 |
+| `source-tag`       | ✅       |                     | Source image tag                                  |
+| `source-user`      |          | ${{ github.actor }} | Username for source registry (optional)           |
+| `source-password`  |          | ${{ github.token }} | Password for source registry (optional)           |
+| `target-registry`  |          | `docker.io`         | Target docker registry to use                     |
+| `target-namespace` |          | <repo-owner>        | Target image namespace                            |
+| `target-name`      |          | <repo-name>         | Target image name                                 |
+| `target-tag`       | ✅       |                     | Target image tag                                  |
+| `target-user`      |          |                     | Username for target registry (optional)           |
+| `target-password`  |          |                     | Password for target registry (optional)           |
+| `multi-arch`       |          | `true`              | Enable multi-arch support using buildx imagetools |
 
 # `review`
 

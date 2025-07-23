@@ -114,6 +114,31 @@ export async function dockerPull(image: Image) {
   await exec(cmd)
 }
 
+export async function dockerCopyMultiArch(
+  sourceImage: Image,
+  targetImage: Image,
+) {
+  info('Copying multi-arch image...')
+
+  const sourceFQN = getImageFQN(sourceImage)
+  const targetFQN = getImageFQN(targetImage)
+
+  const cmd = `docker buildx imagetools create --tag ${targetFQN} ${sourceFQN}`
+  debug(`Executing command:\n${cmd}`)
+
+  await exec(cmd)
+}
+
+export async function dockerInspectManifest(image: Image) {
+  info('Inspecting image manifest...')
+
+  const imageFQN = getImageFQN(image)
+  const cmd = `docker buildx imagetools inspect ${imageFQN}`
+  debug(`Executing command:\n${cmd}`)
+
+  await exec(cmd)
+}
+
 export function getImageFQN(image: Image) {
   return `${image.registry}/${image.namespace}/${image.name}:${image.tag}`
 }
