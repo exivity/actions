@@ -1,9 +1,13 @@
-import { getInput, setFailed } from '@actions/core'
+import { getInput, setFailed, getBooleanInput } from '@actions/core'
+import { table } from '../../lib/core'
 import {
   dockerAddTag,
+  dockerCopyMultiArch,
   dockerLogin,
-  dockerPush,
   dockerPull,
+  dockerPush,
+  dockerInspectManifest,
+  getImageFQN,
 } from '../../lib/dockerCli'
 import { getOwnerInput, getRepoInput } from '../../lib/github'
 
@@ -24,19 +28,8 @@ async function run() {
   const targetUser = getInput('target-user')
   const targetPassword = getInput('target-password')
 
-  // Login to source registry
-  await dockerLogin({
-    registry: sourceRegistry,
-    user: sourceUser,
-    password: sourcePassword,
-  })
-
-  // Login to target registry
-  await dockerLogin({
-    registry: targetRegistry,
-    user: targetUser,
-    password: targetPassword,
-  })
+  // New input for multi-arch support
+  const useMultiArch = getBooleanInput('multi-arch') || true // Default to true for better multi-arch handling
 
   const sourceImage = {
     registry: sourceRegistry,
@@ -52,11 +45,51 @@ async function run() {
     tag: targetTag,
   }
 
-  await dockerPull(sourceImage)
+  table('Source Image', getImageFQN(sourceImage))
+  table('Target Image', getImageFQN(targetImage))
+  table('Multi-arch Mode', useMultiArch.toString())
 
-  await dockerAddTag(sourceImage, targetImage)
+  // Login to source registry if credentials provided
+  if (sourceUser && sourcePassword) {
+    await dockerLogin({
+      registry: sourceRegistry,
+      user: sourceUser,
+      password: sourcePassword,
+    })
+  }
 
-  await dockerPush(targetImage)
+  // Login to target registry if credentials provided
+  if (targetUser && targetPassword) {
+    await dockerLogin({
+      registry: targetRegistry,
+      user: targetUser,
+      password: targetPassword,
+    })
+  }
+
+  // Inspect source image to verify it exists and show manifest info
+  try {
+    await dockerInspectManifest(sourceImage)
+  } catch (error) {
+    throw new Error(
+      `Failed to inspect source image ${getImageFQN(sourceImage)}: ${error}`,
+    )
+  }
+
+  if (useMultiArch) {
+    // Use buildx imagetools for proper multi-arch support
+    await dockerCopyMultiArch(sourceImage, targetImage)
+  } else {
+    // Fallback to traditional docker commands for backwards compatibility
+    await dockerPull(sourceImage)
+    await dockerAddTag(sourceImage, targetImage)
+    await dockerPush(targetImage)
+  }
+
+  table(
+    'Success',
+    `Image copied from ${getImageFQN(sourceImage)} to ${getImageFQN(targetImage)}`,
+  )
 }
 
 run().catch(setFailed)
