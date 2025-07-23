@@ -71,6 +71,7 @@ runs:
       with:
         images: ${{ inputs.registry }}/${{ contains(inputs.image, '/') && inputs.image || format('{0}/{1}', github.repository_owner, inputs.image) }}
         tags: |
+          type=semver,pattern={{version}}   
           type=ref,event=branch
           type=ref,event=pr
           type=sha
@@ -78,7 +79,7 @@ runs:
           org.opencontainers.image.title=${{ github.event.repository.name }}
           org.opencontainers.image.description=${{ github.event.repository.description }}
           org.opencontainers.image.url=${{ github.event.repository.html_url }}
-          org.opencontainers.image.source=${{ github.event.repository.clone_url }}
+          org.opencontainers.image.source=${{ github.event.repository.html_url }}
           org.opencontainers.image.version=${{ github.ref_name }}
           org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
           org.opencontainers.image.revision=${{ github.sha }}
