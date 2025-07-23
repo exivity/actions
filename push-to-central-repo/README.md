@@ -126,14 +126,18 @@ The action creates the following structure in the central repository:
 
 ## File Categorization
 
-The action automatically categorizes files based on their characteristics and organizes them under the `external/` folder to clearly distinguish content from external repositories:
+The action automatically categorizes files based on their characteristics and
+organizes them under the `external/` folder to clearly distinguish content from
+external repositories:
 
 1. **README.md files** → `external/README_sources/{repo-name}/README.md`
-2. **Files ending with `.schema.json`** → `external/schemas/{repo-name}/{filename}`
+2. **Files ending with `.schema.json`** →
+   `external/schemas/{repo-name}/{filename}`
 3. **Files in `templates/` folder** → `external/templates/{repo-name}/{path}`
 4. **Other files** → `external/files/{repo-name}/{filename}`
 
-All commits follow conventional commit format: `chore: update files from {repo-owner}/{repo-name}`
+All commits follow conventional commit format:
+`chore: update files from {repo-owner}/{repo-name}`
 
 ## Custom Mappings
 
