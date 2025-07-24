@@ -5,7 +5,8 @@
 These were originally built for use with the Exivity CI/CD workflows, but can be
 applied outside of the context of the Exivity repositories.
 
-- [`build-push-image`] ⚠️ **DEPRECATED** This action is deprecated and will be removed in a future version. Please migrate to `docker-build-push`
+- [`build-push-image`] ⚠️ **DEPRECATED** This action is deprecated and will be
+  removed in a future version. Please migrate to `docker-build-push`
 - [`docker-build-push`](#docker-build-push)
 - [`commit-status`](#commit-status)
 - [`dispatch-workflow`](#dispatch-workflow)
@@ -218,9 +219,9 @@ See individual actions for inputs.
 
 Delete a package version from GitHub Container Registry if a branch or tag is
 deleted. This is useful to clean dangling versions from ghcr.io for images built
-with [`docker-build-push`].
-See [.github repository](https://github.com/exivity/.github#purge-ghcr) for
-example usage.
+with [`docker-build-push`]. See
+[.github repository](https://github.com/exivity/.github#purge-ghcr) for example
+usage.
 
 ## Example
 

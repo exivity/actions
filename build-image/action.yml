@@ -1,5 +1,7 @@
 name: build-image
-description: "⚠️ DEPRECATED: Builds a component image. This action will be removed in a future version. Please migrate to docker-build-push.
+description:
+  '⚠️ DEPRECATED: Builds a component image. This action will be removed in a
+  future version. Please migrate to docker-build-push.'
 inputs:
   owner:
     description: The namespace of the image repository

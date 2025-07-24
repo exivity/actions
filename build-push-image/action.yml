@@ -1,5 +1,7 @@
 name: build-push-image
-description: "⚠️ DEPRECATED: Builds and pushes a component image. This action will be removed in a future version. Please use the enhanced docker-build-push action."
+description:
+  '⚠️ DEPRECATED: Builds and pushes a component image. This action will be
+  removed in a future version. Please use the enhanced docker-build-push action.'
 inputs:
   owner:
     description: The namespace of the image repository
