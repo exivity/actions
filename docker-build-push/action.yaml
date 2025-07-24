@@ -1,54 +1,58 @@
-name: "Exivity Docker Build and Push"
-description: "This action builds and pushes a Docker image using the docker/build-push-action with automatic metadata tag generation"
+name: 'Exivity Docker Build and Push'
+description:
+  'This action builds and pushes a Docker image using the
+  docker/build-push-action with automatic metadata tag generation'
 inputs:
   context:
-    description: "Build context path"
-    default: "."
+    description: 'Build context path'
+    default: '.'
     required: false
   dockerfile:
-    description: "Path to the Dockerfile"
-    default: "./Dockerfile"
+    description: 'Path to the Dockerfile'
+    default: './Dockerfile'
     required: false
   push:
-    description: "Push image to registry"
-    default: "true"
+    description: 'Push image to registry'
+    default: 'true'
     required: false
   image:
-    description: "Image name"
+    description: 'Image name'
     required: true
   builder:
-    description: "The namespace of the image repository"
+    description: 'The namespace of the image repository'
     required: false
   registry:
-    description: "Docker registry"
-    default: "ghcr.io"
+    description: 'Docker registry'
+    default: 'ghcr.io'
     required: false
   username:
-    description: "Username for Docker registry"
+    description: 'Username for Docker registry'
     required: false
   password:
-    description: "Password for Docker registry"
+    description: 'Password for Docker registry'
     required: false
   platforms:
-    description: "Target platforms for build (e.g., linux/amd64,linux/arm64)"
-    default: "linux/amd64,linux/arm64"
+    description: 'Target platforms for build (e.g., linux/amd64,linux/arm64)'
+    default: 'linux/amd64,linux/arm64'
     required: false
   secrets:
-    description: "List of secrets to expose to the build (e.g., id=mypassword,src=./secret.txt)"
+    description:
+      'List of secrets to expose to the build (e.g.,
+      id=mypassword,src=./secret.txt)'
     required: false
   ssh:
-    description: "SSH agent socket or keys to expose to the build"
+    description: 'SSH agent socket or keys to expose to the build'
     required: false
   target:
-    description: "Sets the target stage to build"
+    description: 'Sets the target stage to build'
     required: false
   qemu:
-    description: "Enable QEMU for cross-platform builds"
-    default: "false"
+    description: 'Enable QEMU for cross-platform builds'
+    default: 'false'
     required: false
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Login to GitHub Container Registry
       if: ${{ inputs.push == 'true' }}
@@ -69,7 +73,9 @@ runs:
       id: meta
       uses: exivity/metadata-action@v5
       with:
-        images: ${{ inputs.registry }}/${{ contains(inputs.image, '/') && inputs.image || format('{0}/{1}', github.repository_owner, inputs.image) }}
+        images:
+          ${{ inputs.registry }}/${{ contains(inputs.image, '/') && inputs.image
+          || format('{0}/{1}', github.repository_owner, inputs.image) }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr

@@ -40,6 +40,11 @@ async function run() {
     return
   }
 
+  if (pr.user?.login === 'dependabot[bot]') {
+    info('Dependabot is author: No release notes necessary.')
+    return
+  }
+
   const requiresJiraTicket = isFeatOrFix(pr.title)
 
   // feat or fix needs to be associated to a jira ticket key
