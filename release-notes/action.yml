@@ -11,10 +11,6 @@ inputs:
   jira-token:
     description: The Jira token (required in prepare and release mode)
     required: false
-  skip-dependabot:
-    description: Skip execution for Dependabot PRs
-    required: false
-    default: 'true'
 runs:
   using: node20
   main: dist/index.js

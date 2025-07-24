@@ -1,4 +1,4 @@
-import { info, setFailed, getBooleanInput } from '@actions/core'
+import { info, setFailed } from '@actions/core'
 import { getOctokit } from '@actions/github'
 import { isFeatOrFix } from '../../lib/conventionalCommits'
 import {
@@ -18,7 +18,6 @@ const supportedEvents = ['pull_request'] as const
 async function run() {
   // Inputs
   const token = getToken()
-  const skipDependabot = getBooleanInput('skip-dependabot')
   const { owner, repo } = getRepository()
   const eventName = getEventName(supportedEvents)
   const eventData = getEventData(eventName)
@@ -41,7 +40,7 @@ async function run() {
     return
   }
 
-  if (skipDependabot && pr.user?.login === 'dependabot[bot]') {
+  if (pr.user?.login === 'dependabot[bot]') {
     info('Dependabot is author: No release notes necessary.')
     return
   }
