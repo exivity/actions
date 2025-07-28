@@ -1,5 +1,5 @@
 import { info, setFailed } from '@actions/core'
-import { getOctokit } from '@actions/github'
+import { getOctokit, context } from '@actions/github'
 import { isFeatOrFix } from '../../lib/conventionalCommits'
 import {
   getEventData,
@@ -33,6 +33,8 @@ async function run() {
     number: eventData.pull_request.number,
   })
 
+  const actor = context.actor
+
   if (!pr) throw Error("Couldn't get PR data.")
 
   if (pr.user?.login === 'renovate[bot]') {
@@ -40,7 +42,7 @@ async function run() {
     return
   }
 
-  if (pr.user?.login === 'dependabot[bot]') {
+  if (actor === 'dependabot[bot]' || actor === 'dependabot') {
     info('Dependabot is author: No release notes necessary.')
     return
   }
