@@ -2,8 +2,8 @@ import { exec } from '@actions/exec'
 import { platform } from 'os'
 import path from 'path'
 
-export const image = 'exivity/postgres'
-export const defaultVersion = '14.0'
+export const image = 'exivity/db'
+export const defaultVersion = 'latest'
 
 export async function startPostgres(password: string = 'postgres') {
   const script =
