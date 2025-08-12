@@ -24,6 +24,9 @@ else
     
 fi
 
+echo "Current working directory: $(pwd)"
+echo "files in bin/: $(ls -l bin/)"
+
 echo "Running migrations"
 chmod u+x bin/$MIGRATE_BIN
 ./bin/$MIGRATE_BIN -path=migrations -database="postgres://postgres:${PGPASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" up
