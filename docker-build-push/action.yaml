@@ -96,7 +96,7 @@ runs:
         context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
         platforms: ${{ inputs.platforms }}
-        push: ${{ inputs.push == 'true' }}
+        push: ${{ inputs.push == 'true' && github.actor != 'dependabot[bot]' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         secrets: ${{ inputs.secrets }}
