@@ -60,7 +60,7 @@
     "zod": "3.25.48"
   },
   "devDependencies": {
-    "@octokit/webhooks": "14.0.0",
+    "@octokit/webhooks": "14.1.3",
     "@types/adm-zip": "0.5.7",
     "@types/glob": "8.1.0",
     "@types/js-yaml": "4.0.9",
