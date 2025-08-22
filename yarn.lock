@@ -1964,10 +1964,10 @@ yaml@^2.8.1:
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.8.1.tgz#1870aa02b631f7e8328b93f8bc574fac5d6c4d79"
   integrity sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==
 
-zod@3.25.48:
-  version "3.25.48"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.48.tgz#6c2b536fbb519905e8f4a4ac58743de4d5331bb2"
-  integrity sha512-0X1mz8FtgEIvaxGjdIImYpZEaZMrund9pGXm3M6vM7Reba0e2eI71KPjSCGXBfwKDPwPoywf6waUKc3/tFvX2Q==
+zod@4.0.17:
+  version "4.0.17"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-4.0.17.tgz#95931170715f73f7426c385c237b7477750d6c8d"
+  integrity sha512-1PHjlYRevNxxdy2JZ8JcNAw7rX8V9P1AKkP+x/xZfxB0K5FYfuV+Ug6P/6NVSR2jHQ+FzDDoDHS04nYUsOIyLQ==
 
 zod@^3.25.76:
   version "3.25.76"
