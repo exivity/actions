@@ -478,7 +478,7 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@^1.9.0:
+axios@^1.10.0:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.11.0.tgz#c2ec219e35e414c025b2095e8b8280278478fdb6"
   integrity sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==
@@ -1216,14 +1216,14 @@ jackspeak@^4.0.1:
   dependencies:
     "@isaacs/cliui" "^8.0.2"
 
-jira.js@5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-5.2.0.tgz#ff431b78eb4f988eb4297732e4b6ae330ed5c853"
-  integrity sha512-tvabx0MDWyS8iWMKLeOyiPN2U6iJJYsPpqcg/PNoM3JSpOsnxo0ADXDKlmGzy6vIHlM9VSf0mAM7PJleqWB0fg==
+jira.js@5.2.2:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/jira.js/-/jira.js-5.2.2.tgz#c1610644e9d5c5a1c1616f37779b6cf68bb78096"
+  integrity sha512-iduKEC+MpQSq46cMbv310CZPn70xaUhbDRMlZIGJ4YKhn+GZsSjlogRPFyrNEfoqergGYi8+EZ1YcY09w+Efkw==
   dependencies:
-    axios "^1.9.0"
+    axios "^1.10.0"
     mime "^4.0.7"
-    zod "^3.24.4"
+    zod "^3.25.76"
 
 js-yaml@4.1.0:
   version "4.1.0"
@@ -1975,7 +1975,7 @@ zod@3.25.48:
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.48.tgz#6c2b536fbb519905e8f4a4ac58743de4d5331bb2"
   integrity sha512-0X1mz8FtgEIvaxGjdIImYpZEaZMrund9pGXm3M6vM7Reba0e2eI71KPjSCGXBfwKDPwPoywf6waUKc3/tFvX2Q==
 
-zod@^3.24.4:
+zod@^3.25.76:
   version "3.25.76"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.76.tgz#26841c3f6fd22a6a2760e7ccb719179768471e34"
   integrity sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==
