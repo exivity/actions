@@ -79,6 +79,7 @@ runs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
+          type=ref,event=tag
           type=sha
         labels: |
           org.opencontainers.image.title=${{ github.event.repository.name }}
