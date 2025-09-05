@@ -1,0 +1,92 @@
+name: retag-image
+description: |
+  Securely retag container images with attestation preservation using cosign.
+  Automatically installs cosign and preserves signatures, attestations, and SBOMs when copying images.
+
+inputs:
+  # source inputs
+  source-registry:
+    description: Source image registry
+    required: true
+    default: ghcr.io
+  source-namespace:
+    description: Source image namespace
+    required: false
+  source-name:
+    description: Source image name
+    required: false
+  source-tag:
+    description: Source image tag
+    required: true
+  source-user:
+    description: Username for source registry
+    required: false
+    default: ${{ github.actor }}
+  source-password:
+    description: Password for source registry
+    required: false
+    default: ${{ github.token }}
+  # target inputs
+  target-registry:
+    description: Target image registry
+    required: true
+    default: docker.io
+  target-namespace:
+    description: Target image namespace
+    required: false
+  target-name:
+    description: Target image name
+    required: false
+  target-tag:
+    description: Target image tag
+    required: true
+  target-user:
+    description: Username for target registry
+    required: false
+  target-password:
+    description: Password for target registry
+    required: false
+  # configuration inputs
+  multi-arch:
+    description: Enable multi-arch support using buildx imagetools
+    required: false
+    default: 'true'
+  preserve-attestations:
+    description: Preserve attestation manifests and signatures when copying
+    required: false
+    default: 'true'
+  cosign-version:
+    description: Version of cosign to install
+    required: false
+    default: 'v2.5.3'
+
+runs:
+  using: composite
+  steps:
+    - name: Install cosign
+      if: inputs.preserve-attestations == 'true'
+      uses: exivity/cosign-installer@v3
+      with:
+        cosign-release: ${{ inputs.cosign-version }}
+
+    - name: Retag image with attestations
+      uses: exivity/actions/retag-image-basic@main
+      with:
+        source-registry: ${{ inputs.source-registry }}
+        source-namespace: ${{ inputs.source-namespace }}
+        source-name: ${{ inputs.source-name }}
+        source-tag: ${{ inputs.source-tag }}
+        source-user: ${{ inputs.source-user || github.actor }}
+        source-password: ${{ inputs.source-password || github.token }}
+        target-registry: ${{ inputs.target-registry }}
+        target-namespace: ${{ inputs.target-namespace }}
+        target-name: ${{ inputs.target-name }}
+        target-tag: ${{ inputs.target-tag }}
+        target-user: ${{ inputs.target-user }}
+        target-password: ${{ inputs.target-password }}
+        multi-arch: ${{ inputs.multi-arch }}
+        preserve-attestations: ${{ inputs.preserve-attestations }}
+
+branding:
+  icon: 'package'
+  color: 'blue'

@@ -1,163 +1,123 @@
-# Retag Image
+# Retag Image Basic
 
-A secure GitHub Action that retags container images while preserving signatures
-and attestations using cosign.
+A low-level GitHub Action for retagging container images with multi-arch
+support.
+
+## When to Use This Action
+
+Use `retag-image-basic` when you need:
+
+- **Manual control** over cosign installation
+- **Custom attestation handling** logic
+- **Integration** with existing cosign workflows
+- **Minimal dependencies** in your action
+
+For most users, we recommend using the main `retag-image` action instead, which
+automatically handles cosign installation and attestation preservation.
 
 ## Features
 
-- 🔒 **Automatic attestation preservation** using cosign
-- 🏗️ **Multi-arch support** with proper manifest handling
-- ⚡ **One-step setup** - no manual cosign installation needed
-- 🛡️ **Secure cosign installation** with pinned, verified releases
-- 🔄 **Graceful fallback** to docker buildx if cosign fails
+- 🏗️ **Multi-arch support** with Docker buildx
+- 🔄 **Graceful fallback** for attestation issues
+- ⚙️ **Manual cosign control** (you install it)
+- 🎛️ **Configurable** attestation handling
 
-## Quick Start
+## Usage
+
+### With Manual Cosign Installation (Recommended)
 
 ```yaml
-- name: Retag image with attestations
-  uses: ./retag-image
+- name: Install cosign
+  uses: sigstore/cosign-installer@v3
+  with:
+    cosign-release: 'v2.4.1'
+
+- name: Retag image
+  uses: ./retag-image-basic
   with:
     source-tag: main
-    target-tag: v1.2.3
-    target-password: ${{ secrets.DOCKERHUB_TOKEN }}
-```
-
-That's it! The action will automatically:
-
-1. Install cosign securely
-2. Copy your image with all signatures and attestations
-3. Verify the copy succeeded
-
-## Inputs
-
-### Source Image
-
-| Input              | Description                  | Required | Default               |
-| ------------------ | ---------------------------- | -------- | --------------------- |
-| `source-registry`  | Source image registry        | ✅       | `ghcr.io`             |
-| `source-namespace` | Source image namespace       | ❌       | Repository owner      |
-| `source-name`      | Source image name            | ❌       | Repository name       |
-| `source-tag`       | Source image tag             | ✅       | -                     |
-| `source-user`      | Username for source registry | ❌       | `${{ github.actor }}` |
-| `source-password`  | Password for source registry | ❌       | `${{ github.token }}` |
-
-### Target Image
-
-| Input              | Description                  | Required | Default          |
-| ------------------ | ---------------------------- | -------- | ---------------- |
-| `target-registry`  | Target image registry        | ✅       | `docker.io`      |
-| `target-namespace` | Target image namespace       | ❌       | Repository owner |
-| `target-name`      | Target image name            | ❌       | Repository name  |
-| `target-tag`       | Target image tag             | ✅       | -                |
-| `target-user`      | Username for target registry | ❌       | -                |
-| `target-password`  | Password for target registry | ❌       | -                |
-
-### Configuration
-
-| Input                   | Description                      | Required | Default  |
-| ----------------------- | -------------------------------- | -------- | -------- |
-| `multi-arch`            | Enable multi-arch support        | ❌       | `true`   |
-| `preserve-attestations` | Preserve signatures/attestations | ❌       | `true`   |
-| `cosign-version`        | Version of cosign to install     | ❌       | `v2.4.1` |
-
-## Examples
-
-### Basic Usage
-
-```yaml
-- name: Retag latest to release
-  uses: ./retag-image
-  with:
-    source-tag: latest
     target-tag: v1.0.0
+    preserve-attestations: 'true'
     target-password: ${{ secrets.DOCKERHUB_TOKEN }}
 ```
 
-### Cross-Registry with Custom Namespaces
+### Without Attestations (Simpler)
 
 ```yaml
-- name: Promote to production registry
-  uses: ./retag-image
-  with:
-    source-registry: ghcr.io
-    source-namespace: myorg
-    source-name: myapp
-    source-tag: staging-v1.2.3
-    target-registry: registry.company.com
-    target-namespace: production
-    target-name: myapp
-    target-tag: v1.2.3
-    source-password: ${{ secrets.GITHUB_TOKEN }}
-    target-user: ${{ secrets.PROD_REGISTRY_USER }}
-    target-password: ${{ secrets.PROD_REGISTRY_TOKEN }}
-```
-
-### Without Attestations (Faster)
-
-```yaml
-- name: Simple retag without security features
-  uses: ./retag-image
+- name: Basic retag
+  uses: ./retag-image-basic
   with:
     source-tag: main
     target-tag: latest
-    preserve-attestations: 'false' # Skip cosign, use docker buildx only
-```
-
-### Custom Cosign Version
-
-```yaml
-- name: Retag with specific cosign version
-  uses: ./retag-image
-  with:
-    source-tag: main
-    target-tag: v1.0.0
-    cosign-version: 'v2.3.0' # Use specific cosign version
+    preserve-attestations: 'false'
     target-password: ${{ secrets.DOCKERHUB_TOKEN }}
 ```
 
-## Security Features
+## Inputs
 
-- **Verified cosign installation**: Uses official `sigstore/cosign-installer@v3`
-- **Pinned versions**: Cosign version is pinned for reproducible builds
-- **Attestation preservation**: Signatures, SBOMs, and provenance data are
-  preserved
-- **Multi-arch support**: Handles complex multi-platform images correctly
+Same as the main `retag-image` action, but **you must install cosign manually**
+if you want `preserve-attestations: 'true'` to work properly.
 
-## Troubleshooting
+| Input                   | Description                  | Required | Default          |
+| ----------------------- | ---------------------------- | -------- | ---------------- |
+| `source-registry`       | Source image registry        | ✅       | `ghcr.io`        |
+| `source-namespace`      | Source image namespace       | ❌       | Repository owner |
+| `source-name`           | Source image name            | ❌       | Repository name  |
+| `source-tag`            | Source image tag             | ✅       | -                |
+| `target-registry`       | Target image registry        | ✅       | `docker.io`      |
+| `target-namespace`      | Target image namespace       | ❌       | Repository owner |
+| `target-name`           | Target image name            | ❌       | Repository name  |
+| `target-tag`            | Target image tag             | ✅       | -                |
+| `multi-arch`            | Enable multi-arch support    | ❌       | `true`           |
+| `preserve-attestations` | Try to preserve attestations | ❌       | `true`           |
 
-### Attestations Not Preserved
+## Comparison
 
-If attestations aren't being copied:
+| Feature                  | retag-image    | retag-image-basic   |
+| ------------------------ | -------------- | ------------------- |
+| Cosign installation      | ✅ Automatic   | ❌ Manual           |
+| Ease of use              | ✅ Simple      | ⚠️ More setup       |
+| Attestation preservation | ✅ Reliable    | ⚠️ Depends on setup |
+| Advanced control         | ❌ Opinionated | ✅ Flexible         |
+| Dependencies             | More           | Fewer               |
 
-1. Ensure `preserve-attestations: 'true'` (default)
-2. Check that source image has attestations: `cosign tree ghcr.io/org/image:tag`
-3. Verify registry supports OCI Referrers API
+## When to Use Each
 
-### Permission Errors
+### Use `retag-image` (main action) when:
 
-Ensure your tokens have appropriate permissions:
+- ✅ You want attestations preserved automatically
+- ✅ You prefer simple, one-step setup
+- ✅ You're building production workflows
+- ✅ You want the latest security best practices
 
-- Source registry: `packages:read`
-- Target registry: `packages:write` or equivalent
+### Use `retag-image-basic` when:
 
-### Multi-arch Issues
+- ✅ You need custom cosign configuration
+- ✅ You're integrating with existing signing workflows
+- ✅ You want minimal action dependencies
+- ✅ You need fine-grained control over the process
 
-If you see manifest errors:
+## Migration
 
-- Ensure source image is actually multi-arch
-- Try setting `multi-arch: 'false'` for single-arch images
+If you're currently using this action, consider migrating to the main
+`retag-image` action:
 
-## Comparison with retag-image-basic
+**Before:**
 
-| Feature                  | retag-image    | retag-image-basic |
-| ------------------------ | -------------- | ----------------- |
-| Multi-arch support       | ✅             | ✅                |
-| Attestation preservation | ✅ (automatic) | ⚠️ (manual setup) |
-| Cosign installation      | ✅ (automatic) | ❌ (manual)       |
-| Security verification    | ✅             | ❌                |
-| Ease of use              | ✅ Excellent   | ⚠️ Good           |
-| Setup complexity         | Simple         | More complex      |
+```yaml
+- uses: sigstore/cosign-installer@v3
+  with:
+    cosign-release: 'v2.4.1'
+- uses: ./retag-image-basic
+  with: # ... inputs
+```
 
-**Use `retag-image`** (this action) for production workloads where security
-attestations matter. **Use `retag-image-basic`** if you need more control over
-the cosign installation process.
+**After:**
+
+```yaml
+- uses: ./retag-image
+  with: # ... same inputs
+```
+
+The main action provides the same functionality with better defaults and
+automatic setup.

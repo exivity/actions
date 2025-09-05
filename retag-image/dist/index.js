@@ -23833,7 +23833,7 @@ var require_utils4 = __commonJS({
   }
 });
 
-// retag-image-basic/src/index.ts
+// retag-image/src/index.ts
 var import_core4 = __toESM(require_core());
 
 // lib/core.ts
@@ -23967,7 +23967,7 @@ function getRepoInput(inputName = "repo", fallbackInputName = "component") {
   return fallbackInputName ? (0, import_core3.getInput)(inputName) || (0, import_core3.getInput)(fallbackInputName) || getRepository().repo : (0, import_core3.getInput)(inputName) || getRepository().repo;
 }
 
-// retag-image-basic/src/index.ts
+// retag-image/src/index.ts
 async function run() {
   const sourceRegistry = (0, import_core4.getInput)("source-registry");
   const sourceNamespace = getOwnerInput("source-namespace");
