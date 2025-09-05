@@ -29,8 +29,8 @@ async function run() {
   const targetPassword = getInput('target-password')
 
   // Configuration inputs
-  const useMultiArch = getBooleanInput('multi-arch') || true // Default to true for better multi-arch handling
-  const preserveAttestations = getBooleanInput('preserve-attestations') ?? true // Default to true
+  const useMultiArch = getBooleanInput('multi-arch')
+  const preserveAttestations = getBooleanInput('preserve-attestations')
 
   const sourceImage = {
     registry: sourceRegistry,

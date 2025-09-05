@@ -23981,8 +23981,8 @@ async function run() {
   const targetTag = (0, import_core4.getInput)("target-tag");
   const targetUser = (0, import_core4.getInput)("target-user");
   const targetPassword = (0, import_core4.getInput)("target-password");
-  const useMultiArch = (0, import_core4.getBooleanInput)("multi-arch") || true;
-  const preserveAttestations = (0, import_core4.getBooleanInput)("preserve-attestations") ?? true;
+  const useMultiArch = (0, import_core4.getBooleanInput)("multi-arch");
+  const preserveAttestations = (0, import_core4.getBooleanInput)("preserve-attestations");
   const sourceImage = {
     registry: sourceRegistry,
     namespace: sourceNamespace,

@@ -76,8 +76,8 @@ runs:
         source-namespace: ${{ inputs.source-namespace }}
         source-name: ${{ inputs.source-name }}
         source-tag: ${{ inputs.source-tag }}
-        source-user: ${{ inputs.source-user }}
-        source-password: ${{ inputs.source-password }}
+        source-user: ${{ inputs.source-user || github.actor }}
+        source-password: ${{ inputs.source-password || github.token }}
         target-registry: ${{ inputs.target-registry }}
         target-namespace: ${{ inputs.target-namespace }}
         target-name: ${{ inputs.target-name }}
