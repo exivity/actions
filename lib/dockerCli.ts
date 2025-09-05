@@ -9,11 +9,9 @@ type LoginOptions = {
 
 export async function dockerLogin({ registry, user, password }: LoginOptions) {
   info(`Logging in to Docker registry "${registry}"...`)
-
   const cmd =
     'bash -c "echo $REGISTRY_PASSWORD | docker login $REGISTRY -u $REGISTRY_USER --password-stdin"'
   debug(`Executing command:\n${cmd}`)
-
   await exec(cmd, undefined, {
     env: {
       ...process.env,
@@ -31,8 +29,8 @@ type BuildOptions = {
   image: Image
   imageName: string
   useSSH: boolean
-  buildArgs?: string // Changed to a simple string
-  target?: string // Add target for specifying build stage
+  buildArgs?: string
+  target?: string
   platforms?: string
   push?: boolean
 }
@@ -73,7 +71,6 @@ export async function dockerBuild({
     !push && (!platforms || platforms.split(',').length <= 1) ? '--load' : ''
 
   const nameOfImage = imageName ? imageName : getImageFQN(image)
-  // Correct command structure with context at the end
   const cmd = `/usr/bin/bash -c "docker buildx build ${ssh} ${secretArgs} ${buildArgsOptions} ${targetOption} ${platformsOption} -f ${dockerfile} -t ${nameOfImage} ${labelOptions} ${context} ${pushOption} ${loadOption}"`
   debug(`Executing command:\n${cmd}`)
 
@@ -87,10 +84,8 @@ export async function dockerBuild({
 
 export async function dockerAddTag(off: Image, on: Image) {
   info('Retagging image...')
-
   const offFQN = getImageFQN(off)
   const onFQN = getImageFQN(on)
-
   const setTag = `docker tag ${offFQN} "${onFQN}"`
   debug(`Executing command:\n${setTag}`)
   await exec(setTag)
@@ -98,44 +93,89 @@ export async function dockerAddTag(off: Image, on: Image) {
 
 export async function dockerPush(image: Image) {
   info('Pushing image...')
-
   const cmd = `docker push ${getImageFQN(image)}`
   debug(`Executing command:\n${cmd}`)
-
   await exec(cmd)
 }
 
 export async function dockerPull(image: Image) {
   info('Pulling image...')
-
   const cmd = `docker pull ${getImageFQN(image)}`
   debug(`Executing command:\n${cmd}`)
-
   await exec(cmd)
 }
 
 export async function dockerCopyMultiArch(
   sourceImage: Image,
   targetImage: Image,
+  preserveAttestations: boolean = true,
 ) {
   info('Copying multi-arch image...')
-
   const sourceFQN = getImageFQN(sourceImage)
   const targetFQN = getImageFQN(targetImage)
 
+  if (preserveAttestations) {
+    const hasCosign = await checkToolAvailable('cosign')
+    if (!hasCosign) {
+      throw new Error(
+        'cosign not found on PATH. Install it beforehand (e.g., via sigstore/cosign-installer in a composite step) when preserveAttestations=true.',
+      )
+    }
+
+    info('Using cosign to copy image with signatures/attestations...')
+    try {
+      const cmd = `cosign copy ${sourceFQN} ${targetFQN}`
+      debug(`Executing command:\n${cmd}`)
+      await exec(cmd)
+
+      info(
+        'Successfully copied image with cosign (attestations preserved when supported)',
+      )
+      info('Inspecting referrers with cosign tree...')
+      const treeExit = await exec(`cosign tree ${targetFQN}`, [], {
+        ignoreReturnCode: true,
+      })
+      if (treeExit === 0) {
+        info(
+          '✓ Referrers/signatures present on target (see tree output above).',
+        )
+      } else {
+        info(
+          'No signatures/attestations found on target (may be expected for unsigned images).',
+        )
+      }
+      return
+    } catch (err) {
+      // If you prefer strictness, rethrow immediately. Otherwise, fall back with an explicit warning.
+      throw new Error(
+        `cosign copy failed (preserveAttestations=true). Aborting: ${err}`,
+      )
+    }
+  }
+
+  // Non-attested path: buildx imagetools copy/retag (no guarantees about referrers)
+  info('Using docker buildx imagetools (attestations will NOT be preserved)...')
   const cmd = `docker buildx imagetools create --tag ${targetFQN} ${sourceFQN}`
   debug(`Executing command:\n${cmd}`)
-
   await exec(cmd)
+  info('Successfully copied image with docker buildx')
+}
+
+async function checkToolAvailable(tool: string): Promise<boolean> {
+  const checkCmd =
+    process.platform === 'win32' ? `where ${tool}` : `which ${tool}`
+  const code = await exec(checkCmd, [], {
+    ignoreReturnCode: true,
+    silent: true,
+  })
+  return code === 0
 }
 
 export async function dockerInspectManifest(image: Image) {
   info('Inspecting image manifest...')
-
   const imageFQN = getImageFQN(image)
   const cmd = `docker buildx imagetools inspect ${imageFQN}`
   debug(`Executing command:\n${cmd}`)
-
   await exec(cmd)
 }
 

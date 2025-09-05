@@ -28,8 +28,9 @@ async function run() {
   const targetUser = getInput('target-user')
   const targetPassword = getInput('target-password')
 
-  // New input for multi-arch support
+  // Configuration inputs
   const useMultiArch = getBooleanInput('multi-arch') || true // Default to true for better multi-arch handling
+  const preserveAttestations = getBooleanInput('preserve-attestations') ?? true // Default to true
 
   const sourceImage = {
     registry: sourceRegistry,
@@ -48,6 +49,7 @@ async function run() {
   table('Source Image', getImageFQN(sourceImage))
   table('Target Image', getImageFQN(targetImage))
   table('Multi-arch Mode', useMultiArch.toString())
+  table('Preserve Attestations', preserveAttestations.toString())
 
   // Login to source registry if credentials provided
   if (sourceUser && sourcePassword) {
@@ -77,8 +79,8 @@ async function run() {
   }
 
   if (useMultiArch) {
-    // Use buildx imagetools for proper multi-arch support
-    await dockerCopyMultiArch(sourceImage, targetImage)
+    // Use cosign (preferred) or buildx imagetools for proper multi-arch support
+    await dockerCopyMultiArch(sourceImage, targetImage, preserveAttestations)
   } else {
     // Fallback to traditional docker commands for backwards compatibility
     await dockerPull(sourceImage)

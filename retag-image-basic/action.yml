@@ -1,0 +1,61 @@
+name: retag-image-basic
+description:
+  Basic image retagging with multi-arch support (manual cosign setup required
+  for attestations)
+inputs:
+  # source inputs
+  source-registry:
+    description: Source image registry
+    required: true
+    default: ghcr.io
+  source-namespace:
+    description: Source image namespace
+    required: false
+  source-name:
+    description: Source image name
+    required: false
+  source-tag:
+    description: Source image tag
+    required: true
+  source-user:
+    description: Username for source registry
+    required: false
+    default: ${{ github.actor }}
+  source-password:
+    description: Password for source registry
+    required: false
+    default: ${{ github.token }}
+  # target inputs
+  target-registry:
+    description: Target image registry
+    required: true
+    default: docker.io
+  target-namespace:
+    description: Target image namespace
+    required: false
+  target-name:
+    description: Target image name
+    required: false
+  target-tag:
+    description: Target image tag
+    required: true
+  target-user:
+    description: Username for target registry
+    required: false
+  target-password:
+    description: Password for target registry
+    required: false
+  multi-arch:
+    description: Enable multi-arch support using buildx imagetools
+    required: false
+    default: 'true'
+  preserve-attestations:
+    description: |
+      Try to preserve attestation manifests and signatures when copying (uses cosign if available).
+      For best security, install cosign via sigstore/cosign-installer@v3 in your workflow before using this action.
+      If cosign is not available, this action will attempt to install it automatically.
+    required: false
+    default: 'true'
+runs:
+  using: node20
+  main: dist/index.js
