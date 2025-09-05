@@ -55,7 +55,7 @@ inputs:
       For best security, install cosign via sigstore/cosign-installer@v3 in your workflow before using this action.
       If cosign is not available, this action will attempt to install it automatically.
     required: false
-    default: 'true'
+    default: 'false'
 runs:
   using: node20
   main: dist/index.js
