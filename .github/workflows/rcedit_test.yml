@@ -13,7 +13,7 @@ jobs:
         os: [windows-2022]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./rcedit
         with:
           path: fixtures/hello/build/*.exe

@@ -12,7 +12,7 @@ jobs:
   purge-ghcr_test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./purge-ghcr
         with:
           component: actions-test
