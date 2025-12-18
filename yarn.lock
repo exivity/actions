@@ -280,7 +280,7 @@ __metadata:
     mime: 4.0.7
     minimatch: 10.0.3
     npm-run-all: 4.1.5
-    p-queue: 8.1.0
+    p-queue: 9.0.1
     prettier: 3.6.2
     ramda: 0.32.0
     rcedit: 4.0.1
@@ -1854,20 +1854,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-queue@npm:8.1.0":
-  version: 8.1.0
-  resolution: "p-queue@npm:8.1.0"
+"p-queue@npm:9.0.1":
+  version: 9.0.1
+  resolution: "p-queue@npm:9.0.1"
   dependencies:
-    eventemitter3: "npm:^5.0.1"
-    p-timeout: "npm:^6.1.2"
-  checksum: b6602ef0f3bd22ebfd916e0fe42ae1388090c63d8fa667fd7b29137e44970653adc5a9f39bedcbb0980ad4ab2cca8c04dbfdd9085b241d12c13f1d9dd02c497e
+    eventemitter3: ^5.0.1
+    p-timeout: ^7.0.0
+  checksum: c822a63b5701502994dd9b750f38ecf86b998a9092ab3c7b96038fbe83a216705be06936c223c2499c9f5f76b374e14e70663683dba29b7373713d08a0ae32bc
   languageName: node
   linkType: hard
 
-"p-timeout@npm:^6.1.2":
-  version: 6.1.4
-  resolution: "p-timeout@npm:6.1.4"
-  checksum: 0fb7bcac2cf49a97b44f881accfdd1057560a4d8657d75c32c4ebc9d75c0a4a09107f32491bcfedb3d8c0b95d06407beb004d880d6386fa58492ab40cd85a1c5
+"p-timeout@npm:^7.0.0":
+  version: 7.0.1
+  resolution: "p-timeout@npm:7.0.1"
+  checksum: 696d5e3b46cd4f81e1c6ec37e8f8555e56441c3e5e98cff080f795edd423b1b0a42c4f113f7a0369842994e9c2ea017bf10b9101574f7e5a477c6638664be84d
   languageName: node
   linkType: hard
 
