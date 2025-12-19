@@ -43,7 +43,7 @@
     "@actions/core": "2.0.1",
     "@actions/exec": "1.1.1",
     "@actions/github": "6.0.1",
-    "@actions/http-client": "2.2.3",
+    "@actions/http-client": "3.0.0",
     "checkout": "github:actions/checkout#v5",
     "deepmerge": "^4.3.1",
     "form-data": "4.0.4",
