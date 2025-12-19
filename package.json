@@ -51,7 +51,7 @@
     "jira.js": "5.2.2",
     "js-yaml": "4.1.1",
     "mime": "4.0.7",
-    "minimatch": "10.0.3",
+    "minimatch": "10.1.1",
     "p-queue": "9.0.1",
     "ramda": "0.32.0",
     "rcedit": "4.0.1",
