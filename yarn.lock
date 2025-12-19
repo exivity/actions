@@ -295,7 +295,7 @@ __metadata:
     "@actions/exec": 1.1.1
     "@actions/github": 6.0.1
     "@actions/http-client": 2.2.3
-    "@octokit/webhooks": 14.1.3
+    "@octokit/webhooks": 14.2.0
     "@types/adm-zip": 0.5.7
     "@types/glob": 9.0.0
     "@types/js-yaml": 4.0.9
@@ -437,10 +437,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/openapi-webhooks-types@npm:12.0.3":
-  version: 12.0.3
-  resolution: "@octokit/openapi-webhooks-types@npm:12.0.3"
-  checksum: 63304f68de7484eef7aa7dfde0a9825b46f7cd99d792560c3a8e48ba740db247ae2bf8a0254ff7018f4b27ff54f29c2d5abfc47cde8aa08cbfcb5abe165a10cd
+"@octokit/openapi-webhooks-types@npm:12.1.0":
+  version: 12.1.0
+  resolution: "@octokit/openapi-webhooks-types@npm:12.1.0"
+  checksum: 3e5be598591580b9f53412ae2c2f5f375a587273623fb49a82af766de301133a127603363bf08de9d84015b50f03a495ee0a3ce632eb1baa40160cf21bcb73c0
   languageName: node
   linkType: hard
 
@@ -532,14 +532,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/webhooks@npm:14.1.3":
-  version: 14.1.3
-  resolution: "@octokit/webhooks@npm:14.1.3"
+"@octokit/webhooks@npm:14.2.0":
+  version: 14.2.0
+  resolution: "@octokit/webhooks@npm:14.2.0"
   dependencies:
-    "@octokit/openapi-webhooks-types": "npm:12.0.3"
-    "@octokit/request-error": "npm:^7.0.0"
-    "@octokit/webhooks-methods": "npm:^6.0.0"
-  checksum: 49cb28b7ba7840968c04c4c52da81584e880d60559b8e9dfe9a8d9cafa67f78851256457764e1404027c18bceb59887b8bd836d1c11adda057e7b276cede3f4b
+    "@octokit/openapi-webhooks-types": 12.1.0
+    "@octokit/request-error": ^7.0.0
+    "@octokit/webhooks-methods": ^6.0.0
+  checksum: 0a852e030a91326c13512d54af753f3553352d0e7717ca544098cc5c5ec8e9ca99e840cb20812d2324a330b94166903a0caef2bcab8b4a99a02caefefa998e1d
   languageName: node
   linkType: hard
 
