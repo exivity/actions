@@ -302,7 +302,7 @@ __metadata:
     "@types/mime": 4.0.0
     "@types/minimatch": 6.0.0
     "@types/node": 25.0.3
-    "@types/ramda": 0.31.0
+    "@types/ramda": 0.31.1
     "@types/semver": 7.7.1
     "@types/uuid": 10.0.0
     checkout: "github:actions/checkout#v5"
@@ -604,12 +604,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:0.31.0":
-  version: 0.31.0
-  resolution: "@types/ramda@npm:0.31.0"
+"@types/ramda@npm:0.31.1":
+  version: 0.31.1
+  resolution: "@types/ramda@npm:0.31.1"
   dependencies:
-    types-ramda: "npm:^0.31.0"
-  checksum: 5870f219b1234c1bc1a8254a566ad41264c18d45e32b8c080faad51bc29755dc0564171feb3e3f63b5f25d7ae66f66317b653737720149a6951b417a34b139d9
+    types-ramda: ^0.31.0
+  checksum: a16b41a30f33e1ef521d4d57ce4949887906fae0a333d2845ee34ff39b21eee9a0b8db963338a5e9343ed9b23878fac1c362114bb4366d81abfc66d01e0066c2
   languageName: node
   linkType: hard
 
