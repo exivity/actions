@@ -25,21 +25,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/exec@npm:1.1.1, @actions/exec@npm:^1.0.0, @actions/exec@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "@actions/exec@npm:1.1.1"
-  dependencies:
-    "@actions/io": "npm:^1.0.1"
-  checksum: d976e66dd51ab03d76a143da8e1406daa1bcdee06046168e6e0bec681c87a12999eefaad7a81cb81f28e4190610f55a58b8458ae4b82cbaaba13200490f4e8c2
-  languageName: node
-  linkType: hard
-
-"@actions/exec@npm:^2.0.0":
+"@actions/exec@npm:2.0.0, @actions/exec@npm:^2.0.0":
   version: 2.0.0
   resolution: "@actions/exec@npm:2.0.0"
   dependencies:
     "@actions/io": ^2.0.0
   checksum: 001e4139129fce56459c7fa3970d50e85dc9bffef5fe451312ff1277f1f18d553d221012a199d58b3a5c2198bd0c71b2060dd28e52ebfeaf5a91331347c93208
+  languageName: node
+  linkType: hard
+
+"@actions/exec@npm:^1.0.0, @actions/exec@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@actions/exec@npm:1.1.1"
+  dependencies:
+    "@actions/io": "npm:^1.0.1"
+  checksum: d976e66dd51ab03d76a143da8e1406daa1bcdee06046168e6e0bec681c87a12999eefaad7a81cb81f28e4190610f55a58b8458ae4b82cbaaba13200490f4e8c2
   languageName: node
   linkType: hard
 
@@ -292,7 +292,7 @@ __metadata:
   resolution: "@exivity/actions@workspace:."
   dependencies:
     "@actions/core": 2.0.1
-    "@actions/exec": 1.1.1
+    "@actions/exec": 2.0.0
     "@actions/github": 6.0.1
     "@actions/http-client": 3.0.0
     "@octokit/webhooks": 14.2.0
