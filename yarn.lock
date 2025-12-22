@@ -299,7 +299,7 @@ __metadata:
     "@types/adm-zip": 0.5.7
     "@types/glob": 9.0.0
     "@types/js-yaml": 4.0.9
-    "@types/mime": 3.0.4
+    "@types/mime": 4.0.0
     "@types/minimatch": 6.0.0
     "@types/node": 25.0.3
     "@types/ramda": 0.31.0
@@ -313,7 +313,7 @@ __metadata:
     husky: 9.1.7
     jira.js: 5.2.2
     js-yaml: 4.1.1
-    mime: 4.0.7
+    mime: 4.1.0
     minimatch: 10.1.1
     npm-run-all: 4.1.5
     p-queue: 9.0.1
@@ -568,10 +568,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mime@npm:3.0.4":
-  version: 3.0.4
-  resolution: "@types/mime@npm:3.0.4"
-  checksum: a6139c8e1f705ef2b064d072f6edc01f3c099023ad7c4fce2afc6c2bf0231888202adadbdb48643e8e20da0ce409481a49922e737eca52871b3dc08017455843
+"@types/mime@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@types/mime@npm:4.0.0"
+  dependencies:
+    mime: "*"
+  checksum: e19258adf39badcfa1ed1deecc081f5d4fbbbd655bb6ae23fc6f0101309c61e95feb66f6a839dfe908d4c7b82e9ef39717d2de0212eebffa5cdabdc3f5cefcc1
   languageName: node
   linkType: hard
 
@@ -1800,7 +1802,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:4.0.7, mime@npm:^4.0.7":
+"mime@npm:*, mime@npm:4.1.0":
+  version: 4.1.0
+  resolution: "mime@npm:4.1.0"
+  bin:
+    mime: bin/cli.js
+  checksum: 46113c538ef4eb0abd8c7220e00332039a1b94a46d87f88247440dbdf0b9f7b133ea549f631695d41e0b36d0b968975a0c77f3e834e4e00ee782cd1d9c73859b
+  languageName: node
+  linkType: hard
+
+"mime@npm:^4.0.7":
   version: 4.0.7
   resolution: "mime@npm:4.0.7"
   bin:
