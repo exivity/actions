@@ -316,7 +316,7 @@ __metadata:
     mime: 4.1.0
     minimatch: 10.1.1
     npm-run-all: 4.1.5
-    p-queue: 9.0.1
+    p-queue: 9.1.0
     prettier: 3.7.4
     ramda: 0.32.0
     rcedit: 4.0.1
@@ -1945,13 +1945,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-queue@npm:9.0.1":
-  version: 9.0.1
-  resolution: "p-queue@npm:9.0.1"
+"p-queue@npm:9.1.0":
+  version: 9.1.0
+  resolution: "p-queue@npm:9.1.0"
   dependencies:
     eventemitter3: ^5.0.1
     p-timeout: ^7.0.0
-  checksum: c822a63b5701502994dd9b750f38ecf86b998a9092ab3c7b96038fbe83a216705be06936c223c2499c9f5f76b374e14e70663683dba29b7373713d08a0ae32bc
+  checksum: 30b9b4a36a9b2d1aa372ad58f3eb1a89da1e98cfed077972016d6b1dd0309b3f55252f3b775533ada98b81ac547e5ac0946ccf72f6ba338a5dfc40c05e596fc9
   languageName: node
   linkType: hard
 
