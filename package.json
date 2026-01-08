@@ -42,7 +42,7 @@
   "dependencies": {
     "@actions/core": "2.0.2",
     "@actions/exec": "2.0.0",
-    "@actions/github": "6.0.1",
+    "@actions/github": "7.0.0",
     "@actions/http-client": "3.0.1",
     "checkout": "github:actions/checkout#v5",
     "deepmerge": "^4.3.1",

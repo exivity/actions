@@ -43,7 +43,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/github@npm:6.0.1, @actions/github@npm:^6.0.0":
+"@actions/github@npm:7.0.0":
+  version: 7.0.0
+  resolution: "@actions/github@npm:7.0.0"
+  dependencies:
+    "@actions/http-client": ^3.0.1
+    "@octokit/core": ^5.0.1
+    "@octokit/plugin-paginate-rest": ^9.2.2
+    "@octokit/plugin-rest-endpoint-methods": ^10.4.0
+    "@octokit/request": ^8.4.1
+    "@octokit/request-error": ^5.1.1
+    undici: ^5.28.5
+  checksum: 829c6402f927839714692f4e1f48359d306be0fd21ef3843feaf3db6541e5e7f85447b0bf794beeebad0b8f4a2644f7f92143cb4a8311541b29f5ddfc585cec1
+  languageName: node
+  linkType: hard
+
+"@actions/github@npm:^6.0.0":
   version: 6.0.1
   resolution: "@actions/github@npm:6.0.1"
   dependencies:
@@ -293,7 +308,7 @@ __metadata:
   dependencies:
     "@actions/core": 2.0.2
     "@actions/exec": 2.0.0
-    "@actions/github": 6.0.1
+    "@actions/github": 7.0.0
     "@actions/http-client": 3.0.1
     "@octokit/webhooks": 14.2.0
     "@types/adm-zip": 0.5.7
