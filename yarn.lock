@@ -316,7 +316,7 @@ __metadata:
     "@types/js-yaml": 4.0.9
     "@types/mime": 4.0.0
     "@types/minimatch": 6.0.0
-    "@types/node": 25.0.7
+    "@types/node": 25.0.8
     "@types/ramda": 0.31.1
     "@types/semver": 7.7.1
     "@types/uuid": 11.0.0
@@ -610,12 +610,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:25.0.7":
-  version: 25.0.7
-  resolution: "@types/node@npm:25.0.7"
+"@types/node@npm:25.0.8":
+  version: 25.0.8
+  resolution: "@types/node@npm:25.0.8"
   dependencies:
     undici-types: ~7.16.0
-  checksum: 6626cffb59bcc18ceb86c418a6a943c7bcbe1bd2f3204415d8cb40ae4d3a0ea6d5bf2ff073e532ff267ac2f61a7e1d3360b11a8fa4056c524f109d1de177f373
+  checksum: 26348643a121bd07048dad55b60fcda5ba2e6661708ce88b8ec13a29521d0d4bd5f374d11be2d3cec9ae306b98a245b2ae226b9166c997362b788c0b032ff333
   languageName: node
   linkType: hard
 
