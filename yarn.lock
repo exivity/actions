@@ -334,7 +334,7 @@ __metadata:
     p-queue: 9.1.0
     prettier: 3.8.0
     ramda: 0.32.0
-    rcedit: 4.0.1
+    rcedit: 5.0.2
     semver: 7.7.3
     typescript: 5.9.3
     yaml: ^2.8.2
@@ -2073,12 +2073,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rcedit@npm:4.0.1":
-  version: 4.0.1
-  resolution: "rcedit@npm:4.0.1"
+"rcedit@npm:5.0.2":
+  version: 5.0.2
+  resolution: "rcedit@npm:5.0.2"
   dependencies:
-    cross-spawn-windows-exe: "npm:^1.1.0"
-  checksum: f6eaee1071886e4c4c767d982a885db8c6cc0b01d06c57589c8a13c760b23649d12d2634462956b540a7a770f5b5ef4d85128944ba60b2ebf6aaf09a2fe15645
+    cross-spawn-windows-exe: ^1.1.0
+  checksum: fc6a2eec31828667e120e887c85747fc31d584a9ba79773fba6419c9671b6a93eec25f6722e364443678a0e387578be2728a391043740483f874acc3e0696813
   languageName: node
   linkType: hard
 
