@@ -326,7 +326,7 @@ __metadata:
     form-data: 4.0.5
     glob: 13.0.0
     husky: 9.1.7
-    jira.js: 5.2.2
+    jira.js: 5.3.0
     js-yaml: 4.1.1
     mime: 4.1.0
     minimatch: 10.1.1
@@ -841,14 +841,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.10.0":
-  version: 1.13.2
-  resolution: "axios@npm:1.13.2"
+"axios@npm:^1.13.3":
+  version: 1.13.3
+  resolution: "axios@npm:1.13.3"
   dependencies:
     follow-redirects: ^1.15.6
     form-data: ^4.0.4
     proxy-from-env: ^1.1.0
-  checksum: 057d0204d5930e2969f0bccb9f0752745b1524a36994667833195e7e1a82f245d660752ba8517b2dbea17e9e4ed0479f10b80c5fe45edd0b5a0df645c0060386
+  checksum: e7031ed19df27c417ce9750c2659b0f4d809b54f98a99a3ea75e1873edd8074a437b2f4453585616d88de2dccac0ab89c2778080f832311bbc3bdf6a7c1b0c15
   languageName: node
   linkType: hard
 
@@ -1866,14 +1866,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jira.js@npm:5.2.2":
-  version: 5.2.2
-  resolution: "jira.js@npm:5.2.2"
+"jira.js@npm:5.3.0":
+  version: 5.3.0
+  resolution: "jira.js@npm:5.3.0"
   dependencies:
-    axios: "npm:^1.10.0"
-    mime: "npm:^4.0.7"
-    zod: "npm:^3.25.76"
-  checksum: 3fe87cac1d0a00ed8aabb3d7efcdb8d1dde1d2a350461a57d7f3c93c9a62d8747059fec7ab6f9fc058072e4726dd8db9afca18e8c257c6645452e3ee45885672
+    axios: ^1.13.3
+    mime: ^4.1.0
+    zod: ^4.3.6
+  checksum: df16caa32608c1abe816612a57e723c2c4cba24d25dca934d0f0ce4fa8fb15fc21d9f6c3c4af3751297e0117fd403145f394a59be477e710713d912c431e87b9
   languageName: node
   linkType: hard
 
@@ -1944,21 +1944,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:*, mime@npm:4.1.0":
+"mime@npm:*, mime@npm:4.1.0, mime@npm:^4.1.0":
   version: 4.1.0
   resolution: "mime@npm:4.1.0"
   bin:
     mime: bin/cli.js
   checksum: 46113c538ef4eb0abd8c7220e00332039a1b94a46d87f88247440dbdf0b9f7b133ea549f631695d41e0b36d0b968975a0c77f3e834e4e00ee782cd1d9c73859b
-  languageName: node
-  linkType: hard
-
-"mime@npm:^4.0.7":
-  version: 4.0.7
-  resolution: "mime@npm:4.0.7"
-  bin:
-    mime: bin/cli.js
-  checksum: adff3c690bf09e444a8c8a3903eb4caa6f4d491e214e6c164853f46cea34c438c7fb17463aecff467f0a477fca7c44f904ff68113631bd816f8c5bfca512225f
   languageName: node
   linkType: hard
 
@@ -2882,16 +2873,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:4.3.6":
+"zod@npm:4.3.6, zod@npm:^4.3.6":
   version: 4.3.6
   resolution: "zod@npm:4.3.6"
   checksum: 19cec761b46bae4b6e7e861ea740f3f248e50a6671825afc8a5758e27b35d6f20ccde9942422fd5cf6f8b697f18bd05ef8bb33f5f2db112ab25cc628de2fae47
-  languageName: node
-  linkType: hard
-
-"zod@npm:^3.25.76":
-  version: 3.25.76
-  resolution: "zod@npm:3.25.76"
-  checksum: c9a403a62b329188a5f6bd24d5d935d2bba345f7ab8151d1baa1505b5da9f227fb139354b043711490c798e91f3df75991395e40142e6510a4b16409f302b849
   languageName: node
   linkType: hard
