@@ -73,13 +73,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/http-client@npm:3.0.2, @actions/http-client@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@actions/http-client@npm:3.0.2"
+"@actions/http-client@npm:4.0.0, @actions/http-client@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@actions/http-client@npm:4.0.0"
   dependencies:
     tunnel: ^0.0.6
     undici: ^6.23.0
-  checksum: 8a4e63499af87ba6248f364fc0dd8325945be51d9f765475d67b2e6ce56a56a6a01ddc2750b89e6112dc70e4679bb881d9526f7ce3bf8c9383a7a1488d248379
+  checksum: a3ee16f3b342bbb0bcf704fc49e1e9998f53b69702b8bde505f0f0d4909b1433296a1b79c3afb0267cbc376a496f78d64f21c01ac7b753c002552dbcd3938ac5
   languageName: node
   linkType: hard
 
@@ -93,13 +93,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/http-client@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@actions/http-client@npm:4.0.0"
+"@actions/http-client@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@actions/http-client@npm:3.0.2"
   dependencies:
     tunnel: ^0.0.6
     undici: ^6.23.0
-  checksum: a3ee16f3b342bbb0bcf704fc49e1e9998f53b69702b8bde505f0f0d4909b1433296a1b79c3afb0267cbc376a496f78d64f21c01ac7b753c002552dbcd3938ac5
+  checksum: 8a4e63499af87ba6248f364fc0dd8325945be51d9f765475d67b2e6ce56a56a6a01ddc2750b89e6112dc70e4679bb881d9526f7ce3bf8c9383a7a1488d248379
   languageName: node
   linkType: hard
 
@@ -319,7 +319,7 @@ __metadata:
     "@actions/core": 3.0.0
     "@actions/exec": 3.0.0
     "@actions/github": 9.0.0
-    "@actions/http-client": 3.0.2
+    "@actions/http-client": 4.0.0
     "@octokit/webhooks": 14.2.0
     "@types/adm-zip": 0.5.7
     "@types/glob": 9.0.0
