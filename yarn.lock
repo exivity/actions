@@ -334,7 +334,7 @@ __metadata:
     deepmerge: ^4.3.1
     esbuild: 0.27.3
     form-data: 4.0.5
-    glob: 13.0.1
+    glob: 13.0.2
     husky: 9.1.7
     jira.js: 5.3.0
     js-yaml: 4.1.1
@@ -1480,14 +1480,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:13.0.1":
-  version: 13.0.1
-  resolution: "glob@npm:13.0.1"
+"glob@npm:13.0.2":
+  version: 13.0.2
+  resolution: "glob@npm:13.0.2"
   dependencies:
     minimatch: ^10.1.2
     minipass: ^7.1.2
     path-scurry: ^2.0.0
-  checksum: 6952c5d1326b3e6f6d5e4198099337f96a9908c8f9488359fac4299bf1dc90e752aec2f55e5fda7f54071d58ce802147c64ac07ffb5bf8825254309fa9c13f34
+  checksum: 2e66a89f66af9813e7e0385f7b66228a6ec849f531467c3e92a634d8fbddf3595279301277938edaf5aa25b9e12999556d5934a6b9c83920a851007b9d837de1
   languageName: node
   linkType: hard
 
