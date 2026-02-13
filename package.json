@@ -47,7 +47,7 @@
     "checkout": "github:actions/checkout#v5",
     "deepmerge": "^4.3.1",
     "form-data": "4.0.5",
-    "glob": "13.0.2",
+    "glob": "13.0.3",
     "jira.js": "5.3.0",
     "js-yaml": "4.1.1",
     "mime": "4.1.0",
