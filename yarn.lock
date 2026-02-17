@@ -339,7 +339,7 @@ __metadata:
     jira.js: 5.3.0
     js-yaml: 4.1.1
     mime: 4.1.0
-    minimatch: 10.2.0
+    minimatch: 10.2.1
     npm-run-all: 4.1.5
     p-queue: 9.1.0
     prettier: 3.8.1
@@ -1993,16 +1993,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:10.2.0":
-  version: 10.2.0
-  resolution: "minimatch@npm:10.2.0"
-  dependencies:
-    brace-expansion: ^5.0.2
-  checksum: 7b54732b32255a6a5458e67c928eb8247d08b19623bbc5a4123ded2545e38ecf6a3296c4f47bb7f85ac0834061c058499fe4507403793effd3f9dfc5839b1c20
-  languageName: node
-  linkType: hard
-
-"minimatch@npm:^10.2.1":
+"minimatch@npm:10.2.1, minimatch@npm:^10.2.1":
   version: 10.2.1
   resolution: "minimatch@npm:10.2.1"
   dependencies:
