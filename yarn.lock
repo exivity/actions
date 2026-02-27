@@ -336,9 +336,10 @@ __metadata:
     form-data: 4.0.5
     glob: 13.0.6
     husky: 9.1.7
-    jira.js: 5.3.0
+    jira.js: 5.3.1
     js-yaml: 4.1.1
     mime: 4.1.0
+    minimatch: 10.2.4
     npm-run-all: 4.1.5
     p-queue: 9.1.0
     prettier: 3.8.1
@@ -841,7 +842,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.13.3":
+"axios@npm:^1.13.5":
   version: 1.13.5
   resolution: "axios@npm:1.13.5"
   dependencies:
@@ -1880,14 +1881,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jira.js@npm:5.3.0":
-  version: 5.3.0
-  resolution: "jira.js@npm:5.3.0"
+"jira.js@npm:5.3.1":
+  version: 5.3.1
+  resolution: "jira.js@npm:5.3.1"
   dependencies:
-    axios: ^1.13.3
-    mime: ^4.1.0
+    axios: ^1.13.5
+    mime-types: ^2.1.35
     zod: ^4.3.6
-  checksum: df16caa32608c1abe816612a57e723c2c4cba24d25dca934d0f0ce4fa8fb15fc21d9f6c3c4af3751297e0117fd403145f394a59be477e710713d912c431e87b9
+  checksum: ef7aba79bc9889eb78b079f3ce3e92267d178ee0c4652c7d84fbbbb0590067e516c4d9ad65505f63d33a63839135d983e92688fd9251ae7477f93b03f5f38519
   languageName: node
   linkType: hard
 
@@ -1949,7 +1950,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.12":
+"mime-types@npm:^2.1.12, mime-types@npm:^2.1.35":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -1958,7 +1959,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:*, mime@npm:4.1.0, mime@npm:^4.1.0":
+"mime@npm:*, mime@npm:4.1.0":
   version: 4.1.0
   resolution: "mime@npm:4.1.0"
   bin:
@@ -1967,7 +1968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:*, minimatch@npm:^10.0.3, minimatch@npm:^10.2.2":
+"minimatch@npm:*, minimatch@npm:10.2.4, minimatch@npm:^10.0.3, minimatch@npm:^10.2.2":
   version: 10.2.4
   resolution: "minimatch@npm:10.2.4"
   dependencies:
