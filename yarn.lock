@@ -43,9 +43,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/github@npm:9.0.0":
-  version: 9.0.0
-  resolution: "@actions/github@npm:9.0.0"
+"@actions/github@npm:9.1.0":
+  version: 9.1.0
+  resolution: "@actions/github@npm:9.1.0"
   dependencies:
     "@actions/http-client": ^3.0.2
     "@octokit/core": ^7.0.6
@@ -54,7 +54,7 @@ __metadata:
     "@octokit/request": ^10.0.7
     "@octokit/request-error": ^7.1.0
     undici: ^6.23.0
-  checksum: 5d3b2790f7b67cb7b0ec4416e8b666fde69621bac5fff5e59737c8233f8ad09829471b5cab2c50faea60da39554c69d5e7e51e5ffc8e2c899fba32f47db15b9b
+  checksum: ed5b50e5e4e59d4feeb2952f8f27ea50a7abc470f4a63b319ab009104f0729ef2788e164a07cf0cccdc7dd27352bad8599923906bcc7d19ea65309321a7fac45
   languageName: node
   linkType: hard
 
@@ -318,7 +318,7 @@ __metadata:
   dependencies:
     "@actions/core": 3.0.0
     "@actions/exec": 3.0.0
-    "@actions/github": 9.0.0
+    "@actions/github": 9.1.0
     "@actions/http-client": 4.0.0
     "@octokit/webhooks": 14.2.0
     "@types/adm-zip": 0.5.8
