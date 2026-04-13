@@ -7,9 +7,7 @@ import { info } from 'console'
 
 import { getToken, STANDARD_BRANCH } from '../../../lib/github'
 import { getBooleanInput } from '../../../lib/core'
-const {
-  resolveReleaseRepositories,
-} = require('./releaseRepositories')
+const { resolveReleaseRepositories } = require('./releaseRepositories')
 
 async function readTextFile(path: string) {
   try {
@@ -38,6 +36,8 @@ export type RepositoryMetadata = {
   releaseBranch?: string
   sourceRepo?: string
   sourcePath?: string
+  legacyOwner?: string
+  legacyRepo?: string
   tagStrategy?: string
 }
 
@@ -46,6 +46,8 @@ export type ReleaseRepository = {
   releasedSha: string
   sourceRepo: string
   sourcePath?: string
+  legacyOwner?: string
+  legacyRepo?: string
   releaseBranch: string
   tagStrategy: string
 }
@@ -75,7 +77,9 @@ export const getRepositoryMetadata = async () => {
     : {}
 }
 
-export const getReleaseRepositories = async (): Promise<ReleaseRepository[]> => {
+export const getReleaseRepositories = async (): Promise<
+  ReleaseRepository[]
+> => {
   const [lockfile, repositoryMetadata] = await Promise.all([
     getLockFile(),
     getRepositoryMetadata(),

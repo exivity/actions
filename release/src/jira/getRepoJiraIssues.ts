@@ -40,6 +40,7 @@ export const getFirstLine = pipe(split('\n'), pathOr('', [0]))
 export const removeFirstLine = pipe(split('\n'), tail, join('\n'))
 
 type RepoCommit = {
+  owner: string
   repo: string
   commit: Awaited<ReturnType<typeof getCommitsSince>>[number]
 }
@@ -49,6 +50,8 @@ export const getRepoJiraIssues = async ({
   releasedSha,
   sourceRepo,
   sourcePath,
+  legacyOwner,
+  legacyRepo,
   releaseBranch,
 }: ReleaseRepository) => {
   const jiraClient = getJiraClient()
@@ -85,26 +88,28 @@ export const getRepoJiraIssues = async ({
     component,
     sourceRepo,
     sourcePath,
+    legacyOwner,
+    legacyRepo,
     releasedSha,
     sourceCommits,
   })
 
   const legacyCommits: RepoCommit[] = (
     await Promise.all(
-      legacyBridgeRanges.map(async ({ repo, baseSha, headSha }) => {
+      legacyBridgeRanges.map(async ({ owner, repo, baseSha, headSha }) => {
         const commits = await getComparedCommits({
           octokit,
-          owner: 'exivity',
+          owner,
           repo,
           base: baseSha,
           head: headSha,
         })
 
         info(
-          `  Found ${commits.length} legacy commits between ${baseSha} and ${headSha} in exivity/${repo} before subtree import into exivity/${sourceRepo}#${releaseBranch}${sourcePath ? ` (${sourcePath})` : ''}`,
+          `  Found ${commits.length} legacy commits between ${baseSha} and ${headSha} in ${owner}/${repo} before subtree import into exivity/${sourceRepo}#${releaseBranch}${sourcePath ? ` (${sourcePath})` : ''}`,
         )
 
-        return commits.map((commit) => ({ repo, commit }))
+        return commits.map((commit) => ({ owner, repo, commit }))
       }),
     )
   ).flat()
@@ -112,6 +117,7 @@ export const getRepoJiraIssues = async ({
   const commits: RepoCommit[] = [
     ...legacyCommits,
     ...sourceCommits.map((commit) => ({
+      owner: 'exivity',
       repo: sourceRepo,
       commit,
     })),
@@ -122,10 +128,10 @@ export const getRepoJiraIssues = async ({
   return {
     jiraIssueKeys,
     issues: await Promise.all(
-      commits.map(async ({ repo, commit }) => {
+      commits.map(async ({ owner, repo, commit }) => {
         const associatedPullRequest = await getAssociatedPullRequest({
           octokit,
-          owner: 'exivity',
+          owner,
           repo,
           sha: commit.sha,
         })
@@ -164,10 +170,10 @@ export const getRepoJiraIssues = async ({
                   type: issueType,
                   breaking,
                   noReleaseNotesNeeded: noReleaseNotesNeeded(issue),
-                  commit: `[exivity/${repo}@${commit.sha.substring(0, 7)}](${commit.html_url})`,
+                  commit: `[${owner}/${repo}@${commit.sha.substring(0, 7)}](${commit.html_url})`,
                   issue: `[${issue.key}](https://exivity.atlassian.net/browse/${issue.key})`,
                   pullRequest: associatedPullRequest
-                    ? `[exivity/${repo}#${associatedPullRequest.number}](${associatedPullRequest.url})`
+                    ? `[${owner}/${repo}#${associatedPullRequest.number}](${associatedPullRequest.url})`
                     : 'No pull request',
                   milestone: epic
                     ? `[${getEpic(issue)}](https://exivity.atlassian.net/browse/${getEpic(issue)})`

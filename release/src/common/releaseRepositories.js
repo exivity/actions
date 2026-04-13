@@ -8,6 +8,8 @@ function resolveReleaseRepositories(lockfile, metadata = {}, defaultBranch = 'ma
       releasedSha,
       sourceRepo,
       sourcePath: config.sourcePath,
+      legacyOwner: config.legacyOwner,
+      legacyRepo: config.legacyRepo,
       releaseBranch: config.releaseBranch || defaultBranch,
       tagStrategy:
         config.tagStrategy ||
