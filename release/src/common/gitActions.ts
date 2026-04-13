@@ -10,11 +10,10 @@ import {
   gitPush,
   gitSetAuthor,
 } from '../../../lib/git'
-import { gitPushTags, gitTag } from '../../../lib/git'
 import {
   createLightweightTag,
-  getRepository,
   getPrFromRef,
+  getRepository,
 } from '../../../lib/github'
 import { JiraIssue } from '../jira/getRepoJiraIssues'
 
@@ -24,9 +23,11 @@ import {
   getLockFile,
   getOctoKitClient,
   getPrTemplate,
+  getReleaseRepositories,
   isDryRun,
   Lockfile,
 } from './inputs'
+const { groupTagTargets } = require('./releaseRepositories')
 
 const releaseBranch = 'main'
 const upcomingReleaseBranch = 'chore/upcoming-release'
@@ -57,45 +58,36 @@ export async function commitAndPush(title: string): Promise<string> {
 
 async function tagRepositories(lockfile: Lockfile) {
   const octokit = getOctoKitClient()
+  const releaseRepositories = await getReleaseRepositories()
+  const tagTargets = groupTagTargets(releaseRepositories) as Array<{
+    repo: string
+    sha: string
+    components: string[]
+  }>
 
-  for (const [repository, sha] of Object.entries(lockfile.repositories)) {
+  for (const target of tagTargets) {
     if (isDryRun()) {
-      info(`Dry run, not tagging ${repository}`)
+      info(
+        `Dry run, not tagging ${target.repo} for ${target.components.join(', ')}`,
+      )
     } else {
       try {
         await createLightweightTag({
           octokit,
           owner: 'exivity',
-          repo: repository,
+          repo: target.repo,
           tag: lockfile.version,
-          sha,
+          sha: target.sha,
         })
       } catch (e) {
-        warning(`Could not create lightweight tag on ${repository}: ${e}`)
+        warning(`Could not create lightweight tag on ${target.repo}: ${e}`)
       }
     }
   }
 }
 
 export async function tagAllRepositories() {
-  const repository = getRepository()
-  const dryRun = isDryRun()
   const lockfile = await getLockFile()
-
-  // Tag current commit with version
-  if (dryRun) {
-    info(`Dry run, not tagging ${repository.fqn}`)
-  } else {
-    try {
-      await gitTag(lockfile.version)
-      await gitPushTags()
-      info(`Pushed tag ${lockfile.version} to ${repository.fqn}`)
-    } catch (e) {
-      warning(`Could not push tag to ${repository.fqn}: ${e}`)
-    }
-  }
-
-  // Tag repositories in lockfile
   await tagRepositories(lockfile)
 }
 

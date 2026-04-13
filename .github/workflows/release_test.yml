@@ -37,6 +37,7 @@ jobs:
           mode: prepare
           dry-run: true
           lockfile: fixtures/release/exivity.lock
+          repositories-metadata: fixtures/release/repositories.json
           changelog: fixtures/release/CHANGELOG.md
           pr-template: fixtures/release/NEW_RELEASE_PR_TEMPLATE.md
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
@@ -58,6 +59,7 @@ jobs:
           mode: release
           dry-run: true
           lockfile: fixtures/release/exivity.lock
+          repositories-metadata: fixtures/release/repositories.json
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
           jira-username: ${{ secrets.JIRA_BOT_EMAIL }}
           jira-token: ${{ secrets.JIRA_BOT_TOKEN }}

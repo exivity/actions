@@ -1,6 +1,5 @@
 import { info } from 'console'
 import { isEmpty } from 'ramda'
-import { getLatestVersion } from '../../lib/git'
 import { getRepoJiraIssues } from './jira/getRepoJiraIssues'
 import {
   commitAndPush,
@@ -8,7 +7,7 @@ import {
   updatePr,
 } from './common/gitActions'
 import { inferVersionFromJiraIssues } from './common/inferVersionFromJiraIssues'
-import { getRepositories } from './common/inputs'
+import { getLockFile, getReleaseRepositories } from './common/inputs'
 import { logIssues } from './common/utils'
 import { writeChangelog } from './common/writeChangelog'
 import { writeIssueFile } from './common/writeIssueFile'
@@ -21,7 +20,7 @@ const jiraIssueKeysProp = <T>({ jiraIssueKeys }: { jiraIssueKeys: T }) =>
 export async function prepare() {
   await switchToReleaseBranch()
 
-  const repositories = await getRepositories()
+  const repositories = await getReleaseRepositories()
 
   const issuesPerRepo = await Promise.all(repositories.map(getRepoJiraIssues))
   const issues = issuesPerRepo.flatMap(issuesProp)
@@ -33,8 +32,9 @@ export async function prepare() {
 
   logIssues(issues)
 
+  const currentVersion = (await getLockFile()).version
   const upcomingVersion = inferVersionFromJiraIssues(
-    await getLatestVersion(),
+    currentVersion,
     issues,
   )
 

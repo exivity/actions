@@ -1,41 +1,35 @@
 import { info } from '@actions/core'
 import { getOctokit } from '@actions/github'
-import { existsSync } from 'checkout/src/fs-helper'
-import * as gitSourceProvider from 'checkout/src/git-source-provider'
-import * as inputHelper from 'checkout/src/input-helper'
-import { readFileSync } from 'fs'
 import yaml from 'js-yaml'
-import { join } from 'path'
-import { getWorkflowName, getWorkspacePath } from '../../lib/github'
+import { getWorkflowName } from '../../lib/github'
 
 export async function isWorkflowDependencyDone(
   octokit: ReturnType<typeof getOctokit>,
-  token: string,
   sha: string,
   repo: string,
 ) {
-  info('Checking out repository to get workflow contents...')
-
-  // Need to 'fake' the token, it defaults to ${{ github.token }}
-  // see https://github.com/actions/checkout/blob/main/action.yml
-  process.env['INPUT_TOKEN'] = token
-  const sourceSettings = await inputHelper.getInputs()
-  await gitSourceProvider.getSource(sourceSettings)
-
   const workflowName = getWorkflowName()
-  const workspacePath = getWorkspacePath()
-  const workflowPath = join(
-    workspacePath,
-    '.github',
-    'workflows',
-    `${workflowName}.yml`,
-  )
+  const workflowPath = `.github/workflows/${workflowName}.yml`
 
-  if (!existsSync(workflowPath)) {
+  info(`Fetching workflow contents from ${repo}@${sha}:${workflowPath}`)
+
+  const workflowFile = await octokit.rest.repos.getContent({
+    owner: 'exivity',
+    repo,
+    path: workflowPath,
+    ref: sha,
+  })
+
+  if (Array.isArray(workflowFile.data) || !('content' in workflowFile.data)) {
     throw new Error(`Workflow file not found at "${workflowPath}"`)
   }
 
-  const workflow = yaml.load(readFileSync(workflowPath, 'utf8')) as {
+  const workflowContents = Buffer.from(
+    workflowFile.data.content,
+    workflowFile.data.encoding as BufferEncoding,
+  ).toString('utf8')
+
+  const workflow = yaml.load(workflowContents) as {
     on?: {
       workflow_run?: {
         workflows?: string[]

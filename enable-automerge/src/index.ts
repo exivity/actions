@@ -5,6 +5,7 @@ import {
   getEventName,
   getRepository,
   getToken,
+  isEvent,
 } from '../../lib/github'
 
 // push for enable-automerge__test
@@ -127,6 +128,11 @@ async function run() {
 
   // Client
   const octokit = getOctokit(token)
+
+  if (!isEvent(eventName, 'pull_request', eventData)) {
+    info('Skipping: enable-automerge only applies to pull_request events')
+    return
+  }
 
   // Get merge method
   const mergeMethod =

@@ -11,14 +11,17 @@ import {
 } from 'ramda'
 
 import {
-  getCommitForTag,
+  getCommit,
   getCommitsSince,
-  STANDARD_BRANCH,
   getAssociatedPullRequest,
 } from '../../../lib/github'
-import { getLatestVersion } from '../../../lib/git'
 import { parseCommitMessage } from '../../../lib/conventionalCommits'
-import { debug, getJiraClient, getOctoKitClient } from '../common/inputs'
+import {
+  debug,
+  getJiraClient,
+  getOctoKitClient,
+  ReleaseRepository,
+} from '../common/inputs'
 
 import {
   JIRA_KEY_RGX,
@@ -34,26 +37,41 @@ import { info } from '@actions/core'
 export const getFirstLine = pipe(split('\n'), pathOr('', [0]))
 export const removeFirstLine = pipe(split('\n'), tail, join('\n'))
 
-export const getRepoJiraIssues = async (repo: string) => {
+export const getRepoJiraIssues = async ({
+  component,
+  releasedSha,
+  sourceRepo,
+  sourcePath,
+  releaseBranch,
+}: ReleaseRepository) => {
   const jiraClient = getJiraClient()
   const octokit = getOctoKitClient()
-  const latestVersion = await getLatestVersion()
-
-  // Find commit for latest version tag in target repository
-  const latestVersionCommit = await getCommitForTag({
+  const releasedCommit = await getCommit({
     octokit,
     owner: 'exivity',
-    repo,
-    tag: latestVersion,
+    repo: sourceRepo,
+    ref: releasedSha,
   })
+  const timestamp =
+    releasedCommit.commit.author?.date ?? releasedCommit.commit.committer?.date
 
-  // Get a list of commits from the last version
+  if (!timestamp) {
+    throw new Error(
+      `Could not find a release timestamp for ${component} at ${releasedSha}`,
+    )
+  }
+
   const commits = await getCommitsSince({
     octokit,
     owner: 'exivity',
-    repo,
-    branch: STANDARD_BRANCH,
-    since: latestVersionCommit,
+    repo: sourceRepo,
+    branch: releaseBranch,
+    path: sourcePath,
+    since: {
+      timestamp,
+      tag: releasedSha,
+      sha: releasedSha,
+    },
   })
 
   const jiraIssueKeys: string[] = []
@@ -65,7 +83,7 @@ export const getRepoJiraIssues = async (repo: string) => {
         const associatedPullRequest = await getAssociatedPullRequest({
           octokit,
           owner: 'exivity',
-          repo,
+          repo: sourceRepo,
           sha: commit.sha,
         })
 
@@ -103,9 +121,11 @@ export const getRepoJiraIssues = async (repo: string) => {
                   type: issueType,
                   breaking,
                   noReleaseNotesNeeded: noReleaseNotesNeeded(issue),
-                  commit: `[exivity/${repo}@${commit.sha.substring(0, 7)}](${commit.html_url})`,
+                  commit: `[exivity/${sourceRepo}@${commit.sha.substring(0, 7)}](${commit.html_url})`,
                   issue: `[${issue.key}](https://exivity.atlassian.net/browse/${issue.key})`,
-                  pullRequest: `[exivity/${repo}#${associatedPullRequest?.number}](${associatedPullRequest?.url})`,
+                  pullRequest: associatedPullRequest
+                    ? `[exivity/${sourceRepo}#${associatedPullRequest.number}](${associatedPullRequest.url})`
+                    : 'No pull request',
                   milestone: epic
                     ? `[${getEpic(issue)}](https://exivity.atlassian.net/browse/${getEpic(issue)})`
                     : 'No milestone',
