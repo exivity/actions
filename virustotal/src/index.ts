@@ -71,7 +71,12 @@ async function run() {
       // Run
       for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
         const result = await check(vt, pendingStatus)
-        await writeStatus(octokit, result, pendingStatus.sha)
+        await writeStatus(
+          octokit,
+          result,
+          pendingStatus.sha,
+          pendingStatus.context,
+        )
       }
       break
     default:

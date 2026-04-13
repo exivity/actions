@@ -52628,7 +52628,7 @@ async function getPendingVirusTotalStatuses(octokit) {
   }
   return statuses;
 }
-async function writeStatus2(octokit, result, sha) {
+async function writeStatus2(octokit, result, sha, context3) {
   const { owner, repo } = getRepository();
   return writeStatus({
     octokit,
@@ -52636,7 +52636,7 @@ async function writeStatus2(octokit, result, sha) {
     repo,
     sha: sha ?? getSha(),
     state: result.status === "pending" ? "pending" : result.flagged === 0 ? "success" : "failure",
-    context: `virustotal (${result.filename})`,
+    context: context3 ?? `virustotal (${result.filename})`,
     description: result.status === "completed" ? result.flagged ? `Detected as malicious or suspicious by ${result.flagged} security vendors` : "No security vendors flagged this file as malicious" : void 0,
     target_url: filehashToGuiUrl(result.filehash)
   });
@@ -52687,7 +52687,12 @@ async function run() {
     case ModeCheck:
       for (const pendingStatus of await getPendingVirusTotalStatuses(octokit)) {
         const result = await check2(vt2, pendingStatus);
-        await writeStatus2(octokit, result, pendingStatus.sha);
+        await writeStatus2(
+          octokit,
+          result,
+          pendingStatus.sha,
+          pendingStatus.context
+        );
       }
       break;
     default:
