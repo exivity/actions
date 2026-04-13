@@ -162,7 +162,7 @@ async function run() {
       return
     }
 
-    if (!(await isWorkflowDependencyDone(octokit, ghToken, sha, component))) {
+    if (!(await isWorkflowDependencyDone(octokit, sha, component))) {
       warning(
         `[accept] Skipping: build artifacts are not ready yet, waiting for "build" workflow to finish.`,
       )

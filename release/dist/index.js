@@ -62947,9 +62947,10 @@ query ($sha: String!, $repo: String!, $owner: String!) {
     );
     return associatedPRs.repository?.commit?.associatedPullRequests?.edges[0]?.node;
   } catch (err) {
-    throw new Error(
-      `Failed to fetch associated pull requests for ${owner}:${repo}@${sha}`
+    warning(
+      `Failed to fetch associated pull requests for ${owner}:${repo}@${sha}: ${err.message}`
     );
+    return void 0;
   }
 }
 
