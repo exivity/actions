@@ -20,6 +20,8 @@ function buildLegacyBridgeRanges({
   component,
   sourceRepo,
   sourcePath,
+  legacyOwner,
+  legacyRepo,
   releasedSha,
   sourceCommits,
 }) {
@@ -46,7 +48,8 @@ function buildLegacyBridgeRanges({
 
     return [
       {
-        repo: component,
+        owner: legacyOwner || 'exivity',
+        repo: legacyRepo || component,
         baseSha: releasedSha,
         headSha: splitSha,
       },
