@@ -76,6 +76,7 @@ export async function writeStatus(
   octokit: ReturnType<typeof getOctokit>,
   result: AnalysisResult,
   sha?: string,
+  context?: string,
 ) {
   const { owner, repo } = getRepository()
   return writeStatusGitHub({
@@ -89,7 +90,7 @@ export async function writeStatus(
         : result.flagged === 0
           ? 'success'
           : 'failure',
-    context: `virustotal (${result.filename})`,
+    context: context ?? `virustotal (${result.filename})`,
     description:
       result.status === 'completed'
         ? result.flagged
