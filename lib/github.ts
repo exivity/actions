@@ -399,6 +399,34 @@ export async function getCommitsSince({
   return commits
 }
 
+export async function getComparedCommits({
+  octokit,
+  owner,
+  repo,
+  base,
+  head,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  owner: string
+  repo: string
+  base: string
+  head: string
+}) {
+  const { data } = await octokit.rest.repos.compareCommitsWithBasehead({
+    owner,
+    repo,
+    basehead: `${base}...${head}`,
+  })
+
+  if (data.total_commits > data.commits.length) {
+    warning(
+      `Compare truncated for ${owner}/${repo} between ${base} and ${head}: ${data.commits.length}/${data.total_commits} commits returned`,
+    )
+  }
+
+  return data.commits
+}
+
 export async function review({
   octokit,
   owner,

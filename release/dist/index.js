@@ -30215,6 +30215,60 @@ var require_releaseRepositories = __commonJS({
   }
 });
 
+// release/src/jira/cutoverBridge.js
+var require_cutoverBridge = __commonJS({
+  "release/src/jira/cutoverBridge.js"(exports2, module2) {
+    "use strict";
+    function parseSubtreeSplitSha(message, sourcePath) {
+      if (!sourcePath) {
+        return null;
+      }
+      const subtreeDirMatch = message.match(/^git-subtree-dir:\s*(.+)$/m);
+      if (!subtreeDirMatch || subtreeDirMatch[1].trim() !== sourcePath) {
+        return null;
+      }
+      const subtreeSplitMatch = message.match(
+        /^git-subtree-split:\s*([0-9a-f]{7,40})$/im
+      );
+      return subtreeSplitMatch ? subtreeSplitMatch[1] : null;
+    }
+    function buildLegacyBridgeRanges2({
+      component,
+      sourceRepo,
+      sourcePath,
+      releasedSha,
+      sourceCommits
+    }) {
+      if (sourceRepo === component || !sourcePath) {
+        return [];
+      }
+      const seen = /* @__PURE__ */ new Set();
+      return sourceCommits.flatMap((commit) => {
+        const splitSha = parseSubtreeSplitSha(commit.commit.message, sourcePath);
+        if (!splitSha) {
+          return [];
+        }
+        const key = `${component}:${releasedSha}:${splitSha}`;
+        if (seen.has(key)) {
+          return [];
+        }
+        seen.add(key);
+        return [
+          {
+            repo: component,
+            baseSha: releasedSha,
+            headSha: splitSha
+          }
+        ];
+      });
+    }
+    module2.exports = {
+      parseSubtreeSplitSha,
+      buildLegacyBridgeRanges: buildLegacyBridgeRanges2
+    };
+  }
+});
+
 // node_modules/semver/internal/constants.js
 var require_constants6 = __commonJS({
   "node_modules/semver/internal/constants.js"(exports2, module2) {
@@ -62869,6 +62923,25 @@ async function getCommitsSince({
   );
   return commits;
 }
+async function getComparedCommits({
+  octokit,
+  owner,
+  repo,
+  base,
+  head
+}) {
+  const { data } = await octokit.rest.repos.compareCommitsWithBasehead({
+    owner,
+    repo,
+    basehead: `${base}...${head}`
+  });
+  if (data.total_commits > data.commits.length) {
+    warning(
+      `Compare truncated for ${owner}/${repo} between ${base} and ${head}: ${data.commits.length}/${data.total_commits} commits returned`
+    );
+  }
+  return data.commits;
+}
 async function dispatchWorkflow({
   octokit,
   owner,
@@ -62988,9 +63061,7 @@ async function exec2(command, args) {
 }
 
 // release/src/common/inputs.ts
-var {
-  resolveReleaseRepositories
-} = require_releaseRepositories();
+var { resolveReleaseRepositories } = require_releaseRepositories();
 async function readTextFile(path4) {
   try {
     return (0, import_promises.readFile)(path4, "utf8");
@@ -64503,6 +64574,7 @@ var getMissingReleaseNotes = pipe2(
 );
 
 // release/src/jira/getRepoJiraIssues.ts
+var import_cutoverBridge = __toESM(require_cutoverBridge());
 var getFirstLine = pipe2(split_default("\n"), pathOr_default("", [0]));
 var removeFirstLine = pipe2(split_default("\n"), tail_default, join_default("\n"));
 var getRepoJiraIssues = async ({
@@ -64526,7 +64598,7 @@ var getRepoJiraIssues = async ({
       `Could not find a release timestamp for ${component} at ${releasedSha}`
     );
   }
-  const commits = await getCommitsSince({
+  const sourceCommits = await getCommitsSince({
     octokit,
     owner: "exivity",
     repo: sourceRepo,
@@ -64538,15 +64610,44 @@ var getRepoJiraIssues = async ({
       sha: releasedSha
     }
   });
+  const legacyBridgeRanges = (0, import_cutoverBridge.buildLegacyBridgeRanges)({
+    component,
+    sourceRepo,
+    sourcePath,
+    releasedSha,
+    sourceCommits
+  });
+  const legacyCommits = (await Promise.all(
+    legacyBridgeRanges.map(async ({ repo, baseSha, headSha }) => {
+      const commits2 = await getComparedCommits({
+        octokit,
+        owner: "exivity",
+        repo,
+        base: baseSha,
+        head: headSha
+      });
+      info(
+        `  Found ${commits2.length} legacy commits between ${baseSha} and ${headSha} in exivity/${repo} before subtree import into exivity/${sourceRepo}#${releaseBranch2}${sourcePath ? ` (${sourcePath})` : ""}`
+      );
+      return commits2.map((commit) => ({ repo, commit }));
+    })
+  )).flat();
+  const commits = [
+    ...legacyCommits,
+    ...sourceCommits.map((commit) => ({
+      repo: sourceRepo,
+      commit
+    }))
+  ];
   const jiraIssueKeys = [];
   return {
     jiraIssueKeys,
     issues: await Promise.all(
-      commits.map(async (commit) => {
+      commits.map(async ({ repo, commit }) => {
         const associatedPullRequest = await getAssociatedPullRequest({
           octokit,
           owner: "exivity",
-          repo: sourceRepo,
+          repo,
           sha: commit.sha
         });
         debug2(() => `PR.title: ${associatedPullRequest?.title}`);
@@ -64575,9 +64676,9 @@ var getRepoJiraIssues = async ({
                   type: issueType,
                   breaking,
                   noReleaseNotesNeeded: noReleaseNotesNeeded(issue3),
-                  commit: `[exivity/${sourceRepo}@${commit.sha.substring(0, 7)}](${commit.html_url})`,
+                  commit: `[exivity/${repo}@${commit.sha.substring(0, 7)}](${commit.html_url})`,
                   issue: `[${issue3.key}](https://exivity.atlassian.net/browse/${issue3.key})`,
-                  pullRequest: associatedPullRequest ? `[exivity/${sourceRepo}#${associatedPullRequest.number}](${associatedPullRequest.url})` : "No pull request",
+                  pullRequest: associatedPullRequest ? `[exivity/${repo}#${associatedPullRequest.number}](${associatedPullRequest.url})` : "No pull request",
                   milestone: epic ? `[${getEpic(issue3)}](https://exivity.atlassian.net/browse/${getEpic(issue3)})` : "No milestone"
                 }
               ];
@@ -64939,10 +65040,7 @@ async function prepare() {
   }
   logIssues(issues);
   const currentVersion = (await getLockFile()).version;
-  const upcomingVersion = inferVersionFromJiraIssues(
-    currentVersion,
-    issues
-  );
+  const upcomingVersion = inferVersionFromJiraIssues(currentVersion, issues);
   await writeIssueFile(issuesPerRepo.flatMap(jiraIssueKeysProp));
   await writeLockFile(upcomingVersion);
   await writeChangelog(upcomingVersion, issues);
