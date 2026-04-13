@@ -688,7 +688,7 @@ release tag in the release repository, plus new tags in all released components.
 `release` mode by using the checkout actions like this:
 
 ```yaml
-- uses: actions/checkout@v3
+- uses: actions/checkout@v6
   with:
     fetch-depth: 0
 ```
