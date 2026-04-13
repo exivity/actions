@@ -38,5 +38,6 @@ jobs:
       - uses: ./sign-file
         with:
           path: fixtures/hello/build/*.exe
-          certificate-base64: ${{ steps.generate-certificate.outputs.certificate_base64 }}
+          certificate-base64:
+            ${{ steps.generate-certificate.outputs.certificate_base64 }}
           certificate-password: test

@@ -33,10 +33,7 @@ export async function prepare() {
   logIssues(issues)
 
   const currentVersion = (await getLockFile()).version
-  const upcomingVersion = inferVersionFromJiraIssues(
-    currentVersion,
-    issues,
-  )
+  const upcomingVersion = inferVersionFromJiraIssues(currentVersion, issues)
 
   await writeIssueFile(issuesPerRepo.flatMap(jiraIssueKeysProp))
 
