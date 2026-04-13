@@ -17,6 +17,10 @@ inputs:
     description: Location of lockfile (json)
     required: false
     default: exivity.lock
+  repositories-metadata:
+    description: Location of release repository metadata (json)
+    required: false
+    default: repositories.json
   changelog:
     description: Location of changelog (markdown)
     required: false

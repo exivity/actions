@@ -5,8 +5,11 @@ import { existsSync } from 'fs'
 import { readFile } from 'fs/promises'
 import { info } from 'console'
 
-import { getToken } from '../../../lib/github'
+import { getToken, STANDARD_BRANCH } from '../../../lib/github'
 import { getBooleanInput } from '../../../lib/core'
+const {
+  resolveReleaseRepositories,
+} = require('./releaseRepositories')
 
 async function readTextFile(path: string) {
   try {
@@ -31,6 +34,22 @@ export type Lockfile = {
   }
 }
 
+export type RepositoryMetadata = {
+  releaseBranch?: string
+  sourceRepo?: string
+  sourcePath?: string
+  tagStrategy?: string
+}
+
+export type ReleaseRepository = {
+  component: string
+  releasedSha: string
+  sourceRepo: string
+  sourcePath?: string
+  releaseBranch: string
+  tagStrategy: string
+}
+
 export const getJiraProjectId = () => Number(getInput('jira-project-id'))
 
 export const isDryRun = () => getBooleanInput('dry-run', false)
@@ -46,9 +65,31 @@ export const getLockFile = async () => readJson<Lockfile>(getInput('lockfile'))
 
 export const getLockFilePath = () => getInput('lockfile')
 
+export const getRepositoryMetadataPath = () => getInput('repositories-metadata')
+
+export const getRepositoryMetadata = async () => {
+  const metadataPath = getRepositoryMetadataPath()
+
+  return existsSync(metadataPath)
+    ? await readJson<Record<string, RepositoryMetadata>>(metadataPath)
+    : {}
+}
+
+export const getReleaseRepositories = async (): Promise<ReleaseRepository[]> => {
+  const [lockfile, repositoryMetadata] = await Promise.all([
+    getLockFile(),
+    getRepositoryMetadata(),
+  ])
+
+  return resolveReleaseRepositories(
+    lockfile,
+    repositoryMetadata,
+    STANDARD_BRANCH,
+  ) as ReleaseRepository[]
+}
+
 export const getRepositories = async () => {
-  const lockfile = await getLockFile()
-  return Object.keys(lockfile.repositories)
+  return (await getReleaseRepositories()).map(({ component }) => component)
 }
 
 export const getChangeLogPath = () => getInput('changelog')

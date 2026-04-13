@@ -316,6 +316,7 @@ export async function getCommits({
   owner,
   repo,
   sha,
+  path,
   since,
   until,
 }: {
@@ -323,6 +324,7 @@ export async function getCommits({
   owner: string
   repo: string
   sha?: string
+  path?: string
   since?: string
   until?: string
 }) {
@@ -330,6 +332,7 @@ export async function getCommits({
     owner,
     repo,
     sha,
+    path,
     since,
     until,
   })
@@ -340,6 +343,7 @@ export async function getLastCommitSha({
   owner,
   repo,
   sha,
+  path,
   since,
   until,
 }: {
@@ -347,6 +351,7 @@ export async function getLastCommitSha({
   owner: string
   repo: string
   sha?: string
+  path?: string
   since?: string
   until?: string
 }) {
@@ -355,6 +360,7 @@ export async function getLastCommitSha({
       owner,
       repo,
       sha,
+      path,
       since,
       until,
     })
@@ -366,12 +372,14 @@ export async function getCommitsSince({
   owner,
   repo,
   branch,
+  path,
   since,
 }: {
   octokit: ReturnType<typeof getOctokit>
   owner: string
   repo: string
   branch: string
+  path?: string
   since: { timestamp: string; tag: string; sha: string }
 }) {
   const commits = (
@@ -380,11 +388,12 @@ export async function getCommitsSince({
       owner,
       repo,
       sha: branch,
+      path,
       since: since.timestamp,
     })
   ).filter((commit) => commit.sha !== since.sha)
   info(
-    `  Found ${commits.length} commits since ${since.tag} in ${owner}/${repo}#${branch}`,
+    `  Found ${commits.length} commits since ${since.tag} in ${owner}/${repo}#${branch}${path ? ` (${path})` : ''}`,
   )
 
   return commits

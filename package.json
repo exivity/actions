@@ -36,6 +36,7 @@
     "build:virustotal": "yarn esbuild:generic virustotal/src/index.ts --outfile=virustotal/dist/index.js",
     "esbuild:generic": "esbuild --bundle --platform=node --target=node20",
     "format": "prettier --write .",
+    "test:release-source-mapping": "node --test release/src/common/releaseRepositories.test.js",
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable"
   },
