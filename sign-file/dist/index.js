@@ -22697,65 +22697,104 @@ Ze.glob = Ze;
 var import_os3 = require("os");
 var import_path = require("path");
 var METHOD_SIGN_TOOL = "signtool";
+async function resolveSignToolPath() {
+  const windowsKitCandidates = await Ze(
+    "C:/Program Files (x86)/Windows Kits/10/bin/*/x64/SignTool.exe",
+    {
+      absolute: true
+    }
+  );
+  const [latestWindowsKitSignTool] = windowsKitCandidates.sort(
+    (a, b) => b.localeCompare(a, void 0, {
+      numeric: true,
+      sensitivity: "base"
+    })
+  );
+  if (latestWindowsKitSignTool) {
+    debug(`Using SignTool from Windows Kit: "${latestWindowsKitSignTool}"`);
+    return latestWindowsKitSignTool;
+  }
+  const { exitCode, stdout } = await getExecOutput(
+    "where.exe",
+    ["signtool.exe"],
+    {
+      ignoreReturnCode: true,
+      silent: true
+    }
+  );
+  if (exitCode === 0) {
+    const [signToolOnPath] = stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    if (signToolOnPath) {
+      debug(`Using SignTool from PATH: "${signToolOnPath}"`);
+      return signToolOnPath;
+    }
+  }
+  throw new Error(
+    "Unable to locate SignTool.exe in the Windows SDK or on PATH."
+  );
+}
 async function signTool(filePath, certificatePath, certificatePassword) {
-  const signToolPath = '"C:/Program Files (x86)/Windows Kits/10/bin/10.0.22000.0/x64/SignTool.exe"';
-  const { exitCode, stderr, stdout } = await getExecOutput(signToolPath, [
-    /**
-     * Digitally signs files. Digital signatures protect files from
-     * tampering, and enable users to verify the signer based on a signing
-     * certificate. For a list of the options supported by the sign command,
-     * see sign Command Options.
-     */
-    "sign",
-    /**
-     * Specifies the signing certificate in a file. If the file is in
-     * Personal Information Exchange (PFX) format and protected by a
-     * password, use the /p option to specify the password. If the file does
-     * not contain private keys, use the /csp and /kc options to specify the
-     * CSP and private key container name.
-     */
-    "/f",
-    certificatePath,
-    /**
-     * Specifies the password to use when opening a PFX file. (Use the /f
-     * option to specify a PFX file.)
-     */
-    "/p",
-    certificatePassword,
-    /**
-     * Specifies the URL of the RFC 3161 time stamp server. If this option
-     * (or /t) is not present, the signed file will not be time stamped. A
-     * warning is generated if time stamping fails. This option cannot be
-     * used with the /t option.
-     */
-    "/tr",
-    "http://timestamp.entrust.net/TSS/RFC3161sha2TS",
-    /**
-     * Used with the /tr option to request a digest algorithm used by the
-     * RFC 3161 time stamp server.
-     *
-     * Note: A warning is generated if the /td switch is not provided while
-     * timestamping. The default algorithm is SHA1, but SHA256 is
-     * recommended.
-     *
-     * The /td switch must be declared after the /tr switch, not before. If
-     * the /td switch is declared before the /tr switch, the timestamp that
-     * is returned is from the SHA1 algorithm instead of the intended SHA256
-     * algorithm.
-     */
-    "/td",
-    "sha256",
-    /**
-     * Specifies the file digest algorithm to use for creating file
-     * signatures.
-     *
-     * Note: A warning is generated if the/fd switch is not provided while
-     * signing. The default algorithm is SHA1 but SHA256 is recommended.
-     */
-    "/fd",
-    "sha256",
-    filePath
-  ]);
+  const signToolPath = await resolveSignToolPath();
+  const { exitCode, stderr, stdout } = await getExecOutput(
+    `"${signToolPath}"`,
+    [
+      /**
+       * Digitally signs files. Digital signatures protect files from
+       * tampering, and enable users to verify the signer based on a signing
+       * certificate. For a list of the options supported by the sign command,
+       * see sign Command Options.
+       */
+      "sign",
+      /**
+       * Specifies the signing certificate in a file. If the file is in
+       * Personal Information Exchange (PFX) format and protected by a
+       * password, use the /p option to specify the password. If the file does
+       * not contain private keys, use the /csp and /kc options to specify the
+       * CSP and private key container name.
+       */
+      "/f",
+      certificatePath,
+      /**
+       * Specifies the password to use when opening a PFX file. (Use the /f
+       * option to specify a PFX file.)
+       */
+      "/p",
+      certificatePassword,
+      /**
+       * Specifies the URL of the RFC 3161 time stamp server. If this option
+       * (or /t) is not present, the signed file will not be time stamped. A
+       * warning is generated if time stamping fails. This option cannot be
+       * used with the /t option.
+       */
+      "/tr",
+      "http://timestamp.entrust.net/TSS/RFC3161sha2TS",
+      /**
+       * Used with the /tr option to request a digest algorithm used by the
+       * RFC 3161 time stamp server.
+       *
+       * Note: A warning is generated if the /td switch is not provided while
+       * timestamping. The default algorithm is SHA1, but SHA256 is
+       * recommended.
+       *
+       * The /td switch must be declared after the /tr switch, not before. If
+       * the /td switch is declared before the /tr switch, the timestamp that
+       * is returned is from the SHA1 algorithm instead of the intended SHA256
+       * algorithm.
+       */
+      "/td",
+      "sha256",
+      /**
+       * Specifies the file digest algorithm to use for creating file
+       * signatures.
+       *
+       * Note: A warning is generated if the/fd switch is not provided while
+       * signing. The default algorithm is SHA1 but SHA256 is recommended.
+       */
+      "/fd",
+      "sha256",
+      filePath
+    ]
+  );
   if (exitCode !== 0) {
     throw new Error(`signtool.exe failed with code ${exitCode}: ${stderr}`);
   }

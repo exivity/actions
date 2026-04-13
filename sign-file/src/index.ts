@@ -7,6 +7,52 @@ import { join, resolve } from 'path'
 
 const METHOD_SIGN_TOOL = 'signtool'
 
+async function resolveSignToolPath() {
+  const windowsKitCandidates = await glob(
+    'C:/Program Files (x86)/Windows Kits/10/bin/*/x64/SignTool.exe',
+    {
+      absolute: true,
+    },
+  )
+
+  const [latestWindowsKitSignTool] = windowsKitCandidates.sort((a, b) =>
+    b.localeCompare(a, undefined, {
+      numeric: true,
+      sensitivity: 'base',
+    }),
+  )
+
+  if (latestWindowsKitSignTool) {
+    debug(`Using SignTool from Windows Kit: "${latestWindowsKitSignTool}"`)
+    return latestWindowsKitSignTool
+  }
+
+  const { exitCode, stdout } = await getExecOutput(
+    'where.exe',
+    ['signtool.exe'],
+    {
+      ignoreReturnCode: true,
+      silent: true,
+    },
+  )
+
+  if (exitCode === 0) {
+    const [signToolOnPath] = stdout
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+
+    if (signToolOnPath) {
+      debug(`Using SignTool from PATH: "${signToolOnPath}"`)
+      return signToolOnPath
+    }
+  }
+
+  throw new Error(
+    'Unable to locate SignTool.exe in the Windows SDK or on PATH.',
+  )
+}
+
 async function signTool(
   filePath: string,
   certificatePath: string,
@@ -17,10 +63,11 @@ async function signTool(
    *
    * See https://docs.microsoft.com/en-us/dotnet/framework/tools/signtool-exe
    */
-  const signToolPath =
-    '"C:/Program Files (x86)/Windows Kits/10/bin/10.0.22000.0/x64/SignTool.exe"'
+  const signToolPath = await resolveSignToolPath()
 
-  const { exitCode, stderr, stdout } = await getExecOutput(signToolPath, [
+  const { exitCode, stderr, stdout } = await getExecOutput(
+    `"${signToolPath}"`,
+    [
     /**
      * Digitally signs files. Digital signatures protect files from
      * tampering, and enable users to verify the signer based on a signing
@@ -81,8 +128,9 @@ async function signTool(
     '/fd',
     'sha256',
 
-    filePath,
-  ])
+      filePath,
+    ],
+  )
 
   if (exitCode !== 0) {
     throw new Error(`signtool.exe failed with code ${exitCode}: ${stderr}`)
