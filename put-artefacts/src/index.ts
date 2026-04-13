@@ -16,24 +16,22 @@ async function zipAll(path: string, component: string) {
 
 async function run() {
   // Input
+  const component = getInput('component') || getRepository().repo
+  const sha = getInput('sha') || getSha()
   const usePlatformPrefix = getBooleanInput('use-platform-prefix', false)
   const prefix = getInput('prefix') || undefined
   let path = getInput('path') || 'build'
   const zip = getBooleanInput('zip', false)
 
-  // From environment
-  const sha = getSha()
-  const { repo } = getRepository()
-
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
 
   if (zip) {
     // This will actually create a tarball instead of a zip archive 🤷‍♂️
-    path = await zipAll(path, repo)
+    path = await zipAll(path, prefix || component)
   }
 
   await uploadS3object({
-    component: repo,
+    component,
     sha,
     usePlatformPrefix,
     prefix,
