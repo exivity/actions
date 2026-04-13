@@ -185,7 +185,7 @@ jobs:
   push-assets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: exivity/actions/push-to-central-repo@main
         with:
           central-repo-owner: 'your-org'
@@ -209,7 +209,7 @@ jobs:
   sync-assets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: exivity/actions/push-to-central-repo@main
         with:
           central-repo-owner: 'your-org'
