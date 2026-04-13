@@ -754,6 +754,8 @@ _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 | name                    | required | default   | description                                                                                    |
 | ----------------------- | -------- | --------- | ---------------------------------------------------------------------------------------------- |
+| `component`             |          | repo name | Component prefix to upload artefacts under                                                     |
+| `sha`                   |          | current sha | Use a specific artefacts sha                                                                 |
 | `use-platform-prefix`   |          | `false`   | If `true`, uses `windows` or `linux` prefix depending on current os.                           |
 | `prefix`                |          |           | If specified, upload artefacts with this prefix (appended after platform prefix if specified). |
 | `path`                  |          | `"build"` | Upload artefacts from this path.                                                               |

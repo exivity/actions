@@ -1,6 +1,12 @@
 name: 'Put artefacts'
 description: 'Upload artefacts for this component.'
 inputs:
+  component:
+    description: 'Component prefix to upload artefacts under'
+    required: false
+  sha:
+    description: 'Use a specific artefacts sha'
+    required: false
   use-platform-prefix:
     description: 'Uses `windows` or `linux` prefix depending on current os.'
     required: false
