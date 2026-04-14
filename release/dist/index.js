@@ -30182,8 +30182,6 @@ var require_releaseRepositories = __commonJS({
           releasedSha,
           sourceRepo,
           sourcePath: config2.sourcePath,
-          legacyOwner: config2.legacyOwner,
-          legacyRepo: config2.legacyRepo,
           releaseBranch: config2.releaseBranch || defaultBranch,
           tagStrategy: config2.tagStrategy || (sourceRepo === component ? "component-repo" : "source-repo")
         };
@@ -30213,63 +30211,6 @@ var require_releaseRepositories = __commonJS({
     module2.exports = {
       resolveReleaseRepositories: resolveReleaseRepositories2,
       groupTagTargets: groupTagTargets2
-    };
-  }
-});
-
-// release/src/jira/cutoverBridge.js
-var require_cutoverBridge = __commonJS({
-  "release/src/jira/cutoverBridge.js"(exports2, module2) {
-    "use strict";
-    function parseSubtreeSplitSha(message, sourcePath) {
-      if (!sourcePath) {
-        return null;
-      }
-      const subtreeDirMatch = message.match(/^git-subtree-dir:\s*(.+)$/m);
-      if (!subtreeDirMatch || subtreeDirMatch[1].trim() !== sourcePath) {
-        return null;
-      }
-      const subtreeSplitMatch = message.match(
-        /^git-subtree-split:\s*([0-9a-f]{7,40})$/im
-      );
-      return subtreeSplitMatch ? subtreeSplitMatch[1] : null;
-    }
-    function buildLegacyBridgeRanges2({
-      component,
-      sourceRepo,
-      sourcePath,
-      legacyOwner,
-      legacyRepo,
-      releasedSha,
-      sourceCommits
-    }) {
-      if (sourceRepo === component || !sourcePath) {
-        return [];
-      }
-      const seen = /* @__PURE__ */ new Set();
-      return sourceCommits.flatMap((commit) => {
-        const splitSha = parseSubtreeSplitSha(commit.commit.message, sourcePath);
-        if (!splitSha) {
-          return [];
-        }
-        const key = `${component}:${releasedSha}:${splitSha}`;
-        if (seen.has(key)) {
-          return [];
-        }
-        seen.add(key);
-        return [
-          {
-            owner: legacyOwner || "exivity",
-            repo: legacyRepo || component,
-            baseSha: releasedSha,
-            headSha: splitSha
-          }
-        ];
-      });
-    }
-    module2.exports = {
-      parseSubtreeSplitSha,
-      buildLegacyBridgeRanges: buildLegacyBridgeRanges2
     };
   }
 });
@@ -62928,25 +62869,6 @@ async function getCommitsSince({
   );
   return commits;
 }
-async function getComparedCommits({
-  octokit,
-  owner,
-  repo,
-  base,
-  head
-}) {
-  const { data } = await octokit.rest.repos.compareCommitsWithBasehead({
-    owner,
-    repo,
-    basehead: `${base}...${head}`
-  });
-  if (data.total_commits > data.commits.length) {
-    warning(
-      `Compare truncated for ${owner}/${repo} between ${base} and ${head}: ${data.commits.length}/${data.total_commits} commits returned`
-    );
-  }
-  return data.commits;
-}
 async function dispatchWorkflow({
   octokit,
   owner,
@@ -64579,7 +64501,6 @@ var getMissingReleaseNotes = pipe2(
 );
 
 // release/src/jira/getRepoJiraIssues.ts
-var import_cutoverBridge = __toESM(require_cutoverBridge());
 var getFirstLine = pipe2(split_default("\n"), pathOr_default("", [0]));
 var removeFirstLine = pipe2(split_default("\n"), tail_default, join_default("\n"));
 var getRepoJiraIssues = async ({
@@ -64587,8 +64508,6 @@ var getRepoJiraIssues = async ({
   releasedSha,
   sourceRepo,
   sourcePath,
-  legacyOwner,
-  legacyRepo,
   releaseBranch: releaseBranch2
 }) => {
   const jiraClient2 = getJiraClient();
@@ -64617,38 +64536,11 @@ var getRepoJiraIssues = async ({
       sha: releasedSha
     }
   });
-  const legacyBridgeRanges = (0, import_cutoverBridge.buildLegacyBridgeRanges)({
-    component,
-    sourceRepo,
-    sourcePath,
-    legacyOwner,
-    legacyRepo,
-    releasedSha,
-    sourceCommits
-  });
-  const legacyCommits = (await Promise.all(
-    legacyBridgeRanges.map(async ({ owner, repo, baseSha, headSha }) => {
-      const commits2 = await getComparedCommits({
-        octokit,
-        owner,
-        repo,
-        base: baseSha,
-        head: headSha
-      });
-      info(
-        `  Found ${commits2.length} legacy commits between ${baseSha} and ${headSha} in ${owner}/${repo} before subtree import into exivity/${sourceRepo}#${releaseBranch2}${sourcePath ? ` (${sourcePath})` : ""}`
-      );
-      return commits2.map((commit) => ({ owner, repo, commit }));
-    })
-  )).flat();
-  const commits = [
-    ...legacyCommits,
-    ...sourceCommits.map((commit) => ({
-      owner: "exivity",
-      repo: sourceRepo,
-      commit
-    }))
-  ];
+  const commits = sourceCommits.map((commit) => ({
+    owner: "exivity",
+    repo: sourceRepo,
+    commit
+  }));
   const jiraIssueKeys = [];
   return {
     jiraIssueKeys,
@@ -65050,10 +64942,7 @@ async function prepare() {
   }
   logIssues(issues);
   const currentVersion = (await getLockFile()).version;
-  const upcomingVersion = inferVersionFromJiraIssues(
-    currentVersion,
-    issues
-  );
+  const upcomingVersion = inferVersionFromJiraIssues(currentVersion, issues);
   await writeIssueFile(issuesPerRepo.flatMap(jiraIssueKeysProp));
   await writeLockFile(upcomingVersion);
   await writeChangelog(upcomingVersion, issues);

@@ -36,8 +36,6 @@ export type RepositoryMetadata = {
   releaseBranch?: string
   sourceRepo?: string
   sourcePath?: string
-  legacyOwner?: string
-  legacyRepo?: string
   tagStrategy?: string
 }
 
@@ -46,8 +44,6 @@ export type ReleaseRepository = {
   releasedSha: string
   sourceRepo: string
   sourcePath?: string
-  legacyOwner?: string
-  legacyRepo?: string
   releaseBranch: string
   tagStrategy: string
 }

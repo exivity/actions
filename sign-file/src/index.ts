@@ -68,65 +68,65 @@ async function signTool(
   const { exitCode, stderr, stdout } = await getExecOutput(
     `"${signToolPath}"`,
     [
-    /**
-     * Digitally signs files. Digital signatures protect files from
-     * tampering, and enable users to verify the signer based on a signing
-     * certificate. For a list of the options supported by the sign command,
-     * see sign Command Options.
-     */
-    'sign',
+      /**
+       * Digitally signs files. Digital signatures protect files from
+       * tampering, and enable users to verify the signer based on a signing
+       * certificate. For a list of the options supported by the sign command,
+       * see sign Command Options.
+       */
+      'sign',
 
-    /**
-     * Specifies the signing certificate in a file. If the file is in
-     * Personal Information Exchange (PFX) format and protected by a
-     * password, use the /p option to specify the password. If the file does
-     * not contain private keys, use the /csp and /kc options to specify the
-     * CSP and private key container name.
-     */
-    '/f',
-    certificatePath,
+      /**
+       * Specifies the signing certificate in a file. If the file is in
+       * Personal Information Exchange (PFX) format and protected by a
+       * password, use the /p option to specify the password. If the file does
+       * not contain private keys, use the /csp and /kc options to specify the
+       * CSP and private key container name.
+       */
+      '/f',
+      certificatePath,
 
-    /**
-     * Specifies the password to use when opening a PFX file. (Use the /f
-     * option to specify a PFX file.)
-     */
-    '/p',
-    certificatePassword,
+      /**
+       * Specifies the password to use when opening a PFX file. (Use the /f
+       * option to specify a PFX file.)
+       */
+      '/p',
+      certificatePassword,
 
-    /**
-     * Specifies the URL of the RFC 3161 time stamp server. If this option
-     * (or /t) is not present, the signed file will not be time stamped. A
-     * warning is generated if time stamping fails. This option cannot be
-     * used with the /t option.
-     */
-    '/tr',
-    'http://timestamp.entrust.net/TSS/RFC3161sha2TS',
+      /**
+       * Specifies the URL of the RFC 3161 time stamp server. If this option
+       * (or /t) is not present, the signed file will not be time stamped. A
+       * warning is generated if time stamping fails. This option cannot be
+       * used with the /t option.
+       */
+      '/tr',
+      'http://timestamp.entrust.net/TSS/RFC3161sha2TS',
 
-    /**
-     * Used with the /tr option to request a digest algorithm used by the
-     * RFC 3161 time stamp server.
-     *
-     * Note: A warning is generated if the /td switch is not provided while
-     * timestamping. The default algorithm is SHA1, but SHA256 is
-     * recommended.
-     *
-     * The /td switch must be declared after the /tr switch, not before. If
-     * the /td switch is declared before the /tr switch, the timestamp that
-     * is returned is from the SHA1 algorithm instead of the intended SHA256
-     * algorithm.
-     */
-    '/td',
-    'sha256',
+      /**
+       * Used with the /tr option to request a digest algorithm used by the
+       * RFC 3161 time stamp server.
+       *
+       * Note: A warning is generated if the /td switch is not provided while
+       * timestamping. The default algorithm is SHA1, but SHA256 is
+       * recommended.
+       *
+       * The /td switch must be declared after the /tr switch, not before. If
+       * the /td switch is declared before the /tr switch, the timestamp that
+       * is returned is from the SHA1 algorithm instead of the intended SHA256
+       * algorithm.
+       */
+      '/td',
+      'sha256',
 
-    /**
-     * Specifies the file digest algorithm to use for creating file
-     * signatures.
-     *
-     * Note: A warning is generated if the/fd switch is not provided while
-     * signing. The default algorithm is SHA1 but SHA256 is recommended.
-     */
-    '/fd',
-    'sha256',
+      /**
+       * Specifies the file digest algorithm to use for creating file
+       * signatures.
+       *
+       * Note: A warning is generated if the/fd switch is not provided while
+       * signing. The default algorithm is SHA1 but SHA256 is recommended.
+       */
+      '/fd',
+      'sha256',
 
       filePath,
     ],

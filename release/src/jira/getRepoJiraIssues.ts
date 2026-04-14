@@ -12,7 +12,6 @@ import {
 
 import {
   getCommit,
-  getComparedCommits,
   getCommitsSince,
   getAssociatedPullRequest,
 } from '../../../lib/github'
@@ -34,7 +33,6 @@ import {
   getIssueType,
 } from './utils'
 import { info } from '@actions/core'
-import { buildLegacyBridgeRanges } from './cutoverBridge'
 
 export const getFirstLine = pipe(split('\n'), pathOr('', [0]))
 export const removeFirstLine = pipe(split('\n'), tail, join('\n'))
@@ -50,8 +48,6 @@ export const getRepoJiraIssues = async ({
   releasedSha,
   sourceRepo,
   sourcePath,
-  legacyOwner,
-  legacyRepo,
   releaseBranch,
 }: ReleaseRepository) => {
   const jiraClient = getJiraClient()
@@ -84,44 +80,11 @@ export const getRepoJiraIssues = async ({
     },
   })
 
-  const legacyBridgeRanges = buildLegacyBridgeRanges({
-    component,
-    sourceRepo,
-    sourcePath,
-    legacyOwner,
-    legacyRepo,
-    releasedSha,
-    sourceCommits,
-  })
-
-  const legacyCommits: RepoCommit[] = (
-    await Promise.all(
-      legacyBridgeRanges.map(async ({ owner, repo, baseSha, headSha }) => {
-        const commits = await getComparedCommits({
-          octokit,
-          owner,
-          repo,
-          base: baseSha,
-          head: headSha,
-        })
-
-        info(
-          `  Found ${commits.length} legacy commits between ${baseSha} and ${headSha} in ${owner}/${repo} before subtree import into exivity/${sourceRepo}#${releaseBranch}${sourcePath ? ` (${sourcePath})` : ''}`,
-        )
-
-        return commits.map((commit) => ({ owner, repo, commit }))
-      }),
-    )
-  ).flat()
-
-  const commits: RepoCommit[] = [
-    ...legacyCommits,
-    ...sourceCommits.map((commit) => ({
-      owner: 'exivity',
-      repo: sourceRepo,
-      commit,
-    })),
-  ]
+  const commits: RepoCommit[] = sourceCommits.map((commit) => ({
+    owner: 'exivity',
+    repo: sourceRepo,
+    commit,
+  }))
 
   const jiraIssueKeys: string[] = []
 
