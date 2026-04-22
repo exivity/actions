@@ -43,18 +43,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/github@npm:9.1.0":
-  version: 9.1.0
-  resolution: "@actions/github@npm:9.1.0"
+"@actions/github@npm:9.1.1":
+  version: 9.1.1
+  resolution: "@actions/github@npm:9.1.1"
   dependencies:
-    "@actions/http-client": "npm:^3.0.2"
-    "@octokit/core": "npm:^7.0.6"
-    "@octokit/plugin-paginate-rest": "npm:^14.0.0"
-    "@octokit/plugin-rest-endpoint-methods": "npm:^17.0.0"
-    "@octokit/request": "npm:^10.0.7"
-    "@octokit/request-error": "npm:^7.1.0"
-    undici: "npm:^6.23.0"
-  checksum: ed5b50e5e4e59d4feeb2952f8f27ea50a7abc470f4a63b319ab009104f0729ef2788e164a07cf0cccdc7dd27352bad8599923906bcc7d19ea65309321a7fac45
+    "@actions/http-client": ^3.0.2
+    "@octokit/core": ^7.0.6
+    "@octokit/plugin-paginate-rest": ^14.0.0
+    "@octokit/plugin-rest-endpoint-methods": ^17.0.0
+    "@octokit/request": ^10.0.7
+    "@octokit/request-error": ^7.1.0
+    undici: ^6.23.0
+  checksum: eb77846e506df107208ee6a57aa38c80ce6cdd9ab499ec3518a8e3000334def8f93fcf2b43c8b512fede9b093a1ca39d184551a9c50f37cb8fc17704d09c7e70
   languageName: node
   linkType: hard
 
@@ -318,7 +318,7 @@ __metadata:
   dependencies:
     "@actions/core": 3.0.0
     "@actions/exec": 3.0.0
-    "@actions/github": 9.1.0
+    "@actions/github": 9.1.1
     "@actions/http-client": 4.0.0
     "@octokit/webhooks": 14.2.0
     "@types/adm-zip": 0.5.8
