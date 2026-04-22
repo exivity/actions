@@ -5,13 +5,13 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@actions/core@npm:3.0.0":
-  version: 3.0.0
-  resolution: "@actions/core@npm:3.0.0"
+"@actions/core@npm:3.0.1":
+  version: 3.0.1
+  resolution: "@actions/core@npm:3.0.1"
   dependencies:
-    "@actions/exec": "npm:^3.0.0"
-    "@actions/http-client": "npm:^4.0.0"
-  checksum: 79d472a597723ce6a8343c3eac994c2071c20f7cba428032a0cd97075c8b802678da4eddeb71d1e3b205c8b5a5a29b6906e1a39be07366ee5e090faa460be5a1
+    "@actions/exec": ^3.0.0
+    "@actions/http-client": ^4.0.0
+  checksum: 4f29321d8629c220b29486ea0d6bc320e968b9bd5b4346a86450d090123a1f83910c2aa3b05efb0c0fbcf7169a51e9573d7f4e318281c97d5e7859d1699a23f0
   languageName: node
   linkType: hard
 
@@ -326,7 +326,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@exivity/actions@workspace:."
   dependencies:
-    "@actions/core": 3.0.0
+    "@actions/core": 3.0.1
     "@actions/exec": 3.0.0
     "@actions/github": 9.1.1
     "@actions/http-client": 4.0.1
