@@ -24,13 +24,24 @@ export async function writeLockFile(version: string) {
       repositories: zipObj(
         repositories.map(({ component }) => component),
         await Promise.all(
-          repositories.map(({ sourceRepo, releaseBranch }) =>
-            getLastCommitSha({
-              octokit,
-              owner: 'exivity',
-              repo: sourceRepo,
-              sha: releaseBranch,
-            }),
+          repositories.map(
+            async ({ component, sourceRepo, sourcePath, releaseBranch }) => {
+              const sha = await getLastCommitSha({
+                octokit,
+                owner: 'exivity',
+                repo: sourceRepo,
+                sha: releaseBranch,
+                path: sourcePath,
+              })
+
+              if (!sha) {
+                throw new Error(
+                  `Could not resolve release artifact SHA for ${component} from exivity/${sourceRepo}#${releaseBranch}${sourcePath ? ` (${sourcePath})` : ''}`,
+                )
+              }
+
+              return sha
+            },
           ),
         ),
       ),

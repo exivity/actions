@@ -12,6 +12,7 @@ import {
 } from '../../../lib/git'
 import {
   createLightweightTag,
+  getCommit,
   getPrFromRef,
   getRepository,
 } from '../../../lib/github'
@@ -61,14 +62,23 @@ async function tagRepositories(lockfile: Lockfile) {
   const releaseRepositories = await getReleaseRepositories()
   const tagTargets = groupTagTargets(releaseRepositories) as Array<{
     repo: string
-    sha: string
+    sha?: string
+    candidateShas?: string[]
     components: string[]
+    tagStrategy: string
   }>
 
   for (const target of tagTargets) {
+    const sha = await resolveTagTargetSha({
+      octokit,
+      repo: target.repo,
+      sha: target.sha,
+      candidateShas: target.candidateShas,
+    })
+
     if (isDryRun()) {
       info(
-        `Dry run, not tagging ${target.repo} for ${target.components.join(', ')}`,
+        `Dry run, not tagging ${target.repo} at ${sha} for ${target.components.join(', ')}`,
       )
     } else {
       try {
@@ -77,13 +87,67 @@ async function tagRepositories(lockfile: Lockfile) {
           owner: 'exivity',
           repo: target.repo,
           tag: lockfile.version,
-          sha: target.sha,
+          sha,
         })
       } catch (e) {
         warning(`Could not create lightweight tag on ${target.repo}: ${e}`)
       }
     }
   }
+}
+
+async function resolveTagTargetSha({
+  octokit,
+  repo,
+  sha,
+  candidateShas,
+}: {
+  octokit: ReturnType<typeof getOctokit>
+  repo: string
+  sha?: string
+  candidateShas?: string[]
+}) {
+  if (sha) {
+    return sha
+  }
+
+  const uniqueCandidateShas = Array.from(new Set(candidateShas ?? []))
+
+  if (uniqueCandidateShas.length === 0) {
+    throw new Error(`Could not resolve tag target for exivity/${repo}`)
+  }
+
+  if (uniqueCandidateShas.length === 1) {
+    return uniqueCandidateShas[0]
+  }
+
+  const commits = await Promise.all(
+    uniqueCandidateShas.map(async (candidateSha) => ({
+      sha: candidateSha,
+      commit: await getCommit({
+        octokit,
+        owner: 'exivity',
+        repo,
+        ref: candidateSha,
+      }),
+    })),
+  )
+
+  commits.sort((a, b) => {
+    return getCommitTime(b.commit) - getCommitTime(a.commit)
+  })
+
+  return commits[0].sha
+}
+
+function getCommitTime(commit: Awaited<ReturnType<typeof getCommit>>) {
+  const timestamp = commit.commit.author?.date ?? commit.commit.committer?.date
+
+  if (!timestamp) {
+    throw new Error(`Could not determine timestamp for ${commit.sha}`)
+  }
+
+  return Date.parse(timestamp)
 }
 
 export async function tagAllRepositories() {
