@@ -101,12 +101,16 @@ test('groupTagTargets deduplicates shared source repositories', () => {
     {
       repo: 'product',
       sha: 'sha-product',
+      candidateShas: undefined,
       components: ['glass', 'proximity'],
+      tagStrategy: 'component-repo',
     },
     {
       repo: 'chronos',
       sha: 'sha-chronos',
+      candidateShas: undefined,
       components: ['chronos'],
+      tagStrategy: 'component-repo',
     },
   ])
 })
@@ -128,4 +132,68 @@ test('groupTagTargets rejects conflicting SHAs for one source repository', () =>
       ]),
     /Conflicting release SHAs for product/,
   )
+})
+
+test('groupTagTargets allows different canonical SHAs for one source repository', () => {
+  const targets = groupTagTargets([
+    {
+      component: 'glass',
+      releasedSha: 'sha-product-glass',
+      sourceRepo: 'product',
+      tagStrategy: 'canonical',
+    },
+    {
+      component: 'proximity',
+      releasedSha: 'sha-product-proximity',
+      sourceRepo: 'product',
+      tagStrategy: 'canonical',
+    },
+    {
+      component: 'edify',
+      releasedSha: 'sha-product-edify',
+      sourceRepo: 'product',
+      tagStrategy: 'canonical',
+    },
+  ])
+
+  assert.deepEqual(targets, [
+    {
+      repo: 'product',
+      sha: undefined,
+      candidateShas: [
+        'sha-product-glass',
+        'sha-product-proximity',
+        'sha-product-edify',
+      ],
+      components: ['glass', 'proximity', 'edify'],
+      tagStrategy: 'canonical',
+    },
+  ])
+})
+
+test('groupTagTargets deduplicates repeated canonical SHAs', () => {
+  const targets = groupTagTargets([
+    {
+      component: 'glass',
+      releasedSha: 'sha-product',
+      sourceRepo: 'product',
+      tagStrategy: 'canonical',
+    },
+    {
+      component: 'proximity',
+      releasedSha: 'sha-product',
+      sourceRepo: 'product',
+      tagStrategy: 'canonical',
+    },
+  ])
+
+  assert.deepEqual(targets, [
+    {
+      repo: 'product',
+      sha: undefined,
+      candidateShas: ['sha-product'],
+      components: ['glass', 'proximity'],
+      tagStrategy: 'canonical',
+    },
+  ])
 })

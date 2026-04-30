@@ -30190,19 +30190,26 @@ var require_releaseRepositories = __commonJS({
     function groupTagTargets2(releaseRepositories) {
       const targets = /* @__PURE__ */ new Map();
       for (const repository of releaseRepositories) {
-        const existing = targets.get(repository.sourceRepo);
+        const tagStrategy = repository.tagStrategy || "component-repo";
+        const key = tagStrategy === "canonical" ? `canonical:${repository.sourceRepo}` : `${tagStrategy}:${repository.sourceRepo}`;
+        const existing = targets.get(key);
         if (!existing) {
-          targets.set(repository.sourceRepo, {
+          targets.set(key, {
             repo: repository.sourceRepo,
-            sha: repository.releasedSha,
-            components: [repository.component]
+            sha: tagStrategy === "canonical" ? void 0 : repository.releasedSha,
+            candidateShas: tagStrategy === "canonical" ? [repository.releasedSha] : void 0,
+            components: [repository.component],
+            tagStrategy
           });
           continue;
         }
-        if (existing.sha !== repository.releasedSha) {
+        if (tagStrategy !== "canonical" && existing.sha !== repository.releasedSha) {
           throw new Error(
             `Conflicting release SHAs for ${repository.sourceRepo}: ${existing.sha} and ${repository.releasedSha}`
           );
+        }
+        if (tagStrategy === "canonical" && !existing.candidateShas.includes(repository.releasedSha)) {
+          existing.candidateShas.push(repository.releasedSha);
         }
         existing.components.push(repository.component);
       }
@@ -64698,9 +64705,15 @@ async function tagRepositories(lockfile) {
   const releaseRepositories = await getReleaseRepositories();
   const tagTargets = groupTagTargets(releaseRepositories);
   for (const target of tagTargets) {
+    const sha = await resolveTagTargetSha({
+      octokit,
+      repo: target.repo,
+      sha: target.sha,
+      candidateShas: target.candidateShas
+    });
     if (isDryRun()) {
       (0, import_console4.info)(
-        `Dry run, not tagging ${target.repo} for ${target.components.join(", ")}`
+        `Dry run, not tagging ${target.repo} at ${sha} for ${target.components.join(", ")}`
       );
     } else {
       try {
@@ -64709,13 +64722,52 @@ async function tagRepositories(lockfile) {
           owner: "exivity",
           repo: target.repo,
           tag: lockfile.version,
-          sha: target.sha
+          sha
         });
       } catch (e) {
         warning(`Could not create lightweight tag on ${target.repo}: ${e}`);
       }
     }
   }
+}
+async function resolveTagTargetSha({
+  octokit,
+  repo,
+  sha,
+  candidateShas
+}) {
+  if (sha) {
+    return sha;
+  }
+  const uniqueCandidateShas = Array.from(new Set(candidateShas ?? []));
+  if (uniqueCandidateShas.length === 0) {
+    throw new Error(`Could not resolve tag target for exivity/${repo}`);
+  }
+  if (uniqueCandidateShas.length === 1) {
+    return uniqueCandidateShas[0];
+  }
+  const commits = await Promise.all(
+    uniqueCandidateShas.map(async (candidateSha) => ({
+      sha: candidateSha,
+      commit: await getCommit({
+        octokit,
+        owner: "exivity",
+        repo,
+        ref: candidateSha
+      })
+    }))
+  );
+  commits.sort((a, b) => {
+    return getCommitTime(b.commit) - getCommitTime(a.commit);
+  });
+  return commits[0].sha;
+}
+function getCommitTime(commit) {
+  const timestamp = commit.commit.author?.date ?? commit.commit.committer?.date;
+  if (!timestamp) {
+    throw new Error(`Could not determine timestamp for ${commit.sha}`);
+  }
+  return Date.parse(timestamp);
 }
 async function tagAllRepositories() {
   const lockfile = await getLockFile();
@@ -64913,12 +64965,21 @@ async function writeLockFile(version2) {
         repositories.map(({ component }) => component),
         await Promise.all(
           repositories.map(
-            ({ sourceRepo, releaseBranch: releaseBranch2 }) => getLastCommitSha({
-              octokit,
-              owner: "exivity",
-              repo: sourceRepo,
-              sha: releaseBranch2
-            })
+            async ({ component, sourceRepo, sourcePath, releaseBranch: releaseBranch2 }) => {
+              const sha = await getLastCommitSha({
+                octokit,
+                owner: "exivity",
+                repo: sourceRepo,
+                sha: releaseBranch2,
+                path: sourcePath
+              });
+              if (!sha) {
+                throw new Error(
+                  `Could not resolve release artifact SHA for ${component} from exivity/${sourceRepo}#${releaseBranch2}${sourcePath ? ` (${sourcePath})` : ""}`
+                );
+              }
+              return sha;
+            }
           )
         )
       )
