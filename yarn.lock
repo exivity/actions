@@ -358,7 +358,7 @@ __metadata:
     semver: 7.7.4
     typescript: 6.0.3
     yaml: ^2.8.3
-    zod: 4.4.1
+    zod: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -2931,10 +2931,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:4.4.1":
-  version: 4.4.1
-  resolution: "zod@npm:4.4.1"
-  checksum: 366cb53fce7c234c5050ec39149dc94d8301eaf5a186f4c665e28e31178cc6a1f2aa7a276f91eb4eb29f49da03874e5c4e8443d607ebfefbe47f5a529d25693e
+"zod@npm:4.4.3":
+  version: 4.4.3
+  resolution: "zod@npm:4.4.3"
+  checksum: bf236fdee7a5a5ec645eef5bfea3aad34e7df912931c2a23bc17e5b59882482751da42392916529da52ff9bc70f584797a5d496f1fb81f2d1a4c90fdd3922d2a
   languageName: node
   linkType: hard
 
