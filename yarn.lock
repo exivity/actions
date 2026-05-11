@@ -336,7 +336,7 @@ __metadata:
     "@types/js-yaml": 4.0.9
     "@types/mime": 4.0.0
     "@types/minimatch": 6.0.0
-    "@types/node": 25.6.2
+    "@types/node": 25.7.0
     "@types/ramda": 0.31.1
     "@types/semver": 7.7.1
     "@types/uuid": 11.0.0
@@ -724,12 +724,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:25.6.2":
-  version: 25.6.2
-  resolution: "@types/node@npm:25.6.2"
+"@types/node@npm:25.7.0":
+  version: 25.7.0
+  resolution: "@types/node@npm:25.7.0"
   dependencies:
-    undici-types: ~7.19.0
-  checksum: 73ba68cce7b80bec594ba8b48b88af3f58f90cf5a6066f922e1c1efb2165862054498ee0464305cfed4e54596561520959d7a0e89478d7a450cd7ba3114e98f6
+    undici-types: ~7.21.0
+  checksum: d7cbd8ed9272e1baa9d90be7b4b3cdd0fb94c961ccbf4f5819863f24a6bd2d69cb839451c1d8e6043ed8d109a4281f0571c5fecb13407780d3cfd0cba1347807
   languageName: node
   linkType: hard
 
@@ -2756,10 +2756,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~7.19.0":
-  version: 7.19.2
-  resolution: "undici-types@npm:7.19.2"
-  checksum: f721026160e1f068a982401d0272b872819c335a2f64783c235ddd37a65ccd94327ec24489cee4556d57c77c14bd68ced60efa5def11cf11e3991f5ebf5e0e72
+"undici-types@npm:~7.21.0":
+  version: 7.21.0
+  resolution: "undici-types@npm:7.21.0"
+  checksum: 9a178d1f5fa36767bb9f9b3e0f235bee2d6c679055a2c5192e906791da3696b49a90aa21228a7465d4aa49ba76c4a0a1b781912474d7f7c843a871a10dc1fc74
   languageName: node
   linkType: hard
 
