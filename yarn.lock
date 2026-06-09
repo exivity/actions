@@ -355,7 +355,7 @@ __metadata:
     prettier: 3.8.3
     ramda: 0.32.0
     rcedit: 4.0.1
-    semver: 7.8.2
+    semver: 7.8.3
     typescript: 6.0.3
     yaml: ^2.9.0
     zod: 4.4.3
@@ -2342,12 +2342,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.8.2":
-  version: 7.8.2
-  resolution: "semver@npm:7.8.2"
+"semver@npm:7.8.3":
+  version: 7.8.3
+  resolution: "semver@npm:7.8.3"
   bin:
     semver: bin/semver.js
-  checksum: d2c9354c4e793a3b9c74511fbb82884f95b7237a1008ccda4523ae0cd1fb6a72b4715edd4f3d4fd66943dd47226d35212949fcf064df896ea5ee5469310da728
+  checksum: 71c58885666c832cc3b3c868308db29997ec6cc8fca9c8ed0f446d1b503cc10f0298eeb27be7bd3f272d89d1f36e23648d2964e4f6b8774a00fc62dc4ed527db
   languageName: node
   linkType: hard
 
