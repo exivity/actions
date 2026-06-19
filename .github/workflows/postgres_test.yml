@@ -25,7 +25,7 @@ jobs:
             mode: docker
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./postgres
         with:
           mode: ${{ matrix.mode }}
