@@ -337,7 +337,7 @@ __metadata:
     "@types/mime": 4.0.0
     "@types/minimatch": 6.0.0
     "@types/node": 26.0.0
-    "@types/ramda": 0.31.1
+    "@types/ramda": 0.32.0
     "@types/semver": 7.7.1
     "@types/uuid": 11.0.0
     checkout: "github:actions/checkout#v5"
@@ -733,12 +733,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:0.31.1":
-  version: 0.31.1
-  resolution: "@types/ramda@npm:0.31.1"
+"@types/ramda@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@types/ramda@npm:0.32.0"
   dependencies:
-    types-ramda: "npm:^0.31.0"
-  checksum: a16b41a30f33e1ef521d4d57ce4949887906fae0a333d2845ee34ff39b21eee9a0b8db963338a5e9343ed9b23878fac1c362114bb4366d81abfc66d01e0066c2
+    types-ramda: ^0.32.0
+  checksum: 8752d68243fdc92ac284fea5877dca55867b01c859691651fe8526838c24148419218097a011bfd93a3743b420cd192661db3ef7a8bbbf82b8f7218a0e1cadda
   languageName: node
   linkType: hard
 
@@ -2708,12 +2708,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"types-ramda@npm:^0.31.0":
-  version: 0.31.0
-  resolution: "types-ramda@npm:0.31.0"
+"types-ramda@npm:^0.32.0":
+  version: 0.32.0
+  resolution: "types-ramda@npm:0.32.0"
   dependencies:
-    ts-toolbelt: "npm:^9.6.0"
-  checksum: 9de570d0198c367bf7babda5307bacaf946a3cac1fa45c3e37092ff42f7639061e17bbb2002d8ca5de1cf4c62f087b3ed5d956327cb5ae0c66c5aa03097e143e
+    ts-toolbelt: ^9.6.0
+  checksum: 0c5c1c14307dd34568539217228115f25a65f28253ce2d03abb2028f9da5d5a32452ebceacb1586e072237e96bd45bfe9296cf7726b5e1ef7507946be36e1744
   languageName: node
   linkType: hard
 
