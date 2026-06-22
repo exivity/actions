@@ -343,6 +343,7 @@ __metadata:
     checkout: "github:actions/checkout#v5"
     deepmerge: ^4.3.1
     esbuild: 0.28.1
+    form-data: 4.0.6
     glob: 13.0.6
     husky: 9.1.7
     jira.js: 5.3.1
@@ -354,7 +355,7 @@ __metadata:
     prettier: 3.8.4
     ramda: 0.32.0
     rcedit: 4.0.1
-    semver: 7.8.4
+    semver: 7.8.5
     typescript: 6.0.3
     yaml: ^2.9.0
     zod: 4.4.3
@@ -1402,7 +1403,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.5":
+"form-data@npm:4.0.6, form-data@npm:^4.0.5":
   version: 4.0.6
   resolution: "form-data@npm:4.0.6"
   dependencies:
@@ -2350,12 +2351,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.8.4":
-  version: 7.8.4
-  resolution: "semver@npm:7.8.4"
+"semver@npm:7.8.5":
+  version: 7.8.5
+  resolution: "semver@npm:7.8.5"
   bin:
     semver: bin/semver.js
-  checksum: 42404642f4b892bd95859c6e2c5777a2916d6e4f0d924441593dea0911cadf5d8761d41b4ca3701793818ecdc72982df5c6d6328cba88252a1f0ebf93e375463
+  checksum: 0c580f17e88e2b45806dc5cf3d824f719c946999d3554bf30307c2b68b3300ab3c8bfcd84d8f489b93b4cbb5362f5fc8de4d2858954f18d834253c4450fc9f6b
   languageName: node
   linkType: hard
 
