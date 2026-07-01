@@ -67,7 +67,7 @@
     "@types/js-yaml": "4.0.9",
     "@types/mime": "4.0.0",
     "@types/minimatch": "6.0.0",
-    "@types/node": "26.0.1",
+    "@types/node": "26.1.0",
     "@types/ramda": "0.32.0",
     "@types/semver": "7.7.1",
     "@types/uuid": "11.0.0",
