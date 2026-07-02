@@ -347,7 +347,7 @@ __metadata:
     glob: 13.0.6
     husky: 9.1.7
     jira.js: 5.4.0
-    js-yaml: 4.2.0
+    js-yaml: 5.2.1
     mime: 4.1.0
     minimatch: 10.2.5
     npm-run-all: 4.1.5
@@ -1943,14 +1943,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:4.2.0":
-  version: 4.2.0
-  resolution: "js-yaml@npm:4.2.0"
+"js-yaml@npm:5.2.1":
+  version: 5.2.1
+  resolution: "js-yaml@npm:5.2.1"
   dependencies:
     argparse: ^2.0.1
   bin:
-    js-yaml: bin/js-yaml.js
-  checksum: 86bd35548a0c19cd1f5861147c09aa1f52eb0fc9464f34023524d22bbe079c62c30fd00750e63f632e8d12c12ad36ea0dd1e6bec5171c492ecad433d8db295eb
+    js-yaml: bin/js-yaml.mjs
+  checksum: 8cbefb87c31db3fc177ce5ecf92c072d124be9247f1164ea50cb446d56037d3f4c086a4167cd127f20bb2b4281d9c64d051a8e148f8f4c841c074d3b06492bcf
   languageName: node
   linkType: hard
 
