@@ -6,7 +6,11 @@ var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  try {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  } catch (e) {
+    throw mod = 0, e;
+  }
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
@@ -19451,7 +19455,7 @@ function escapeProperty(s) {
   return toCommandValue(s).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A").replace(/:/g, "%3A").replace(/,/g, "%2C");
 }
 
-// node_modules/@actions/http-client/lib/index.js
+// node_modules/@actions/core/node_modules/@actions/http-client/lib/index.js
 var tunnel = __toESM(require_tunnel2(), 1);
 var import_undici = __toESM(require_undici(), 1);
 var HttpCodes;
@@ -24205,9 +24209,10 @@ function getEventData(eventName) {
 var import_fs3 = require("fs");
 var import_os4 = require("os");
 var import_path = require("path");
-var S3_BUCKET = "exivity";
-var S3_PREFIX = "build";
-var S3_REGION = "eu-central-1";
+var S3_BUCKET = process.env.S3_BUCKET || "exivity-core-dev-build";
+var S3_PREFIX = process.env.S3_PREFIX || "build";
+var S3_REGION = process.env.S3_REGION || "eu-central-2";
+var S3_ENDPOINT_URL = process.env.S3_ENDPOINT_URL || "https://eu-central-2.storage.impossibleapi.net";
 function getS3url({ component, sha, usePlatformPrefix, prefix }) {
   const platformPrefix = (0, import_os4.platform)() === "win32" ? "windows" : "linux";
   return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ""}${prefix ? `/${prefix}` : ""}`;
@@ -24237,6 +24242,8 @@ async function uploadS3object({
     isDirectory2 ? "--recursive" : "",
     "--region",
     S3_REGION,
+    "--endpoint-url",
+    S3_ENDPOINT_URL,
     `"${src}"`,
     isDirectory2 ? `"${dest}"` : `"${dest}/${(0, import_path.basename)(path4)}"`
   ].filter((item) => item).join(" ");

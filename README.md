@@ -631,8 +631,10 @@ repository migrations and runs them.
 
 # `get-artefacts`
 
-Download artefacts for the provided component. It will use the S3 _exivity_
-bucket in the _eu-central-1_ region. Artefacts are downloaded with the
+Download artefacts for the provided component. It will use the Impossible Cloud
+(S3-compatible) _exivity-core-dev-build_ bucket in the _eu-central-2_ region
+(override via `S3_BUCKET` / `S3_REGION` / `S3_ENDPOINT_URL` environment
+variables). Artefacts are downloaded with the
 _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ## Example
@@ -736,8 +738,10 @@ request in the prepare step.
 
 # `put-artefacts`
 
-Uploads artefacts in the provided directory. It will use the S3 _exivity_ bucket
-in the _eu-central-1_ region. Artefacts are uploaded to the
+Uploads artefacts in the provided directory. It will use the Impossible Cloud
+(S3-compatible) _exivity-core-dev-build_ bucket in the _eu-central-2_ region
+(override via `S3_BUCKET` / `S3_REGION` / `S3_ENDPOINT_URL` environment
+variables). Artefacts are uploaded to the
 _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
 ## Example

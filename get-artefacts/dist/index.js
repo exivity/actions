@@ -6,7 +6,11 @@ var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  try {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  } catch (e) {
+    throw mod = 0, e;
+  }
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
@@ -19454,7 +19458,7 @@ function escapeProperty(s) {
 // node_modules/@actions/core/lib/core.js
 var os4 = __toESM(require("os"), 1);
 
-// node_modules/@actions/http-client/lib/index.js
+// node_modules/@actions/core/node_modules/@actions/http-client/lib/index.js
 var tunnel = __toESM(require_tunnel2(), 1);
 var import_undici = __toESM(require_undici(), 1);
 var HttpCodes;
@@ -24295,9 +24299,10 @@ function getToken(inputName = "gh-token") {
 // lib/s3.ts
 var import_os4 = require("os");
 var import_path2 = require("path");
-var S3_BUCKET = "exivity";
-var S3_PREFIX = "build";
-var S3_REGION = "eu-central-1";
+var S3_BUCKET = process.env.S3_BUCKET || "exivity-core-dev-build";
+var S3_PREFIX = process.env.S3_PREFIX || "build";
+var S3_REGION = process.env.S3_REGION || "eu-central-2";
+var S3_ENDPOINT_URL = process.env.S3_ENDPOINT_URL || "https://eu-central-2.storage.impossibleapi.net";
 function getS3url({ component, sha, usePlatformPrefix, prefix }) {
   const platformPrefix = (0, import_os4.platform)() === "win32" ? "windows" : "linux";
   return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ""}${prefix ? `/${prefix}` : ""}`;
@@ -24314,7 +24319,7 @@ async function downloadS3object({
   const workspacePath = getWorkspacePath();
   const src = getS3url({ component, sha, usePlatformPrefix, prefix });
   const dest = (0, import_path2.resolve)(workspacePath, path4);
-  const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`;
+  const cmd = `aws s3 cp --recursive --region ${S3_REGION} --endpoint-url ${S3_ENDPOINT_URL} "${src}" "${dest}"`;
   info(`About to execute ${cmd}`);
   await exec(cmd, void 0, {
     env: {

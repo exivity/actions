@@ -5,9 +5,19 @@ import { platform } from 'os'
 import { basename, resolve } from 'path'
 import { getWorkspacePath } from './github'
 
-const S3_BUCKET = 'exivity'
-const S3_PREFIX = 'build'
-const S3_REGION = 'eu-central-1'
+/*
+ * Artifact storage lives on Impossible Cloud (S3-compatible object storage).
+ * All values can be overridden through the environment, so workflows can
+ * target a different bucket/endpoint without a code change. The AWS CLI is
+ * still used as the transfer tool; credentials are provided via the
+ * aws-access-key-id / aws-secret-access-key action inputs as before.
+ */
+const S3_BUCKET = process.env.S3_BUCKET || 'exivity-core-dev-build'
+const S3_PREFIX = process.env.S3_PREFIX || 'build'
+const S3_REGION = process.env.S3_REGION || 'eu-central-2'
+const S3_ENDPOINT_URL =
+  process.env.S3_ENDPOINT_URL ||
+  'https://eu-central-2.storage.impossibleapi.net'
 
 type S3Options = {
   component: string
@@ -41,7 +51,7 @@ export async function downloadS3object({
   const workspacePath = getWorkspacePath()
   const src = getS3url({ component, sha, usePlatformPrefix, prefix })
   const dest = resolve(workspacePath, path)
-  const cmd = `aws s3 cp --recursive --region ${S3_REGION} "${src}" "${dest}"`
+  const cmd = `aws s3 cp --recursive --region ${S3_REGION} --endpoint-url ${S3_ENDPOINT_URL} "${src}" "${dest}"`
 
   info(`About to execute ${cmd}`)
 
@@ -81,6 +91,8 @@ export async function uploadS3object({
     isDirectory ? '--recursive' : '',
     '--region',
     S3_REGION,
+    '--endpoint-url',
+    S3_ENDPOINT_URL,
     `"${src}"`,
     isDirectory ? `"${dest}"` : `"${dest}/${basename(path)}"`,
   ]
