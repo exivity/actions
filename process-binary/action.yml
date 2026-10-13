@@ -4,13 +4,29 @@ inputs:
   path:
     description: The path to the binary to process, glob patterns allowed
     required: true
-  certificate-base64:
+  signing-endpoint:
     description:
-      The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string
-    required: true
+      Azure Artifact Signing endpoint, e.g. https://weu.codesigning.azure.net.
+      Signing runs on Windows when signing-account is set; the job must have run
+      azure/login (OIDC) first.
+    required: false
+    default: ''
+  signing-account:
+    description: Azure Artifact Signing account name. Empty = do not sign.
+    required: false
+    default: ''
+  signing-profile:
+    description: Azure Artifact Signing certificate profile name
+    required: false
+    default: ''
+  certificate-base64:
+    description: Deprecated, ignored. Signing now uses Azure Artifact Signing.
+    required: false
+    default: ''
   certificate-password:
-    description: The password for the `.pfx` file
-    required: true
+    description: Deprecated, ignored. Signing now uses Azure Artifact Signing.
+    required: false
+    default: ''
   virustotal-api-key:
     description: The VirusTotal API key
     required: true
@@ -26,11 +42,15 @@ runs:
       with:
         path: ${{ inputs.path }}
     - uses: exivity/actions/sign-file@main
-      if: runner.os == 'disabled'
+      if: runner.os == 'Windows' && inputs.signing-account != ''
       with:
         path: ${{ inputs.path }}
-        certificate-base64: ${{ inputs.certificate-base64 }}
-        certificate-password: ${{ inputs.certificate-password }}
+        method: artifact-signing
+        endpoint: ${{ inputs.signing-endpoint }}
+        account-name: ${{ inputs.signing-account }}
+        certificate-profile-name: ${{ inputs.signing-profile }}
+        description: Exivity Core
+        description-url: https://exivity.com
     - uses: exivity/actions/virustotal@main
       with:
         path: ${{ inputs.path }}

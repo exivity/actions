@@ -6,7 +6,11 @@ var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  try {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  } catch (e) {
+    throw mod = 0, e;
+  }
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
@@ -18583,7 +18587,10 @@ function escapeProperty(s) {
   return toCommandValue(s).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A").replace(/:/g, "%3A").replace(/,/g, "%2C");
 }
 
-// node_modules/@actions/http-client/lib/index.js
+// node_modules/@actions/core/lib/core.js
+var os4 = __toESM(require("os"), 1);
+
+// node_modules/@actions/core/node_modules/@actions/http-client/lib/index.js
 var tunnel = __toESM(require_tunnel2(), 1);
 var import_undici = __toESM(require_undici(), 1);
 var HttpCodes;
@@ -19705,6 +19712,9 @@ function debug(message) {
 function error(message, properties = {}) {
   issueCommand("error", toCommandProperties(properties), message instanceof Error ? message.toString() : message);
 }
+function info(message) {
+  process.stdout.write(message + os4.EOL);
+}
 
 // sign-file/src/index.ts
 var import_fs3 = require("fs");
@@ -19751,7 +19761,7 @@ var pe = "\0PERIOD" + Math.random() + "\0";
 var is = new RegExp(fe, "g");
 var rs = new RegExp(ue, "g");
 var ns = new RegExp(qt, "g");
-var os4 = new RegExp(de, "g");
+var os5 = new RegExp(de, "g");
 var hs = new RegExp(pe, "g");
 var as = /\\\\/g;
 var ls = /\\{/g;
@@ -19766,7 +19776,7 @@ function ps(n7) {
   return n7.replace(as, fe).replace(ls, ue).replace(cs, qt).replace(fs2, de).replace(us, pe);
 }
 function ms(n7) {
-  return n7.replace(is, "\\").replace(rs, "{").replace(ns, "}").replace(os4, ",").replace(hs, ".");
+  return n7.replace(is, "\\").replace(rs, "{").replace(ns, "}").replace(os5, ",").replace(hs, ".");
 }
 function me(n7) {
   if (!n7) return [""];
@@ -22697,121 +22707,119 @@ Ze.glob = Ze;
 var import_os3 = require("os");
 var import_path = require("path");
 var METHOD_SIGN_TOOL = "signtool";
-async function resolveSignToolPath() {
-  const windowsKitCandidates = await Ze(
-    "C:/Program Files (x86)/Windows Kits/10/bin/*/x64/SignTool.exe",
-    {
-      absolute: true
-    }
-  );
-  const [latestWindowsKitSignTool] = windowsKitCandidates.sort(
-    (a, b) => b.localeCompare(a, void 0, {
-      numeric: true,
-      sensitivity: "base"
-    })
-  );
-  if (latestWindowsKitSignTool) {
-    debug(`Using SignTool from Windows Kit: "${latestWindowsKitSignTool}"`);
-    return latestWindowsKitSignTool;
-  }
-  const { exitCode, stdout } = await getExecOutput(
-    "where.exe",
-    ["signtool.exe"],
-    {
-      ignoreReturnCode: true,
-      silent: true
-    }
-  );
-  if (exitCode === 0) {
-    const [signToolOnPath] = stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-    if (signToolOnPath) {
-      debug(`Using SignTool from PATH: "${signToolOnPath}"`);
-      return signToolOnPath;
-    }
-  }
-  throw new Error(
-    "Unable to locate SignTool.exe in the Windows SDK or on PATH."
-  );
-}
+var METHOD_ARTIFACT_SIGNING = "artifact-signing";
 async function signTool(filePath, certificatePath, certificatePassword) {
-  const signToolPath = await resolveSignToolPath();
-  const { exitCode, stderr, stdout } = await getExecOutput(
-    `"${signToolPath}"`,
-    [
-      /**
-       * Digitally signs files. Digital signatures protect files from
-       * tampering, and enable users to verify the signer based on a signing
-       * certificate. For a list of the options supported by the sign command,
-       * see sign Command Options.
-       */
-      "sign",
-      /**
-       * Specifies the signing certificate in a file. If the file is in
-       * Personal Information Exchange (PFX) format and protected by a
-       * password, use the /p option to specify the password. If the file does
-       * not contain private keys, use the /csp and /kc options to specify the
-       * CSP and private key container name.
-       */
-      "/f",
-      certificatePath,
-      /**
-       * Specifies the password to use when opening a PFX file. (Use the /f
-       * option to specify a PFX file.)
-       */
-      "/p",
-      certificatePassword,
-      /**
-       * Specifies the URL of the RFC 3161 time stamp server. If this option
-       * (or /t) is not present, the signed file will not be time stamped. A
-       * warning is generated if time stamping fails. This option cannot be
-       * used with the /t option.
-       */
-      "/tr",
-      "http://timestamp.entrust.net/TSS/RFC3161sha2TS",
-      /**
-       * Used with the /tr option to request a digest algorithm used by the
-       * RFC 3161 time stamp server.
-       *
-       * Note: A warning is generated if the /td switch is not provided while
-       * timestamping. The default algorithm is SHA1, but SHA256 is
-       * recommended.
-       *
-       * The /td switch must be declared after the /tr switch, not before. If
-       * the /td switch is declared before the /tr switch, the timestamp that
-       * is returned is from the SHA1 algorithm instead of the intended SHA256
-       * algorithm.
-       */
-      "/td",
-      "sha256",
-      /**
-       * Specifies the file digest algorithm to use for creating file
-       * signatures.
-       *
-       * Note: A warning is generated if the/fd switch is not provided while
-       * signing. The default algorithm is SHA1 but SHA256 is recommended.
-       */
-      "/fd",
-      "sha256",
-      filePath
-    ]
-  );
+  const signToolPath = '"C:/Program Files (x86)/Windows Kits/10/bin/10.0.22000.0/x64/SignTool.exe"';
+  const { exitCode, stderr, stdout } = await getExecOutput(signToolPath, [
+    /**
+     * Digitally signs files. Digital signatures protect files from
+     * tampering, and enable users to verify the signer based on a signing
+     * certificate. For a list of the options supported by the sign command,
+     * see sign Command Options.
+     */
+    "sign",
+    /**
+     * Specifies the signing certificate in a file. If the file is in
+     * Personal Information Exchange (PFX) format and protected by a
+     * password, use the /p option to specify the password. If the file does
+     * not contain private keys, use the /csp and /kc options to specify the
+     * CSP and private key container name.
+     */
+    "/f",
+    certificatePath,
+    /**
+     * Specifies the password to use when opening a PFX file. (Use the /f
+     * option to specify a PFX file.)
+     */
+    "/p",
+    certificatePassword,
+    /**
+     * Specifies the URL of the RFC 3161 time stamp server. If this option
+     * (or /t) is not present, the signed file will not be time stamped. A
+     * warning is generated if time stamping fails. This option cannot be
+     * used with the /t option.
+     */
+    "/tr",
+    "http://timestamp.entrust.net/TSS/RFC3161sha2TS",
+    /**
+     * Used with the /tr option to request a digest algorithm used by the
+     * RFC 3161 time stamp server.
+     *
+     * Note: A warning is generated if the /td switch is not provided while
+     * timestamping. The default algorithm is SHA1, but SHA256 is
+     * recommended.
+     *
+     * The /td switch must be declared after the /tr switch, not before. If
+     * the /td switch is declared before the /tr switch, the timestamp that
+     * is returned is from the SHA1 algorithm instead of the intended SHA256
+     * algorithm.
+     */
+    "/td",
+    "sha256",
+    /**
+     * Specifies the file digest algorithm to use for creating file
+     * signatures.
+     *
+     * Note: A warning is generated if the/fd switch is not provided while
+     * signing. The default algorithm is SHA1 but SHA256 is recommended.
+     */
+    "/fd",
+    "sha256",
+    filePath
+  ]);
   if (exitCode !== 0) {
     throw new Error(`signtool.exe failed with code ${exitCode}: ${stderr}`);
   }
   debug(`signtool.exe output: ${stdout}`);
 }
+async function artifactSigning(filePaths, endpoint, accountName, certificateProfileName, description, descriptionUrl) {
+  const script = (0, import_path.resolve)(__dirname, "..", "artifact-signing.ps1");
+  const args = [
+    "-NoProfile",
+    "-NonInteractive",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    script,
+    "-Endpoint",
+    endpoint,
+    "-AccountName",
+    accountName,
+    "-CertificateProfileName",
+    certificateProfileName,
+    "-Files",
+    filePaths.join(",")
+  ];
+  if (description) {
+    args.push("-Description", description);
+  }
+  if (descriptionUrl) {
+    args.push("-DescriptionUrl", descriptionUrl);
+  }
+  const { exitCode, stderr } = await getExecOutput("pwsh", args);
+  if (exitCode !== 0) {
+    throw new Error(`artifact-signing.ps1 failed with code ${exitCode}: ${stderr}`);
+  }
+}
 async function run() {
   const path4 = getInput("path", { required: true });
-  const encodedCertificate = getInput("certificate-base64", { required: true });
-  const certificatePassword = getInput("certificate-password", {
-    required: true
-  });
-  const method = getInput("method");
+  const method = getInput("method") || METHOD_SIGN_TOOL;
+  if ((0, import_os3.platform)() !== "win32") {
+    throw new Error("sign-file is only available on Windows");
+  }
+  const absPaths = await Ze(path4, { absolute: true });
+  debug(`Absolute path to file(s): "${absPaths.join(", ")}"`);
+  if (absPaths.length === 0) {
+    throw new Error(`No files matched "${path4}"`);
+  }
   switch (method) {
-    case METHOD_SIGN_TOOL:
-      if ((0, import_os3.platform)() !== "win32") {
-        throw new Error("signtool is only available on Windows");
-      }
+    case METHOD_SIGN_TOOL: {
+      const encodedCertificate = getInput("certificate-base64", {
+        required: true
+      });
+      const certificatePassword = getInput("certificate-password", {
+        required: true
+      });
       const tmpDir = await import_fs3.promises.mkdtemp((0, import_path.join)((0, import_os3.tmpdir)()));
       const certificatePath = (0, import_path.resolve)(tmpDir, "cert.pfx");
       await import_fs3.promises.writeFile(
@@ -22819,16 +22827,36 @@ async function run() {
         Buffer.from(encodedCertificate, "base64")
       );
       debug(`Written temporary pfx file to "${certificatePath}"`);
-      const absPaths = await Ze(path4, { absolute: true });
-      debug(`Absolute path to file(s): "${absPaths.join(", ")}"`);
       for (const absPath of absPaths) {
         await signTool(absPath, certificatePath, certificatePassword);
       }
       await import_fs3.promises.unlink(certificatePath);
       await import_fs3.promises.rmdir(tmpDir, { recursive: true });
       break;
+    }
+    case METHOD_ARTIFACT_SIGNING: {
+      const endpoint = getInput("endpoint", { required: true });
+      const accountName = getInput("account-name", { required: true });
+      const certificateProfileName = getInput("certificate-profile-name", {
+        required: true
+      });
+      const description = getInput("description");
+      const descriptionUrl = getInput("description-url");
+      info(
+        `Signing ${absPaths.length} file(s) with Artifact Signing ${accountName}/${certificateProfileName}`
+      );
+      await artifactSigning(
+        absPaths,
+        endpoint,
+        accountName,
+        certificateProfileName,
+        description,
+        descriptionUrl
+      );
+      break;
+    }
     default:
-      throw new Error("Method is invalid");
+      throw new Error(`Method "${method}" is invalid`);
   }
 }
 run().catch(setFailed);

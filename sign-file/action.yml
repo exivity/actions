@@ -4,17 +4,41 @@ inputs:
   path:
     description: The path to the file to sign, glob patterns allowed
     required: true
+  method:
+    description:
+      The signature tool to use. "artifact-signing" (Azure Artifact Signing,
+      needs a preceding azure/login with OIDC) or "signtool" (legacy, needs a
+      .pfx file)
+    required: false
+    default: signtool
+  endpoint:
+    description:
+      Artifact Signing endpoint for the account's region, e.g.
+      https://weu.codesigning.azure.net (method artifact-signing)
+    required: false
+  account-name:
+    description: Artifact Signing account name (method artifact-signing)
+    required: false
+  certificate-profile-name:
+    description:
+      Artifact Signing certificate profile name (method artifact-signing)
+    required: false
+  description:
+    description: Description of the signed content (method artifact-signing)
+    required: false
+  description-url:
+    description:
+      URL with more information about the signed content (method
+      artifact-signing)
+    required: false
   certificate-base64:
     description:
       The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string
-    required: true
-  certificate-password:
-    description: The password for the `.pfx` file
-    required: true
-  method:
-    description: The signature tool to use
+      (method signtool)
     required: false
-    default: signtool
+  certificate-password:
+    description: The password for the `.pfx` file (method signtool)
+    required: false
 runs:
-  using: 'node24'
+  using: node20
   main: dist/index.js

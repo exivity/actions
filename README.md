@@ -198,22 +198,39 @@ Starts a PostgreSQL server
 # `process-binary`
 
 A composite action running [`rcedit`](#rcedit), [`sign-file`](#sign-file) and
-[`virustotal`](#virustotal) (in that order).
+[`virustotal`](#virustotal) (in that order). Signing uses Azure Artifact Signing
+and only runs on Windows when `signing-account` is set; the job needs
+`id-token: write` and an `azure/login` step before it.
 
 ## Example
 
 ```yaml
+- uses: azure/login@v3
+  with:
+    client-id: ${{ vars.AZURE_SIGNING_CLIENT_ID }}
+    tenant-id: ${{ vars.AZURE_SIGNING_TENANT_ID }}
+    subscription-id: ${{ vars.AZURE_SIGNING_SUBSCRIPTION_ID }}
 - uses: exivity/actions/process-binary@main
   with:
     path: build/foo.exe
-    certificate-base64: ${{ secrets.CODESIGN_CERTIFICATE_BASE64 }}
-    certificate-password: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
+    signing-endpoint: ${{ vars.AZURE_SIGNING_ENDPOINT }}
+    signing-account: ${{ vars.AZURE_SIGNING_ACCOUNT }}
+    signing-profile: ${{ vars.AZURE_SIGNING_PROFILE }}
     virustotal-api-key: ${{ secrets.VIRUSTOTAL_API_KEY }}
 ```
 
 ## Inputs
 
-See individual actions for inputs.
+| name                   | required | default        | description                                                               |
+| ---------------------- | -------- | -------------- | ------------------------------------------------------------------------- |
+| `path`                 | ✅       |                | The path to the binary to process, glob patterns allowed                  |
+| `signing-endpoint`     |          |                | Azure Artifact Signing endpoint, e.g. `https://weu.codesigning.azure.net` |
+| `signing-account`      |          |                | Azure Artifact Signing account name; empty disables signing               |
+| `signing-profile`      |          |                | Azure Artifact Signing certificate profile name                           |
+| `virustotal-api-key`   | ✅       |                | The VirusTotal API key                                                    |
+| `gh-token`             |          | `github.token` | GitHub token used for writing commit status                               |
+| `certificate-base64`   |          |                | Deprecated, ignored                                                       |
+| `certificate-password` |          |                | Deprecated, ignored                                                       |
 
 # `purge-ghcr`
 
@@ -451,24 +468,41 @@ Digitally sign a file
 
 ⚠️ Currently only works on Windows hosts
 
+With `method: artifact-signing` the file is signed through Azure Artifact
+Signing. The job must have `id-token: write` and run `azure/login` first; the
+action installs the `ArtifactSigning` PowerShell module and authenticates with
+that login, so no certificate material is involved.
+
 ## Example
 
 ```yaml
+- uses: azure/login@v3
+  with:
+    client-id: ${{ vars.AZURE_SIGNING_CLIENT_ID }}
+    tenant-id: ${{ vars.AZURE_SIGNING_TENANT_ID }}
+    subscription-id: ${{ vars.AZURE_SIGNING_SUBSCRIPTION_ID }}
 - uses: exivity/actions/sign-file@main
   with:
     path: build/foo.exe
-    certificate-base64: ${{ secrets.CODESIGN_CERTIFICATE_BASE64 }}
-    certificate-password: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
+    method: artifact-signing
+    endpoint: ${{ vars.AZURE_SIGNING_ENDPOINT }}
+    account-name: ${{ vars.AZURE_SIGNING_ACCOUNT }}
+    certificate-profile-name: ${{ vars.AZURE_SIGNING_PROFILE }}
 ```
 
 ## Inputs
 
-| name                   | required | default      | description                                                                |
-| ---------------------- | -------- | ------------ | -------------------------------------------------------------------------- |
-| `path`                 | ✅       |              | The path to the file to sign, glob patterns allowed                        |
-| `certificate-base64`   | ✅       |              | The contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string |
-| `certificate-password` | ✅       |              | The password for the `.pfx` file                                           |
-| `method`               |          | `"signtool"` | The signature tool to use. Available options: `"signtool"`                 |
+| name                       | required | default      | description                                                                                  |
+| -------------------------- | -------- | ------------ | -------------------------------------------------------------------------------------------- |
+| `path`                     | ✅       |              | The path to the file to sign, glob patterns allowed                                          |
+| `method`                   |          | `"signtool"` | `"artifact-signing"` (Azure Artifact Signing) or `"signtool"` (legacy `.pfx`)                |
+| `endpoint`                 |          |              | Artifact Signing endpoint for the account's region, e.g. `https://weu.codesigning.azure.net` |
+| `account-name`             |          |              | Artifact Signing account name                                                                |
+| `certificate-profile-name` |          |              | Artifact Signing certificate profile name                                                    |
+| `description`              |          |              | Description of the signed content                                                            |
+| `description-url`          |          |              | URL with more information about the signed content                                           |
+| `certificate-base64`       |          |              | `signtool` only: the contents of the `.pfx` file (PKCS#12 archive) encoded as base64 string  |
+| `certificate-password`     |          |              | `signtool` only: the password for the `.pfx` file                                            |
 
 # `slack`
 
