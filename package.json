@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@octokit/webhooks": "14.2.0",
-    "@types/adm-zip": "0.5.8",
+    "@types/adm-zip": "0.6.0",
     "@types/glob": "9.0.0",
     "@types/js-yaml": "4.0.9",
     "@types/mime": "4.0.0",
