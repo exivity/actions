@@ -22,8 +22,7 @@ jobs:
       - uses: ./release
         with:
           mode: ping
-          # @todo change to true
-          dry-run: false
+          dry-run: true
           gh-token: ${{ secrets.GH_BOT_TOKEN }}
 
   release_prepare-test:

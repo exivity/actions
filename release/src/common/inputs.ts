@@ -8,6 +8,7 @@ import { info } from 'console'
 import { getToken, STANDARD_BRANCH } from '../../../lib/github'
 import { getBooleanInput } from '../../../lib/core'
 const { resolveReleaseRepositories } = require('./releaseRepositories')
+const { resolveChangelogRepositories } = require('./changelogRepositories')
 
 async function readTextFile(path: string) {
   try {
@@ -46,6 +47,7 @@ export type ReleaseRepository = {
   sourcePath?: string
   releaseBranch: string
   tagStrategy: string
+  excludedPullRequests?: number[]
 }
 
 export const getJiraProjectId = () => Number(getInput('jira-project-id'))
@@ -90,6 +92,43 @@ export const getReleaseRepositories = async (): Promise<
 
 export const getRepositories = async () => {
   return (await getReleaseRepositories()).map(({ component }) => component)
+}
+
+export const getChangelogRepositories = async (): Promise<
+  ReleaseRepository[]
+> => {
+  const [repositories, lockfile] = await Promise.all([
+    getReleaseRepositories(),
+    getLockFile(),
+  ])
+  const plan = existsSync('release-plan.json')
+    ? await readJson<unknown>('release-plan.json')
+    : null
+  return resolveChangelogRepositories({
+    repositories,
+    lockfile,
+    plan,
+    loadBaseline: async (ref: string) => {
+      try {
+        const { data } = await getOctoKitClient().rest.repos.getContent({
+          owner: 'exivity',
+          repo: getReleaseRepo(),
+          path: 'release-plan.json',
+          ref,
+        })
+        if (
+          Array.isArray(data) ||
+          !('content' in data) ||
+          data.encoding !== 'base64'
+        )
+          throw new Error('Unsupported maintenance changelog baseline file')
+        return JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'))
+      } catch (error) {
+        if ((error as { status?: number }).status === 404) return null
+        throw error
+      }
+    },
+  })
 }
 
 export const getChangeLogPath = () => getInput('changelog')

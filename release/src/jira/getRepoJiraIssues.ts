@@ -49,6 +49,7 @@ export const getRepoJiraIssues = async ({
   sourceRepo,
   sourcePath,
   releaseBranch,
+  excludedPullRequests = [],
 }: ReleaseRepository) => {
   const jiraClient = getJiraClient()
   const octokit = getOctoKitClient()
@@ -98,6 +99,11 @@ export const getRepoJiraIssues = async ({
           repo,
           sha: commit.sha,
         })
+        if (
+          associatedPullRequest &&
+          excludedPullRequests.includes(associatedPullRequest.number)
+        )
+          return []
 
         debug(() => `PR.title: ${associatedPullRequest?.title}`)
         debug(() => `PR.body: ${associatedPullRequest?.body}`)
