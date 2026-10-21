@@ -348,7 +348,7 @@ __metadata:
     husky: "npm:9.1.7"
     jira.js: "npm:5.4.0"
     js-yaml: "npm:4.2.0"
-    mime: "npm:4.1.0"
+    mime: "npm:4.1.1"
     minimatch: "npm:10.2.6"
     npm-run-all: "npm:4.1.5"
     p-queue: "npm:10.0.0"
@@ -2141,12 +2141,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:*, mime@npm:4.1.0":
+"mime@npm:*":
   version: 4.1.0
   resolution: "mime@npm:4.1.0"
   bin:
     mime: bin/cli.js
   checksum: 10/154c06eeaf803c4a87f44b3dbd3fafc50afed7154f9ea2d2dde4ae464be33a7c6943de6981d636abd5da3523d2bd66ee1ad2adb2e4c2e7a2fe5e0075bcde62d5
+  languageName: node
+  linkType: hard
+
+"mime@npm:4.1.1":
+  version: 4.1.1
+  resolution: "mime@npm:4.1.1"
+  bin:
+    mime: bin/cli.js
+  checksum: 10/6e323328f14c4a1fb25adc31699892768d193cf214ef07c7375de4100d26a4f2cda21e4b6385838b9c09a6865475832c5c3fcc7d8754988a6d5d791ade7c9c1e
   languageName: node
   linkType: hard
 
