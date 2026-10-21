@@ -1,5 +1,5 @@
 import { getInput, info } from '@actions/core'
-import { exec } from '@actions/exec'
+import { exec, getExecOutput } from '@actions/exec'
 import { promises as fsPromises } from 'fs'
 import { platform } from 'os'
 import { basename, resolve } from 'path'
@@ -37,6 +37,39 @@ function getS3url({ component, sha, usePlatformPrefix, prefix }: S3Options) {
   return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${
     usePlatformPrefix ? `/${platformPrefix}` : ''
   }${prefix ? `/${prefix}` : ''}`
+}
+
+export async function hasS3objects(options: Options) {
+  const destination = getS3url(options)
+  const keyPrefix = destination.slice(`s3://${S3_BUCKET}/`.length) + '/'
+  const result = await getExecOutput(
+    'aws',
+    [
+      's3api',
+      'list-objects-v2',
+      '--bucket',
+      S3_BUCKET,
+      '--prefix',
+      keyPrefix,
+      '--max-keys',
+      '1',
+      '--region',
+      S3_REGION,
+      '--endpoint-url',
+      S3_ENDPOINT_URL,
+      '--output',
+      'json',
+    ],
+    {
+      silent: true,
+      env: {
+        ...process.env,
+        AWS_ACCESS_KEY_ID: options.awsKeyId,
+        AWS_SECRET_ACCESS_KEY: options.awsSecretKey,
+      },
+    },
+  )
+  return (JSON.parse(result.stdout).Contents || []).length > 0
 }
 
 export async function downloadS3object({

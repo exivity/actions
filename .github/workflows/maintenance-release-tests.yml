@@ -16,3 +16,4 @@ jobs:
       - run:
           node --test release/src/common/*.test.js
           build-push-image/src/identity.test.js
+          put-artefacts/src/*.test.js

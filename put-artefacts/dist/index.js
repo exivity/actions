@@ -14647,7 +14647,7 @@ var require_util4 = __commonJS({
     var { getEncoding } = require_encoding();
     var { serializeAMimeType, parseMIMEType } = require_data_url();
     var { types } = require("node:util");
-    var { StringDecoder } = require("string_decoder");
+    var { StringDecoder: StringDecoder2 } = require("string_decoder");
     var { btoa } = require("node:buffer");
     var staticPropertyDescriptors = {
       enumerable: true,
@@ -14738,7 +14738,7 @@ var require_util4 = __commonJS({
             dataURL += serializeAMimeType(parsed);
           }
           dataURL += ";base64,";
-          const decoder = new StringDecoder("latin1");
+          const decoder = new StringDecoder2("latin1");
           for (const chunk of bytes) {
             dataURL += btoa(decoder.write(chunk));
           }
@@ -14767,7 +14767,7 @@ var require_util4 = __commonJS({
         }
         case "BinaryString": {
           let binaryString = "";
-          const decoder = new StringDecoder("latin1");
+          const decoder = new StringDecoder2("latin1");
           for (const chunk of bytes) {
             binaryString += decoder.write(chunk);
           }
@@ -19455,6 +19455,9 @@ function escapeProperty(s) {
   return toCommandValue(s).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A").replace(/:/g, "%3A").replace(/,/g, "%2C");
 }
 
+// node_modules/@actions/core/lib/core.js
+var os4 = __toESM(require("os"), 1);
+
 // node_modules/@actions/core/node_modules/@actions/http-client/lib/index.js
 var tunnel = __toESM(require_tunnel2(), 1);
 var import_undici = __toESM(require_undici(), 1);
@@ -19796,6 +19799,9 @@ var _summary = new Summary();
 
 // node_modules/@actions/core/lib/platform.js
 var import_os2 = __toESM(require("os"), 1);
+
+// node_modules/@actions/exec/lib/exec.js
+var import_string_decoder = require("string_decoder");
 
 // node_modules/@actions/exec/lib/toolrunner.js
 var os2 = __toESM(require("os"), 1);
@@ -20511,6 +20517,38 @@ function exec(commandLine, args, options) {
     return runner.exec();
   });
 }
+function getExecOutput(commandLine, args, options) {
+  return __awaiter5(this, void 0, void 0, function* () {
+    var _a, _b;
+    let stdout = "";
+    let stderr = "";
+    const stdoutDecoder = new import_string_decoder.StringDecoder("utf8");
+    const stderrDecoder = new import_string_decoder.StringDecoder("utf8");
+    const originalStdoutListener = (_a = options === null || options === void 0 ? void 0 : options.listeners) === null || _a === void 0 ? void 0 : _a.stdout;
+    const originalStdErrListener = (_b = options === null || options === void 0 ? void 0 : options.listeners) === null || _b === void 0 ? void 0 : _b.stderr;
+    const stdErrListener = (data) => {
+      stderr += stderrDecoder.write(data);
+      if (originalStdErrListener) {
+        originalStdErrListener(data);
+      }
+    };
+    const stdOutListener = (data) => {
+      stdout += stdoutDecoder.write(data);
+      if (originalStdoutListener) {
+        originalStdoutListener(data);
+      }
+    };
+    const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
+    const exitCode = yield exec(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+    stdout += stdoutDecoder.end();
+    stderr += stderrDecoder.end();
+    return {
+      exitCode,
+      stdout,
+      stderr
+    };
+  });
+}
 
 // node_modules/@actions/core/lib/platform.js
 var platform = import_os2.default.platform();
@@ -20538,6 +20576,9 @@ function setFailed(message) {
 }
 function error(message, properties = {}) {
   issueCommand("error", toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+}
+function info(message) {
+  process.stdout.write(message + os4.EOL);
 }
 
 // put-artefacts/src/index.ts
@@ -24217,6 +24258,38 @@ function getS3url({ component, sha, usePlatformPrefix, prefix }) {
   const platformPrefix = (0, import_os4.platform)() === "win32" ? "windows" : "linux";
   return `s3://${S3_BUCKET}/${S3_PREFIX}/${component}/${sha}${usePlatformPrefix ? `/${platformPrefix}` : ""}${prefix ? `/${prefix}` : ""}`;
 }
+async function hasS3objects(options) {
+  const destination = getS3url(options);
+  const keyPrefix = destination.slice(`s3://${S3_BUCKET}/`.length) + "/";
+  const result = await getExecOutput(
+    "aws",
+    [
+      "s3api",
+      "list-objects-v2",
+      "--bucket",
+      S3_BUCKET,
+      "--prefix",
+      keyPrefix,
+      "--max-keys",
+      "1",
+      "--region",
+      S3_REGION,
+      "--endpoint-url",
+      S3_ENDPOINT_URL,
+      "--output",
+      "json"
+    ],
+    {
+      silent: true,
+      env: {
+        ...process.env,
+        AWS_ACCESS_KEY_ID: options.awsKeyId,
+        AWS_SECRET_ACCESS_KEY: options.awsSecretKey
+      }
+    }
+  );
+  return (JSON.parse(result.stdout).Contents || []).length > 0;
+}
 async function uploadS3object({
   component,
   sha,
@@ -24264,6 +24337,17 @@ function getAWSCredentials() {
   return [awsKeyId, awsSecretKey];
 }
 
+// put-artefacts/src/preserve.js
+async function preserveTagArtifacts(ref, exists2) {
+  if (!ref?.startsWith("refs/tags/")) return false;
+  if (!await exists2()) {
+    throw new Error(
+      "Release-tag artifact prefix is missing. Build this source commit on its branch before tagging; tag builds cannot publish or replace source artifacts."
+    );
+  }
+  return true;
+}
+
 // put-artefacts/src/index.ts
 async function zipAll(path4, component) {
   const filename = `${component}.tar.gz`;
@@ -24279,6 +24363,24 @@ async function run() {
   let path4 = getInput("path") || "build";
   const zip = getBooleanInput("zip", false);
   const [awsKeyId, awsSecretKey] = getAWSCredentials();
+  const options = {
+    component,
+    sha,
+    usePlatformPrefix,
+    prefix,
+    path: path4,
+    awsKeyId,
+    awsSecretKey
+  };
+  if (await preserveTagArtifacts(
+    process.env.GITHUB_REF,
+    () => hasS3objects(options)
+  )) {
+    info(
+      `Preserving existing artifacts for ${component}@${sha}; release-tag builds do not upload rebuilt files.`
+    );
+    return;
+  }
   if (zip) {
     path4 = await zipAll(path4, prefix || component);
   }
