@@ -637,6 +637,12 @@ Download artefacts for the provided component. It will use the Impossible Cloud
 variables). Artefacts are downloaded with the
 _build/{component}/{sha}[/{platform}][/{prefix}]_ prefix.
 
+Tag-triggered builds preserve the existing artifact prefix and skip uploading
+rebuilt files. A tag build fails if that prefix is missing: first build the
+source commit on its branch. This keeps release tags from replacing
+already-verified installer inputs with different binaries compiled from the same
+commit. Branch and pull-request uploads retain their existing behavior.
+
 ## Example
 
 ```yaml

@@ -1,9 +1,10 @@
-import { getInput, setFailed } from '@actions/core'
+import { getInput, info, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { resolve } from 'path'
 import { getBooleanInput } from '../../lib/core'
 import { getRepository, getSha, getWorkspacePath } from '../../lib/github'
-import { getAWSCredentials, uploadS3object } from '../../lib/s3'
+import { getAWSCredentials, hasS3objects, uploadS3object } from '../../lib/s3'
+import { preserveTagArtifacts } from './preserve.js'
 
 async function zipAll(path: string, component: string) {
   const filename = `${component}.tar.gz`
@@ -24,6 +25,26 @@ async function run() {
   const zip = getBooleanInput('zip', false)
 
   const [awsKeyId, awsSecretKey] = getAWSCredentials()
+
+  const options = {
+    component,
+    sha,
+    usePlatformPrefix,
+    prefix,
+    path,
+    awsKeyId,
+    awsSecretKey,
+  }
+  if (
+    await preserveTagArtifacts(process.env.GITHUB_REF, () =>
+      hasS3objects(options),
+    )
+  ) {
+    info(
+      `Preserving existing artifacts for ${component}@${sha}; release-tag builds do not upload rebuilt files.`,
+    )
+    return
+  }
 
   if (zip) {
     // This will actually create a tarball instead of a zip archive 🤷‍♂️
