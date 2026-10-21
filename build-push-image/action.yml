@@ -3,6 +3,13 @@ description:
   '⚠️ DEPRECATED: Builds and pushes a component image. This action will be
   removed in a future version. Please use the enhanced docker-build-push action.'
 inputs:
+  output-tag:
+    description:
+      Optional unique candidate-* output tag for an exact-revision build
+    required: false
+  source-revision:
+    description: Expected full checkout SHA; build fails if it differs
+    required: false
   owner:
     description: The namespace of the image repository
     required: false
