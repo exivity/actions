@@ -9,10 +9,10 @@ const METADATA_FILENAME = 'metadata.json'
  * docker image on build. This requires the line `COPY ./metadata.json {target}`
  * to be present in the Dockerfile.
  */
-export async function writeMetadataFile(repo: string) {
+export async function writeMetadataFile(repo: string, revision?: string) {
   const metadata = {
     component: repo,
-    version: getImageVersion(),
+    version: getImageVersion(revision),
     created: new Date().toISOString(),
   }
   const contents = JSON.stringify(metadata, undefined, 2)

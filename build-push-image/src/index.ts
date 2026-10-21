@@ -9,6 +9,8 @@ import {
 import { getOwnerInput, getRepoInput } from '../../lib/github'
 import { branchToTag, getLabels } from '../../lib/image'
 import { writeMetadataFile } from './metadataFile'
+import { execFileSync } from 'node:child_process'
+import { buildIdentity } from './identity.js'
 
 async function run() {
   // Inputs
@@ -26,15 +28,22 @@ async function run() {
   const onlyBuild = getBooleanInput('only-build') // New option to skip push
 
   // Get all relevant metadata for the image
-  const labels = getLabels(name)
-  const tag = branchToTag()
+  const { revision, tag } = buildIdentity({
+    checkout: execFileSync('git', ['rev-parse', 'HEAD'], {
+      encoding: 'utf8',
+    }).trim(),
+    expected: getInput('source-revision'),
+    outputTag: getInput('output-tag'),
+    fallbackTag: branchToTag(),
+  })
+  const labels = getLabels(name, revision)
   const image = { registry, namespace, name, tag }
 
   table('Repository', getImageFQN(image))
   table('Tag', tag)
   table('Labels', JSON.stringify(labels, undefined, 2))
 
-  await writeMetadataFile(name)
+  await writeMetadataFile(name, revision)
 
   // Perform login only if we're also going to push
   await dockerLogin({

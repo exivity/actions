@@ -33,7 +33,7 @@ function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-export function getLabels(name: string) {
+export function getLabels(name: string, revision = getSha()) {
   const { owner, fqn } = getRepository()
 
   return {
@@ -42,7 +42,7 @@ export function getLabels(name: string) {
     'org.opencontainers.image.description': name,
     'org.opencontainers.image.source': `https://github.com/${fqn}`,
     'org.opencontainers.image.created': new Date().toISOString(),
-    'org.opencontainers.image.revision': getSha(),
+    'org.opencontainers.image.revision': revision,
     ...(owner === 'exivity'
       ? {
           'org.opencontainers.image.url': 'https://exivity.com',
@@ -52,9 +52,9 @@ export function getLabels(name: string) {
   }
 }
 
-export function getImageVersion() {
+export function getImageVersion(revision = getSha()) {
   const tag = getTag()
   const semver = semverParse(tag)
 
-  return (semver?.version ?? getSha()) || 'unknown'
+  return (semver?.version ?? revision) || 'unknown'
 }
