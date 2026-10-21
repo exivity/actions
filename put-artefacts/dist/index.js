@@ -24272,6 +24272,7 @@ async function hasS3objects(options) {
       keyPrefix,
       "--max-keys",
       "1",
+      "--no-paginate",
       "--region",
       S3_REGION,
       "--endpoint-url",

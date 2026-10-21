@@ -53,6 +53,7 @@ export async function hasS3objects(options: Options) {
       keyPrefix,
       '--max-keys',
       '1',
+      '--no-paginate',
       '--region',
       S3_REGION,
       '--endpoint-url',

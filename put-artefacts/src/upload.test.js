@@ -67,6 +67,7 @@ test('bundled action lists the exact tag prefix and never calls upload', () => {
   assert.equal(result.status, 0, result.stdout + result.stderr)
   assert.equal(result.calls.length, 1)
   assert.deepEqual(result.calls[0].slice(0, 2), ['s3api', 'list-objects-v2'])
+  assert.ok(result.calls[0].includes('--no-paginate'))
   assert.equal(
     result.calls[0][result.calls[0].indexOf('--prefix') + 1],
     `build/transcript/${'a'.repeat(40)}/linux/payload/`,
