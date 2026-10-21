@@ -31468,6 +31468,77 @@ var require_releaseRepositories = __commonJS({
   }
 });
 
+// release/src/common/maintenancePlan.js
+var require_maintenancePlan = __commonJS({
+  "release/src/common/maintenancePlan.js"(exports2, module2) {
+    "use strict";
+    function isMaintenancePlan2(plan, lockfile) {
+      return plan?.mode === "maintenance" && plan.version === lockfile.version;
+    }
+    module2.exports = { isMaintenancePlan: isMaintenancePlan2 };
+  }
+});
+
+// release/src/common/changelogRepositories.js
+var require_changelogRepositories = __commonJS({
+  "release/src/common/changelogRepositories.js"(exports2, module2) {
+    "use strict";
+    var { isMaintenancePlan: isMaintenancePlan2 } = require_maintenancePlan();
+    var fullSha = /^[a-f0-9]{40}$/;
+    async function resolveChangelogRepositories2({
+      repositories,
+      lockfile,
+      plan,
+      loadBaseline
+    }) {
+      if (!isMaintenancePlan2(plan, lockfile)) return repositories;
+      const result = repositories.map((r) => ({
+        ...r,
+        excludedPullRequests: [],
+        excludedCommitShas: []
+      }));
+      const seen = /* @__PURE__ */ new Set();
+      let current = plan;
+      while (current) {
+        const baseline = current.baseline;
+        if (!fullSha.test(baseline?.commit) || seen.has(baseline.commit))
+          throw new Error("Invalid or cyclic maintenance changelog baseline");
+        seen.add(baseline.commit);
+        for (const repository of result) {
+          const component = current.components?.[repository.component];
+          if (!component || !fullSha.test(component.baselineSha) || component.repo !== repository.sourceRepo || (component.path || "") !== (repository.sourcePath || ""))
+            throw new Error(
+              `Invalid maintenance changelog source: ${repository.component}`
+            );
+          repository.releasedSha = component.baselineSha;
+          const pr = current.fixes?.[repository.sourceRepo]?.developmentPr;
+          const commit = current.fixes?.[repository.sourceRepo]?.developmentCommit;
+          if (commit !== void 0) {
+            if (!fullSha.test(commit))
+              throw new Error(
+                `Invalid released development commit: ${repository.sourceRepo}`
+              );
+            if (!repository.excludedCommitShas.includes(commit))
+              repository.excludedCommitShas.push(commit);
+          }
+          if (pr !== void 0) {
+            if (!Number.isSafeInteger(pr) || pr <= 0)
+              throw new Error(
+                `Invalid released development PR: ${repository.sourceRepo}`
+              );
+            if (!repository.excludedPullRequests.includes(pr))
+              repository.excludedPullRequests.push(pr);
+          }
+        }
+        const previous = await loadBaseline(baseline.commit);
+        current = isMaintenancePlan2(previous, { version: baseline.version }) ? previous : null;
+      }
+      return result;
+    }
+    module2.exports = { resolveChangelogRepositories: resolveChangelogRepositories2 };
+  }
+});
+
 // node_modules/semver/internal/constants.js
 var require_constants6 = __commonJS({
   "node_modules/semver/internal/constants.js"(exports2, module2) {
@@ -33459,17 +33530,6 @@ var require_semver2 = __commonJS({
       compareIdentifiers: identifiers.compareIdentifiers,
       rcompareIdentifiers: identifiers.rcompareIdentifiers
     };
-  }
-});
-
-// release/src/common/maintenancePlan.js
-var require_maintenancePlan = __commonJS({
-  "release/src/common/maintenancePlan.js"(exports2, module2) {
-    "use strict";
-    function isMaintenancePlan2(plan, lockfile) {
-      return plan?.mode === "maintenance" && plan.version === lockfile.version;
-    }
-    module2.exports = { isMaintenancePlan: isMaintenancePlan2 };
   }
 });
 
@@ -67062,6 +67122,7 @@ async function exec2(command, args) {
 
 // release/src/common/inputs.ts
 var { resolveReleaseRepositories } = require_releaseRepositories();
+var { resolveChangelogRepositories } = require_changelogRepositories();
 async function readTextFile(path4) {
   try {
     return (0, import_promises.readFile)(path4, "utf8");
@@ -67096,6 +67157,34 @@ var getReleaseRepositories = async () => {
     repositoryMetadata,
     STANDARD_BRANCH
   );
+};
+var getChangelogRepositories = async () => {
+  const [repositories, lockfile] = await Promise.all([
+    getReleaseRepositories(),
+    getLockFile()
+  ]);
+  const plan = (0, import_fs3.existsSync)("release-plan.json") ? await readJson("release-plan.json") : null;
+  return resolveChangelogRepositories({
+    repositories,
+    lockfile,
+    plan,
+    loadBaseline: async (ref) => {
+      try {
+        const { data } = await getOctoKitClient().rest.repos.getContent({
+          owner: "exivity",
+          repo: getReleaseRepo(),
+          path: "release-plan.json",
+          ref
+        });
+        if (Array.isArray(data) || !("content" in data) || data.encoding !== "base64")
+          throw new Error("Unsupported maintenance changelog baseline file");
+        return JSON.parse(Buffer.from(data.content, "base64").toString("utf8"));
+      } catch (error52) {
+        if (error52.status === 404) return null;
+        throw error52;
+      }
+    }
+  });
 };
 var getChangeLogPath = () => getInput("changelog");
 var getChangeLog = async () => {
@@ -68581,7 +68670,9 @@ var getRepoJiraIssues = async ({
   releasedSha,
   sourceRepo,
   sourcePath,
-  releaseBranch: releaseBranch2
+  releaseBranch: releaseBranch2,
+  excludedPullRequests = [],
+  excludedCommitShas = []
 }) => {
   const jiraClient2 = getJiraClient();
   const octokit = getOctoKitClient();
@@ -68609,7 +68700,7 @@ var getRepoJiraIssues = async ({
       sha: releasedSha
     }
   });
-  const commits = sourceCommits.map((commit) => ({
+  const commits = sourceCommits.filter((commit) => !excludedCommitShas.includes(commit.sha)).map((commit) => ({
     owner: "exivity",
     repo: sourceRepo,
     commit
@@ -68625,6 +68716,8 @@ var getRepoJiraIssues = async ({
           repo,
           sha: commit.sha
         });
+        if (associatedPullRequest && excludedPullRequests.includes(associatedPullRequest.number))
+          return [];
         debug2(() => `PR.title: ${associatedPullRequest?.title}`);
         debug2(() => `PR.body: ${associatedPullRequest?.body}`);
         const jiraKeys = cleanJiraKeyMatches([
@@ -69060,7 +69153,7 @@ var issuesProp = ({ issues }) => issues;
 var jiraIssueKeysProp = ({ jiraIssueKeys }) => jiraIssueKeys;
 async function prepare() {
   await switchToReleaseBranch();
-  const repositories = await getReleaseRepositories();
+  const repositories = await getChangelogRepositories();
   const issuesPerRepo = await Promise.all(repositories.map(getRepoJiraIssues));
   const issues = issuesPerRepo.flatMap(issuesProp);
   if (isEmpty_default(issues)) {

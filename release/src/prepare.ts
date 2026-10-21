@@ -7,7 +7,7 @@ import {
   updatePr,
 } from './common/gitActions'
 import { inferVersionFromJiraIssues } from './common/inferVersionFromJiraIssues'
-import { getLockFile, getReleaseRepositories } from './common/inputs'
+import { getLockFile, getChangelogRepositories } from './common/inputs'
 import { logIssues } from './common/utils'
 import { writeChangelog } from './common/writeChangelog'
 import { writeIssueFile } from './common/writeIssueFile'
@@ -20,7 +20,7 @@ const jiraIssueKeysProp = <T>({ jiraIssueKeys }: { jiraIssueKeys: T }) =>
 export async function prepare() {
   await switchToReleaseBranch()
 
-  const repositories = await getReleaseRepositories()
+  const repositories = await getChangelogRepositories()
 
   const issuesPerRepo = await Promise.all(repositories.map(getRepoJiraIssues))
   const issues = issuesPerRepo.flatMap(issuesProp)
