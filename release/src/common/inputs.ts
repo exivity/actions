@@ -48,6 +48,7 @@ export type ReleaseRepository = {
   releaseBranch: string
   tagStrategy: string
   excludedPullRequests?: number[]
+  excludedCommitShas?: string[]
 }
 
 export const getJiraProjectId = () => Number(getInput('jira-project-id'))

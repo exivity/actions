@@ -11,7 +11,11 @@ async function resolveChangelogRepositories({
   loadBaseline,
 }) {
   if (!isMaintenancePlan(plan, lockfile)) return repositories
-  const result = repositories.map((r) => ({ ...r, excludedPullRequests: [] }))
+  const result = repositories.map((r) => ({
+    ...r,
+    excludedPullRequests: [],
+    excludedCommitShas: [],
+  }))
   const seen = new Set()
   let current = plan
   while (current) {
@@ -32,6 +36,15 @@ async function resolveChangelogRepositories({
         )
       repository.releasedSha = component.baselineSha
       const pr = current.fixes?.[repository.sourceRepo]?.developmentPr
+      const commit = current.fixes?.[repository.sourceRepo]?.developmentCommit
+      if (commit !== undefined) {
+        if (!fullSha.test(commit))
+          throw new Error(
+            `Invalid released development commit: ${repository.sourceRepo}`,
+          )
+        if (!repository.excludedCommitShas.includes(commit))
+          repository.excludedCommitShas.push(commit)
+      }
       if (pr !== undefined) {
         if (!Number.isSafeInteger(pr) || pr <= 0)
           throw new Error(

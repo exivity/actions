@@ -50,6 +50,7 @@ export const getRepoJiraIssues = async ({
   sourcePath,
   releaseBranch,
   excludedPullRequests = [],
+  excludedCommitShas = [],
 }: ReleaseRepository) => {
   const jiraClient = getJiraClient()
   const octokit = getOctoKitClient()
@@ -81,11 +82,13 @@ export const getRepoJiraIssues = async ({
     },
   })
 
-  const commits: RepoCommit[] = sourceCommits.map((commit) => ({
-    owner: 'exivity',
-    repo: sourceRepo,
-    commit,
-  }))
+  const commits: RepoCommit[] = sourceCommits
+    .filter((commit) => !excludedCommitShas.includes(commit.sha))
+    .map((commit) => ({
+      owner: 'exivity',
+      repo: sourceRepo,
+      commit,
+    }))
 
   const jiraIssueKeys: string[] = []
 

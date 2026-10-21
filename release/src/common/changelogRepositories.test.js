@@ -71,10 +71,13 @@ test('ordinary preparation leaves artifact/tag source resolution unchanged', asy
   )
 })
 test('the next normal release starts notes before maintenance, preserving older unshipped main work', async () => {
-  const result = await resolve(plan())
+  const p = plan()
+  p.fixes.product.developmentCommit = D
+  const result = await resolve(p)
   assert.equal(result[0].releasedSha, A)
   assert.equal(result[2].releasedSha, A)
   assert.deepEqual(result[0].excludedPullRequests, [12])
+  assert.deepEqual(result[0].excludedCommitShas, [D])
   assert.deepEqual(result[2].excludedPullRequests, [13])
   assert.equal(repositories[0].releasedSha, C)
   assert.equal(repositories[0].excludedPullRequests, undefined)

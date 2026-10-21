@@ -31492,7 +31492,11 @@ var require_changelogRepositories = __commonJS({
       loadBaseline
     }) {
       if (!isMaintenancePlan2(plan, lockfile)) return repositories;
-      const result = repositories.map((r) => ({ ...r, excludedPullRequests: [] }));
+      const result = repositories.map((r) => ({
+        ...r,
+        excludedPullRequests: [],
+        excludedCommitShas: []
+      }));
       const seen = /* @__PURE__ */ new Set();
       let current = plan;
       while (current) {
@@ -31508,6 +31512,15 @@ var require_changelogRepositories = __commonJS({
             );
           repository.releasedSha = component.baselineSha;
           const pr = current.fixes?.[repository.sourceRepo]?.developmentPr;
+          const commit = current.fixes?.[repository.sourceRepo]?.developmentCommit;
+          if (commit !== void 0) {
+            if (!fullSha.test(commit))
+              throw new Error(
+                `Invalid released development commit: ${repository.sourceRepo}`
+              );
+            if (!repository.excludedCommitShas.includes(commit))
+              repository.excludedCommitShas.push(commit);
+          }
           if (pr !== void 0) {
             if (!Number.isSafeInteger(pr) || pr <= 0)
               throw new Error(
@@ -68658,7 +68671,8 @@ var getRepoJiraIssues = async ({
   sourceRepo,
   sourcePath,
   releaseBranch: releaseBranch2,
-  excludedPullRequests = []
+  excludedPullRequests = [],
+  excludedCommitShas = []
 }) => {
   const jiraClient2 = getJiraClient();
   const octokit = getOctoKitClient();
@@ -68686,7 +68700,7 @@ var getRepoJiraIssues = async ({
       sha: releasedSha
     }
   });
-  const commits = sourceCommits.map((commit) => ({
+  const commits = sourceCommits.filter((commit) => !excludedCommitShas.includes(commit.sha)).map((commit) => ({
     owner: "exivity",
     repo: sourceRepo,
     commit
