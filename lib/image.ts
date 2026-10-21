@@ -52,9 +52,9 @@ export function getLabels(name: string, revision = getSha()) {
   }
 }
 
-export function getImageVersion() {
+export function getImageVersion(revision = getSha()) {
   const tag = getTag()
   const semver = semverParse(tag)
 
-  return (semver?.version ?? getSha()) || 'unknown'
+  return (semver?.version ?? revision) || 'unknown'
 }

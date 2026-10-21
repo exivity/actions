@@ -12,7 +12,7 @@ const METADATA_FILENAME = 'metadata.json'
 export async function writeMetadataFile(repo: string, revision?: string) {
   const metadata = {
     component: repo,
-    version: revision || getImageVersion(),
+    version: getImageVersion(revision),
     created: new Date().toISOString(),
   }
   const contents = JSON.stringify(metadata, undefined, 2)

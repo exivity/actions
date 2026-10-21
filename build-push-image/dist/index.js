@@ -26314,10 +26314,10 @@ function getLabels(name, revision = getSha()) {
     } : {}
   };
 }
-function getImageVersion() {
+function getImageVersion(revision = getSha()) {
   const tag = getTag();
   const semver = (0, import_semver.parse)(tag);
-  return (semver?.version ?? getSha()) || "unknown";
+  return (semver?.version ?? revision) || "unknown";
 }
 
 // build-push-image/src/metadataFile.ts
@@ -26326,7 +26326,7 @@ var METADATA_FILENAME = "metadata.json";
 async function writeMetadataFile(repo, revision) {
   const metadata = {
     component: repo,
-    version: revision || getImageVersion(),
+    version: getImageVersion(revision),
     created: (/* @__PURE__ */ new Date()).toISOString()
   };
   const contents = JSON.stringify(metadata, void 0, 2);
