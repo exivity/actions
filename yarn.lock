@@ -336,7 +336,7 @@ __metadata:
     "@types/js-yaml": "npm:4.0.9"
     "@types/mime": "npm:4.0.0"
     "@types/minimatch": "npm:6.0.0"
-    "@types/node": "npm:26.6.5"
+    "@types/node": "npm:26.6.6"
     "@types/ramda": "npm:0.32.0"
     "@types/semver": "npm:7.8.0"
     "@types/uuid": "npm:11.0.0"
@@ -358,6 +358,7 @@ __metadata:
     semver: "npm:7.8.5"
     typescript: "npm:7.0.2"
     yaml: "npm:^2.9.1"
+    zod: "npm:4.6.7"
   languageName: unknown
   linkType: soft
 
@@ -714,12 +715,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:26.6.5":
-  version: 26.6.5
-  resolution: "@types/node@npm:26.6.5"
+"@types/node@npm:26.6.6":
+  version: 26.6.6
+  resolution: "@types/node@npm:26.6.6"
   dependencies:
     undici-types: "npm:~8.9.0"
-  checksum: 10/03780cc68280b566af47c0f673318e665258dbdcc953737a83c11593424d55aecb8b2642a573da33f76cb4dd5457379548388b78ab284cb3b762030e5d58b252
+  checksum: 10/07c6c6fc1f5cc89c700ac9ebcebd42b000fef234bf0b80e9461a8f077105f15faf16df95b83745e0c0e37338d1fbc28cb402ef27b5787fd7a57b492c926ff7ae
   languageName: node
   linkType: hard
 
@@ -3214,7 +3215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^4.4.3":
+"zod@npm:4.6.7, zod@npm:^4.4.3":
   version: 4.6.7
   resolution: "zod@npm:4.6.7"
   checksum: 10/3ca8b8d6bb401538e59504c543db629ea7beaa775e504c3f22269b406fdffbf1431c856d59a597bf66d8487e4d2be12b03a55d76fc2c63d9f046eae1ca173bca
